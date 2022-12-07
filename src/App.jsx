@@ -12,6 +12,8 @@ import CategoryPost from "./Pages/CategoryPost";
 import Login from "./Pages/Login";
 import Register from "./Pages/Register";
 import ForgetPassword from "./Pages/ForgetPassword";
+import NewPassword from "./Pages/NewPassword";
+import UserConfirmed from "./Pages/UserConfirmed";
 
 
 import { Provider } from "react-redux";
@@ -28,6 +30,9 @@ function App() {
           <Route path="/login" element={<Login /> } />
           <Route path="/register" element={<Register /> } />
           <Route path="/forget-password" element={<ForgetPassword /> } />
+          <Route path="/forget-password/:id" element={<NewPassword /> } />
+          <Route path="/user-confirmed/:id" element={<UserConfirmed /> } />
+
           <Route path="/new-post" element={<NewPost /> } />
           <Route path="/edit-post" element={<EditPost /> } />
           <Route path="/profile/:id" element={<Profile /> } />

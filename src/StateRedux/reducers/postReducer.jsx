@@ -1,4 +1,5 @@
 const initialState = {
+    user: {},
     posts:[],
     post:{},
     categories:[],
