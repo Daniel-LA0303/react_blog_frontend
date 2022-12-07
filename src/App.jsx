@@ -13,11 +13,15 @@ import Login from "./Pages/Login";
 import Register from "./Pages/Register";
 import ForgetPassword from "./Pages/ForgetPassword";
 
+
+import { Provider } from "react-redux";
+import store from "./store";
+
 function App() {
 
 
   return (
-    <>
+    <Provider store={store}>
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<Home /> } />
@@ -31,7 +35,7 @@ function App() {
           <Route path="/category/:id" element={<CategoryPost /> } />
         </Routes>
       </BrowserRouter>
-    </>
+    </Provider>
   )
 }
 
