@@ -15,19 +15,31 @@ import ForgetPassword from "./Pages/ForgetPassword";
 import NewPassword from "./Pages/NewPassword";
 import UserConfirmed from "./Pages/UserConfirmed";
 
+import { useSelector, useDispatch } from 'react-redux';
+import { useEffect } from "react";
 
-import { Provider } from "react-redux";
-import store from "./store";
+import { getUserAction } from "./StateRedux/actions/postAction";
+
+
+// import { useSelector } from "react-redux";
 
 function App() {
 
+  const dispatch = useDispatch();
+  const getUserRedux = token => dispatch(getUserAction(token));
+
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    if(token){
+      getUserRedux(JSON.parse(token));
+    }
+  }, []);
 
   return (
-    <Provider store={store}>
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<Home /> } />
-          <Route path="/login" element={<Login /> } />
+          <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register /> } />
           <Route path="/forget-password" element={<ForgetPassword /> } />
           <Route path="/forget-password/:id" element={<NewPassword /> } />
@@ -40,7 +52,6 @@ function App() {
           <Route path="/category/:id" element={<CategoryPost /> } />
         </Routes>
       </BrowserRouter>
-    </Provider>
   )
 }
 
