@@ -2,6 +2,7 @@ import React, { useEffect } from 'react'
 
 //components
 import Sidebar from '../components/Sidebar/Sidebar';
+// import ProfileButton from '../components/ProfileButton/ProfileButton';
 
 import { getUserAction } from '../StateRedux/actions/postAction';
 import { useSelector, useDispatch } from 'react-redux';
@@ -18,13 +19,12 @@ const Home = () => {
       getUserRedux(JSON.parse(token));
     }
   }, [])
-  
-
-  
+    
 
   return (
-    <div>
+    <div className=' bg-slate-600 h-screen'>
         <Sidebar />
+        {/* <ProfileButton /> */}
     </div>
   )
 }

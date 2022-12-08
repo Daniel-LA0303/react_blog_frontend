@@ -20,9 +20,6 @@ import { useEffect } from "react";
 
 import { getUserAction } from "./StateRedux/actions/postAction";
 
-
-// import { useSelector } from "react-redux";
-
 function App() {
 
   const dispatch = useDispatch();
