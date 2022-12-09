@@ -19,12 +19,13 @@ import UserConfirmed from "./Pages/UserConfirmed";
 import { useSelector, useDispatch } from 'react-redux';
 import { useEffect } from "react";
 
-import { getUserAction } from "./StateRedux/actions/postAction";
+import { getAllPostsAction, getUserAction } from "./StateRedux/actions/postAction";
 
 function App() {
 
   const dispatch = useDispatch();
   const getUserRedux = token => dispatch(getUserAction(token));
+  const getAllPostsRedux = token => dispatch(getAllPostsAction(token));
 
   useEffect(() => {
     const token = localStorage.getItem('token');
@@ -32,6 +33,11 @@ function App() {
       getUserRedux(JSON.parse(token));
     }
   }, []);
+
+  useEffect(() => {
+    getAllPostsRedux();
+  }, [])
+  
 
   return (
       <BrowserRouter>
@@ -42,13 +48,16 @@ function App() {
           <Route path="/forget-password" element={<ForgetPassword /> } />
           <Route path="/forget-password/:id" element={<NewPassword /> } />
           <Route path="/user-confirmed/:id" element={<UserConfirmed /> } />
+          
           <Route path="/new-post" element={<NewPost /> } />
           <Route path="/edit-post" element={<EditPost /> } />
+          <Route path="/view-post/:id" element={<ViewPost /> } />
+          <Route path="/category/:id" element={<CategoryPost /> } />
+
           <Route path="/profile/:id" element={<Profile /> } />
           <Route path="/edit-profile/:id" element={<EditProfile /> } />
 
-          <Route path="/view-post" element={<ViewPost /> } />
-          <Route path="/category/:id" element={<CategoryPost /> } />
+
         </Routes>
       </BrowserRouter>
   )

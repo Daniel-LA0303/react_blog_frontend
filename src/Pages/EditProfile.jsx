@@ -57,7 +57,6 @@ const EditProfile = () => {
             return;
         }
         const data={
-            // profilePicture: 'xxxxxx',
             info: {
                 desc: desc,
                 work: work,
@@ -68,7 +67,7 @@ const EditProfile = () => {
         if(newImage){ 
             data.previousName=image //user chose a new image
         }else{
-            data.linkImage=image //user not chose a new image
+            data.profilePicture=image //user not chose a new image
         }
         if(file){
             const dataFile = new FormData();
@@ -106,8 +105,8 @@ const EditProfile = () => {
                         <span className="text-xl font-semibold block">Admin Profile</span>
                         
                     </div>
-                    <p className="text-gray-600 font-bold">{user.name}</p>
-                    <p className="text-gray-600 font-bold">{user.email}</p>
+                    <p className="text-gray-600 font-bold">Name: <span className=' text-2xl'>{user.name}</span></p>
+                    <p className="text-gray-600 font-bold">Email: <span className=' text-2xl'>{user.email}</span></p>
                     <div className="max-w-2xl mx-auto">
 	                    <label className="font-semibold text-gray-700 block pb-1">Upload file</label>
                         <input 

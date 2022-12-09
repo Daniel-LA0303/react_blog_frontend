@@ -2,6 +2,15 @@ import {
     GET_USER,
     GET_USER_SUCCESS,
     GET_USER_ERROR,
+    GET_ALL_CARTEGORIES,
+    GET_ALL_CARTEGORIES_SUCCESS,
+    GET_ALL_CARTEGORIES_ERROR,
+    ADD_POST,
+    ADD_POST_SUCCESS,
+    ADD_POST_ERROR,
+    GET_ALL_POSTS,
+    GET_ALL_POSTS_SUCCESS,
+    GET_ALL_POSTS_ERROR,
 } from "../types";
 
 const initialState = {
@@ -12,13 +21,17 @@ const initialState = {
     categories:[],
     error: null,
     loading: false,
-    PFLink: 'http://localhost:4000/uploads-profile/'
+    PFLink: 'http://localhost:4000/uploads-profile/',
+    PFPost: 'http://localhost:4000/uploads-post/'
 }
 
 
 export default function(state = initialState, action){
     switch(action.type){
         case GET_USER:
+        case GET_ALL_CARTEGORIES:
+        case ADD_POST:
+        case GET_ALL_POSTS:
             return{
                 ...state,
                 loading: action.payload
@@ -30,7 +43,30 @@ export default function(state = initialState, action){
                 error: null,
                 user: action.payload
             }
+        case GET_ALL_CARTEGORIES_SUCCESS:
+            return{
+                ...state,
+                loading: false,
+                error: null,
+                categories: action.payload
+            }
+        case ADD_POST_SUCCESS:
+            return{
+                ...state,
+                loading: false,
+                posts: [...state.posts, action.payload]
+            }
+        case GET_ALL_POSTS_SUCCESS: 
+            return{
+                ...state,
+                loading: false,
+                error: null,
+                posts: action.payload
+            }
         case GET_USER_ERROR:
+        case GET_ALL_CARTEGORIES_ERROR:
+        case ADD_POST_ERROR:
+        case GET_ALL_POSTS_ERROR:
             return{
                 ...state,
                 loading: false,

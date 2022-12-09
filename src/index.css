@@ -124,3 +124,36 @@ h3 span{
   margin-left: 10px;
   transition: var(--speed);
 }
+
+.image_profile{
+  /* border-radius: 10%; */
+  height: 200px;
+  width: 200px;
+  overflow: hidden;
+  border-radius: 50%;
+}
+
+
+iframe{
+  width: 1200px;
+  height: 537px;
+}
+
+img{
+  margin: 0 auto;
+}
+.img-card{
+  width: 400px;
+  height: 200px;
+}
+.img-cover{
+  width: 100%;
+  height: auto;
+}
+.img-preview{
+  width: 70%;
+  height: auto;
+}
+h1{
+  font-size: 30px;
+}

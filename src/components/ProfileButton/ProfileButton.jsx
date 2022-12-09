@@ -5,6 +5,9 @@ import { useSelector } from 'react-redux';
 const ProfileButton = () => {
 
     const user = useSelector(state => state.posts.user);
+    
+    const PF = useSelector(state => state.posts.PFLink);
+
 
     const [open, setOpen] = useState(false);
     let menuRef = useRef();
@@ -38,7 +41,8 @@ const ProfileButton = () => {
             <div className='menu-trigger mr-4 sm:mr-0' onClick={()=>{setOpen(!open)}}>
                 <img
                     className='' 
-                    src='https://cdn.pixabay.com/photo/2015/01/08/18/29/entrepreneur-593358_960_720.jpg'></img>
+                    src={PF+user.profilePicture}    
+                />
             </div>
 
             <div className={`dropdown-menu ${open? 'active' : 'inactive'}`} >

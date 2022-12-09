@@ -7,6 +7,10 @@ import { faPen } from '@fortawesome/free-solid-svg-icons';
 const Profile = () => {
 
   const user = useSelector(state => state.posts.user);
+  
+  const PF = useSelector(state => state.posts.PFLink);
+
+  if(Object.keys(user) == '') return <p>loading</p>
   return (
     <div className=' bg-slate-600 '>
       <Sidebar />
@@ -16,27 +20,21 @@ const Profile = () => {
             <div className="px-6">
               <div className="flex flex-wrap justify-center">
                 <div className="w-full px-4 flex justify-center">
-                  <img alt="..." src="https://demos.creative-tim.com/notus-js/assets/img/team-2-800x800.jpg" className="shadow-xl rounded-full w-80 h-auto align-middle border-none  -m-16  lg:-ml-16 max-w-250-px" />              
+                  <img alt="..." src={PF+user.profilePicture} className="shadow-xl image_profile w-80 h-auto align-middle border-none  -m-16  lg:-ml-16 max-w-250-px" />              
                 </div>
                 <div className="w-full px-4 text-center mt-20">
                   <div className="flex justify-center py-4 lg:pt-4 pt-8">
                     <div className="mr-4 p-3 text-center">
-                      <span className="text-xl font-bold block uppercase tracking-wide text-blueGray-600">
-                        22
+                      <span className="text-sm font-bold block uppercase tracking-wide text-blueGray-600">
+                        {user.numberPost}
                       </span>
-                      <span className="text-sm text-blueGray-400">Friends</span>
+                      <span className="text-sm text-blueGray-400">Posts</span>
                     </div>
                     <div className="mr-4 p-3 text-center">
-                      <span className="text-xl font-bold block uppercase tracking-wide text-blueGray-600">
-                        10
+                      <span className=" text-sm font-bold block uppercase tracking-wide text-blueGray-600">
+                        {new Date(user.createdAt).toDateString()}
                       </span>
-                      <span className="text-sm text-blueGray-400">Photos</span>
-                    </div>
-                    <div className="lg:mr-4 p-3 text-center">
-                      <span className="text-xl font-bold block uppercase tracking-wide text-blueGray-600">
-                        89
-                      </span>
-                      <span className="text-sm text-blueGray-400">Comments</span>
+                      <span className="text-sm text-blueGray-400">Joined on</span>
                     </div>
                   </div>
                 </div>
@@ -47,15 +45,19 @@ const Profile = () => {
                 </h3>
                 <div className="text-sm leading-normal mt-0 mb-2 text-blueGray-400 font-bold uppercase">
                   
-                  Los Angeles, California
+                  {user.info.desc}
                 </div>
                 <div className="mb-2 text-blueGray-600 mt-10">
                   
-                  Solution Manager - Creative Tim Officer
+                  {user.info.work}
                 </div>
                 <div className="mb-2 text-blueGray-600">
                   
-                  University of Computer Science
+                  {user.info.education}
+                </div>
+                <div className="mb-2 text-blueGray-600">
+                  
+                  {user.info.skills}
                 </div>
               </div>
               <div className="mt-10 py-10 border-t border-blueGray-200 text-center">
