@@ -23,7 +23,7 @@ const Sidebar = () => {
 
 
 
-  console.log(user);
+  // console.log(user);
   return (
     <>
 
@@ -33,7 +33,7 @@ const Sidebar = () => {
           {/* Spinner */}
         </>
       ) : (
-        <div className='bg-white  py-1  top-0 left-0 right-0 shadow-md'>
+        <div className='bg-white  py-1  top-0 left-0 right-0 shadow-2xl'>
           <div className='flex items-center justify-between h-14'>
             <button className='ml-4' onClick={() => setOpen(true)}>
               <FontAwesomeIcon icon={faBars} className=' text-3xl' />

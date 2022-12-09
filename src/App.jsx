@@ -7,6 +7,7 @@ import Home from "./Pages/Home";
 import NewPost from "./Pages/NewPost";
 import EditPost from "./Pages/EditPost";
 import Profile from "./Pages/Profile";
+import EditProfile from "./Pages/EditProfile";
 import ViewPost from "./Pages/ViewPost";
 import CategoryPost from "./Pages/CategoryPost";
 import Login from "./Pages/Login";
@@ -41,10 +42,11 @@ function App() {
           <Route path="/forget-password" element={<ForgetPassword /> } />
           <Route path="/forget-password/:id" element={<NewPassword /> } />
           <Route path="/user-confirmed/:id" element={<UserConfirmed /> } />
-
           <Route path="/new-post" element={<NewPost /> } />
           <Route path="/edit-post" element={<EditPost /> } />
           <Route path="/profile/:id" element={<Profile /> } />
+          <Route path="/edit-profile/:id" element={<EditProfile /> } />
+
           <Route path="/view-post" element={<ViewPost /> } />
           <Route path="/category/:id" element={<CategoryPost /> } />
         </Routes>

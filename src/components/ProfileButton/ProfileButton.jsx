@@ -1,6 +1,10 @@
-import React, {useEffect, useRef, useState} from 'react'
+import React, {useEffect, useRef, useState} from 'react';
+import { Link } from 'react-router-dom';
+import { useSelector } from 'react-redux';
 
 const ProfileButton = () => {
+
+    const user = useSelector(state => state.posts.user);
 
     const [open, setOpen] = useState(false);
     let menuRef = useRef();
@@ -9,7 +13,6 @@ const ProfileButton = () => {
         let handler = (e)=>{
           if(!menuRef.current.contains(e.target)){
             setOpen(false);
-            console.log(menuRef.current);
           }      
         };
     
@@ -36,17 +39,16 @@ const ProfileButton = () => {
                 <img
                     className='' 
                     src='https://cdn.pixabay.com/photo/2015/01/08/18/29/entrepreneur-593358_960_720.jpg'></img>
-                {/* <p >presiona</p> */}
             </div>
 
             <div className={`dropdown-menu ${open? 'active' : 'inactive'}`} >
             <h3>The Kiet<br/><span>Website Designer</span></h3>
             <ul>
                 <li className = 'dropdownItem'>
-                    <a>My profile</a>
+                    <Link to={`/profile/${user._id}`}>My Profile</Link>
                 </li>
                 <li className = 'dropdownItem'>
-                    <a>Edit Profile</a>
+                    <Link to={`/edit-profile/${user._id}`}>Edit Profile</Link>
                 </li>
                 <li className = 'dropdownItem'>
                     <a>Settings</a>

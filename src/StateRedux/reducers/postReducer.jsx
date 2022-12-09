@@ -1,7 +1,7 @@
 import { 
     GET_USER,
     GET_USER_SUCCESS,
-    GET_USER_ERROR
+    GET_USER_ERROR,
 } from "../types";
 
 const initialState = {
@@ -12,7 +12,7 @@ const initialState = {
     categories:[],
     error: null,
     loading: false,
-    PFLink: 'http://localhost:4000/uploads/'
+    PFLink: 'http://localhost:4000/uploads-profile/'
 }
 
 
@@ -27,6 +27,7 @@ export default function(state = initialState, action){
             return{
                 ...state,
                 loading: false,
+                error: null,
                 user: action.payload
             }
         case GET_USER_ERROR:
