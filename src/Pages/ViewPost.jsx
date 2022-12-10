@@ -20,19 +20,24 @@ const ViewPost = () => {
       const getOnePostState = () => dispatch(getOnePostAction(params.id));
       getOnePostState();
   }, []);
+  // useEffect(() => {
+  //   if(!user._id){
+  //       route('/');
+  //   }
+  // }, []);
 
   //redux
   const post = useSelector(state => state.posts.post);
   const user = useSelector(state => state.posts.user);
   const PF = useSelector(state => state.posts.PFPost);
-  // const deletePostRedux = (id) => dispatch(deletePostAction(id));
+  const deletePostRedux = (id) => dispatch(deletePostAction(id));
 
   const deletePostComponent = async (id) => {
-      // deletePostRedux(id);
+      deletePostRedux(id);
       route('/');
   }
 
-  if(Object.keys(post) == '' || Object.keys(user) == '') return <p>Loading</p>
+  if(Object.keys(post) == '') return <p>Loading</p>
   return (
     <div>
       <Sidebar />

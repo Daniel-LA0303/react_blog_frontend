@@ -12,6 +12,7 @@ const EditProfile = () => {
     const route = useNavigate();
     // const [user, setUser] = useState({});
     const user = useSelector(state => state.posts.user);
+    const loading = useSelector(state => state.posts.loading);
 
     const PF = useSelector(state => state.posts.PFLink);
 
@@ -45,6 +46,16 @@ const EditProfile = () => {
         }
         getOneUser();
     }, []);
+
+    useEffect(() => {
+        if(!user._id){
+            route('/');
+            
+        }
+        // if(!loading){
+
+        // }
+    }, [user]);
     
     const getFile = e => {
         setFile(e.target.files[0]);

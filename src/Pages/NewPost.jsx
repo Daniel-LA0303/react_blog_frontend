@@ -72,7 +72,7 @@ const NewPost = () => {
         content: content,
         categoriesPost: cats,
         categoriesSelect: categoriesPost,
-        desc: desc
+        desc: desc,
     }
     if(file){
         const formData = new FormData();

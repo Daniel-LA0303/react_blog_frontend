@@ -3,12 +3,13 @@ import { useDispatch, useSelector } from 'react-redux';
 import Sidebar from '../components/Sidebar/Sidebar';
 import { faPen } from '@fortawesome/free-solid-svg-icons';
 import { getOneUserAction, getUserAction } from '../StateRedux/actions/postAction';
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 
 
 const Profile = () => {
 
   const params = useParams();
+  const route = useNavigate();
 
   const dispatch = useDispatch();
   const user = useSelector(state => state.posts.userView);
@@ -27,6 +28,7 @@ useEffect(() => {
     getUserRedux(JSON.parse(token));
   }
 }, []);
+
 
 
   if(Object.keys(user) == '') return <p>loading</p>

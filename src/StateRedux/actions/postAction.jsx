@@ -18,6 +18,12 @@ import {
     GET_ONE_POST,
     GET_ONE_POST_SUCCESS,
     GET_ONE_POST_ERROR,
+    EDIT_POST,
+    EDIT_POST_SUCCESS,
+    EDIT_POST_ERROR,
+    DELETE_POST,
+    DELETE_POST_SUCCESS,
+    DELETE_POST_ERROR,
     RESET_STATE_POST
 } from "../types";
 
@@ -215,6 +221,64 @@ const getOnePostSuccess = (post) => ({
 });
 const getOnePostError =() => ({
     type: GET_ONE_POST_ERROR,
+    payload: true
+});
+
+//edit post
+export function editPostAction(id, newPost){
+    return async(dispatch) => {
+        dispatch(editPost());
+        try {
+            const res = await axios.put(`http://localhost:4000/api/posts/${id}`, newPost);
+            dispatch(editPostSuccess(res));
+        } catch (error) {
+            console.log(error);
+            dispatch(editPostError());
+        }
+    }
+}
+
+const editPost = () => ({
+    type: EDIT_POST,
+    payload: true
+});
+
+const editPostSuccess = (post) => ({
+    type: EDIT_POST_SUCCESS,
+    payload: post
+});
+
+const editPostError = () => ({
+    type: EDIT_POST_ERROR,
+    payload: true
+});
+
+//delete post
+export function deletePostAction(id){
+    return async(dispatch) => {
+        dispatch(deletePost());
+        try {
+            const res = await axios.delete(`http://localhost:4000/api/posts/${id}`);
+            dispatch(deletePostSuccess(id));
+        } catch (error) {
+            console.log(error);
+            dispatch(deletePostError());
+        }
+    }
+}
+
+const deletePost = () => ({
+    type: DELETE_POST,
+    payload: true
+});
+
+const deletePostSuccess = (id) => ({
+    type: DELETE_POST_SUCCESS,
+    payload: id
+});
+
+const deletePostError = () => ({
+    type: DELETE_POST_ERROR,
     payload: true
 });
 

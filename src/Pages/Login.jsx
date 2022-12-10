@@ -14,7 +14,6 @@ const Login = () => {
     useEffect(() => {
         if(user._id){
             route('/');
-            
         }
     }, [user]);
     

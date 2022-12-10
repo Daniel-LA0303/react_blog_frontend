@@ -17,6 +17,12 @@ import {
     GET_ONE_POST,
     GET_ONE_POST_SUCCESS,
     GET_ONE_POST_ERROR,
+    EDIT_POST,
+    EDIT_POST_SUCCESS,
+    EDIT_POST_ERROR,
+    DELETE_POST,
+    DELETE_POST_SUCCESS,
+    DELETE_POST_ERROR,
     RESET_STATE_POST
 } from "../types";
 
@@ -42,6 +48,8 @@ export default function(state = initialState, action){
         case GET_ALL_POSTS:
         case GET_ONE_POST:
         case GET_ONE_USER:
+        case EDIT_POST:
+        case DELETE_POST:
             return{
                 ...state,
                 loading: action.payload
@@ -87,12 +95,27 @@ export default function(state = initialState, action){
                 error: null,
                 userView: action.payload,
             }
+        case EDIT_POST_SUCCESS:
+            return{
+                ...state,
+                posts:state.posts.map(post => 
+                    post._id === action.payload._id ? post = action.payload : post),
+                post: {}
+            }
+        case DELETE_POST_SUCCESS:
+            return {
+                ...state,
+                posts: state.posts.filter(post => post._id !== action.payload),
+                post: {}
+            }
         case GET_USER_ERROR:
         case GET_ALL_CARTEGORIES_ERROR:
         case ADD_POST_ERROR:
         case GET_ALL_POSTS_ERROR:
         case GET_ONE_POST_ERROR:
         case GET_ONE_USER_ERROR:
+        case EDIT_POST_ERROR:
+        case DELETE_POST_ERROR:
             return{
                 ...state,
                 loading: false,
