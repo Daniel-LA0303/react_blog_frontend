@@ -27,6 +27,8 @@ function App() {
   const getUserRedux = token => dispatch(getUserAction(token));
   const getAllPostsRedux = token => dispatch(getAllPostsAction(token));
 
+  const user = useSelector(state => state.posts.user);
+
   useEffect(() => {
     const token = localStorage.getItem('token');
     if(token){

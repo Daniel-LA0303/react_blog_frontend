@@ -1,14 +1,33 @@
-import React from 'react'
-import { useSelector } from 'react-redux';
+import React, {useEffect} from 'react'
+import { useDispatch, useSelector } from 'react-redux';
 import Sidebar from '../components/Sidebar/Sidebar';
 import { faPen } from '@fortawesome/free-solid-svg-icons';
+import { getOneUserAction, getUserAction } from '../StateRedux/actions/postAction';
+import { useParams } from 'react-router-dom';
 
 
 const Profile = () => {
 
-  const user = useSelector(state => state.posts.user);
+  const params = useParams();
+
+  const dispatch = useDispatch();
+  const user = useSelector(state => state.posts.userView);
   
   const PF = useSelector(state => state.posts.PFLink);
+
+  useEffect(() => {
+    const getOneUserState = () => dispatch(getOneUserAction(params.id));
+    getOneUserState();  
+}, []);
+
+useEffect(() => {
+  const getUserRedux = token => dispatch(getUserAction(token));
+  const token = localStorage.getItem('token');
+  if(token){
+    getUserRedux(JSON.parse(token));
+  }
+}, []);
+
 
   if(Object.keys(user) == '') return <p>loading</p>
   return (

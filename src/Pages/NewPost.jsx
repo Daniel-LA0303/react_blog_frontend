@@ -30,12 +30,20 @@ const NewPost = () => {
   const categories = useSelector(state => state.posts.categories);
   const addPostRedux = newPost => dispatch(addNewPostAction(newPost));
   const addNewFileRedux = (formData) => dispatch(addNewFilePostAction(formData));
+  const loading = useSelector(state => state.posts.loading);
 
   const user = useSelector(state => state.posts.user);
 
   useEffect(() => {
     getAllCategoriesRedux();
   }, []);
+
+  useEffect(() => {
+    if(!user._id){
+        route('/');
+        
+    }
+}, [user]);
 
 
   const onContent = (value) => {
@@ -78,11 +86,15 @@ const NewPost = () => {
     route('/');
 }
 
-  if(Object.keys(user) == '') return <p>loading</p>
+//   if(Object.keys(user) == '') return <p>loading</p>
   return (
     <div>
-      <Sidebar />   
-      <div className=" w-5/6  mx-auto my-20">
+        {loading ? (
+            <p>loading</p>
+        ):(
+            <>
+                        <Sidebar />   
+        <div className=" w-5/6  mx-auto my-20">
             <form 
                 className="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4"
                 onSubmit={newPost}
@@ -168,6 +180,9 @@ const NewPost = () => {
                 </div>
             </form>
         </div>
+            </>
+        )}
+
     </div>
   )
 }

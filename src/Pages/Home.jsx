@@ -5,7 +5,7 @@ import Sidebar from '../components/Sidebar/Sidebar';
 import Post from '../components/Post/Post';
 // import ProfileButton from '../components/ProfileButton/ProfileButton';
 
-import { getAllPostsAction, getUserAction } from '../StateRedux/actions/postAction';
+import { getAllPostsAction, getUserAction, resetStatePostAction } from '../StateRedux/actions/postAction';
 import { useSelector, useDispatch } from 'react-redux';
 
 
@@ -25,13 +25,18 @@ const Home = () => {
 
   useEffect(() => {
     getAllPostsRedux();
-  }, [])
+  }, []);
+
+  useEffect(() => {
+    const resetState = () => dispatch(resetStatePostAction());
+    resetState();
+  }, []);
     
   if(posts.lenght < 0) return <p>loading</p>
   return (
-    <div className=' bg-slate-600 '>
+    <div className='  '>
         <Sidebar />
-        <div className='w-full flex flex-wrap flex-col justify-evenly mx-auto'>
+        <div className='w-full flex flex-col justify-evenly mx-auto'>
             {posts.map(post => (
                 <Post 
                     key={post._id}

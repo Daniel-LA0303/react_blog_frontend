@@ -32,7 +32,7 @@ const ViewPost = () => {
       route('/');
   }
 
-  if(Object.keys(post) == '') return <p>Loading</p>
+  if(Object.keys(post) == '' || Object.keys(user) == '') return <p>Loading</p>
   return (
     <div>
       <Sidebar />
@@ -52,6 +52,8 @@ const ViewPost = () => {
             </div>
 
         </div>
+        {/* {user._id} {''}
+        <p>{post.user._id}</p> */}
         {user._id === post.user._id ? (
           <div className=' flex justify-end'>
             <FontAwesomeIcon 
@@ -68,7 +70,7 @@ const ViewPost = () => {
               />
             </Link>
           </div>
-        ): null}
+         ): null} 
 
         <div className=" mt-5 p-4">
             <h2 className=' font-bold text-5xl mb-3'>{post.title}</h2>

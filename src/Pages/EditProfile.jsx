@@ -26,6 +26,8 @@ const EditProfile = () => {
     const[file, setFile] = useState(null); //get new image
     const[newImage, setNewImage] = useState(false); //new image validation
 
+    console.log(params.id);
+
     useEffect(() => {
         const getOneUser = async() => {
             try {
@@ -64,6 +66,7 @@ const EditProfile = () => {
                 skills: skills
             }
         }
+        console.log(data);
         if(newImage){ 
             data.previousName=image //user chose a new image
         }else{
@@ -82,10 +85,10 @@ const EditProfile = () => {
             }
           }
         try {
-            const res = await axios.post(`http://localhost:4000/api/users/new-info/${params._id}`, data);
+            const res = await axios.post(`http://localhost:4000/api/users/new-info/${params.id}`, data);
             console.log(res.data);
 
-            // route('/');
+            route('/');
         } catch (error) {
             console.log(error);
         }

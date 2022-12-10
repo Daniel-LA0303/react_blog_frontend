@@ -3,6 +3,9 @@ import {
     GET_USER,
     GET_USER_SUCCESS,
     GET_USER_ERROR,
+    GET_ONE_USER,
+    GET_ONE_USER_SUCCESS,
+    GET_ONE_USER_ERROR,
     GET_ALL_CARTEGORIES,
     GET_ALL_CARTEGORIES_SUCCESS,
     GET_ALL_CARTEGORIES_ERROR,
@@ -69,6 +72,38 @@ const getUserError = (stateError) => ({
     type: GET_USER_ERROR,
     payload: stateError
 });
+
+export function getOneUserAction(id){
+    return async(dispatch) => {
+        dispatch(getOneUser());
+        
+        try {
+            const res = await axios.get(`http://localhost:4000/api/users/get-profile/${id}`);
+            // console.log(res.data);
+            
+            dispatch(getOneUserSuccess(res.data));
+        } catch (error) {
+            console.log(error);
+            dispatch(getOneUserError(true));
+        }
+    }
+}
+
+const getOneUser = () => ({
+    type: GET_ONE_USER,
+    payload: true
+});
+
+const getOneUserSuccess = (data) => ({
+    type: GET_ONE_USER_SUCCESS,
+    payload: data
+});
+
+const getOneUserError = (stateError) => ({
+    type: GET_ONE_USER_ERROR,
+    payload: stateError
+});
+
 
 
 export function getAllCategoriesAction(){

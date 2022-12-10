@@ -2,6 +2,9 @@ import {
     GET_USER,
     GET_USER_SUCCESS,
     GET_USER_ERROR,
+    GET_ONE_USER,
+    GET_ONE_USER_SUCCESS,
+    GET_ONE_USER_ERROR,
     GET_ALL_CARTEGORIES,
     GET_ALL_CARTEGORIES_SUCCESS,
     GET_ALL_CARTEGORIES_ERROR,
@@ -20,6 +23,7 @@ import {
 const initialState = {
     token: JSON.parse(localStorage.getItem("token")) || null,
     user: {},
+    userView:{},
     posts:[],
     post:{},
     categories:[],
@@ -37,6 +41,7 @@ export default function(state = initialState, action){
         case ADD_POST:
         case GET_ALL_POSTS:
         case GET_ONE_POST:
+        case GET_ONE_USER:
             return{
                 ...state,
                 loading: action.payload
@@ -75,11 +80,19 @@ export default function(state = initialState, action){
                 error: null,
                 post: action.payload,
             }
+        case GET_ONE_USER_SUCCESS:
+            return{
+                ...state,
+                loading: false,
+                error: null,
+                userView: action.payload,
+            }
         case GET_USER_ERROR:
         case GET_ALL_CARTEGORIES_ERROR:
         case ADD_POST_ERROR:
         case GET_ALL_POSTS_ERROR:
         case GET_ONE_POST_ERROR:
+        case GET_ONE_USER_ERROR:
             return{
                 ...state,
                 loading: false,
@@ -88,7 +101,9 @@ export default function(state = initialState, action){
         case RESET_STATE_POST :
             return{
                 ...state,
-                post: {}
+                post: {},
+                userView: {},
+                user: {}
             }
         default: return state;
     }
