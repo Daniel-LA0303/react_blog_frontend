@@ -2,6 +2,7 @@ import axios from 'axios';
 import React, { useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import { useParams, Link, useNavigate } from 'react-router-dom';
+import Spinner from '../components/Spinner/Spinner';
 
 const UserConfirmed = () => {
 
@@ -20,9 +21,7 @@ const UserConfirmed = () => {
     useEffect(() => {
         const confirmUser = async () => {
             try {
-                
                 const {data} = await axios.get(`http://localhost:4000/api/users/confirm/${params.id}`);
-                console.log(data);
             } catch (error) {
                 console.log(error);
             }
@@ -30,11 +29,10 @@ const UserConfirmed = () => {
         confirmUser();
     }, [])
     
-
   return (
     <>
         {loading ? (
-            <p>loading...</p>
+            <Spinner />
         ):(
             <div className='flex justify-center items-center h-screen'>
                 <div className="max-w-sm p-6 bg-white border border-gray-200 rounded-lg shadow-md dark:bg-gray-800 dark:border-gray-700">

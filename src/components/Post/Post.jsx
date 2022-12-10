@@ -2,6 +2,7 @@ import React from 'react'
 import { Link } from 'react-router-dom'
 
 import { useSelector } from 'react-redux'
+import Spinner from '../Spinner/Spinner'
 
 const Post = ({post}) => {
     const PF = useSelector(state => state.posts.PFPost)
@@ -9,7 +10,7 @@ const Post = ({post}) => {
 
     const {title, linkImage, categoriesPost, _id, desc, createdAt, user} = post;
 
-    if(Object.keys(post) == '') return <p>loading</p>
+    if(Object.keys(post) == '') return <Spinner />
   return (
     <>
         <div className="flex mx-auto flex-col sm:flex-row w-full sm:w-5/6 lg:w-4/6 xl:w-3/6 hover:bg-gray-100  dark:bg-gray-800 dark:hover:bg-gray-700 my-10 rounded-2xl">

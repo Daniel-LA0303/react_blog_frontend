@@ -1,9 +1,13 @@
 import React, { useEffect, useState } from 'react'
+
 import { useDispatch } from 'react-redux';
+import { resetStatePostAction } from '../StateRedux/actions/postAction';
+
 import { useParams } from 'react-router-dom';
+
 import Post from '../components/Post/Post';
 import Sidebar from '../components/Sidebar/Sidebar'
-import { resetStatePostAction } from '../StateRedux/actions/postAction';
+
 
 const CategoryPost = () => {
 

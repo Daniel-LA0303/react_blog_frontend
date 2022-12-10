@@ -11,6 +11,9 @@ import "../components/EditorToolBar/EditorToolBar.css"
 import EditorToolBar, { modules, formats } from '../components/EditorToolBar/EditorToolBar';
 
 import Select from 'react-select'
+import axios from 'axios';
+
+import Spinner from '../components/Spinner/Spinner';
 
 
 const EditPost = () => {
@@ -49,13 +52,20 @@ const EditPost = () => {
   }, []);
 
   useEffect(() => {
-    const getOnePostState = () => dispatch(getOnePostAction(params.id));
-    getOnePostState();
-    setTitle(post.title);
-    setContent(post.content);
-    setImage(post.linkImage);
-    setCategoriesSelect(post.categoriesSelect);
-    setDesc(post.desc);
+    const getOnePost = async() => {
+      try {
+        const res = await axios.get(`http://localhost:4000/api/posts/${params.id}`);
+        console.log(res.data);
+        setTitle(res.data.title);
+        setContent(res.data.content);
+        setImage(res.data.linkImage);
+        setCategoriesSelect(res.data.categoriesSelect);
+        setDesc(res.data.desc);
+        } catch (error) {
+            console.log(error);
+        }
+    }
+    getOnePost();
 }, [params.id]);
 
   const onContent = (value) => {
@@ -103,111 +113,110 @@ const EditPost = () => {
     route('/');
 }
 
-  if(Object.keys(post) === '') return <p>loading</p>
+  if(Object.keys(post) === '') return <Spinner />
   return (
     <div>
       <Sidebar />
-      <div className="App">
-    <div className=" w-4/6  mx-auto my-20">
-        <form 
-            className="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4"
-            onSubmit={newPost}
-        >
-            <div className=" flex justify-between">
-                <div className="w-full sm:w-3/6">
-                    <div className="mb-2 w-full ">
-                        <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="username">
-                            Title
-                        </label>
-                        <input 
-                            className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" 
-                            id="username" 
-                            type="text" 
-                            placeholder="Title" 
-                            onChange={(e) => setTitle(e.target.value)}
-                            value={title}
-                        />
-                    </div>
-                    <div className="mb-2 w-full ">
-                            <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="username">
-                                Description
-                            </label>
-                            <input 
-                                className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" 
-                                id="username" 
-                                type="text" 
-                                placeholder="Description" 
-                                onChange={(e) => setDesc(e.target.value)}
-                                value={desc}
-                            />
-                        </div>
-                    <div className="mb-4 w-full ">
-                            <label for="countries" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Select an option</label>
-                            <Select 
+        <div className="App">
+            <div className=" w-4/6  mx-auto my-20">
+                <form 
+                    className="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4"
+                    onSubmit={newPost}
+                >
+                    <div className=" flex justify-between">
+                        <div className="w-full sm:w-3/6">
+                            <div className="mb-2 w-full ">
+                                <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="username">
+                                    Title
+                                </label>
+                                <input 
+                                    className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" 
+                                    id="username" 
+                                    type="text" 
+                                    placeholder="Title" 
+                                    onChange={(e) => setTitle(e.target.value)}
+                                    value={title}
+                                />
+                            </div>
+                            <div className="mb-2 w-full ">
+                                    <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="username">
+                                        Description
+                                    </label>
+                                    <input 
+                                        className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" 
+                                        id="username" 
+                                        type="text" 
+                                        placeholder="Description" 
+                                        onChange={(e) => setDesc(e.target.value)}
+                                        value={desc}
+                                    />
+                            </div>
+                            <div className="mb-4 w-full ">
+                                <label htmlFor="countries" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Select an option</label>
+                                <Select 
                                     // defaultInputValue={ labelcategories[1]}
                                     onChange={handleChangeS}
                                     options={categories}
                                     isMulti 
                                     value={categoriesSelect}
                                 />
-                    </div>
-                </div>
+                            </div>
+                        </div>
 
-                <div className="mb-4 w-full sm:w-2/6">
-                    <label className="block text-gray-700 text-sm font-bold mb-2" >
-                        Image
-                    </label>
-                    <input 
-                        className="block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 dark:text-gray-400 focus:outline-none dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400" 
-                        id="file_input" 
-                        type="file" 
-                        onChange={getFile}
-                    />
-                    <div className='my-2'>
-                    {newImage ? (
-                            <img
-                            className="writeImg"
-                            src={URL.createObjectURL(file)}
-                            alt=""
-                        />
-                        ): (
-                            <>
-                                {image !== '' ? (
+                        <div className="mb-4 w-full sm:w-2/6">
+                            <label className="block text-gray-700 text-sm font-bold mb-2" >
+                                Image
+                            </label>
+                            <input 
+                                className="block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 dark:text-gray-400 focus:outline-none dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400" 
+                                id="file_input" 
+                                type="file" 
+                                onChange={getFile}
+                            />
+                            <div className='my-2'>
+                                {newImage ? (
                                     <img
-                                        className=""
-                                        src={PF+image}
+                                        className="writeImg"
+                                        src={URL.createObjectURL(file)}
                                         alt=""
                                     />
-                                ): null}
-                            </>
-                        )}
+                                ): (
+                                    <>
+                                        {image !== '' ? (
+                                            <img
+                                                className=""
+                                                src={PF+image}
+                                                alt=""
+                                            />
+                                        ): null}
+                                    </>
+                                )}
+                            </div>
+                        </div>         
                     </div>
-                </div>         
-            </div>
 
-            <div className="mb-4">
-                <EditorToolBar toolbarId={'t1'}/>
-                <ReactQuill
-                    theme="snow"
-                    value={content}
-                    onChange={onContent}
-                    placeholder={"Write something awesome..."}
-                    modules={modules('t1')}
-                    formats={formats}
-                />
-            </div>
+                    <div className="mb-4">
+                        <EditorToolBar toolbarId={'t1'}/>
+                        <ReactQuill
+                            theme="snow"
+                            value={content}
+                            onChange={onContent}
+                            placeholder={"Write something awesome..."}
+                            modules={modules('t1')}
+                            formats={formats}
+                        />
+                    </div>
 
-            <div className="flex items-center justify-between">
-                <input 
-                    className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" 
-                    value='Save Post'
-                    type="submit" 
-                />
+                    <div className="flex items-center justify-between">
+                        <input 
+                            className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" 
+                            value='Save Post'
+                            type="submit" 
+                        />
+                    </div>
+                </form>
             </div>
-        </form>
-    </div>
-    
-</div>
+        </div>
     </div>
   )
 }

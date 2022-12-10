@@ -5,8 +5,11 @@ import { Link, useParams, useNavigate } from 'react-router-dom';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faTrash, faPen } from '@fortawesome/free-solid-svg-icons'
+
 import { useDispatch, useSelector } from 'react-redux';
-import { getOnePostAction } from '../StateRedux/actions/postAction';
+import { deletePostAction, getOnePostAction } from '../StateRedux/actions/postAction';
+
+import Spinner from '../components/Spinner/Spinner';
 
 const ViewPost = () => {
 
@@ -20,11 +23,7 @@ const ViewPost = () => {
       const getOnePostState = () => dispatch(getOnePostAction(params.id));
       getOnePostState();
   }, []);
-  // useEffect(() => {
-  //   if(!user._id){
-  //       route('/');
-  //   }
-  // }, []);
+
 
   //redux
   const post = useSelector(state => state.posts.post);
@@ -37,14 +36,11 @@ const ViewPost = () => {
       route('/');
   }
 
-  if(Object.keys(post) == '') return <p>Loading</p>
+  if(Object.keys(post) == '') return <Spinner />
   return (
     <div>
       <Sidebar />
       <div className='w-full sm:w-4/6 lg:w-3/6 mx-auto rounded-lg bg-gray-100'>
-        {/* <div className='m-2'>
-            <Link to='/' className=' px-6 py-2 bg-blue-600 rounded-md text-white'>Home</Link>
-        </div> */}
         <div className=''>
             <div className="overflow-hidden h-96">
                 {post.linkImage && (
@@ -55,10 +51,7 @@ const ViewPost = () => {
                     />
                 )}
             </div>
-
         </div>
-        {/* {user._id} {''}
-        <p>{post.user._id}</p> */}
         {user._id === post.user._id ? (
           <div className=' flex justify-end'>
             <FontAwesomeIcon 
@@ -76,7 +69,6 @@ const ViewPost = () => {
             </Link>
           </div>
          ): null} 
-
         <div className=" mt-5 p-4">
             <h2 className=' font-bold text-5xl mb-3'>{post.title}</h2>
             <p className="mb-3 font-normal ">Posted on {new Date(post.createdAt).toDateString()}</p>
@@ -91,9 +83,8 @@ const ViewPost = () => {
                 dangerouslySetInnerHTML={{ __html: post.content}}  
             />
         </div>
-
     </div>
-    </div>
+  </div>
   )
 }
 

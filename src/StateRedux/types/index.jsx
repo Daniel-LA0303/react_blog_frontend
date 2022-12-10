@@ -1,3 +1,4 @@
+//users
 export const GET_USER = 'GET_USER';
 export const GET_USER_SUCCESS = 'GET_USER_SUCCESS';
 export const GET_USER_ERROR = 'GET_USER_ERROR';
@@ -6,10 +7,12 @@ export const GET_ONE_USER = 'GET_ONE_USER';
 export const GET_ONE_USER_SUCCESS = 'GET_ONE_USER_SUCCESS';
 export const GET_ONE_USER_ERROR = 'GET_ONE_USER_ERROR';
 
+//categories
 export const GET_ALL_CARTEGORIES = 'GET_ALL_CARTEGORIES';
 export const GET_ALL_CARTEGORIES_SUCCESS = 'GET_ALL_CARTEGORIES_SUCCESS';
 export const GET_ALL_CARTEGORIES_ERROR = 'GET_ALL_CARTEGORIES_ERROR';
 
+//posts
 export const ADD_POST = 'ADD_POST';
 export const ADD_POST_SUCCESS = 'ADD_POST_SUCCESS';
 export const ADD_POST_ERROR = 'ADD_POST_ERROR';
@@ -30,4 +33,5 @@ export const DELETE_POST = 'DELETE_POST';
 export const DELETE_POST_SUCCESS = 'DELETE_POST_SUCCESS';
 export const DELETE_POST_ERROR = 'DELETE_POST_ERROR';
 
+//reset state
 export const RESET_STATE_POST = 'RESET_STATE_POST';

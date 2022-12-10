@@ -57,9 +57,7 @@ function App() {
           <Route path="/category/:id" element={<CategoryPost /> } />
 
           <Route path="/profile/:id" element={<Profile /> } />
-          <Route path="/edit-profile/:id" element={<EditProfile /> } />
-
-
+          <Route path="/edit-profile/:id" element={user._id ? <EditProfile /> : <Login /> } />
         </Routes>
       </BrowserRouter>
   )

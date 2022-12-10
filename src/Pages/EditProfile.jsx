@@ -1,33 +1,32 @@
 import axios from 'axios';
 import React, { useEffect, useState } from 'react'
-import { useDispatch, useSelector } from 'react-redux';
+
 import Sidebar from '../components/Sidebar/Sidebar'
 
 import { useParams, useNavigate } from 'react-router-dom';
+
+import { useDispatch, useSelector } from 'react-redux';
+import { addNewFileUserAction } from '../StateRedux/actions/postAction';
+
+import Spinner from '../components/Spinner/Spinner';
 
 const EditProfile = () => {
     const dispatch = useDispatch();
 
     const params = useParams();
     const route = useNavigate();
-    // const [user, setUser] = useState({});
+
     const user = useSelector(state => state.posts.user);
-    const loading = useSelector(state => state.posts.loading);
-
+    const addNewFileRedux = (dataFile) => dispatch(addNewFileUserAction(dataFile));
     const PF = useSelector(state => state.posts.PFLink);
-
-
 
     const[desc, setDesc] = useState('');
     const[work, setWork] = useState('');
     const[education, setEducation] = useState('');
     const[skills, setSkills] = useState('');
-    
     const[image, setImage]= useState(''); //image
     const[file, setFile] = useState(null); //get new image
     const[newImage, setNewImage] = useState(false); //new image validation
-
-    console.log(params.id);
 
     useEffect(() => {
         const getOneUser = async() => {
@@ -40,22 +39,11 @@ const EditProfile = () => {
                 setSkills(res.data.info.skills);
                 setImage(res.data.profilePicture);
             } catch (error) {
-                console.log(error);
-                
+                console.log(error);  
             }
         }
         getOneUser();
     }, []);
-
-    useEffect(() => {
-        if(!user._id){
-            route('/');
-            
-        }
-        // if(!loading){
-
-        // }
-    }, [user]);
     
     const getFile = e => {
         setFile(e.target.files[0]);
@@ -77,7 +65,6 @@ const EditProfile = () => {
                 skills: skills
             }
         }
-        console.log(data);
         if(newImage){ 
             data.previousName=image //user chose a new image
         }else{
@@ -89,16 +76,10 @@ const EditProfile = () => {
             dataFile.append("name",filename);
             dataFile.append("image", file);
             data.profilePicture = filename;
-            try {
-              await axios.post('http://localhost:4000/api/users/uploads-profile', dataFile)
-            } catch (error) {
-              console.log(error);
-            }
+            addNewFileRedux(dataFile);
           }
         try {
             const res = await axios.post(`http://localhost:4000/api/users/new-info/${params.id}`, data);
-            console.log(res.data);
-
             route('/');
         } catch (error) {
             console.log(error);
@@ -106,18 +87,15 @@ const EditProfile = () => {
         route(`/profile/${params.id}`);
     }  
 
-    if(desc === '') return <p>loading</p>
+    if(Object.keys(user) === '') return <Spinner />
   return (
     <div className=' '>
-      
-                    <Sidebar />
+        <Sidebar />
         <div className="h-full my-20 mx-10">
-            {/* <p>{user.name}</p> */}
             <div className="border-b-2 block md:flex">
                 <div className="w-full md:w-2/5 p-4 sm:p-6 lg:p-8 bg-white shadow-md">
                     <div className="flex justify-between">
                         <span className="text-xl font-semibold block">Admin Profile</span>
-                        
                     </div>
                     <p className="text-gray-600 font-bold">Name: <span className=' text-2xl'>{user.name}</span></p>
                     <p className="text-gray-600 font-bold">Email: <span className=' text-2xl'>{user.email}</span></p>
@@ -208,7 +186,6 @@ const EditProfile = () => {
                 </div>
             </div>
         </div>
-      
     </div>
   )
 }

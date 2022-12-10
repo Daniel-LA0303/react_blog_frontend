@@ -13,6 +13,8 @@ import Select from 'react-select'
 import { useDispatch, useSelector } from 'react-redux';
 import {addNewPostAction, addNewFilePostAction, getAllCategoriesAction } from '../StateRedux/actions/postAction';
 
+import Spinner from '../components/Spinner/Spinner';
+
 const NewPost = () => {
 
   const route = useNavigate();
@@ -31,7 +33,6 @@ const NewPost = () => {
   const addPostRedux = newPost => dispatch(addNewPostAction(newPost));
   const addNewFileRedux = (formData) => dispatch(addNewFilePostAction(formData));
   const loading = useSelector(state => state.posts.loading);
-
   const user = useSelector(state => state.posts.user);
 
   useEffect(() => {
@@ -86,11 +87,10 @@ const NewPost = () => {
     route('/');
 }
 
-//   if(Object.keys(user) == '') return <p>loading</p>
   return (
     <div>
         {loading ? (
-            <p>loading</p>
+            <Spinner />
         ):(
             <>
                         <Sidebar />   

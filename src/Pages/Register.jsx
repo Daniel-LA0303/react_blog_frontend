@@ -1,8 +1,10 @@
 import axios from 'axios';
 import React, { useEffect, useState } from 'react'
+
 import { Link, useNavigate } from 'react-router-dom';
 
 import { useSelector } from 'react-redux';
+import Spinner from '../components/Spinner/Spinner';
 
 const Register = () => {
 
@@ -10,7 +12,6 @@ const Register = () => {
 
     const user = useSelector(state => state.posts.user);
     const loading = useSelector(state => state.posts.loading);
-
 
     useEffect(() => {
         if(user._id){
@@ -20,6 +21,7 @@ const Register = () => {
         console.log('xd');
     }, [user]);
 
+    const[password2, setPassword2] = useState('');
     const[data, setData] = useState({
         name: '',
         email: '',
@@ -27,8 +29,6 @@ const Register = () => {
     });
 
     const {name, email, password} = data;
-
-    const[password2, setPassword2] = useState('');
 
     const getData = (e) => {
         setData({
@@ -53,15 +53,13 @@ const Register = () => {
         } catch (error) {
             console.log(error);
         }
-
         route('/');
-
     }
 
   return (
     <>
         {loading ? (
-            <p>loading...</p>
+            <Spinner />
         ):(
             <section className="">
             <div className="flex flex-col items-center justify-center px-6 py-8 mx-auto md:h-screen lg:py-0">

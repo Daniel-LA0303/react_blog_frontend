@@ -1,8 +1,11 @@
 import axios from 'axios';
 import React, { useEffect, useState } from 'react'
+
 import { useParams, useNavigate, Link } from 'react-router-dom'
 
 import { useSelector } from 'react-redux';
+
+import Spinner from '../components/Spinner/Spinner';
 
 const NewPassword = () => {
 
@@ -40,9 +43,7 @@ const NewPassword = () => {
             alert('error');
             return;
         }
-
         try {
-
             const {data} = await axios.post(`http://localhost:4000/api/users/new-password/${params.id}`,{password});
             // setAlerta({
             //     msg: data.msg,
@@ -58,7 +59,7 @@ const NewPassword = () => {
   return (
     <>
         {loading ? (
-            <p>loading</p>
+            <Spinner />
         ):(
             <section className="">
                 <div className="flex flex-col items-center justify-center px-6 py-8 mx-auto md:h-screen lg:py-0">
@@ -82,7 +83,6 @@ const NewPassword = () => {
                                                 id="password" 
                                                 className="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" 
                                                 placeholder="••••••••" 
-                                                // required="" 
                                                 onChange={(e) => setPassword(e.target.value)}
                                             />
                                         </div>
@@ -96,8 +96,7 @@ const NewPassword = () => {
                             {newPassword && (
                                 <div className=''>
                                     <Link to={'/login'} className="w-full my-3 text-white bg-sky-600 py-3 px-4 rounded">Login</Link>
-                                </div>
-                                
+                                </div>  
                             )}
                         </div>
                     </div>

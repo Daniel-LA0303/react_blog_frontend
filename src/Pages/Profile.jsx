@@ -1,9 +1,13 @@
 import React, {useEffect} from 'react'
+
 import { useDispatch, useSelector } from 'react-redux';
-import Sidebar from '../components/Sidebar/Sidebar';
-import { faPen } from '@fortawesome/free-solid-svg-icons';
 import { getOneUserAction, getUserAction } from '../StateRedux/actions/postAction';
+
+import Sidebar from '../components/Sidebar/Sidebar';
+
 import { useNavigate, useParams } from 'react-router-dom';
+
+import Spinner from '../components/Spinner/Spinner';
 
 
 const Profile = () => {
@@ -31,7 +35,7 @@ useEffect(() => {
 
 
 
-  if(Object.keys(user) == '') return <p>loading</p>
+  if(Object.keys(user) == '') return <Spinner />
   return (
     <div className=' bg-slate-600 '>
       <Sidebar />
@@ -65,19 +69,15 @@ useEffect(() => {
                   {user.name}
                 </h3>
                 <div className="text-sm leading-normal mt-0 mb-2 text-blueGray-400 font-bold uppercase">
-                  
                   {user.info.desc}
                 </div>
                 <div className="mb-2 text-blueGray-600 mt-10">
-                  
                   {user.info.work}
                 </div>
-                <div className="mb-2 text-blueGray-600">
-                  
+                <div className="mb-2 text-blueGray-600">   
                   {user.info.education}
                 </div>
                 <div className="mb-2 text-blueGray-600">
-                  
                   {user.info.skills}
                 </div>
               </div>

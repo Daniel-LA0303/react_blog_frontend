@@ -1,9 +1,9 @@
 import React, { useEffect } from 'react'
+import Spinner from '../components/Spinner/Spinner';
 
 //components
 import Sidebar from '../components/Sidebar/Sidebar';
 import Post from '../components/Post/Post';
-// import ProfileButton from '../components/ProfileButton/ProfileButton';
 
 import { getAllPostsAction, getUserAction, resetStatePostAction } from '../StateRedux/actions/postAction';
 import { useSelector, useDispatch } from 'react-redux';
@@ -32,7 +32,7 @@ const Home = () => {
     resetState();
   }, []);
     
-  if(posts.lenght < 0) return <p>loading</p>
+  if(posts.lenght < 0) return <Spinner />
   return (
     <div className='  '>
         <Sidebar />

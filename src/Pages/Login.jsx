@@ -1,8 +1,11 @@
 import axios from 'axios';
 import React, { useEffect, useState } from 'react'
+
 import { Link, useNavigate } from 'react-router-dom';
 
 import { useSelector } from 'react-redux';
+
+import Spinner from '../components/Spinner/Spinner';
 
 const Login = () => {
 
@@ -16,7 +19,6 @@ const Login = () => {
             route('/');
         }
     }, [user]);
-    
 
     const[data, setData]=useState({
         email: '',
@@ -38,7 +40,6 @@ const Login = () => {
             alert('error');
             return;
         }
-        // getUserRedux(data);
         try {
             const res = await axios.post('http://localhost:4000/api/users/login', data);
             console.log(res.data.token);
@@ -47,13 +48,12 @@ const Login = () => {
         } catch (error) {
             console.log(error);
         }
-        
     }
 
   return (
     <>
         {loading ? (
-            <p>loading...</p>
+            <Spinner />
         ):(
             <section className="">
                 <div className="flex flex-col items-center justify-center px-6 py-8 mx-auto md:h-screen lg:py-0">

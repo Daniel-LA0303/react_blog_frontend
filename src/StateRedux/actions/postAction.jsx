@@ -27,19 +27,7 @@ import {
     RESET_STATE_POST
 } from "../types";
 
-
-
-export function addNewFilePostAction(formData){
-    return async() => {
-        try {
-            await axios.post('http://localhost:4000/api/post/uploads-post', formData);
-        } catch (error) {
-            console.log(error);
-
-        }
-    }
-}
-
+//users
 export function getUserAction(token){
     return async(dispatch) => {
         dispatch(getUser());
@@ -111,7 +99,7 @@ const getOneUserError = (stateError) => ({
 });
 
 
-
+//categories
 export function getAllCategoriesAction(){
     return async(dispatch) => {
         dispatch(getAllCategories());
@@ -141,7 +129,8 @@ const getAllCategoriesError = (stateError) => ({
     payload: stateError
 });
 
-
+//posts
+//New post
 export function addNewPostAction(newPost){
     return async (dispatch) => {
         dispatch(addNewPost());
@@ -163,7 +152,6 @@ const addNewPostSuccess = newPost => ({
     type: ADD_POST_SUCCESS,
     payload: newPost
 });
-
 
 const addNewPostError = (stateError) => ({
     type: ADD_POST_ERROR,
@@ -282,7 +270,7 @@ const deletePostError = () => ({
     payload: true
 });
 
-
+//reset state
 export function resetStatePostAction(){
     return (dispatch) => {
         dispatch(resetStatePost());
@@ -292,3 +280,28 @@ export function resetStatePostAction(){
 const resetStatePost = () => ({
     type: RESET_STATE_POST
 });
+
+
+//files
+export function addNewFilePostAction(formData){
+    return async() => {
+        try {
+            await axios.post('http://localhost:4000/api/post/uploads-post', formData);
+        } catch (error) {
+            console.log(error);
+
+        }
+    }
+}
+
+export function addNewFileUserAction(formData){
+    return async() => {
+        try {
+            await axios.post('http://localhost:4000/api/users/uploads-profile', formData);
+        } catch (error) {
+            console.log(error);
+
+        }
+    }
+}
+

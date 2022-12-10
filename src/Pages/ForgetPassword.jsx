@@ -1,8 +1,11 @@
 import axios from 'axios';
 import React, { useEffect, useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+
+import { useNavigate } from 'react-router-dom';
 
 import { useSelector } from 'react-redux';
+
+import Spinner from '../components/Spinner/Spinner';
 
 const ForgetPassword = () => {
 
@@ -35,7 +38,7 @@ const ForgetPassword = () => {
   return (
     <>{
         loading ? (
-            <p>loading...</p>
+            <Spinner />
         ) : (
             <section className="">
                 <div className="flex flex-col items-center justify-center px-6 py-8 mx-auto md:h-screen lg:py-0">

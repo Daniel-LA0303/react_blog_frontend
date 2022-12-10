@@ -7,10 +7,11 @@ import ProfileButton from '../ProfileButton/ProfileButton'
 
 import { useSelector } from 'react-redux'
 
+import Spinner from '../Spinner/Spinner'
+
 const Sidebar = () => {
 
   const [open, setOpen] = useState(false);
-  const [userA, setUserA] = useState(false);
 
   const user = useSelector(state => state.posts.user);
   const loading = useSelector(state => state.posts.loading);
@@ -20,8 +21,7 @@ const Sidebar = () => {
 
       {loading ? (
         <>
-          <p>cargando</p>
-          {/* Spinner */}
+          <Spinner />
         </>
       ) : (
         <div className='bg-white  py-1  top-0 left-0 right-0 shadow-2xl'>
@@ -60,7 +60,6 @@ const Sidebar = () => {
             </div>
           </div>
         </div>
-
       )}
     </>
   )
