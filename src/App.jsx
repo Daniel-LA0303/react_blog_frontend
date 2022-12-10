@@ -50,7 +50,7 @@ function App() {
           <Route path="/user-confirmed/:id" element={<UserConfirmed /> } />
           
           <Route path="/new-post" element={<NewPost /> } />
-          <Route path="/edit-post" element={<EditPost /> } />
+          <Route path="/edit-post/:id" element={<EditPost /> } />
           <Route path="/view-post/:id" element={<ViewPost /> } />
           <Route path="/category/:id" element={<CategoryPost /> } />
 

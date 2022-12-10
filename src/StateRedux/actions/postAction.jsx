@@ -12,6 +12,10 @@ import {
     GET_ALL_POSTS,
     GET_ALL_POSTS_SUCCESS,
     GET_ALL_POSTS_ERROR,
+    GET_ONE_POST,
+    GET_ONE_POST_SUCCESS,
+    GET_ONE_POST_ERROR,
+    RESET_STATE_POST
 } from "../types";
 
 
@@ -152,3 +156,40 @@ const getAllPostsError =() => ({
     payload: true
 });
 
+
+//get one post
+export function getOnePostAction(id){
+    return async(dispatch) => {
+        dispatch(getOnePost());
+        try {
+            const res = await axios.get(`http://localhost:4000/api/posts/${id}`);
+            dispatch(getOnePostSuccess(res.data));
+        } catch (error) {
+            console.log(error);
+            dispatch(getOnePostError())
+        }
+    }
+}
+const getOnePost = () =>({
+    type: GET_ONE_POST,
+    payload: true
+});
+const getOnePostSuccess = (post) => ({
+    type: GET_ONE_POST_SUCCESS,
+    payload: post
+});
+const getOnePostError =() => ({
+    type: GET_ONE_POST_ERROR,
+    payload: true
+});
+
+
+export function resetStatePostAction(){
+    return (dispatch) => {
+        dispatch(resetStatePost());
+    }       
+}
+
+const resetStatePost = () => ({
+    type: RESET_STATE_POST
+});

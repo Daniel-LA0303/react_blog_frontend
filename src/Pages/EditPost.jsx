@@ -1,8 +1,12 @@
 import React from 'react'
+import Sidebar from '../components/Sidebar/Sidebar'
+
 
 const EditPost = () => {
   return (
-    <div>EditPost</div>
+    <div>
+      <Sidebar />
+    </div>
   )
 }
 

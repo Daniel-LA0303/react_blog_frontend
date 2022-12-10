@@ -11,6 +11,10 @@ import {
     GET_ALL_POSTS,
     GET_ALL_POSTS_SUCCESS,
     GET_ALL_POSTS_ERROR,
+    GET_ONE_POST,
+    GET_ONE_POST_SUCCESS,
+    GET_ONE_POST_ERROR,
+    RESET_STATE_POST
 } from "../types";
 
 const initialState = {
@@ -32,6 +36,7 @@ export default function(state = initialState, action){
         case GET_ALL_CARTEGORIES:
         case ADD_POST:
         case GET_ALL_POSTS:
+        case GET_ONE_POST:
             return{
                 ...state,
                 loading: action.payload
@@ -63,14 +68,27 @@ export default function(state = initialState, action){
                 error: null,
                 posts: action.payload
             }
+        case GET_ONE_POST_SUCCESS:
+            return{
+                ...state,
+                loading: false,
+                error: null,
+                post: action.payload,
+            }
         case GET_USER_ERROR:
         case GET_ALL_CARTEGORIES_ERROR:
         case ADD_POST_ERROR:
         case GET_ALL_POSTS_ERROR:
+        case GET_ONE_POST_ERROR:
             return{
                 ...state,
                 loading: false,
                 error: action.payload
+            }
+        case RESET_STATE_POST :
+            return{
+                ...state,
+                post: {}
             }
         default: return state;
     }
