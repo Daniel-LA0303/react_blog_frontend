@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 
 import { useDispatch } from 'react-redux';
-import { resetStatePostAction } from '../StateRedux/actions/postAction';
+import { getUserAction, resetStatePostAction } from '../StateRedux/actions/postAction';
 
 import { useParams } from 'react-router-dom';
 
@@ -12,6 +12,7 @@ import Sidebar from '../components/Sidebar/Sidebar'
 const CategoryPost = () => {
 
   const dispatch = useDispatch();
+  const getUserRedux = token => dispatch(getUserAction(token));
   const params = useParams();
 
   const[postsFilter, setPostsFilters]=useState([]);
@@ -22,6 +23,13 @@ const CategoryPost = () => {
     resetState();
   }, []);
 
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    if(token){
+      getUserRedux(JSON.parse(token));
+    }
+  }, []);
+  
   useEffect(() => {
     fetch("http://localhost:4000/api/posts")
       .then((response) => response.json())

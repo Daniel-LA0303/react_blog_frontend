@@ -1,19 +1,82 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 
-import { useSelector } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import Spinner from '../Spinner/Spinner'
+import axios from 'axios'
+
+import { faHeart, faBookmark } from '@fortawesome/free-solid-svg-icons'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { getAllPostsAction, getUserAction } from '../../StateRedux/actions/postAction'
 
 const Post = ({post}) => {
-    const PF = useSelector(state => state.posts.PFPost)
+
+    const dispatch = useDispatch();
+    const getUserRedux = token => dispatch(getUserAction(token));
+    const getAllPostsRedux = () => dispatch(getAllPostsAction());
+
+    const {title, linkImage, categoriesPost, _id, desc, createdAt, user, likePost} = post;
+
+    const[like, setLike] = useState(false);
+    const[numberLike, setNumberLike] =  useState(0);
+    const[save, setSave] = useState(false);
+
+    const PF = useSelector(state => state.posts.PFPost);
     const PP = useSelector(state => state.posts.PFLink);
+    const userP = useSelector(state => state.posts.user);
 
-    const {title, linkImage, categoriesPost, _id, desc, createdAt, user} = post;
+    
+    useEffect(() => {
 
-    if(Object.keys(post) == '') return <Spinner />
+        // getAllPostsRedux();
+        const userLike = likePost.users.includes(userP._id);
+        if(userLike){
+            setLike(true);
+        }
+        setNumberLike(likePost.reactions);
+
+    }, []);
+
+    useEffect(() => {
+        const userPost = userP.postsSaved.posts.includes(_id);
+        if(userPost){
+            setSave(true);
+        }
+        
+    }, []);
+    
+    const handleLike = async (id) => {
+        
+        setLike(!like);
+        if(like){
+            setNumberLike(numberLike-1);
+        }else{
+            setNumberLike(numberLike+1)
+        }
+        try {
+            const res =await axios.post(`http://localhost:4000/api/posts/like-post/${id}`, userP);
+            console.log(res);
+        } catch (error) {
+            console.log(error);
+
+        }
+    }
+
+    const handleSave = async (id) => {
+        setSave(!save);
+        // console.log('post id:',id ,'user id', userP._id);
+        try {
+            await axios.post(`http://localhost:4000/api/posts/save-post/${id}`, userP);
+        } catch (error) {
+            console.log(error);
+
+        }
+    }
+
+    if(Object.keys(post) == '' || Object.keys(userP) == '') return <Spinner />
   return (
     <>
-        <div className="flex mx-auto flex-col sm:flex-row w-full sm:w-5/6 lg:w-4/6 xl:w-3/6 hover:bg-gray-100  dark:bg-gray-800 dark:hover:bg-gray-700 my-10 rounded-2xl">
+        <div className="flex mx-auto flex-col sm:flex-row w-full sm:w-5/6 lg:w-5/6 xl:w-5/6 hover:bg-gray-100  dark:bg-gray-800 dark:hover:bg-gray-700 my-10 rounded-2xl">
             <img className="object-cover w-full h-20  sm:w-2/5 sm:h-52 md:rounded-none md:rounded-l-lg" src={PF+linkImage} alt="" />
             <div className="flex flex-col  w-full  justify-between p-4 leading-normal">
                 <div className='flex justify-between'>
@@ -47,7 +110,25 @@ const Post = ({post}) => {
                         <svg aria-hidden="true" className="w-4 h-4 ml-2 -mr-1" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z" ></path></svg>
                     </Link>
                 </div>
-               
+                <div class="  flex items-center justify-between mt-5">
+                    <div className='flex'>
+                        <p className=' text-white mx-3'>{numberLike}</p>
+                        <button onClick={() => handleLike(_id)}>
+                            <FontAwesomeIcon 
+                                icon={faHeart} 
+                                className={`${like ? ' text-red-400' :  ' text-white'}   mx-auto  rounded`}
+                                
+                            />
+                        </button>
+                    </div>
+                    <button onClick={() => handleSave(_id)}>
+                        <FontAwesomeIcon 
+                            icon={faBookmark} 
+                            className={`${save ? 'text-blue-500': 'text-white '}    mx-auto  rounded`}
+                            
+                        />
+                    </button>
+                </div>
             </div>
         </div>
     </>

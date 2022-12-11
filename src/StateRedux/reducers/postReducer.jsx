@@ -126,7 +126,7 @@ export default function(state = initialState, action){
                 ...state,
                 post: {},
                 userView: {},
-                user: {}
+                // user: {}
             }
         default: return state;
     }

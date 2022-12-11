@@ -36,9 +36,9 @@ function App() {
     }
   }, []);
 
-  useEffect(() => {
-    getAllPostsRedux();
-  }, [])
+  // useEffect(() => {
+  //   getAllPostsRedux();
+  // }, [])
   
 
   return (

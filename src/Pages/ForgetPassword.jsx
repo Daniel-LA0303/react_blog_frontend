@@ -33,6 +33,7 @@ const ForgetPassword = () => {
         } catch (error) {
             console.log(error);
         }
+        route('/');
     }
 
   return (
