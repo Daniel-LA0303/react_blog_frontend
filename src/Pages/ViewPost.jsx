@@ -1,15 +1,18 @@
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 import Sidebar from '../components/Sidebar/Sidebar'
 
 import { Link, useParams, useNavigate } from 'react-router-dom';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faTrash, faPen } from '@fortawesome/free-solid-svg-icons'
+import { faHeart, faBookmark, faTrash, faPen } from '@fortawesome/free-solid-svg-icons'
 
 import { useDispatch, useSelector } from 'react-redux';
-import { deletePostAction, getOnePostAction } from '../StateRedux/actions/postAction';
+import { deletePostAction, getOnePostAction, getUserAction } from '../StateRedux/actions/postAction';
 
 import Spinner from '../components/Spinner/Spinner';
+import axios from 'axios';
+import NewComment from '../components/Comment/NewComment';
+import ShowCommenst from '../components/Comment/ShowCommenst';
 
 const ViewPost = () => {
 
@@ -18,29 +21,103 @@ const ViewPost = () => {
   const params = useParams();
   const route = useNavigate();
 
+  const[like, setLike] = useState(false);
+  const[numberLike, setNumberLike] =  useState(0);
+  const[save, setSave] = useState(false);
+  const[user, setUser] = useState({});
+  const[post, setPost] = useState({})
+
+  //redux
+  // const post = useSelector(state => state.posts.post);
+  const userP = useSelector(state => state.posts.user);
+  const PF = useSelector(state => state.posts.PFPost);
+  const deletePostRedux = (id) => dispatch(deletePostAction(id));
+  const getUserRedux = token => dispatch(getUserAction(token));
+
   //get post with id
   useEffect(() => {
       const getOnePostState = () => dispatch(getOnePostAction(params.id));
       getOnePostState();
   }, []);
 
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    if(token){
+      getUserRedux(JSON.parse(token));
+    }
+  }, []);
 
-  //redux
-  const post = useSelector(state => state.posts.post);
-  const user = useSelector(state => state.posts.user);
-  const PF = useSelector(state => state.posts.PFPost);
-  const deletePostRedux = (id) => dispatch(deletePostAction(id));
+  useEffect(() => {
+    fetch(`http://localhost:4000/api/posts/${params.id}`)
+    .then((response) => response.json())
+    .then((post) => {
+      setPost(post)
+      const userLike = post.likePost.users.includes(userP._id);
+          if(userLike){
+        setLike(true);
+    }
+    setNumberLike(post.likePost.reactions);
+    })   
+
+}, [params.id]);
+
+useEffect(() => {
+  fetch(`http://localhost:4000/api/users/get-profile/${userP._id}`)
+  .then((response) => response.json())
+  .then((user) => {
+    setUser(user);
+    const userPost = user.postsSaved.posts.includes(params.id);
+    if(userPost){
+      setSave(true);
+    }
+  })  
+  console.log(user);
+
+    // const userPost = userP.postsSaved.posts.includes(params.id);
+    // if(userPost){
+    //     setSave(true);
+    // }
+    
+}, []);
 
   const deletePostComponent = async (id) => {
       deletePostRedux(id);
       route('/');
   }
 
+  const handleLike = async (id) => {
+        
+    setLike(!like);
+    if(like){
+        setNumberLike(numberLike-1);
+    }else{
+        setNumberLike(numberLike+1)
+    }
+    try {
+        const res =await axios.post(`http://localhost:4000/api/posts/like-post/${id}`, userP);
+        console.log(res);
+    } catch (error) {
+        console.log(error);
+
+    }
+  }
+
+const handleSave = async (id) => {
+    setSave(!save);
+    // console.log('post id:',id ,'user id', userP._id);
+    try {
+        await axios.post(`http://localhost:4000/api/posts/save-post/${id}`, userP);
+    } catch (error) {
+        console.log(error);
+
+    }
+}
+
   if(Object.keys(post) == '') return <Spinner />
   return (
     <div>
       <Sidebar />
-      <div className='w-full sm:w-4/6 lg:w-3/6 mx-auto rounded-lg bg-gray-100'>
+      <div className='w-full sm:w-4/6 lg:w-3/6 mx-auto rounded-lg dark:bg-gray-800 dark:hover:bg-gray-7000'>
         <div className=''>
             <div className="overflow-hidden h-96">
                 {post.linkImage && (
@@ -52,7 +129,7 @@ const ViewPost = () => {
                 )}
             </div>
         </div>
-        {user._id === post.user._id ? (
+        {userP._id === post.user._id ? (
           <div className=' flex justify-end'>
             <FontAwesomeIcon 
               onClick={() => deletePostComponent(params.id)}
@@ -72,6 +149,23 @@ const ViewPost = () => {
         <div className=" mt-5 p-4">
             <h2 className=' font-bold text-5xl mb-3'>{post.title}</h2>
             <p className="mb-3 font-normal ">Posted on {new Date(post.createdAt).toDateString()}</p>
+            <div className='flex justify-between'>
+              <div className='flex'>
+                <p className=' text-white mx-3'>{numberLike}</p>
+                <button onClick={() => handleLike(params.id)}>
+                  <FontAwesomeIcon 
+                    icon={faHeart} 
+                    className={`${like ? ' text-red-400' :  ' text-white'}   mx-auto  rounded`}
+                  />
+                </button>
+              </div>
+              <button onClick={() => handleSave(params.id)}>
+                <FontAwesomeIcon 
+                  icon={faBookmark} 
+                  className={`${save ? 'text-blue-500': 'text-white '}    mx-auto  rounded`}          
+                />
+              </button>
+            </div>
             {post.categoriesPost.map(cat => (
                 <Link
                     key={cat}
@@ -89,21 +183,16 @@ const ViewPost = () => {
     
     <div className='sm:w-4/6 lg:w-3/6 mx-auto'>
         <p className=' text-5xl my-3'>Comments:</p>
-        <div class="flex justify-center  relative my-10">
-            <div class="relative grid grid-cols-1 gap-4 p-4 mb-8 border rounded-lg bg-white shadow-lg">
-              <div class="relative flex gap-4">
-                <img src="https://icons.iconarchive.com/icons/diversity-avatars/avatars/256/charlie-chaplin-icon.png" class="relative rounded-lg -top-8 -mb-4 bg-white border h-20 w-20" alt="" loading="lazy" />
-                <div class="flex flex-col w-full">
-                  <div class="flex flex-row justify-between">
-                    <p class="relative text-xl whitespace-nowrap truncate overflow-hidden">COMMENTOR</p>
-                    <a class="text-gray-500 text-xl" href="#"><i class="fa-solid fa-trash"></i></a>
-                  </div>
-                  <p class="text-gray-400 text-sm">20 April 2022, at 14:88 PM</p>
-                </div>
-              </div>
-              <p class="-mt-4 text-gray-500">Lorem ipsum dolor sit amet consectetur adipisicing elit. {' '}Maxime quisquam vero adipisci beatae voluptas dolor ame.</p>
-            </div>
-        </div>
+        <NewComment 
+          user={userP}
+          idPost={params.id}
+        />
+        {post.commenstOnPost.comments.map(comment => (
+          <ShowCommenst 
+            comment={comment}
+          />
+        ))}
+        
     </div>
   </div>
   )

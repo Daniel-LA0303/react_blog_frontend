@@ -43,7 +43,7 @@ const Home = () => {
     <div className='  '>
         <Sidebar />
         <div className='flex flex-row'>
-          <div className='  sm:w-5/6 flex flex-col  mx-auto'>
+          <div className=' w-full  sm:w-5/6 flex flex-col  mx-auto'>
               {posts.map(post => (
                   <Post 
                       key={post._id}
