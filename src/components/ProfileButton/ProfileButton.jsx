@@ -2,6 +2,9 @@ import React, {useEffect, useRef, useState} from 'react';
 import { Link } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faHeart, faBookmark, faUser, faGear, faTableColumns } from '@fortawesome/free-solid-svg-icons'
+
 const ProfileButton = () => {
 
     const user = useSelector(state => state.posts.user);
@@ -46,20 +49,32 @@ const ProfileButton = () => {
             </div>
 
             <div className={`dropdown-menu ${open? 'active' : 'inactive'}`} >
-            <h3>The Kiet<br/><span>Website Designer</span></h3>
+            <h3>{user.name}<br/>
+              {/* <span>Website Designer</span> */}
+            </h3>
+            <h3>{user.email}</h3>
             <ul>
                 <li className = 'dropdownItem'>
+                    <div>
+                      <FontAwesomeIcon icon={faUser} />
+                    </div>
                     <Link to={`/profile/${user._id}`}>My Profile</Link>
                 </li>
                 <li className = 'dropdownItem'>
-                    <Link to={`/edit-profile/${user._id}`}>Edit Profile</Link>
+                  <div>
+                      <FontAwesomeIcon icon={faGear} />
+                    </div>
+                    <Link to={`/edit-profile/${user._id}`}>Settings</Link>
                 </li>
                 <li className = 'dropdownItem'>
-                    <a>Settings</a>
+                    <div>
+                      <FontAwesomeIcon icon={faTableColumns} />
+                    </div>
+                    <a>Dashboard</a>
                 </li>
-                <li className = 'dropdownItem'>
+                {/* <li className = 'dropdownItem'>
                     <a>help</a>
-                </li>
+                </li> */}
                 <li className = 'dropdownItem'>
                     <button 
                         type="button" 

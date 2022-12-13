@@ -38,10 +38,14 @@ const Post = ({post}) => {
     }, []);
 
     useEffect(() => {
-        const userPost = userP.postsSaved.posts.includes(_id);
-        if(userPost){
-            setSave(true);
+        if(Object.keys(userP) != ''){
+            console.log('cd');
+            const userPost = userP.postsSaved.posts.includes(_id);
+            if(userPost){
+                setSave(true);
+            }
         }
+
         
     }, []);
     
@@ -73,7 +77,7 @@ const Post = ({post}) => {
         }
     }
 
-    if(Object.keys(post) == '' || Object.keys(userP) == '') return <Spinner />
+    if(Object.keys(post) == '' ) return <Spinner />
   return (
     <>
         <div className="flex mx-auto flex-col sm:flex-row w-full sm:w-5/6 lg:w-5/6 xl:w-5/6 hover:bg-gray-100  dark:bg-gray-800 dark:hover:bg-gray-700 my-10 rounded-2xl">
@@ -110,25 +114,30 @@ const Post = ({post}) => {
                         <svg aria-hidden="true" className="w-4 h-4 ml-2 -mr-1" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z" ></path></svg>
                     </Link>
                 </div>
-                <div class="  flex items-center justify-between mt-5">
-                    <div className='flex'>
-                        <p className=' text-white mx-3'>{numberLike}</p>
-                        <button onClick={() => handleLike(_id)}>
+                {userP._id ? (
+                    <div class="  flex items-center justify-between mt-5">
+                        <div className='flex'>
+                            <p className=' text-white mx-3'>{numberLike}</p>
+                            <button onClick={() => handleLike(_id)}>
+                                <FontAwesomeIcon 
+                                    icon={faHeart} 
+                                    className={`${like ? ' text-red-400' :  ' text-white'}   mx-auto  rounded`}
+                                    
+                                />
+                            </button>
+                        </div>
+                        <button onClick={() => handleSave(_id)}>
                             <FontAwesomeIcon 
-                                icon={faHeart} 
-                                className={`${like ? ' text-red-400' :  ' text-white'}   mx-auto  rounded`}
+                                icon={faBookmark} 
+                                className={`${save ? 'text-blue-500': 'text-white '}    mx-auto  rounded`}
                                 
                             />
                         </button>
                     </div>
-                    <button onClick={() => handleSave(_id)}>
-                        <FontAwesomeIcon 
-                            icon={faBookmark} 
-                            className={`${save ? 'text-blue-500': 'text-white '}    mx-auto  rounded`}
-                            
-                        />
-                    </button>
-                </div>
+                ): (
+                    null
+                )}
+               
             </div>
         </div>
     </>

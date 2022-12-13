@@ -6,6 +6,7 @@ import { getUserAction, resetStatePostAction } from '../StateRedux/actions/postA
 import { useParams } from 'react-router-dom';
 
 import Post from '../components/Post/Post';
+import CategoryCard from '../components/CategoryCard/CategoryCard';
 import Sidebar from '../components/Sidebar/Sidebar'
 
 
@@ -47,7 +48,9 @@ const CategoryPost = () => {
   return (
     <div>
       <Sidebar />
+      
       <div className='w-full flex flex-wrap justify-evenly'>
+      <CategoryCard category={params.id}/>
         {postsFilter.map(post => (
           <Post 
             key={post._id}

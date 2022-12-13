@@ -28,7 +28,7 @@ const NewComment = ({user, idPost}) => {
   return (
     <div className="flex mx-auto items-center justify-center shadow-lg mb-4 rounded-lg">
         <form   
-            className="w-full max-w-xl dark:bg-gray-800 text-white rounded-lg px-4 pt-2"
+            className="w-full  dark:bg-gray-800 text-white rounded-lg px-4 pt-2"
             // onSubmit={newComment}    
         >
             <div className="flex flex-wrap -mx-3 mb-6">

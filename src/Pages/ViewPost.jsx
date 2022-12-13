@@ -4,7 +4,7 @@ import Sidebar from '../components/Sidebar/Sidebar'
 import { Link, useParams, useNavigate } from 'react-router-dom';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faHeart, faBookmark, faTrash, faPen } from '@fortawesome/free-solid-svg-icons'
+import { faHeart, faBookmark, faTrash, faPen, faL } from '@fortawesome/free-solid-svg-icons'
 
 import { useDispatch, useSelector } from 'react-redux';
 import { deletePostAction, getOnePostAction, getUserAction } from '../StateRedux/actions/postAction';
@@ -65,11 +65,14 @@ useEffect(() => {
   fetch(`http://localhost:4000/api/users/get-profile/${userP._id}`)
   .then((response) => response.json())
   .then((user) => {
-    setUser(user);
-    const userPost = user.postsSaved.posts.includes(params.id);
-    if(userPost){
-      setSave(true);
+    if(Object.keys(userP) != ''){
+      setUser(user);
+      const userPost = user.postsSaved.posts.includes(params.id);
+      if(userPost){
+        setSave(true);
+      }
     }
+
   })  
   console.log(user);
 
@@ -152,19 +155,23 @@ const handleSave = async (id) => {
             <div className='flex justify-between'>
               <div className='flex'>
                 <p className=' text-white mx-3'>{numberLike}</p>
-                <button onClick={() => handleLike(params.id)}>
+                <button onClick={() => handleLike(params.id)} disabled={Object.keys(userP) != ''? false : true}>
                   <FontAwesomeIcon 
                     icon={faHeart} 
                     className={`${like ? ' text-red-400' :  ' text-white'}   mx-auto  rounded`}
                   />
                 </button>
               </div>
-              <button onClick={() => handleSave(params.id)}>
-                <FontAwesomeIcon 
-                  icon={faBookmark} 
-                  className={`${save ? 'text-blue-500': 'text-white '}    mx-auto  rounded`}          
-                />
-              </button>
+              <div className='flex'>
+                <p className=' text-white mx-3'>{post.saved}</p>
+                <button onClick={() => handleSave(params.id)} disabled={Object.keys(userP) != ''? false : true}>
+                  <FontAwesomeIcon 
+                    icon={faBookmark} 
+                    className={`${save ? 'text-blue-500': 'text-white '}    mx-auto  rounded`}          
+                  />
+                </button>
+              </div>
+             
             </div>
             {post.categoriesPost.map(cat => (
                 <Link
