@@ -1,19 +1,19 @@
 import React, { useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom';
-import Sidebar from '../components/Sidebar/Sidebar'
+import Sidebar from '../../components/Sidebar/Sidebar'
 
 import { useDispatch, useSelector } from 'react-redux';
-import { addNewFilePostAction, editPostAction, getAllCategoriesAction, getOnePostAction } from '../StateRedux/actions/postAction';
+import { addNewFilePostAction, editPostAction, getAllCategoriesAction, getOnePostAction } from '../../StateRedux/actions/postAction';
 
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
-import "../components/EditorToolBar/EditorToolBar.css"
-import EditorToolBar, { modules, formats } from '../components/EditorToolBar/EditorToolBar';
+import "../../components/EditorToolBar/EditorToolBar.css"
+import EditorToolBar, { modules, formats } from '../../components/EditorToolBar/EditorToolBar';
 
 import Select from 'react-select'
 import axios from 'axios';
 
-import Spinner from '../components/Spinner/Spinner';
+import Spinner from '../../components/Spinner/Spinner';
 
 
 const EditPost = () => {

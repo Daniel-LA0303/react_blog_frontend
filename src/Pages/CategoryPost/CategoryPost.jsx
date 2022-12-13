@@ -1,13 +1,13 @@
 import React, { useEffect, useState } from 'react'
 
 import { useDispatch } from 'react-redux';
-import { getUserAction, resetStatePostAction } from '../StateRedux/actions/postAction';
+import { getUserAction, resetStatePostAction } from '../../StateRedux/actions/postAction';
 
 import { useParams } from 'react-router-dom';
 
-import Post from '../components/Post/Post';
-import CategoryCard from '../components/CategoryCard/CategoryCard';
-import Sidebar from '../components/Sidebar/Sidebar'
+import Post from '../../components/Post/Post';
+import CategoryCard from '../../components/CategoryCard/CategoryCard';
+import Sidebar from '../../components/Sidebar/Sidebar'
 
 
 const CategoryPost = () => {

@@ -130,35 +130,6 @@ const getAllCategoriesError = (stateError) => ({
 });
 
 //posts
-//New post
-export function addNewPostAction(newPost){
-    return async (dispatch) => {
-        dispatch(addNewPost());
-        try {
-            await axios.post('http://localhost:4000/api/posts', newPost);
-            dispatch(addNewPostSuccess(newPost)); 
-        } catch (error) {
-            console.log(error);
-            dispatch(addNewPostError(true));
-        }
-    }
-}
-const addNewPost = () => ({
-    type: ADD_POST,
-    payload: true
-});
-
-const addNewPostSuccess = newPost => ({
-    type: ADD_POST_SUCCESS,
-    payload: newPost
-});
-
-const addNewPostError = (stateError) => ({
-    type: ADD_POST_ERROR,
-    payload: stateError
-});
-
-
 //get all posts
 export function getAllPostsAction(){
     return async(dispatch) => {
@@ -210,6 +181,34 @@ const getOnePostSuccess = (post) => ({
 const getOnePostError =() => ({
     type: GET_ONE_POST_ERROR,
     payload: true
+});
+
+//New post
+export function addNewPostAction(newPost){
+    return async (dispatch) => {
+        dispatch(addNewPost());
+        try {
+            await axios.post('http://localhost:4000/api/posts', newPost);
+            dispatch(addNewPostSuccess(newPost)); 
+        } catch (error) {
+            console.log(error);
+            dispatch(addNewPostError(true));
+        }
+    }
+}
+const addNewPost = () => ({
+    type: ADD_POST,
+    payload: true
+});
+
+const addNewPostSuccess = newPost => ({
+    type: ADD_POST_SUCCESS,
+    payload: newPost
+});
+
+const addNewPostError = (stateError) => ({
+    type: ADD_POST_ERROR,
+    payload: stateError
 });
 
 //edit post

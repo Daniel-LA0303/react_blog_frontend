@@ -22,9 +22,7 @@ const Sidebar = () => {
     <>
 
       {loading ? (
-        <>
-          <Spinner />
-        </>
+        null
       ) : (
         <div className='bg-white  py-1  top-0 left-0 right-0 shadow-2xl fixed'>
           <div className='flex items-center justify-between h-14'>

@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from 'react'
-import Spinner from '../components/Spinner/Spinner';
+import Spinner from '../../components/Spinner/Spinner';
 
 //components
-import Sidebar from '../components/Sidebar/Sidebar';
-import Post from '../components/Post/Post';
+import Sidebar from '../../components/Sidebar/Sidebar';
+import Post from '../../components/Post/Post';
 
-import { getAllPostsAction, getUserAction, resetStatePostAction } from '../StateRedux/actions/postAction';
+import { getAllPostsAction, getUserAction, resetStatePostAction } from '../../StateRedux/actions/postAction';
 import { useSelector, useDispatch } from 'react-redux';
 
 
@@ -44,7 +44,7 @@ const Home = () => {
         <Sidebar />
         <div className='flex flex-row mt-10'>
           <div className=' w-full  sm:w-8/12 lg:w-9/12 flex flex-col'>
-              {posts.map(post => (
+              {[...posts].reverse().map(post => (
                   <Post 
                       key={post._id}
                       post={post}

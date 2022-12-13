@@ -5,7 +5,7 @@ import { useNavigate } from 'react-router-dom';
 
 import { useSelector } from 'react-redux';
 
-import Spinner from '../components/Spinner/Spinner';
+import Spinner from '../../components/Spinner/Spinner';
 
 const ForgetPassword = () => {
 

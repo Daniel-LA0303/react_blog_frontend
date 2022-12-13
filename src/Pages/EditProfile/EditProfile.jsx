@@ -1,14 +1,14 @@
 import axios from 'axios';
 import React, { useEffect, useState } from 'react'
 
-import Sidebar from '../components/Sidebar/Sidebar'
+import Sidebar from '../../components/Sidebar/Sidebar'
 
 import { useParams, useNavigate } from 'react-router-dom';
 
 import { useDispatch, useSelector } from 'react-redux';
-import { addNewFileUserAction } from '../StateRedux/actions/postAction';
+import { addNewFileUserAction } from '../../StateRedux/actions/postAction';
 
-import Spinner from '../components/Spinner/Spinner';
+import Spinner from '../../components/Spinner/Spinner';
 
 const EditProfile = () => {
     const dispatch = useDispatch();

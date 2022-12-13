@@ -1,13 +1,13 @@
 import React, {useEffect} from 'react'
 
 import { useDispatch, useSelector } from 'react-redux';
-import { getOneUserAction, getUserAction } from '../StateRedux/actions/postAction';
+import { getOneUserAction, getUserAction } from '../../StateRedux/actions/postAction';
 
-import Sidebar from '../components/Sidebar/Sidebar';
+import Sidebar from '../../components/Sidebar/Sidebar';
 
 import { useNavigate, useParams } from 'react-router-dom';
 
-import Spinner from '../components/Spinner/Spinner';
+import Spinner from '../../components/Spinner/Spinner';
 
 
 const Profile = () => {

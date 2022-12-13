@@ -70,7 +70,7 @@ const ProfileButton = () => {
                     <div>
                       <FontAwesomeIcon icon={faTableColumns} />
                     </div>
-                    <a>Dashboard</a>
+                    <Link to={`/dashboard/${user._id}`}>Dashboard</Link>
                 </li>
                 {/* <li className = 'dropdownItem'>
                     <a>help</a>

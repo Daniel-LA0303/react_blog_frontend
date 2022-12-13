@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import Sidebar from '../components/Sidebar/Sidebar'
+import Sidebar from '../../components/Sidebar/Sidebar'
 
 import { Link, useParams, useNavigate } from 'react-router-dom';
 
@@ -7,12 +7,12 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faHeart, faBookmark, faTrash, faPen, faL } from '@fortawesome/free-solid-svg-icons'
 
 import { useDispatch, useSelector } from 'react-redux';
-import { deletePostAction, getOnePostAction, getUserAction } from '../StateRedux/actions/postAction';
+import { deletePostAction, getOnePostAction, getUserAction } from '../../StateRedux/actions/postAction';
 
-import Spinner from '../components/Spinner/Spinner';
+import Spinner from '../../components/Spinner/Spinner';
 import axios from 'axios';
-import NewComment from '../components/Comment/NewComment';
-import ShowCommenst from '../components/Comment/ShowCommenst';
+import NewComment from '../../components/Comment/NewComment';
+import ShowCommenst from '../../components/Comment/ShowCommenst';
 
 const ViewPost = () => {
 
@@ -24,6 +24,7 @@ const ViewPost = () => {
   const[like, setLike] = useState(false);
   const[numberLike, setNumberLike] =  useState(0);
   const[save, setSave] = useState(false);
+  const[numberSave, setNumberSave] = useState(0);
   const[user, setUser] = useState({});
   const[post, setPost] = useState({})
 
@@ -57,6 +58,7 @@ const ViewPost = () => {
         setLike(true);
     }
     setNumberLike(post.likePost.reactions);
+    setNumberSave(post.saved)
     })   
 
 }, [params.id]);
@@ -85,7 +87,9 @@ useEffect(() => {
 
   const deletePostComponent = async (id) => {
       deletePostRedux(id);
-      route('/');
+      setTimeout(() => {
+        route('/');
+    }, 1000);
   }
 
   const handleLike = async (id) => {
@@ -107,6 +111,11 @@ useEffect(() => {
 
 const handleSave = async (id) => {
     setSave(!save);
+    if(save){
+        setNumberSave(numberSave-1);
+    }else{
+        setNumberSave(numberSave+1)
+    }
     // console.log('post id:',id ,'user id', userP._id);
     try {
         await axios.post(`http://localhost:4000/api/posts/save-post/${id}`, userP);
@@ -163,7 +172,7 @@ const handleSave = async (id) => {
                 </button>
               </div>
               <div className='flex'>
-                <p className=' text-white mx-3'>{post.saved}</p>
+                <p className=' text-white mx-3'>{numberSave}</p>
                 <button onClick={() => handleSave(params.id)} disabled={Object.keys(userP) != ''? false : true}>
                   <FontAwesomeIcon 
                     icon={faBookmark} 

@@ -80,8 +80,11 @@ const Post = ({post}) => {
     if(Object.keys(post) == '' ) return <Spinner />
   return (
     <>
-        <div className="flex mx-auto flex-col sm:flex-row w-full sm:w-5/6 lg:w-5/6 xl:w-5/6 hover:bg-gray-100  dark:bg-gray-800 dark:hover:bg-gray-700 my-10 rounded-2xl">
-            <img className="object-cover w-full h-20  sm:w-2/5 sm:h-52 md:rounded-none md:rounded-l-lg" src={PF+linkImage} alt="" />
+        <div className="flex mx-auto items-center flex-col sm:flex-row w-full sm:w-5/6 lg:w-5/6 xl:w-5/6 hover:bg-gray-100  dark:bg-gray-800 dark:hover:bg-gray-700 my-10 rounded-2xl">
+            {/* <div className='h-auto w-full'> */}
+                <img className="object-cover w-full h-20  sm:w-2/5 sm:h-60 md:rounded-none md:rounded-l-lg" src={PF+linkImage} alt="" />
+            {/* </div> */}
+            
             <div className="flex flex-col  w-full  justify-between p-4 leading-normal">
                 <div className='flex justify-between'>
                     <h5 className="mb-2 text-2xl w-4/6  font-bold tracking-tight text-gray-900 dark:text-white">{title}</h5>

@@ -1,19 +1,19 @@
 import React, { useEffect, useState } from 'react'
-import Sidebar from '../components/Sidebar/Sidebar';
+import Sidebar from '../../components/Sidebar/Sidebar';
 
 import { useNavigate } from 'react-router-dom';
 
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
-import "../components/EditorToolBar/EditorToolBar.css"
-import EditorToolBar, { modules, formats } from '../components/EditorToolBar/EditorToolBar';
+import "../../components/EditorToolBar/EditorToolBar.css"
+import EditorToolBar, { modules, formats } from '../../components/EditorToolBar/EditorToolBar';
 
 import Select from 'react-select'
 
 import { useDispatch, useSelector } from 'react-redux';
-import {addNewPostAction, addNewFilePostAction, getAllCategoriesAction } from '../StateRedux/actions/postAction';
+import {addNewPostAction, addNewFilePostAction, getAllCategoriesAction } from '../../StateRedux/actions/postAction';
 
-import Spinner from '../components/Spinner/Spinner';
+import Spinner from '../../components/Spinner/Spinner';
 
 const NewPost = () => {
 
@@ -25,6 +25,7 @@ const NewPost = () => {
   const[content, setContent] = useState(''); //content
   const[file, setFile] = useState(null); //get file
   const[categoriesPost, setCategoriesPost] = useState([]); //cat that user chose
+  const[addPost, setAddPost] = useState(false);
 
   //redux
   const dispatch = useDispatch();
@@ -83,8 +84,11 @@ const NewPost = () => {
         newPost.linkImage = filename
         addNewFileRedux(formData);
     }
-    addPostRedux(newPost)
-    route('/');
+    addPostRedux(newPost);
+    setTimeout(() => {
+        route('/');
+    }, 500);
+    
 }
 
   return (
@@ -93,8 +97,8 @@ const NewPost = () => {
             <Spinner />
         ):(
             <>
-                        <Sidebar />   
-        <div className=" w-5/6  mx-auto my-20">
+                <Sidebar />   
+            <div className=" w-5/6  mx-auto my-20">
             <form 
                 className="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4"
                 onSubmit={newPost}
