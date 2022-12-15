@@ -14,14 +14,15 @@ const Home = () => {
   const dispatch = useDispatch();
   const getUserRedux = token => dispatch(getUserAction(token));
   // const posts = useSelector(state => state.posts.posts);
-  // const getAllPostsRedux = token => dispatch(getAllPostsAction(token));
+  const getAllPostsRedux = token => dispatch(getAllPostsAction(token));
 
   const[posts, setPosts] = useState([]);
 
   useEffect(() => {
     const token = localStorage.getItem('token');
     if(token){
-      getUserRedux(JSON.parse(token));
+      // getUserRedux(JSON.parse(token));
+      dispatch(getUserAction(JSON.parse(token)))
     }
   }, []);
 
@@ -30,6 +31,7 @@ const Home = () => {
     .then((response) => response.json())
     .then((post) => {
       setPosts(post)
+      console.log(post);
     })   
   }, []);
 

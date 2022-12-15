@@ -20,11 +20,24 @@ const Post = ({post}) => {
     const[like, setLike] = useState(false);
     const[numberLike, setNumberLike] =  useState(0);
     const[save, setSave] = useState(false);
+    const[imageProfile, setImageProfile] = useState('');
 
     const PF = useSelector(state => state.posts.PFPost);
     const PP = useSelector(state => state.posts.PFLink);
     const userP = useSelector(state => state.posts.user);
 
+    useEffect(() => {
+        const getOnePost = async () => {
+            try {
+                const res = await axios.get(`http://localhost:4000/api/posts/${post._id}`);
+                setImageProfile(res.data.user.profilePicture)
+            } catch (error) {
+                console.log(error);
+            }
+        }
+        getOnePost();
+
+    }, []);
     
     useEffect(() => {
 
@@ -33,13 +46,13 @@ const Post = ({post}) => {
         if(userLike){
             setLike(true);
         }
-        setNumberLike(likePost.reactions);
+        setNumberLike(likePost.users.length);
+        console.log();
 
     }, []);
 
     useEffect(() => {
         if(Object.keys(userP) != ''){
-            console.log('cd');
             const userPost = userP.postsSaved.posts.includes(_id);
             if(userPost){
                 setSave(true);
@@ -80,7 +93,7 @@ const Post = ({post}) => {
     if(Object.keys(post) == '' ) return <Spinner />
   return (
     <>
-        <div className="flex mx-auto items-center flex-col sm:flex-row w-full sm:w-5/6 lg:w-5/6 xl:w-5/6 hover:bg-gray-100  dark:bg-gray-800 dark:hover:bg-gray-700 my-10 rounded-2xl">
+        <div className="flex mx-auto items-center flex-col sm:flex-row w-full sm:w-5/6 lg:w-5/6 xl:w-5/6 hover:bg-gray-100  dark:bg-gray-800 dark:hover:bg-gray-700 my-5 rounded-2xl">
             {/* <div className='h-auto w-full'> */}
                 <img className="object-cover w-full h-20  sm:w-2/5 sm:h-60 md:rounded-none md:rounded-l-lg" src={PF+linkImage} alt="" />
             {/* </div> */}
@@ -106,7 +119,7 @@ const Post = ({post}) => {
                             <Link to={`/profile/${user._id}`}>
                                 <img
                                     className='border-4 w-10 h-10 rounded-full' 
-                                    src={PP+user.profilePicture}    
+                                    src={PP+imageProfile}    
                                 />
                             </Link>
                             <p className='mx-3 text-white'>{user.name}</p>

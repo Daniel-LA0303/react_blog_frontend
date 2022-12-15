@@ -68,11 +68,11 @@ const Sidebar = () => {
               </div>
               <div className='text-center  text-xl hover:bg-orange-400 cursor-pointer py-3 mb-2'>
                 <FontAwesomeIcon icon={faBookmark} className='mx-2'/>
-                <a>Saved</a>
+                <Link to={`/save-posts/${user._id}`}>Saved</Link>
               </div>
               <div className='text-center  text-xl hover:bg-orange-400 cursor-pointer py-3 mb-2'>
                 <FontAwesomeIcon icon={faCode} className='mx-2'/>
-                <a>Categories</a>
+                <Link to={'/categories'}>Categories</Link>
               </div>
               <div className='text-center  text-xl hover:bg-orange-400 cursor-pointer py-3 mb-2'>
                 <FontAwesomeIcon icon={faPeopleGroup} className='mx-2'/>

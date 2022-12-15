@@ -53,37 +53,27 @@ const ViewPost = () => {
     .then((response) => response.json())
     .then((post) => {
       setPost(post)
+      console.log(post);
       const userLike = post.likePost.users.includes(userP._id);
-          if(userLike){
+      if(userLike){
         setLike(true);
-    }
-    setNumberLike(post.likePost.reactions);
-    setNumberSave(post.saved)
+      }
+      setNumberLike(post.likePost.users.length);
+      setNumberSave(post.usersSavedPost.users.length)
     })   
 
 }, [params.id]);
 
 useEffect(() => {
-  fetch(`http://localhost:4000/api/users/get-profile/${userP._id}`)
-  .then((response) => response.json())
-  .then((user) => {
+
     if(Object.keys(userP) != ''){
-      setUser(user);
-      const userPost = user.postsSaved.posts.includes(params.id);
+      // setUser(user);
+      const userPost = userP.postsSaved.posts.includes(params.id);
       if(userPost){
         setSave(true);
       }
-    }
-
-  })  
-  console.log(user);
-
-    // const userPost = userP.postsSaved.posts.includes(params.id);
-    // if(userPost){
-    //     setSave(true);
-    // }
-    
-}, []);
+    } 
+}, [userP]);
 
   const deletePostComponent = async (id) => {
       deletePostRedux(id);

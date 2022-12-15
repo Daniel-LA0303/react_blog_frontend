@@ -15,12 +15,14 @@ import Register from "./Pages/Register/Register";
 import ForgetPassword from "./Pages/NewUsers/ForgetPassword";
 import NewPassword from "./Pages/NewUsers/NewPassword";
 import UserConfirmed from "./Pages/NewUsers/UserConfirmed";
+import SavePost from "./Pages/SavePost/SavePost";
 
 import { useSelector, useDispatch } from 'react-redux';
 import { useEffect } from "react";
 
 import { getAllPostsAction, getUserAction } from "./StateRedux/actions/postAction";
 import DashBoardProfile from "./Pages/DashBoard/DashBoardProfile";
+import Categories from "./Pages/Categories/Categories";
 
 function App() {
 
@@ -56,7 +58,9 @@ function App() {
           <Route path="/edit-post/:id" element={user._id ? <EditPost /> :<Login /> } />
           <Route path="/view-post/:id" element={<ViewPost /> } />
           <Route path="/category/:id" element={<CategoryPost /> } />
+          <Route path="/categories/" element={<Categories /> } />
           <Route path="/dashboard/:id" element={<DashBoardProfile />} />
+          <Route path="/save-posts/:id" element={user._id  ? <SavePost /> : <Login />}/>
 
           <Route path="/profile/:id" element={<Profile /> } />
           <Route path="/edit-profile/:id" element={user._id ? <EditProfile /> : <Login /> } />
