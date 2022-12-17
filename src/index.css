@@ -132,6 +132,13 @@ h3 span{
   overflow: hidden;
   border-radius: 50%;
 }
+@media (max-width: 600px) {
+  .image_profile{
+    /* border-radius: 10%; */
+    height: 150px;
+    width: 150px;
+  }
+}
 
 
 iframe{

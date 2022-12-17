@@ -4,6 +4,7 @@ import Sidebar from '../../components/Sidebar/Sidebar'
 import { getAllCategoriesAction } from '../../StateRedux/actions/postAction';
 import NewCardCategory from '../../components/CategoryCard/NewCardCategory';
 import Spinner from '../../components/Spinner/Spinner';
+import LoadingCategory from '../../components/Spinner/LoadingCategory';
 
 const Categories = () => {
 
@@ -14,23 +15,35 @@ const Categories = () => {
     const userP = useSelector(state => state.posts.user);
 
     useEffect(() => {
+      setTimeout(() => {
         getAllCategoriesRedux();
-      }, []);
+      }, 1000);    
+    }, []);
 
 
-    if(loading) return <Spinner />
+    // if(categories.length == 0) return <LoadingCategory />
   return (
     <div>
         <Sidebar />
-        <p className=' text-center mt-20 text-3xl'>All Categories</p>
+        <p className=' text-center mt-10 text-3xl'>All Categories</p>
         <div className=' w-full block sm:flex sm:flex-wrap justify-center mb-10'>
-            {categories.map(cat => (
-                <NewCardCategory 
+          <>
+            {categories.length == 0 ? (
+              <LoadingCategory />
+            ):(
+              <>
+                {categories.map(cat => (
+                  <NewCardCategory 
                     key={cat._id}
                     category={cat}
                     userP={userP}
-                />
-            ))}
+                  />
+                ))}
+                {/* <LoadingCategory /> */}
+              </>
+            )}
+          </>
+
         </div>
 
     </div>

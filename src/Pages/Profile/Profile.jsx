@@ -1,4 +1,6 @@
 import React, {useEffect} from 'react'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faUser, faHeart, faFile } from '@fortawesome/free-solid-svg-icons';
 
 import { useDispatch, useSelector } from 'react-redux';
 import { getOneUserAction, getUserAction } from '../../StateRedux/actions/postAction';
@@ -33,7 +35,7 @@ useEffect(() => {
   }
 }, []);
 
-
+  console.log(user);
 
   if(Object.keys(user) == '') return <Spinner />
   return (
@@ -42,44 +44,77 @@ useEffect(() => {
       <section className="pt-16 bg-blueGray-50">
         <div className="w-full lg:w-8/12 px-4 mx-auto">
           <div className=" flex flex-col min-w-0 break-words bg-white w-full mb-6 shadow-xl rounded-lg mt-16">
-            <div className="px-6">
+            <div className="px-2 sm:px-6">
               <div className="flex flex-wrap justify-center">
                 <div className="w-full px-4 flex justify-center">
-                  <img alt="..." src={PF+user.profilePicture} className="shadow-xl image_profile w-80 h-auto align-middle border-none  -m-16  lg:-ml-16 max-w-250-px" />              
+                  <img alt="..." src={PF+user.profilePicture} className="shadow-xl image_profile  h-auto align-middle border-none  -m-16  lg:-ml-16 max-w-250-px" />  
+                  {/* <div className='flex justify-end'>
+                    <button>Follow</button>  
+                  </div>             */}
                 </div>
-                <div className="w-full px-4 text-center mt-20">
+                <div className='w-full flex justify-end'>
+                  <button 
+                    type="button" 
+                    // onClick={() => handleClick()}
+                    className={`focus:outline-none text-white bg-purple-800 hover:bg-purple-900 focus:ring-4 focus:ring-purple-300 font-medium rounded-lg text-sm px-5 py-1.5`}
+                  >{'Follow'}</button> 
+                </div>            
+                <div className="w-full px-4 text-center mt-10">
                   <div className="flex justify-center py-4 lg:pt-4 pt-8">
-                    <div className="mr-4 p-3 text-center">
+                    <div className=" p-3 text-center">
                       <span className="text-sm font-bold block uppercase tracking-wide text-blueGray-600">
                         {user.numberPost}
                       </span>
-                      <span className="text-sm text-blueGray-400">Posts</span>
-                    </div>
-                    <div className="mr-4 p-3 text-center">
-                      <span className=" text-sm font-bold block uppercase tracking-wide text-blueGray-600">
-                        {new Date(user.createdAt).toDateString()}
+                      <span className="text-sm text-blueGray-400">
+                        <FontAwesomeIcon icon={faFile} className=' text-lg text-green-600 mx-1'/>
+                        Posts
                       </span>
-                      <span className="text-sm text-blueGray-400">Joined on</span>
+                    </div>
+                    
+                    <div className=" p-3 text-center">
+                      <span className="text-sm font-bold block uppercase tracking-wide text-blueGray-600">
+                        {user.likePost.posts.length}
+                      </span>
+                      <span className="text-sm text-blueGray-400">
+                        <FontAwesomeIcon icon={faHeart} className=' text-lg text-red-500 mx-1'/>
+                        Likes
+                      </span>
+                    </div>
+                    <div className=" p-3 text-center">
+                      <span className="text-sm font-bold block uppercase tracking-wide text-blueGray-600">
+                        {user.numberPost}
+                      </span>
+                      <span className="text-sm text-blueGray-400">
+                        <FontAwesomeIcon icon={faUser}  className=' text-lg text-blue-700 mx-1'/>
+                        Follows
+                      </span>
                     </div>
                   </div>
                 </div>
               </div>
-              <div className="text-center mt-12">
+              <div className="text-center ">
                 <h3 className="text-xl font-semibold leading-normal text-blueGray-700 mb-2">
                   {user.name}
                 </h3>
+                
                 <div className="text-sm leading-normal mt-0 mb-2 text-blueGray-400 font-bold uppercase">
                   {user.info.desc}
                 </div>
-                <div className="mb-2 text-blueGray-600 mt-10">
-                  {user.info.work}
-                </div>
-                <div className="mb-2 text-blueGray-600">   
-                  {user.info.education}
-                </div>
-                <div className="mb-2 text-blueGray-600">
-                  {user.info.skills}
-                </div>
+                <div className="mb-2 text-blueGray-600 w-3/5 mx-auto flex justify-center">
+                    <h2 className=' font-bold'>Skills: {''}</h2>   
+                    {user.info.skills}
+                  </div>  
+                <div className='sm:w-3/5 mx-auto flex'>
+                  <div className="mb-2 text-blueGray-600 w-full sm:w-2/4">
+                    <h2 className=' font-bold'>Work: </h2>   
+                    {user.info.work}
+                  </div>
+                  <div className="mb-2 text-blueGray-600 w-full sm:w-2/4">
+                    <h2 className=' font-bold'>Education: </h2>   
+                    {user.info.education}
+                  </div>
+
+                </div>             
               </div>
               <div className="mt-10 py-10 border-t border-blueGray-200 text-center">
                 <div className="flex flex-wrap justify-center">

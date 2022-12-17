@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from 'react'
-import Spinner from '../../components/Spinner/Spinner';
 
 //components
 import Sidebar from '../../components/Sidebar/Sidebar';
 import Post from '../../components/Post/Post';
+import Spinner from '../../components/Spinner/Spinner';
+import LoadingPosts from '../../components/Spinner/LoadingPosts';
 
 import { getAllPostsAction, getUserAction, resetStatePostAction } from '../../StateRedux/actions/postAction';
 import { useSelector, useDispatch } from 'react-redux';
@@ -30,7 +31,10 @@ const Home = () => {
     fetch("http://localhost:4000/api/posts")
     .then((response) => response.json())
     .then((post) => {
-      setPosts(post)
+      setTimeout(() => {
+        setPosts(post)
+      }, 1000);
+      
       console.log(post);
     })   
   }, []);
@@ -40,18 +44,26 @@ const Home = () => {
     resetState();
   }, []);
     
-  if(posts.lenght < 0) return <Spinner />
+  // if(posts.length == 0) return <LoadingPosts />
   return (
     <div className='  '>
         <Sidebar />
         <div className='flex flex-row mt-10'>
           <div className=' w-full  sm:w-8/12 lg:w-9/12 flex flex-col'>
+            {posts.length === 0 ? (
+              <>
+                <LoadingPosts />
+              </>
+            ): 
+            <>
               {[...posts].reverse().map(post => (
                   <Post 
                       key={post._id}
                       post={post}
                   />
-              ))}
+              ))}  
+            </>}
+
           </div>
           <aside className=' hidden sm:block sm:visible w-0 sm:w-4/12 lg:w-3/12'>
             <div className=' p-5'>

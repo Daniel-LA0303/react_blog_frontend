@@ -8,6 +8,8 @@ import { useParams } from 'react-router-dom';
 import Post from '../../components/Post/Post';
 import CategoryCard from '../../components/CategoryCard/CategoryCard';
 import Sidebar from '../../components/Sidebar/Sidebar'
+import axios from 'axios';
+import Spinner from '../../components/Spinner/Spinner';
 
 
 const CategoryPost = () => {
@@ -18,6 +20,7 @@ const CategoryPost = () => {
 
   const[postsFilter, setPostsFilters]=useState([]);
   const[charge, setCharge] = useState(true); 
+  const[category, setCategory] = useState({});
   
   useEffect(() => {
     const resetState = () => dispatch(resetStatePostAction());
@@ -44,13 +47,26 @@ const CategoryPost = () => {
         setCharge(false);
       })
 }, [params.id]);
-  
+
+useEffect(() => {
+  const getOneUser = async () => {
+    try {
+      const res = await axios.get(`http://localhost:4000/api/categories/${params.id}`);
+      setCategory(res.data);
+    } catch (error) {
+        console.log(error);
+    }
+  }
+  getOneUser();
+
+}, [params.id]);
+if(Object.keys(category) == '') return <Spinner />
   return (
     <div>
       <Sidebar />
       
       <div className='w-full flex flex-wrap justify-evenly'>
-      <CategoryCard category={params.id}/>
+      <CategoryCard category={category}/>
         {postsFilter.map(post => (
           <Post 
             key={post._id}

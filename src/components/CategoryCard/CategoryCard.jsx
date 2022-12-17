@@ -1,13 +1,46 @@
-import React from 'react'
+import axios from 'axios';
+import React, { useEffect, useState } from 'react'
+import { useSelector } from 'react-redux';
 
 const CategoryCard = ({category}) => {
+  console.log(category);
+  const userP = useSelector(state => state.posts.user);
+  const [isFollow, setIsFollow] = useState(false);
+
+  useEffect(() => {
+    const userInCat = category.follows.users.includes(userP._id);
+    if(userInCat){
+      setIsFollow(true);
+    }
+}, [userP]);
+
+const handleClick = async() => {
+  setIsFollow(!isFollow);
+  // if(isFollow){
+
+  // }
+  try {
+    const res = await axios.post(`http://localhost:4000/api/users/save-follow/${userP._id}`, category);
+    // setPosts(res.data.postsSaved.posts);
+    // console.log(res.data.postsSaved.posts)
+    // console.log(res.data);
+  } catch (error) {
+    console.log(error);
+  }
+}
   return (
-    <div class="sm:w-5/6 lg:w-5/6 xl:w-5/6 mt-20 px-3 py-4  border-b-4 border-red-500 rounded-lg shadow-md hover:bg-gray-100 dark:bg-gray-800  dark:hover:bg-gray-700">
+    <div
+      style={{borderBottom: `solid 10px ${category.color}`}} 
+      className="sm:w-5/6 lg:w-5/6 xl:w-5/6 mt-5 px-3 py-4   rounded-lg shadow-md hover:bg-gray-100 dark:bg-gray-800  dark:hover:bg-gray-700">
         <div className='flex items-center justify-between'>
-            <h5 class="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">{category}</h5>
-            <button type="button" class="focus:outline-none text-white bg-purple-700 hover:bg-purple-800 focus:ring-4 focus:ring-purple-300 font-medium rounded-lg text-sm px-5 py-1.5 mb-2 dark:bg-purple-600 dark:hover:bg-purple-700 dark:focus:ring-purple-900">Purple</button>    
+            <h5 className="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">{category.name}</h5>
+            <button 
+              type="button" 
+              onClick={() => handleClick()}
+              className={`focus:outline-none text-white ${isFollow ? 'bg-orange-500 hover:bg-orange-800' : 'bg-purple-800 hover:bg-purple-900'} focus:ring-4 focus:ring-purple-300 font-medium rounded-lg text-sm px-5 py-1.5 mb-2 `}
+            >{isFollow ? 'Following' : 'Follow'}</button>      
         </div>
-        <p class="font-normal text-gray-700 dark:text-gray-400">Here are the biggest enterprise technology acquisitions of 2021 so far, in reverse chronological order.</p>         
+        <p className="font-normal text-gray-700 dark:text-gray-400">{category.desc}</p>         
     </div>    
   )
 }
