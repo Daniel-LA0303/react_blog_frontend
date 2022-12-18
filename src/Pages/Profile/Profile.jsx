@@ -1,4 +1,4 @@
-import React, {useEffect} from 'react'
+import React, {useEffect, useState} from 'react'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faUser, faHeart, faFile } from '@fortawesome/free-solid-svg-icons';
 
@@ -10,6 +10,7 @@ import Sidebar from '../../components/Sidebar/Sidebar';
 import { useNavigate, useParams } from 'react-router-dom';
 
 import Spinner from '../../components/Spinner/Spinner';
+import axios from 'axios';
 
 
 const Profile = () => {
@@ -19,12 +20,34 @@ const Profile = () => {
 
   const dispatch = useDispatch();
   const user = useSelector(state => state.posts.userView);
-  
+  const userP = useSelector(state => state.posts.user);
   const PF = useSelector(state => state.posts.PFLink);
+  // console.log(userP);
+
+  const [userC, setUserC] = useState({});
+  const [isFollow, setIsFollow] = useState(false);
 
   useEffect(() => {
     const getOneUserState = () => dispatch(getOneUserAction(params.id));
     getOneUserState();  
+}, []);
+
+useEffect(() => {
+  const getOneUserAPI = async () => {
+    try {
+      const res = await axios.get(`http://localhost:4000/api/users/get-profile/${params.id}`);
+      console.log(res.data);
+      setUserC(res.data);
+      const userProfileFound = res.data.followersUsers.followers.includes(userP._id);
+      console.log(userProfileFound);
+      if(userProfileFound){
+        setIsFollow(true);
+      }
+    } catch (error) {
+        console.log(error);
+    }
+  }
+  getOneUserAPI();
 }, []);
 
 useEffect(() => {
@@ -35,9 +58,19 @@ useEffect(() => {
   }
 }, []);
 
-  console.log(user);
+  // console.log(user);
+  const handleClickFollow = async() => {
+    setIsFollow(!isFollow);
+    try {
+      const res = await axios.post(`http://localhost:4000/api/users/user-follow/${params.id}`, userP);
+      // console.log(res.data);
+      // setUserC(res.data);
+    } catch (error) {
+        // console.log(error);
+    }
+  }
 
-  if(Object.keys(user) == '') return <Spinner />
+  if(Object.keys(user) == '' || Object.keys(userP) =='' || Object.keys(userC) == '') return <Spinner />
   return (
     <div className=' bg-slate-600 '>
       <Sidebar />
@@ -48,16 +81,17 @@ useEffect(() => {
               <div className="flex flex-wrap justify-center">
                 <div className="w-full px-4 flex justify-center">
                   <img alt="..." src={PF+user.profilePicture} className="shadow-xl image_profile  h-auto align-middle border-none  -m-16  lg:-ml-16 max-w-250-px" />  
-                  {/* <div className='flex justify-end'>
-                    <button>Follow</button>  
-                  </div>             */}
                 </div>
                 <div className='w-full flex justify-end'>
+                  {userC._id === userP._id  ? null: (                    
                   <button 
                     type="button" 
-                    // onClick={() => handleClick()}
-                    className={`focus:outline-none text-white bg-purple-800 hover:bg-purple-900 focus:ring-4 focus:ring-purple-300 font-medium rounded-lg text-sm px-5 py-1.5`}
-                  >{'Follow'}</button> 
+                    onClick={() => handleClickFollow()}
+                    className={`focus:outline-none text-white ${isFollow ? 'bg-orange-500 hover:bg-orange-800' : 'bg-purple-800 hover:bg-purple-900'} focus:ring-4 focus:ring-purple-300 font-medium rounded-lg text-sm px-5 py-1.5 mb-2 `}
+                    >{isFollow ? 'Following' : 'Follow'}
+                  </button>  
+                  )}
+
                 </div>            
                 <div className="w-full px-4 text-center mt-10">
                   <div className="flex justify-center py-4 lg:pt-4 pt-8">
@@ -86,7 +120,7 @@ useEffect(() => {
                       </span>
                       <span className="text-sm text-blueGray-400">
                         <FontAwesomeIcon icon={faUser}  className=' text-lg text-blue-700 mx-1'/>
-                        Follows
+                        Followers
                       </span>
                     </div>
                   </div>

@@ -22,7 +22,7 @@ const DashBoard = () => {
                 </div>
                 <div className="flex-1 text-right md:text-center">
                     <h2 className="font-bold uppercase text-gray-600">Total Posts Publish</h2>
-                   <p className="font-bold text-3xl">$3249 <span className="text-green-500"><i className="fas fa-caret-up"></i></span></p>
+                   <p className="font-bold text-3xl">{userP.numberPost} <span className="text-green-500"><i className="fas fa-caret-up"></i></span></p>
                 </div>
             </div>
         </div>
@@ -31,11 +31,11 @@ const DashBoard = () => {
         <div className="bg-gradient-to-b from-pink-200 to-pink-100 border-b-4 border-pink-500 rounded-lg shadow-xl p-5">
             <div className="flex flex-row items-center">
                 <div className="flex-shrink pr-4">
-                    <div className="rounded-full px-4 py-3 bg-pink-600"><FontAwesomeIcon  icon={faUser} className='text-white text-sm w-5 h-5' /></div>
+                    <Link to={`/followers-users/${userP._id}`} className="rounded-full block px-4 py-3 bg-pink-600"><FontAwesomeIcon  icon={faUser} className='text-white text-sm w-5 h-5' /></Link>
                 </div>
                 <div className="flex-1 text-right md:text-center">
                     <h2 className="font-bold uppercase text-gray-600">Followers</h2>
-                    <p className="font-bold text-3xl">249 <span className="text-pink-500"><i className="fas fa-exchange-alt"></i></span></p>
+                    <p className="font-bold text-3xl">{userP.followersUsers.conutFollowers} <span className="text-pink-500"><i className="fas fa-exchange-alt"></i></span></p>
                 </div>
             </div>
         </div>
@@ -83,11 +83,11 @@ const DashBoard = () => {
         <div className="bg-gradient-to-b from-red-200 to-red-100 border-b-4 border-red-500 rounded-lg shadow-xl p-5">
             <div className="flex flex-row items-center">
                 <div className="flex-shrink pr-4">
-                    <div className="rounded-full  px-4 py-3 bg-red-600"><FontAwesomeIcon  icon={faUserPlus} className='text-white text-sm w-5 h-5' /></div>
+                    <Link to={`/followed-users/${userP._id}`} className="rounded-full block px-4 py-3 bg-red-600"><FontAwesomeIcon  icon={faUserPlus} className='text-white text-sm w-5 h-5' /></Link>
                 </div>
                 <div className="flex-1 text-right md:text-center">
                     <h2 className="font-bold uppercase text-gray-600">Followed</h2>
-                    <p className="font-bold text-3xl">3 <span className="text-red-500"><i className="fas fa-caret-up"></i></span></p>
+                    <p className="font-bold text-3xl">{userP.followedUsers.conutFollowed} <span className="text-red-500"><i className="fas fa-caret-up"></i></span></p>
                 </div>
             </div>
         </div>

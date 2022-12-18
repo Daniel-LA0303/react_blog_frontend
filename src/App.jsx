@@ -26,6 +26,8 @@ import Categories from "./Pages/Categories/Categories";
 import UserPosts from "./Pages/DashBoard/Pages/UserPosts";
 import UserTags from "./Pages/DashBoard/Pages/UserTags";
 import LikesPosts from "./Pages/DashBoard/Pages/LikesPosts";
+import FollowedUsers from "./Pages/DashBoard/Pages/FollowedUsers";
+import FollowersUsers from "./Pages/DashBoard/Pages/FollowersUsers";
 
 function App() {
 
@@ -71,6 +73,8 @@ function App() {
           <Route path="/user-posts/:id" element={user._id  ? <UserPosts /> : <Login />} />
           <Route path="/user-tags/:id" element={user._id  ? < UserTags/> : <Login />} />
           <Route path="/user-likes-posts/:id" element={user._id  ? <LikesPosts/> : <Login />} />
+          <Route path="/followed-users/:id" element={user._id  ? <FollowedUsers/> : <Login />} />
+          <Route path="/followers-users/:id" element={user._id  ? <FollowersUsers/> : <Login />} />
           
 
           <Route path="/profile/:id" element={<Profile /> } />
