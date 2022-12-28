@@ -1,3 +1,4 @@
+import axios from 'axios';
 import React, { useEffect, useState } from 'react'
 import { useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
@@ -21,11 +22,8 @@ const UserCard = ({user}) => {
     const handleClickFollow = async() => {
         setIsFollow(!isFollow);
         try {
-          const res = await axios.post(`http://localhost:4000/api/users/user-follow/${user._id}`, userP);
-          // console.log(res.data);
-          // setUserC(res.data);
+          await axios.post(`http://localhost:4000/api/users/user-follow/${user._id}`, userP);
         } catch (error) {
-            // console.log(error);
         }
       }
     

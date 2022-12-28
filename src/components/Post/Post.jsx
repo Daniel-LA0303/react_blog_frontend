@@ -40,8 +40,6 @@ const Post = ({post}) => {
     }, []);
     
     useEffect(() => {
-
-        // getAllPostsRedux();
         const userLike = likePost.users.includes(userP._id);
         if(userLike){
             setLike(true);
@@ -58,8 +56,6 @@ const Post = ({post}) => {
                 setSave(true);
             }
         }
-
-        
     }, []);
     
     const handleLike = async (id) => {
@@ -81,7 +77,6 @@ const Post = ({post}) => {
 
     const handleSave = async (id) => {
         setSave(!save);
-        // console.log('post id:',id ,'user id', userP._id);
         try {
             await axios.post(`http://localhost:4000/api/posts/save-post/${id}`, userP);
         } catch (error) {
@@ -94,10 +89,7 @@ const Post = ({post}) => {
   return (
     <>
         <div className="flex mx-auto items-center flex-col sm:flex-row w-full sm:w-5/6 lg:w-5/6 xl:w-5/6 hover:bg-gray-100  dark:bg-gray-800 dark:hover:bg-gray-700 my-5 rounded-2xl">
-            {/* <div className='h-auto w-full'> */}
-                <img className="object-cover w-full h-20  sm:w-2/5 sm:h-60 md:rounded-none md:rounded-l-lg" src={PF+linkImage} alt="" />
-            {/* </div> */}
-            
+            <img className="object-cover w-full h-20  sm:w-2/5 sm:h-60 md:rounded-none md:rounded-l-lg" src={PF+linkImage} alt="" />   
             <div className="flex flex-col  w-full  justify-between p-4 leading-normal">
                 <div className='flex justify-between'>
                     <h5 className="mb-2 text-2xl w-4/6  font-bold tracking-tight text-gray-900 dark:text-white">{title}</h5>
@@ -146,7 +138,6 @@ const Post = ({post}) => {
                             <FontAwesomeIcon 
                                 icon={faBookmark} 
                                 className={`${save ? 'text-blue-500': 'text-white '}    mx-auto  rounded`}
-                                
                             />
                         </button>
                     </div>

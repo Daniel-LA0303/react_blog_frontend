@@ -70,7 +70,7 @@ useEffect(() => {
     }
   }
 
-  if(Object.keys(user) == '' || Object.keys(userP) =='' || Object.keys(userC) == '') return <Spinner />
+  if(Object.keys(user) == ''  || Object.keys(userC) == '') return <Spinner />
   return (
     <div className=' bg-slate-600 '>
       <Sidebar />
@@ -83,7 +83,7 @@ useEffect(() => {
                   <img alt="..." src={PF+user.profilePicture} className="shadow-xl image_profile  h-auto align-middle border-none  -m-16  lg:-ml-16 max-w-250-px" />  
                 </div>
                 <div className='w-full flex justify-end'>
-                  {userC._id === userP._id  ? null: (                    
+                  {(userC._id === userP._id || Object.keys(userP) == '') ? null: (                    
                   <button 
                     type="button" 
                     onClick={() => handleClickFollow()}
@@ -91,7 +91,6 @@ useEffect(() => {
                     >{isFollow ? 'Following' : 'Follow'}
                   </button>  
                   )}
-
                 </div>            
                 <div className="w-full px-4 text-center mt-10">
                   <div className="flex justify-center py-4 lg:pt-4 pt-8">

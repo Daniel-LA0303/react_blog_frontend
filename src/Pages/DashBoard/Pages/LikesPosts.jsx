@@ -8,10 +8,7 @@ import { useParams } from 'react-router-dom'
 const LikesPosts = () => {
 
   const params = useParams();
-  const userP = useSelector(state => state.posts.user);
-  const[user,setUser]=useState({});
   const[posts, setPosts] = useState([]);
-  // console.log(userP);
 
   useEffect(() => {
     fetch(`http://localhost:4000/api/users/get-profile/${params.id}`)
@@ -19,6 +16,7 @@ const LikesPosts = () => {
     .then((user) => {
       setTimeout(() => {
         setPosts(user.likePost.posts);  
+        console.log(user.likePost.posts);
       }, 1000);
     })   
 

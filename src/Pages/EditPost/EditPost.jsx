@@ -154,7 +154,6 @@ const EditPost = () => {
                             <div className="mb-4 w-full ">
                                 <label htmlFor="countries" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Select an option</label>
                                 <Select 
-                                    // defaultInputValue={ labelcategories[1]}
                                     onChange={handleChangeS}
                                     options={categories}
                                     isMulti 

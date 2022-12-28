@@ -8,7 +8,6 @@ const ShowCommenst = ({comment}) => {
     const PF = useSelector(state => state.posts.PFLink);
     const userP = useSelector(state => state.posts.user);
 
-    console.log(comment);
   return (
     <div className="flex justify-center my-1 ">
         <div className=" grid grid-cols-1 gap-4 p-4 border rounded-lg dark:bg-gray-800 shadow-lg w-full">
@@ -30,22 +29,18 @@ const ShowCommenst = ({comment}) => {
                     userP._id === comment.userID._id ? (
                         <div className=' flex justify-end'>
                             <FontAwesomeIcon 
-                            //   onClick={() => deletePostComponent(params.id)}
-                            className=' text-base text-red-500 p-2 cursor-pointer'
-                            icon={faTrash} 
+                                className=' text-base text-red-500 p-2 cursor-pointer'
+                                icon={faTrash} 
                             />
-                            <Link
-                            //   to={`/edit-post/${params.id}`}
-                            >
-                            <FontAwesomeIcon 
-                                icon={faPen} 
-                                className='text-base text-sky-500 p-2 cursor-pointer'
-                            />
+                            <Link>
+                                <FontAwesomeIcon 
+                                    icon={faPen} 
+                                    className='text-base text-sky-500 p-2 cursor-pointer'
+                                />
                             </Link>
                         </div>
                     ) :  (null)
                 }
-
             </div>
             
             <p className="mt-4 text-gray-500">{comment.comment}</p>

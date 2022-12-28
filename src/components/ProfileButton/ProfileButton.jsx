@@ -49,9 +49,7 @@ const ProfileButton = () => {
             </div>
 
             <div className={`dropdown-menu ${open? 'active' : 'inactive'}`} >
-            <h3>{user.name}<br/>
-              {/* <span>Website Designer</span> */}
-            </h3>
+            <h3>{user.name}<br/></h3>
             <h3>{user.email}</h3>
             <ul>
                 <li className = 'dropdownItem'>
@@ -72,9 +70,6 @@ const ProfileButton = () => {
                     </div>
                     <Link to={`/dashboard/${user._id}`}>Dashboard</Link>
                 </li>
-                {/* <li className = 'dropdownItem'>
-                    <a>help</a>
-                </li> */}
                 <li className = 'dropdownItem'>
                     <button 
                         type="button" 

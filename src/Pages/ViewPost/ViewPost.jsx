@@ -25,11 +25,9 @@ const ViewPost = () => {
   const[numberLike, setNumberLike] =  useState(0);
   const[save, setSave] = useState(false);
   const[numberSave, setNumberSave] = useState(0);
-  const[user, setUser] = useState({});
   const[post, setPost] = useState({})
 
   //redux
-  // const post = useSelector(state => state.posts.post);
   const userP = useSelector(state => state.posts.user);
   const PF = useSelector(state => state.posts.PFPost);
   const deletePostRedux = (id) => dispatch(deletePostAction(id));
@@ -62,18 +60,16 @@ const ViewPost = () => {
       setNumberSave(post.usersSavedPost.users.length)
     })   
 
-}, [params.id]);
+  }, [params.id]);
 
-useEffect(() => {
-
-    if(Object.keys(userP) != ''){
-      // setUser(user);
-      const userPost = userP.postsSaved.posts.includes(params.id);
-      if(userPost){
-        setSave(true);
-      }
-    } 
-}, [userP]);
+  useEffect(() => {
+      if(Object.keys(userP) != ''){
+        const userPost = userP.postsSaved.posts.includes(params.id);
+        if(userPost){
+          setSave(true);
+        }
+      } 
+  }, [userP]);
 
   const deletePostComponent = async (id) => {
       deletePostRedux(id);
@@ -106,7 +102,6 @@ const handleSave = async (id) => {
     }else{
         setNumberSave(numberSave+1)
     }
-    // console.log('post id:',id ,'user id', userP._id);
     try {
         await axios.post(`http://localhost:4000/api/posts/save-post/${id}`, userP);
     } catch (error) {
@@ -183,8 +178,6 @@ const handleSave = async (id) => {
                 dangerouslySetInnerHTML={{ __html: post.content}}  
             />
         </div>
-        {/* comment */}
-       
     </div>
     
     <div className='sm:w-4/6 lg:w-3/6 mx-auto'>

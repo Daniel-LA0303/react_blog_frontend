@@ -5,10 +5,7 @@ const NewComment = ({user, idPost}) => {
 
     const[comment, setComment] = useState('');
 
-
     const newComment = async(id) => {
-        // e.preventDefault();
-        // console.log(idPost);
         const data={
             userID:user._id,
             comment:comment,
@@ -21,15 +18,12 @@ const NewComment = ({user, idPost}) => {
             console.log(error);
 
         }
-        
-        // // console.log(comment);
     }
 
   return (
     <div className="flex mx-auto items-center justify-center shadow-lg mb-4 rounded-lg">
         <form   
-            className="w-full  dark:bg-gray-800 text-white rounded-lg px-4 pt-2"
-            // onSubmit={newComment}    
+            className="w-full  dark:bg-gray-800 text-white rounded-lg px-4 pt-2"   
         >
             <div className="flex flex-wrap -mx-3 mb-6">
                 <h2 className="px-4 pt-3 pb-2  text-lg">Add a new comment</h2>

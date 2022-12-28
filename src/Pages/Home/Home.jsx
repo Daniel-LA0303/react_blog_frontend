@@ -6,23 +6,19 @@ import Post from '../../components/Post/Post';
 import Spinner from '../../components/Spinner/Spinner';
 import LoadingPosts from '../../components/Spinner/LoadingPosts';
 
-import { getAllPostsAction, getUserAction, resetStatePostAction } from '../../StateRedux/actions/postAction';
-import { useSelector, useDispatch } from 'react-redux';
+import { getUserAction, resetStatePostAction } from '../../StateRedux/actions/postAction';
+import { useDispatch } from 'react-redux';
 
 
 const Home = () => {
 
   const dispatch = useDispatch();
-  const getUserRedux = token => dispatch(getUserAction(token));
-  // const posts = useSelector(state => state.posts.posts);
-  const getAllPostsRedux = token => dispatch(getAllPostsAction(token));
 
   const[posts, setPosts] = useState([]);
 
   useEffect(() => {
     const token = localStorage.getItem('token');
     if(token){
-      // getUserRedux(JSON.parse(token));
       dispatch(getUserAction(JSON.parse(token)))
     }
   }, []);
@@ -44,7 +40,6 @@ const Home = () => {
     resetState();
   }, []);
     
-  // if(posts.length == 0) return <LoadingPosts />
   return (
     <div className='  '>
         <Sidebar />

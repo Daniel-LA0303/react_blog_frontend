@@ -1,17 +1,13 @@
 import React, { useEffect, useState } from 'react'
 import Sidebar from '../../components/Sidebar/Sidebar'
 import Post from '../../components/Post/Post'
-import { useNavigate, useParams } from 'react-router-dom'
+import { useParams } from 'react-router-dom'
 import axios from 'axios'
-import { useSelector } from 'react-redux'
-import Spinner from '../../components/Spinner/Spinner'
 import LoadingPosts from '../../components/Spinner/LoadingPosts'
 
 const SavePost = () => {
 
   const params = useParams();
-
-  const loading = useSelector(state => state.posts.loading);
 
   const[posts, setPosts] = useState([]);
 
@@ -29,12 +25,8 @@ const SavePost = () => {
     setTimeout(() => {
       getOneUser();
     }, 1000);
-    
-
   }, []);
   
-
-  // if(loading) return <Spinner />
   return (
     <div>
         <Sidebar />

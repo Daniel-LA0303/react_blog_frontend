@@ -20,8 +20,6 @@ const Categories = () => {
       }, 1000);    
     }, []);
 
-
-    // if(categories.length == 0) return <LoadingCategory />
   return (
     <div>
         <Sidebar />
@@ -39,7 +37,6 @@ const Categories = () => {
                     userP={userP}
                   />
                 ))}
-                {/* <LoadingCategory /> */}
               </>
             )}
           </>

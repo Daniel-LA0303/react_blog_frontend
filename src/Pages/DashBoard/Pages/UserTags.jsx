@@ -17,7 +17,6 @@ const UserTags = () => {
     .then((user) => {
       setTimeout(() => {
         setCategories(user.followsTags.tags);
-        // setPosts(user.likePost.posts);  
       }, 1000);
     })   
 
@@ -40,7 +39,6 @@ const UserTags = () => {
                     userP={userP}
                   />
                 ))}
-                {/* <LoadingCategory /> */}
               </>
             )}
           </>
