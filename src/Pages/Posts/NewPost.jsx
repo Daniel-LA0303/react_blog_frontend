@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import Sidebar from '../../components/Sidebar/Sidebar';
 
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
@@ -97,13 +97,17 @@ const NewPost = () => {
             <Spinner />
         ):(
             <>
-                <Sidebar />   
-            <div className=" w-5/6  mx-auto my-20">
+                {/* <Sidebar />    */}
+
+            <div className=" w-5/6  mx-auto my-20  ">
+            <div className='flex justify-start'>
+                <Link to='/' class="text-center w-full sm:w-auto focus:outline-none text-white bg-red-700 hover:bg-red-800 focus:ring-4 focus:ring-red-300 font-medium rounded text-sm px-5 py-2.5 mb-2 dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-900">Cancel</Link>
+            </div>
             <form 
-                className="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4"
+                className="bg-gray-700 shadow-md rounded px-8 pt-6 pb-8 mb-4"
                 onSubmit={newPost}
             >
-                <div className=" flex justify-between w-full">
+                <div className="bg-white p-5 block sm:flex justify-between w-full rounded">
                     <div className="w-full sm:w-3/6">
                         <div className="mb-2 w-full ">
                             <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="username">
@@ -163,7 +167,7 @@ const NewPost = () => {
                     </div>
                 </div>
 
-                <div className="mb-4">
+                <div className="mb-4 bg-white p-4">
                     <EditorToolBar toolbarId={'t1'}/>
                     <ReactQuill
                         theme="snow"

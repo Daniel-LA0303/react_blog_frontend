@@ -92,48 +92,51 @@ const EditProfile = () => {
     <div className=' '>
         <Sidebar />
         <div className="h-full my-20 mx-10">
-            <div className="border-b-2 block md:flex">
-                <div className="w-full md:w-2/5 p-4 sm:p-6 lg:p-8 bg-white shadow-md">
-                    <div className="flex justify-between">
-                        <span className="text-xl font-semibold block">Admin Profile</span>
-                    </div>
-                    <p className="text-gray-600 font-bold">Name: <span className=' text-2xl'>{user.name}</span></p>
-                    <p className="text-gray-600 font-bold">Email: <span className=' text-2xl'>{user.email}</span></p>
-                    <div className="max-w-2xl mx-auto">
-	                    <label className="font-semibold text-gray-700 block pb-1">Upload file</label>
-                        <input 
-                            className="block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 dark:text-gray-400 focus:outline-none dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400" 
-                            id="file_input" 
-                            type="file" 
-                            onChange={getFile}
-                        />
-                    </div>
-                    <div className="w-full p-8 mx-2 flex justify-center">
-                    {newImage ? (
-                            <img
-                            className="writeImg"
-                            src={URL.createObjectURL(file)}
-                            alt=""
-                        />
-                        ): (
-                            <>
-                                {image !== '' ? (
+            <div className="border-b-2 block md:flex ">
+                <div className="w-full md:w-2/5 p-4 sm:p-6 lg:p-8 bg-gray-700 shadow-md rounded">
+                    <div className='p-5 bg-white rounded'>
+                        <div className="flex justify-between">
+                            <span className="text-xl font-semibold block">Admin Profile</span>
+                        </div>
+                        <p className="text-gray-600 font-bold">Name: <span className=' text-2xl'>{user.name}</span></p>
+                        <p className="text-gray-600 font-bold">Email: <span className=' text-2xl'>{user.email}</span></p>
+                        <div className="max-w-2xl mx-auto">
+                            <label className="font-semibold text-gray-700 block pb-1">Upload file</label>
+                            <input 
+                                className="block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 dark:text-gray-400 focus:outline-none dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400" 
+                                id="file_input" 
+                                type="file" 
+                                onChange={getFile}
+                            />
+                        </div>
+                        <div className="w-full p-8 mx-2 flex justify-center">
+                            {newImage ? (
                                     <img
-                                        className=""
-                                        src={PF+image}
-                                        alt=""
-                                    />
-                                ): null}
-                            </>
-                        )}
-                </div>
+                                    className="writeImg"
+                                    src={URL.createObjectURL(file)}
+                                    alt=""
+                                />
+                                ): (
+                                    <>
+                                        {image !== '' ? (
+                                            <img
+                                                className=""
+                                                src={PF+image}
+                                                alt=""
+                                            />
+                                        ): null}
+                                    </>
+                                )}
+                        </div>
+                    </div>
+                   
                 </div>
             
-                <div className="w-full md:w-3/5 p-8 bg-white lg:ml-4 shadow-md">
+                <div className="w-full md:w-3/5 p-6 bg-gray-700 lg:ml-4 shadow-md rounded">
                     <form 
                         onSubmit={handleSubmit}
                     >
-                        <div className="rounded  shadow p-6">
+                        <div className="rounded bg-white  shadow p-6">
                             <div className="pb-6">
                                 <label htmlFor="name" className="font-semibold text-gray-700 block pb-1">Description</label>
                                 <div className="flex">
@@ -180,7 +183,7 @@ const EditProfile = () => {
                                     value={skills}
                                 />
                             </div>
-                            <button type="submit" className="w-full text-white bg-sky-600 py-2 rounded">Save Changes</button>
+                            <button type="submit" className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800">Save Changes</button>
                         </div>
                     </form>
                 </div>

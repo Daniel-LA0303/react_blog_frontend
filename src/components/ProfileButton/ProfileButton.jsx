@@ -49,28 +49,28 @@ const ProfileButton = () => {
             </div>
 
             <div className={`dropdown-menu ${open? 'active' : 'inactive'}`} >
-            <h3>{user.name}<br/></h3>
-            <h3>{user.email}</h3>
+            <p className=' text-center text-xl sm:text-3xl'>{user.name}</p>
+            <p className='text-center'>{user.email}</p>
             <ul>
-                <li className = 'dropdownItem'>
-                    <div>
+                <li className = 'dropdownItem p-2 hover:bg-gray-700 hover:text-white transition rounded'>
+                    <div className='px-2'>
                       <FontAwesomeIcon icon={faUser} />
                     </div>
                     <Link to={`/profile/${user._id}`}>My Profile</Link>
                 </li>
-                <li className = 'dropdownItem'>
-                  <div>
+                <li className = 'dropdownItem p-2 hover:bg-gray-700 hover:text-white transition rounded'>
+                  <div className='px-2'>
                       <FontAwesomeIcon icon={faGear} />
                     </div>
                     <Link to={`/edit-profile/${user._id}`}>Settings</Link>
                 </li>
-                <li className = 'dropdownItem'>
-                    <div>
+                <li className = 'dropdownItem p-2 hover:bg-gray-700 hover:text-white transition rounded'>
+                    <div className='px-2'>
                       <FontAwesomeIcon icon={faTableColumns} />
                     </div>
                     <Link to={`/dashboard/${user._id}`}>Dashboard</Link>
                 </li>
-                <li className = 'dropdownItem'>
+                <li className = 'dropdownItem '>
                     <button 
                         type="button" 
                         className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800"

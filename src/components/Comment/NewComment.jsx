@@ -25,7 +25,7 @@ const NewComment = ({user, idPost}) => {
         <form   
             className="w-full  dark:bg-gray-800 text-white rounded-lg px-4 pt-2"   
         >
-            <div className="flex flex-wrap -mx-3 mb-6">
+            <div className="flex flex-wrap -mx-3 mb-2">
                 <h2 className="px-4 pt-3 pb-2  text-lg">Add a new comment</h2>
                 <div className="w-full md:w-full px-3 mb-2 mt-2">
                     <textarea 
@@ -42,9 +42,9 @@ const NewComment = ({user, idPost}) => {
                         <button 
                             type='submit' 
                             onClick={() => newComment(idPost)}
-                            className="bg-white text-gray-700 font-medium py-1 px-4 border border-gray-400 rounded-lg tracking-wide mr-1 hover:bg-gray-100" 
+                            className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800" 
                             placeholder='Type your Comment'
-                        >Send</button>
+                        >Comment</button>
                     </div>
                 </div>
             </div>

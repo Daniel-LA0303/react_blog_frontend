@@ -19,9 +19,9 @@ const DashBoardProfile = () => {
   return (
     <div>
         <Sidebar />
-        <div className=' mt-24'>
+        <h1 className=' text-center mt-10'>Dashboard</h1>
+        <div className=' mt-2'>
             <DashBoard />
-            <p>MY post user</p>
         </div>
         
     </div>

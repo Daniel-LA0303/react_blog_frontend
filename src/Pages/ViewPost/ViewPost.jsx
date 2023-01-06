@@ -114,7 +114,7 @@ const handleSave = async (id) => {
   return (
     <div>
       <Sidebar />
-      <div className='w-full sm:w-4/6 lg:w-3/6 mx-auto rounded-lg dark:bg-gray-800 dark:hover:bg-gray-7000'>
+      <div className='w-full sm:w-4/6 lg:w-3/6 mx-auto rounded-lg view-post'>
         <div className=''>
             <div className="overflow-hidden h-96">
                 {post.linkImage && (
@@ -143,12 +143,12 @@ const handleSave = async (id) => {
             </Link>
           </div>
          ): null} 
-        <div className=" mt-5 p-4">
+        <div className=" mt-2 px-4 py-1">
             <h2 className=' font-bold text-5xl mb-3'>{post.title}</h2>
             <p className="mb-3 font-normal ">Posted on {new Date(post.createdAt).toDateString()}</p>
             <div className='flex justify-between'>
               <div className='flex'>
-                <p className=' text-white mx-3'>{numberLike}</p>
+                <p className=' text-gray-700 mx-3'>{numberLike}</p>
                 <button onClick={() => handleLike(params.id)} disabled={Object.keys(userP) != ''? false : true}>
                   <FontAwesomeIcon 
                     icon={faHeart} 
@@ -157,7 +157,7 @@ const handleSave = async (id) => {
                 </button>
               </div>
               <div className='flex'>
-                <p className=' text-white mx-3'>{numberSave}</p>
+                <p className=' text-gray-700 mx-3'>{numberSave}</p>
                 <button onClick={() => handleSave(params.id)} disabled={Object.keys(userP) != ''? false : true}>
                   <FontAwesomeIcon 
                     icon={faBookmark} 
@@ -171,7 +171,7 @@ const handleSave = async (id) => {
                 <Link
                     key={cat}
                     to={`/category/${cat}`}
-                    className="inline-block bg-gray-200 rounded-full px-3 py-1 text-sm font-semibold text-gray-700 mr-2 mb-2">#{cat}</Link> 
+                    className="inline-block hover:bg-gray-700 hover:text-white transition bg-gray-200 rounded-full px-3 py-1 text-sm font-semibold text-gray-700 mr-2 mb-2">#{cat}</Link> 
                 ))}
             <div 
                 className="ql-editor post bg-content" 
