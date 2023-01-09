@@ -16,6 +16,7 @@ import ForgetPassword from "./Pages/NewUsers/ForgetPassword";
 import NewPassword from "./Pages/NewUsers/NewPassword";
 import UserConfirmed from "./Pages/NewUsers/UserConfirmed";
 import SavePost from "./Pages/SavePost/SavePost";
+import Search from "./Pages/Search/Search";
 
 import { useSelector, useDispatch } from 'react-redux';
 import { useEffect } from "react";
@@ -79,6 +80,7 @@ function App() {
 
           <Route path="/profile/:id" element={<Profile /> } />
           <Route path="/edit-profile/:id" element={user._id ? <EditProfile /> : <Login /> } />
+          <Route path="/search/:id" element={<Search /> } />
         </Routes>
       </BrowserRouter>
   )

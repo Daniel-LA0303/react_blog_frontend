@@ -23,7 +23,7 @@ const NewComment = ({user, idPost}) => {
   return (
     <div className="flex mx-auto items-center justify-center shadow-lg mb-4 rounded-lg">
         <form   
-            className="w-full  dark:bg-gray-800 text-white rounded-lg px-4 pt-2"   
+            className="w-full bg-mode-white rounded-lg px-4 pt-2"   
         >
             <div className="flex flex-wrap -mx-3 mb-2">
                 <h2 className="px-4 pt-3 pb-2  text-lg">Add a new comment</h2>

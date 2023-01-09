@@ -2,6 +2,15 @@
 @tailwind components;
 @tailwind utilities;
 
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
 :root {
   font-size: 16px;
   font-family: 'Open Sans';
@@ -160,6 +169,11 @@ h1{
 .like-heart{
   font-size: 10px;
 }
-.view-post{
-  background-color: #f2f2f2;
+.bg-mode-white{
+  background-color: #e9e5e5;
+}
+
+.img-card-post{
+  width: 50px;
+  height: 50px;
 }

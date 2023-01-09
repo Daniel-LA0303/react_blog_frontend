@@ -9,8 +9,8 @@ const ShowCommenst = ({comment}) => {
     const userP = useSelector(state => state.posts.user);
 
   return (
-    <div className="flex justify-center my-1 ">
-        <div className=" grid grid-cols-1 gap-4 p-4 border rounded-lg dark:bg-gray-800 shadow-lg w-full">
+    <div className="flex justify-center my-3 ">
+        <div className=" grid grid-cols-1 gap-4 p-4 border rounded-lg bg-mode-white shadow-lg w-full">
             <div className='flex justify-between'>
                 <div className=" flex gap-4">
                     <img src={PF+comment.userID.profilePicture} 
@@ -19,7 +19,7 @@ const ShowCommenst = ({comment}) => {
                         loading="lazy" />
                     <div className="flex flex-col w-full">
                         <div className="flex flex-row justify-between">
-                            <p className=" text-white text-xl whitespace-nowrap truncate overflow-hidden">{comment.userID.name}</p>
+                            <p className="  text-xl whitespace-nowrap truncate overflow-hidden">{comment.userID.name}</p>
                             <a className="text-gray-500 text-xl" href="#"><i className="fa-solid fa-trash"></i></a>
                         </div>
                         <p className="text-gray-400 text-sm">{new Date(comment.dateComment).toDateString()}</p>
@@ -45,7 +45,7 @@ const ShowCommenst = ({comment}) => {
             
             <p className="mt-4 text-gray-500">{comment.comment}</p>
             <div className='flex'>
-                <p className=' text-white mx-3'>0</p>
+                <p className='  mx-3'>0</p>
                 <button>
                     <FontAwesomeIcon 
                         icon={faHeart} 

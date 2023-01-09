@@ -114,7 +114,7 @@ const handleSave = async (id) => {
   return (
     <div>
       <Sidebar />
-      <div className='w-full sm:w-4/6 lg:w-3/6 mx-auto rounded-lg view-post'>
+      <div className='w-full sm:w-4/6 lg:w-3/6 mx-auto rounded-lg bg-mode-white'>
         <div className=''>
             <div className="overflow-hidden h-96">
                 {post.linkImage && (
@@ -152,7 +152,7 @@ const handleSave = async (id) => {
                 <button onClick={() => handleLike(params.id)} disabled={Object.keys(userP) != ''? false : true}>
                   <FontAwesomeIcon 
                     icon={faHeart} 
-                    className={`${like ? ' text-red-400' :  ' text-white'}   mx-auto  rounded`}
+                    className={`${like ? ' text-red-400' :  ' text-mode-white'}   mx-auto  rounded`}
                   />
                 </button>
               </div>
@@ -161,7 +161,7 @@ const handleSave = async (id) => {
                 <button onClick={() => handleSave(params.id)} disabled={Object.keys(userP) != ''? false : true}>
                   <FontAwesomeIcon 
                     icon={faBookmark} 
-                    className={`${save ? 'text-blue-500': 'text-white '}    mx-auto  rounded`}          
+                    className={`${save ? 'text-blue-500': 'text-mode-white '}    mx-auto  rounded`}          
                   />
                 </button>
               </div>
@@ -171,7 +171,7 @@ const handleSave = async (id) => {
                 <Link
                     key={cat}
                     to={`/category/${cat}`}
-                    className="inline-block hover:bg-gray-700 hover:text-white transition bg-gray-200 rounded-full px-3 py-1 text-sm font-semibold text-gray-700 mr-2 mb-2">#{cat}</Link> 
+                    className="inline-block hover:bg-gray-700 hover:text-mode-white transition bg-gray-200 rounded-full px-3 py-1 text-sm font-semibold text-gray-700 mr-2 mb-2">#{cat}</Link> 
                 ))}
             <div 
                 className="ql-editor post bg-content" 

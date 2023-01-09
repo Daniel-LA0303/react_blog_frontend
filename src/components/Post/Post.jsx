@@ -110,7 +110,7 @@ const Post = ({post}) => {
                         <div className='flex items-center'>
                             <Link to={`/profile/${user._id}`}>
                                 <img
-                                    className='border-4 w-10 h-10 rounded-full' 
+                                    className='border-4 img-card-post rounded-full' 
                                     src={PP+imageProfile}    
                                 />
                             </Link>
