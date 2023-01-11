@@ -42,28 +42,28 @@ a {
   border-radius: 50%;
   overflow: hidden;
   cursor: pointer;
-  background-color: #fff;
+  /* background-color: #fff; */
 }
 
 .dropdown-menu{
   position: absolute;
   top: 80px;
   right: 20px;
-  background-color: #fff;
+  /* background-color: #fff; */
   border-radius: var(--border-radius);
   padding: 10px 20px;
   width: 200px;
 }
 
 .dropdown-menu::before{
-  content: '';
+  /* content: '';
   position: absolute;
   top: -5px;
   right: 20px;
   height: 20px;
   width: 20px;
   background: var(--secondary-bg);
-  transform: rotate(45deg);
+  transform: rotate(45deg); */
 }
 
 .dropdown-menu.active{
@@ -141,6 +141,58 @@ h3 span{
   }
 }
 
+.switch {
+  display: inline-block;
+}
+
+.switch input {
+  display: none;
+}
+
+.switch label {
+  display: block;
+  width: 60px;
+  height: 30px;
+  padding: 3px;
+  border-radius: 15px;
+  border: 2px solid #7e8382;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.switch label::after {
+  content: "";
+  display: inherit;
+  width: 20px;
+  height: 20px;
+  border-radius: 12px;
+  background: #7e8382;
+  transition: 0.3s;
+}
+.bgt-black{
+  background-color: black;
+  transition: 0.3s all ease-in;
+}
+.bgt-white{
+  background-color: white;
+  transition: 0.3s all ease-in;
+}
+.bgt-dark{
+  background-color: rgb(39 39 42);
+  transition: 0.3s all ease-in;
+}
+.bgt-light{
+  background-color: #f2f2f2;
+  transition: 0.3s all ease-in;
+}
+.switch input:checked ~ label {
+  border-color: #25c89c;
+}
+
+.switch input:checked ~ label::after {
+  translate: 30px 0;
+  background: #25c89c;
+}
 
 iframe{
   width: 1200px;

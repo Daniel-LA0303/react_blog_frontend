@@ -24,8 +24,31 @@ import {
     DELETE_POST,
     DELETE_POST_SUCCESS,
     DELETE_POST_ERROR,
-    RESET_STATE_POST
+    RESET_STATE_POST,
+    CHANGE_THEME
 } from "../types";
+
+// export function resetStatePostAction(){
+//     return (dispatch) => {
+//         dispatch(resetStatePost());
+//     }       
+// }
+
+// const resetStatePost = () => ({
+//     type: RESET_STATE_POST
+// });
+
+export function changeThemeAction(){
+    // console.log('theme');
+    return (dispatch) => {
+        dispatch(changeTheme());
+        // console.log('theme');
+    }
+}
+
+const changeTheme = () => ({
+    type: CHANGE_THEME
+})
 
 //users
 export function getUserAction(token){

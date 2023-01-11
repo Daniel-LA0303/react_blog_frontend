@@ -37,6 +37,7 @@ function App() {
   const getAllPostsRedux = token => dispatch(getAllPostsAction(token));
 
   const user = useSelector(state => state.posts.user);
+  const theme = useSelector(state => state.posts.themeW);
 
   useEffect(() => {
     const token = localStorage.getItem('token');
@@ -48,6 +49,17 @@ function App() {
   // useEffect(() => {
   //   getAllPostsRedux();
   // }, [])
+  
+  useEffect(() => {
+    if(theme){
+      document.body.classList.add('bgt-white');
+      document.body.classList.remove('bgt-black');
+    }else{
+      document.body.classList.add('bgt-black');
+      document.body.classList.remove('bgt-white');
+    }
+    
+  }, [theme])
   
 
   return (

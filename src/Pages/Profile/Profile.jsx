@@ -24,6 +24,7 @@ const Profile = () => {
   const user = useSelector(state => state.posts.userView);
   const userP = useSelector(state => state.posts.user);
   const PF = useSelector(state => state.posts.PFLink);
+  const theme = useSelector(state => state.posts.themeW);
   // console.log(userP);
 
   const [userC, setUserC] = useState({});
@@ -35,14 +36,17 @@ const Profile = () => {
     fetch("http://localhost:4000/api/posts")
     .then((response) => response.json())
     .then((post) => {
-      const postUser = post.filter(p => p.user._id === user._id)
+      
       setTimeout(() => {
-        setPosts(postUser)
-      }, 1000);
+      const postUser = post.filter(p => p.user._id === user._id)
+      console.log(postUser);
+      
+      setPosts(postUser)
+      }, 2000)
       
       console.log(post);
     })   
-  }, []);
+  }, [params.id]);
 
   useEffect(() => {
     const getOneUserState = () => dispatch(getOneUserAction(params.id));
@@ -50,21 +54,21 @@ const Profile = () => {
 }, []);
 
 useEffect(() => {
-  const getOneUserAPI = async () => {
-    try {
-      const res = await axios.get(`http://localhost:4000/api/users/get-profile/${params.id}`);
-      console.log(res.data);
-      setUserC(res.data);
-      const userProfileFound = res.data.followersUsers.followers.includes(userP._id);
-      console.log(userProfileFound);
-      if(userProfileFound){
-        setIsFollow(true);
-      }
-    } catch (error) {
-        console.log(error);
+  fetch(`http://localhost:4000/api/users/get-profile/${params.id}`)
+  .then((response) => response.json())
+  .then((post) => {
+    
+    // console.log(post);
+    const userProfileFound = post.followersUsers.followers.includes(userP._id);
+    if(userProfileFound){
+      setIsFollow(true);
     }
-  }
-  getOneUserAPI();
+    setTimeout(() => {
+      setUserC(post);
+    }, 1000);
+    
+   
+  })   
 }, []);
 
 useEffect(() => {
@@ -80,21 +84,19 @@ useEffect(() => {
     setIsFollow(!isFollow);
     try {
       const res = await axios.post(`http://localhost:4000/api/users/user-follow/${params.id}`, userP);
-      // console.log(res.data);
-      // setUserC(res.data);
     } catch (error) {
-        // console.log(error);
+        console.log(error)
     }
   }
 
-  if(Object.keys(user) == ''  || Object.keys(userC) == '') return <Spinner />
+  if(Object.keys(userC) == '' || Object.keys(user) == '') return <Spinner />
   return (
     <div className=''>
       <Sidebar />
       <section className="pt-8 sm:pt-8 ">
         <div className="w-full  sm:w-5/6 lg:w-5/6 xl:w-5/6 mx-auto">
-          <div className=" flex flex-col min-w-0 break-words bg-gray-700 w-full mb-6 shadow-xl rounded-lg mt-16">
-            <div className="px-2 sm:px-6 text-white">
+          <div className={`${theme ? 'bgt-light ' : 'bgt-dark text-white'} flex flex-col min-w-0 break-word w-full mb-6 shadow-xl rounded-lg mt-16`}>
+            <div className="px-2 sm:px-6 ">
               <div className="flex flex-wrap justify-center">
                 <div className="w-full px-4 flex justify-center">
                   <img alt="..." src={PF+user.profilePicture} className=" shadow-xl image_profile  h-auto align-middle border-none  -m-16  lg:-ml-16 max-w-250-px" />  
@@ -143,7 +145,7 @@ useEffect(() => {
                 </div>
               </div>
               <div className=" ">
-                <h3 className="text-xl font-semibold leading-normal mb-2 text-white">
+                <h3 className={`${theme ? 'bgt-light ' : 'bgt-dark text-white'} text-xl font-semibold leading-normal mb-2`}>
                   {user.name}
                 </h3>
                 <div className="mb-2 text-left block sm:text-center sm:flex sm:justify-center">
@@ -176,19 +178,19 @@ useEffect(() => {
           </div>
         </div>
         <div className='w-full flex flex-col mx-auto'>
-            {/* {Object.keys(user) === '' ? (
+            {Object.keys(user) === '' ? (
               <>
                 <LoadingPosts />
               </>
             ): 
-            <> */}
+            <>
               {[...posts].reverse().map(post => (
                   <Post
                       key={post._id}
                       post={post}
                   />
               ))}  
-            {/* </>} */}
+            </>}
 
           </div>
         <footer className="relative  pt-8 pb-6 mt-8">

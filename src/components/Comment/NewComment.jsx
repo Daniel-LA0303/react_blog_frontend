@@ -1,9 +1,11 @@
 import axios from 'axios';
 import React, { useState } from 'react'
+import { useSelector } from 'react-redux';
 
 const NewComment = ({user, idPost}) => {
 
     const[comment, setComment] = useState('');
+    const theme = useSelector(state => state.posts.themeW);
 
     const newComment = async(id) => {
         const data={
@@ -21,9 +23,9 @@ const NewComment = ({user, idPost}) => {
     }
 
   return (
-    <div className="flex mx-auto items-center justify-center shadow-lg mb-4 rounded-lg">
+    <div className={` ${theme ? ' bgt-light text-black' : 'bgt-dark hover:bg-zinc-700 text-white'} flex mx-auto items-center justify-center shadow-lg mb-4 rounded-lg`}>
         <form   
-            className="w-full bg-mode-white rounded-lg px-4 pt-2"   
+            className="w-full rounded-lg px-4 pt-2"   
         >
             <div className="flex flex-wrap -mx-3 mb-2">
                 <h2 className="px-4 pt-3 pb-2  text-lg">Add a new comment</h2>

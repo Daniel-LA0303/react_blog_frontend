@@ -5,6 +5,7 @@ import { useSelector } from 'react-redux';
 const CategoryCard = ({category}) => {
   console.log(category);
   const userP = useSelector(state => state.posts.user);
+  const theme = useSelector(state => state.posts.themeW);
   const [isFollow, setIsFollow] = useState(false);
 
   useEffect(() => {
@@ -25,9 +26,9 @@ const handleClick = async() => {
   return (
     <div
       style={{borderBottom: `solid 10px ${category.color}`}} 
-      className="sm:w-5/6 lg:w-5/6 xl:w-5/6 mt-5 px-3 py-4   rounded-lg shadow-md hover:bg-gray-100 dark:bg-gray-800  dark:hover:bg-gray-700">
+      className={` ${theme ? ' bgt-light text-black' : 'bgt-dark hover:bg-zinc-700 text-white'} sm:w-5/6 lg:w-5/6 xl:w-5/6 mt-5 px-3 py-4 rounded-lg shadow-md`}>
         <div className='flex items-center justify-between'>
-            <h5 className="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">{category.name}</h5>
+            <h5 className="mb-2 text-2xl font-bold tracking-tight">{category.name}</h5>
             {Object.keys(userP) == '' ? null : (
               <button 
               type="button" 
@@ -36,7 +37,7 @@ const handleClick = async() => {
               >{isFollow ? 'Following' : 'Follow'}</button>  
             )}
         </div>
-        <p className="font-normal text-gray-700 dark:text-gray-400">{category.desc}</p>         
+        <p className="font-normal">{category.desc}</p>         
     </div>    
   )
 }

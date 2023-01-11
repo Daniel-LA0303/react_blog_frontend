@@ -23,11 +23,13 @@ import {
     DELETE_POST,
     DELETE_POST_SUCCESS,
     DELETE_POST_ERROR,
-    RESET_STATE_POST
+    RESET_STATE_POST,
+    CHANGE_THEME
 } from "../types";
 
 const initialState = {
     token: JSON.parse(localStorage.getItem("token")) || null,
+    themeW: true,
     user: {},
     userView:{},
     posts:[],
@@ -127,6 +129,11 @@ export default function(state = initialState, action){
                 post: {},
                 userView: {},
                 // user: {}
+            }
+        case CHANGE_THEME:
+            return{
+                ...state,
+                themeW: !state.themeW
             }
         default: return state;
     }

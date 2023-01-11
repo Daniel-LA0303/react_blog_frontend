@@ -35,3 +35,5 @@ export const DELETE_POST_ERROR = 'DELETE_POST_ERROR';
 
 //reset state
 export const RESET_STATE_POST = 'RESET_STATE_POST';
+
+export const CHANGE_THEME = 'CHANGE_THEME';

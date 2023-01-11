@@ -35,6 +35,7 @@ const NewPost = () => {
   const addNewFileRedux = (formData) => dispatch(addNewFilePostAction(formData));
   const loading = useSelector(state => state.posts.loading);
   const user = useSelector(state => state.posts.user);
+  const theme = useSelector(state => state.posts.themeW);
 
   useEffect(() => {
     getAllCategoriesRedux();
@@ -104,7 +105,7 @@ const NewPost = () => {
                 <Link to='/' class="text-center w-full sm:w-auto focus:outline-none text-white bg-red-700 hover:bg-red-800 focus:ring-4 focus:ring-red-300 font-medium rounded text-sm px-5 py-2.5 mb-2 dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-900">Cancel</Link>
             </div>
             <form 
-                className="bg-gray-700 shadow-md rounded px-8 pt-6 pb-8 mb-4"
+                className={`${theme ? ' bgt-light text-black' : 'bgt-dark text-white'}  bg-gray-700 shadow-md rounded px-8 pt-6 pb-8 mb-4`}
                 onSubmit={newPost}
             >
                 <div className="bg-white p-5 block sm:flex justify-between w-full rounded">
@@ -135,7 +136,7 @@ const NewPost = () => {
                                 value={desc}
                             />
                         </div>
-                        <div className="mb-4 w-full ">
+                        <div className="mb-4 w-full text-black">
                                 <label  className="block text-gray-700 text-sm font-bold mb-2">Select an option</label>
                                 <Select 
                                     onChange={handleChangeS}
@@ -167,7 +168,7 @@ const NewPost = () => {
                     </div>
                 </div>
 
-                <div className="mb-4 bg-white p-4">
+                <div className="mb-4 bg-white p-4 text-black">
                     <EditorToolBar toolbarId={'t1'}/>
                     <ReactQuill
                         theme="snow"
@@ -181,7 +182,7 @@ const NewPost = () => {
 
                 <div className="flex items-center justify-between">
                     <input 
-                        className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" 
+                        className="bg-blue-500 hover:cursor-pointer hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" 
                         value='Add Post'
                         type="submit" 
                     />

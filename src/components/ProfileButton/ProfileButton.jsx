@@ -1,14 +1,17 @@
 import React, {useEffect, useRef, useState} from 'react';
 import { Link } from 'react-router-dom';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faHeart, faBookmark, faUser, faGear, faTableColumns } from '@fortawesome/free-solid-svg-icons'
+import { faHeart, faBookmark, faUser, faGear, faTableColumns, faSun, faMoon } from '@fortawesome/free-solid-svg-icons'
+import { changeThemeAction } from '../../StateRedux/actions/postAction';
 
 const ProfileButton = () => {
 
+    const dispatch = useDispatch();
+    const changeThemeRedux = () => dispatch(changeThemeAction());
     const user = useSelector(state => state.posts.user);
-    
+    const theme = useSelector(state => state.posts.themeW);
     const PF = useSelector(state => state.posts.PFLink);
 
 
@@ -36,10 +39,15 @@ const ProfileButton = () => {
         document.location.reload(true);
         document.location='/'
       }
+
+    const handleChange = () => {
+      changeThemeRedux();
+      // console.log('xd');
+    }
     
 
   return (
-    <div>
+    <div className={`${theme ? 'bgt-light' : 'bgt-dark'}`}>
          <div className='menu-container' ref={menuRef}>
             <div className='menu-trigger mr-4 sm:mr-0' onClick={()=>{setOpen(!open)}}>
                 <img
@@ -48,7 +56,7 @@ const ProfileButton = () => {
                 />
             </div>
 
-            <div className={`dropdown-menu ${open? 'active' : 'inactive'}`} >
+            <div className={`dropdown-menu ${open? 'active' : 'inactive'} ${theme ? 'bgt-light ' : 'bgt-dark border text-white'}`} >
             <p className=' text-center text-xl sm:text-3xl'>{user.name}</p>
             <p className='text-center'>{user.email}</p>
             <ul>
@@ -69,6 +77,22 @@ const ProfileButton = () => {
                       <FontAwesomeIcon icon={faTableColumns} />
                     </div>
                     <Link to={`/dashboard/${user._id}`}>Dashboard</Link>
+                </li>
+                <li>
+                  <div>
+                    <h2 className='mb-3'>Theme</h2>
+                    <div className='flex justify-start items-center'>
+                      <span className="switch">
+                        <input id="switch-round" type="checkbox" onChange={handleChange}/>
+                        <label htmlFor="switch-round"></label>
+                      </span>
+                      {theme ? <FontAwesomeIcon className=' text-xl text-yellow-400 mx-1' icon={faSun} /> :
+                      <FontAwesomeIcon className=' text-xl text-gray-600 mx-1' icon={faMoon} />}
+                      
+                      
+                    </div>
+
+                  </div>
                 </li>
                 <li className = 'dropdownItem '>
                     <button 

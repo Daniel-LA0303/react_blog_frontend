@@ -11,6 +11,7 @@ import Spinner from '../Spinner/Spinner'
 import SocialMedia from '../SocialMedia/SocialMedia'
 import SearchBar from '../SearchBar/SearchBar'
 import ConfigButton from '../ConfigButton/ConfigButton'
+import Logo from '../Logo/Logo'
 
 const Sidebar = () => {
 
@@ -18,6 +19,7 @@ const Sidebar = () => {
 
   const user = useSelector(state => state.posts.user);
   const loading = useSelector(state => state.posts.loading);
+  const theme = useSelector(state => state.posts.themeW);
 
   return (
     <>
@@ -25,14 +27,18 @@ const Sidebar = () => {
       {loading ? (
         null
       ) : (
-        <div className='bg-white  py-1  top-0 left-0 right-0 shadow-2xl '>
-          <div className={`flex items-center ${user._id ? 'justify-between' : ' justify-end'}  h-14`}>
-            {user._id ? <>
+        <div className={`${theme ? 'bgt-light' : 'bgt-dark'}  py-1  top-0 left-0 right-0 shadow-2xl `}>
+          <div className={`flex items-center justify-between  h-14`}>
+            <div className='flex items-center justify-start'>
+            {user._id ? 
+            <>
               <button className='ml-4' onClick={() => setOpen(true)}>
-                <FontAwesomeIcon icon={faBars} className=' text-3xl' />
+                <FontAwesomeIcon icon={faBars} className={` text-3xl ${theme ? 'text-black' : 'text-white'}`} />
               </button>
             </> : null}
 
+            <Logo />
+            </div>
 
             <div className=' mx-1 sm:ml-5 flex justify-end items-center'>
               <SearchBar />
@@ -59,25 +65,25 @@ const Sidebar = () => {
               )}
             </div>
           </div>
-          <div className={`${!open && "hidden"} bg-gray-600/50 min-h-screen w-full fixed top-0 left-0 right-0 backdrop-blur-sm`} onClick={() => setOpen(false)}></div>
+          <div className={`${!open && "hidden"}  min-h-screen w-full fixed top-0 left-0 right-0 backdrop-blur-sm`} onClick={() => setOpen(false)}></div>
 
-          <div className={`${open ? " w-80" : "w-0"} bg-white min-h-screen fixed top-0 left-0 transition-all duration-300`}>
+          <div className={`${open ? " w-80" : "w-0"} ${theme ? ' bgt-light text-black' : 'bgt-dark text-white'} min-h-screen fixed top-0 left-0 transition-all duration-300`}>
             <div className={`${!open && "hidden"} pt-3`}>
               <button className='ml-4 mb-14' onClick={() => setOpen(false)}>
                 <FontAwesomeIcon icon={faX} className=' text-xl' />
               </button>
               <div className=''>
-                <div className='text-center  text-xl hover:bg-gray-700 hover:text-white cursor-pointer py-3 mb-2 transition'>
+                <div className='text-center  text-xl hover:bg-zinc-700 hover:text-white cursor-pointer py-3 mb-2 transition'>
                   <FontAwesomeIcon icon={faHome} className='mx-2'/>
                   <Link to={'/'}>Home</Link>
                 </div>
                 {/* {user._id ?  */}
                   <>
-                    <div className='text-center  text-xl hover:bg-gray-700 hover:text-white cursor-pointer py-3 mb-2 transition'>
+                    <div className='text-center  text-xl hover:bg-zinc-700 hover:text-white cursor-pointer py-3 mb-2 transition'>
                       <FontAwesomeIcon icon={faCirclePlus} className='mx-2'/>
                       <Link to={'/new-post'}>New Post</Link>
                     </div>
-                    <div className='text-center  text-xl hover:bg-gray-700 hover:text-white cursor-pointer py-3 mb-2 transition'>
+                    <div className='text-center  text-xl hover:bg-zinc-700 hover:text-white cursor-pointer py-3 mb-2 transition'>
                       <FontAwesomeIcon icon={faBookmark} className='mx-2'/>
                       <Link to={`/save-posts/${user._id}`}>Saved</Link>
                     </div>
@@ -86,11 +92,11 @@ const Sidebar = () => {
                 {/* } */}
 
 
-                <div className='text-center  text-xl hover:bg-gray-700 hover:text-white cursor-pointer py-3 mb-2 transition'>
+                <div className='text-center  text-xl hover:bg-zinc-700 hover:text-white cursor-pointer py-3 mb-2 transition'>
                   <FontAwesomeIcon icon={faCode} className='mx-2'/>
                   <Link to={'/categories'}>Categories</Link>
                 </div>
-                <div className='text-center  text-xl hover:bg-gray-700 hover:text-white cursor-pointer py-3 mb-2 transition'>
+                <div className='text-center  text-xl hover:bg-zinc-700 hover:text-white cursor-pointer py-3 mb-2 transition'>
                   <FontAwesomeIcon icon={faPeopleGroup} className='mx-2'/>
                   <a>About</a>
                 </div>

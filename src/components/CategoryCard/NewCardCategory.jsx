@@ -6,6 +6,8 @@ import { Link } from 'react-router-dom';
 
 const NewCardCategory = ({category, userP}) => {
 
+  const theme = useSelector(state => state.posts.themeW);
+
   const [isFollow, setIsFollow] = useState(false);
 
   useEffect(() => {
@@ -27,9 +29,9 @@ const NewCardCategory = ({category, userP}) => {
   return (
     <div 
         style={{borderBottom: `solid 10px ${category.color}`}}
-        className=" w-full mx-auto sm:mx-10 lg:mx-10 xl:mx-10 sm:w-3/6 lg:w-4/12 xl:w-3/12 mt-10 px-3 py-4 rounded-lg shadow-md hover:bg-gray-100 dark:bg-gray-800  dark:hover:bg-gray-700">
+        className={` ${theme ? ' bgt-light text-black' : 'bgt-dark hover:bg-zinc-700 text-white'} w-full mx-auto sm:mx-10 lg:mx-10 xl:mx-10 sm:w-3/6 lg:w-4/12 xl:w-3/12 mt-10 px-3 py-4 rounded-lg shadow-md `}>
         <div className='flex items-center justify-between'>
-            <Link to={`/category/${category.name}`} className="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">{category.name}</Link>
+            <Link to={`/category/${category.name}`} className="mb-2 text-2xl font-bold tracking-tight ">{category.name}</Link>
             {Object.keys(userP) == '' ? null : (
               <button 
               type="button" 
@@ -38,7 +40,7 @@ const NewCardCategory = ({category, userP}) => {
             >{isFollow ? 'Following' : 'Follow'}</button> 
             )}
         </div>
-        <p className="font-normal text-gray-700 dark:text-gray-400">{category.desc}</p>         
+        <p className="font-normal ">{category.desc}</p>         
     </div>   
   )
 }

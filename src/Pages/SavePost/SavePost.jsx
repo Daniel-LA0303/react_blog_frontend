@@ -4,12 +4,14 @@ import Post from '../../components/Post/Post'
 import { useParams } from 'react-router-dom'
 import axios from 'axios'
 import LoadingPosts from '../../components/Spinner/LoadingPosts'
+import { useSelector } from 'react-redux'
 
 const SavePost = () => {
 
   const params = useParams();
 
   const[posts, setPosts] = useState([]);
+  const theme = useSelector(state => state.posts.themeW);
 
   useEffect(() => {
     const getOneUser = async() => {
@@ -30,7 +32,7 @@ const SavePost = () => {
   return (
     <div>
         <Sidebar />
-        <p className=' mt-10 text-center text-4xl'>Posts Saved</p>
+        <p className={`${theme ? 'text-black' : ' text-white'}  mt-10 text-center text-4xl`}>Posts Saved</p>
         <div className=' w-full  flex flex-col mt-10'>
           {posts.length == 0 ? (
             <>

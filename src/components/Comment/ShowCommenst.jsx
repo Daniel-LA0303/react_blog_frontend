@@ -7,10 +7,11 @@ import { Link } from 'react-router-dom';
 const ShowCommenst = ({comment}) => {
     const PF = useSelector(state => state.posts.PFLink);
     const userP = useSelector(state => state.posts.user);
+    const theme = useSelector(state => state.posts.themeW);
 
   return (
-    <div className="flex justify-center my-3 ">
-        <div className=" grid grid-cols-1 gap-4 p-4 border rounded-lg bg-mode-white shadow-lg w-full">
+    <div className={` ${theme ? ' bgt-light text-black' : 'bgt-dark hover:bg-zinc-700 text-white'} flex justify-center my-3 `}>
+        <div className=" grid grid-cols-1 gap-4 p-4 border rounded-lg shadow-lg w-full">
             <div className='flex justify-between'>
                 <div className=" flex gap-4">
                     <img src={PF+comment.userID.profilePicture} 

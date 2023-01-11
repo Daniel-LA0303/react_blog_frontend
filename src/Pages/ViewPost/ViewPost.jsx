@@ -30,6 +30,7 @@ const ViewPost = () => {
   //redux
   const userP = useSelector(state => state.posts.user);
   const PF = useSelector(state => state.posts.PFPost);
+  const theme = useSelector(state => state.posts.themeW);
   const deletePostRedux = (id) => dispatch(deletePostAction(id));
   const getUserRedux = token => dispatch(getUserAction(token));
 
@@ -114,7 +115,7 @@ const handleSave = async (id) => {
   return (
     <div>
       <Sidebar />
-      <div className='w-full sm:w-4/6 lg:w-3/6 mx-auto rounded-lg bg-mode-white'>
+      <div className={`${theme ? ' bgt-light text-black' : 'bgt-dark text-white'} w-full sm:w-4/6 lg:w-3/6 mx-auto rounded-lg `}>
         <div className=''>
             <div className="overflow-hidden h-96">
                 {post.linkImage && (
@@ -148,7 +149,7 @@ const handleSave = async (id) => {
             <p className="mb-3 font-normal ">Posted on {new Date(post.createdAt).toDateString()}</p>
             <div className='flex justify-between'>
               <div className='flex'>
-                <p className=' text-gray-700 mx-3'>{numberLike}</p>
+                <p className='mx-3'>{numberLike}</p>
                 <button onClick={() => handleLike(params.id)} disabled={Object.keys(userP) != ''? false : true}>
                   <FontAwesomeIcon 
                     icon={faHeart} 
@@ -157,7 +158,7 @@ const handleSave = async (id) => {
                 </button>
               </div>
               <div className='flex'>
-                <p className=' text-gray-700 mx-3'>{numberSave}</p>
+                <p className='  mx-3'>{numberSave}</p>
                 <button onClick={() => handleSave(params.id)} disabled={Object.keys(userP) != ''? false : true}>
                   <FontAwesomeIcon 
                     icon={faBookmark} 
