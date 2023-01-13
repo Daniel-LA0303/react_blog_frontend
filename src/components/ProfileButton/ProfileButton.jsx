@@ -56,7 +56,7 @@ const ProfileButton = () => {
                 />
             </div>
 
-            <div className={`dropdown-menu ${open? 'active' : 'inactive'} ${theme ? 'bgt-light ' : 'bgt-dark border text-white'}`} >
+            <div className={`dropdown-menu ${open? 'active' : 'inactive'} ${theme ? 'bgt-light border-4' : 'bgt-dark border-4 text-white'}`} >
             <p className=' text-center text-xl sm:text-3xl'>{user.name}</p>
             <p className='text-center'>{user.email}</p>
             <ul>

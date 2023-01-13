@@ -110,7 +110,7 @@ const PostSearch = ({post}) => {
             {userP._id ? (
                 <div class="  flex items-center justify-between mt-5">
                     <div className='flex'>
-                        <p className=' text-white mx-3'>{numberLike}</p>
+                        <p className='mx-3'>{numberLike}</p>
                         <button onClick={() => handleLike(_id)}>
                             <FontAwesomeIcon 
                                 icon={faHeart} 

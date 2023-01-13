@@ -16,12 +16,27 @@ const Home = () => {
   const dispatch = useDispatch();
 
   const[posts, setPosts] = useState([]);
+  const[cats, setCats] = useState([]);
+
 
   useEffect(() => {
     const token = localStorage.getItem('token');
     if(token){
       dispatch(getUserAction(JSON.parse(token)))
     }
+  }, []);
+
+  useEffect(() => {
+    fetch("http://localhost:4000/api/categories")
+    .then((response) => response.json())
+    .then((cats) => {
+      const result = cats.filter(cat => cat.follows.countFollows > 0);
+      setTimeout(() => {
+        setCats(result)
+      }, 1000);
+      
+      console.log(result);
+    })   
   }, []);
 
   useEffect(() => {
@@ -44,6 +59,7 @@ const Home = () => {
   return (
     <div className='  '>
         <Sidebar />
+
         <div className='flex flex-row mt-10'>
           <div className=' w-full  sm:w-8/12 lg:w-9/12 flex flex-col'>
             {posts.length === 0 ? (
@@ -62,7 +78,12 @@ const Home = () => {
 
           </div>
           <aside className=' hidden mt-5 sm:block sm:visible w-0 sm:w-4/12 lg:w-3/12'>
-            <Aside />
+            {cats.map(cat => (
+              <Aside 
+                cats={cat}
+              />
+            ))}
+
           </aside>
         </div>
 

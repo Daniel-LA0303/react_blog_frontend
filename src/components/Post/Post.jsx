@@ -115,7 +115,7 @@ const Post = ({post}) => {
                                     src={PP+imageProfile}    
                                 />
                             </Link>
-                            <p className='mx-3 text-white'>{user.name}</p>
+                            <p className='mx-3'>{user.name}</p>
                         </div>
                     </div>
                     <Link to={`/view-post/${_id}`} className=" w-32 h-auto inline-flex items-center px-3 py-2 text-sm font-medium text-center text-white bg-blue-700 rounded-lg hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
@@ -126,7 +126,7 @@ const Post = ({post}) => {
                 {userP._id ? (
                     <div className="flex items-center justify-between mt-5">
                         <div className='flex'>
-                            <p className=' text-white mx-3'>{numberLike}</p>
+                            <p className='mx-3'>{numberLike}</p>
                             <button onClick={() => handleLike(_id)}>
                                 <FontAwesomeIcon 
                                     icon={faHeart} 
