@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { useNavigate, useParams } from 'react-router-dom';
+import { Link, useNavigate, useParams } from 'react-router-dom';
 import Sidebar from '../../components/Sidebar/Sidebar'
 
 import { useDispatch, useSelector } from 'react-redux';
@@ -14,6 +14,7 @@ import Select from 'react-select'
 import axios from 'axios';
 
 import Spinner from '../../components/Spinner/Spinner';
+import Swal from 'sweetalert2';
 
 
 const EditPost = () => {
@@ -31,6 +32,7 @@ const EditPost = () => {
   const addNewFileRedux = (formData) => dispatch(addNewFilePostAction(formData));
   const getAllCategoriesRedux = () => dispatch(getAllCategoriesAction());
   const categories = useSelector(state => state.posts.categories);
+  const theme = useSelector(state => state.posts.themeW);
 
   //local state
   const[title, setTitle] = useState(''); //title
@@ -110,27 +112,35 @@ const EditPost = () => {
         addNewFileRedux(formData);
     }
     editPostRedux(params.id, postUpdate);
+    Swal.fire(
+        'Post saved',
+        // 'You clicked the button!',
+        'success'
+      )
     route('/');
 }
 
   if(Object.keys(post) === '') return <Spinner />
   return (
     <div>
-      <Sidebar />
+      {/* <Sidebar /> */}
         <div className="App">
-            <div className=" w-4/6  mx-auto my-20">
+            <div className=" w-5/6  mx-auto my-10">
+            <div className='flex justify-start'>
+                <Link to='/' class="text-center w-full sm:w-auto focus:outline-none text-white bg-red-700 hover:bg-red-800 focus:ring-4 focus:ring-red-300 font-medium rounded text-sm px-5 py-2.5 mb-2 dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-900">Cancel</Link>
+            </div>
                 <form 
-                    className="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4"
+                    className={`${theme ? ' bgt-light text-black' : 'bgt-dark text-white'}  bg-gray-700 shadow-md rounded px-8 pt-6 pb-8 mb-4`}
                     onSubmit={newPost}
                 >
-                    <div className=" flex justify-between">
+                    <div className="bg-white p-5 block sm:flex justify-between w-full rounded">
                         <div className="w-full sm:w-3/6">
                             <div className="mb-2 w-full ">
-                                <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="username">
+                                <label className="block text-sm font-bold mb-2" htmlFor="username">
                                     Title
                                 </label>
                                 <input 
-                                    className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" 
+                                    className="shadow appearance-none border rounded w-full py-2 px-3 leading-tight focus:outline-none focus:shadow-outline text-black" 
                                     id="username" 
                                     type="text" 
                                     placeholder="Title" 
@@ -139,11 +149,11 @@ const EditPost = () => {
                                 />
                             </div>
                             <div className="mb-2 w-full ">
-                                    <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="username">
+                                    <label className="block text-sm font-bold mb-2" htmlFor="username">
                                         Description
                                     </label>
                                     <input 
-                                        className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" 
+                                        className="shadow appearance-none border rounded w-full py-2 px-3 leading-tight focus:outline-none focus:shadow-outline text-black" 
                                         id="username" 
                                         type="text" 
                                         placeholder="Description" 
@@ -152,8 +162,9 @@ const EditPost = () => {
                                     />
                             </div>
                             <div className="mb-4 w-full ">
-                                <label htmlFor="countries" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Select an option</label>
+                                <label htmlFor="countries" className="block mb-2 text-sm font-medium ">Select an option</label>
                                 <Select 
+                                    className='text-black'
                                     onChange={handleChangeS}
                                     options={categories}
                                     isMulti 
@@ -163,7 +174,7 @@ const EditPost = () => {
                         </div>
 
                         <div className="mb-4 w-full sm:w-2/6">
-                            <label className="block text-gray-700 text-sm font-bold mb-2" >
+                            <label className="block text-sm font-bold mb-2" >
                                 Image
                             </label>
                             <input 
@@ -194,7 +205,7 @@ const EditPost = () => {
                         </div>         
                     </div>
 
-                    <div className="mb-4">
+                    <div className="mb-4 bg-white p-4 text-black">
                         <EditorToolBar toolbarId={'t1'}/>
                         <ReactQuill
                             theme="snow"

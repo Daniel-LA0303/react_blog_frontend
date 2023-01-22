@@ -9,6 +9,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { addNewFileUserAction } from '../../StateRedux/actions/postAction';
 
 import Spinner from '../../components/Spinner/Spinner';
+import Swal from 'sweetalert2';
 
 const EditProfile = () => {
     const dispatch = useDispatch();
@@ -82,6 +83,11 @@ const EditProfile = () => {
         try {
             const res = await axios.post(`http://localhost:4000/api/users/new-info/${params.id}`, data);
             route('/');
+            Swal.fire(
+                'User saved',
+                // 'You clicked the button!',
+                'success'
+            )
         } catch (error) {
             console.log(error);
         }

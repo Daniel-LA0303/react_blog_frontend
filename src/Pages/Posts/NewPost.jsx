@@ -14,10 +14,13 @@ import { useDispatch, useSelector } from 'react-redux';
 import {addNewPostAction, addNewFilePostAction, getAllCategoriesAction } from '../../StateRedux/actions/postAction';
 
 import Spinner from '../../components/Spinner/Spinner';
+import Swal from 'sweetalert2';
 
 const NewPost = () => {
 
   const route = useNavigate();
+
+//   const notify = () => toast('Here is your toast.');
 
   //local state
   const[title, setTitle] = useState(''); //title
@@ -86,6 +89,11 @@ const NewPost = () => {
         addNewFileRedux(formData);
     }
     addPostRedux(newPost);
+    Swal.fire(
+        'Post Created!',
+        // 'You clicked the button!',
+        'success'
+      )
     setTimeout(() => {
         route('/');
     }, 500);

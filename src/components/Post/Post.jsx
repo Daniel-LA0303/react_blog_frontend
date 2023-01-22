@@ -5,9 +5,26 @@ import { useDispatch, useSelector } from 'react-redux'
 import Spinner from '../Spinner/Spinner'
 import axios from 'axios'
 
-import { faHeart, faBookmark } from '@fortawesome/free-solid-svg-icons'
+import { faHeart, faBookmark, faComment } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { getAllPostsAction, getUserAction } from '../../StateRedux/actions/postAction'
+import { toast, Toaster } from 'react-hot-toast'
+
+const notify = () => toast(
+    'Post saved.',
+    {
+        duration: 1500,
+        icon: '💼'
+    }
+  );
+  
+  const notify2 = () => toast(
+    'Quit post.',
+    {
+        duration: 1500,
+        icon: '👋'
+    }
+  );
 
 const Post = ({post}) => {
 
@@ -15,7 +32,7 @@ const Post = ({post}) => {
     const getUserRedux = token => dispatch(getUserAction(token));
     const getAllPostsRedux = () => dispatch(getAllPostsAction());
 
-    const {title, linkImage, categoriesPost, _id, desc, createdAt, user, likePost} = post;
+    const {title, linkImage, categoriesPost, _id, desc, createdAt, user, likePost, commenstOnPost} = post;
 
     const[like, setLike] = useState(false);
     const[numberLike, setNumberLike] =  useState(0);
@@ -78,6 +95,13 @@ const Post = ({post}) => {
 
     const handleSave = async (id) => {
         setSave(!save);
+        if(save){
+            // setNumberSave(numberSave-1);
+            notify2()
+        }else{
+            // setNumberSave(numberSave+1)
+            notify()
+        }
         try {
             await axios.post(`http://localhost:4000/api/posts/save-post/${id}`, userP);
         } catch (error) {
@@ -96,7 +120,10 @@ const Post = ({post}) => {
                     <h5 className="mb-2 text-2xl w-4/6  font-bold tracking-tight ">{title}</h5>
                     <span className="mb-3 font-normal w-auto text-gray-700 dark:text-gray-400">Posted on {new Date(createdAt).toDateString()}</span>
                 </div>
-
+                <Toaster
+                    position="bottom-right"
+                    reverseOrder={false}
+                />
                 <p className="mb-3 font-normal text-gray-700 dark:text-gray-400">{desc}</p>
                 <div className="mb-3">
                     {categoriesPost.map(cat => (
@@ -126,15 +153,25 @@ const Post = ({post}) => {
                 {userP._id ? (
                     <div className="flex items-center justify-between mt-5">
                         <div className='flex'>
-                            <p className='mx-3'>{numberLike}</p>
-                            <button onClick={() => handleLike(_id)}>
+                            <div className='flex'>
+                                <p className='mx-3'>{numberLike}</p>
+                                <button onClick={() => handleLike(_id)}>
+                                    <FontAwesomeIcon 
+                                        icon={faHeart} 
+                                        className={`${like ? ' text-red-400' :  ' text-white'}   mx-auto  rounded`}
+                                        
+                                    />
+                                </button>
+                            </div>
+                            <div className='flex items-center'>
+                                <p className='mx-3'>{commenstOnPost.comments.length}</p>
                                 <FontAwesomeIcon 
-                                    icon={faHeart} 
-                                    className={`${like ? ' text-red-400' :  ' text-white'}   mx-auto  rounded`}
-                                    
+                                    icon={faComment} 
+                                    className={`text-white  mx-auto  rounded`}                    
                                 />
-                            </button>
+                            </div>
                         </div>
+
                         <button onClick={() => handleSave(_id)}>
                             <FontAwesomeIcon 
                                 icon={faBookmark} 

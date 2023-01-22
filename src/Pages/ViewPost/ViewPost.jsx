@@ -4,7 +4,7 @@ import Sidebar from '../../components/Sidebar/Sidebar'
 import { Link, useParams, useNavigate } from 'react-router-dom';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faHeart, faBookmark, faTrash, faPen, faL } from '@fortawesome/free-solid-svg-icons'
+import { faHeart, faBookmark, faTrash, faPen, faL, faComment } from '@fortawesome/free-solid-svg-icons'
 
 import { useDispatch, useSelector } from 'react-redux';
 import { deletePostAction, getOnePostAction, getUserAction } from '../../StateRedux/actions/postAction';
@@ -13,6 +13,26 @@ import Spinner from '../../components/Spinner/Spinner';
 import axios from 'axios';
 import NewComment from '../../components/Comment/NewComment';
 import ShowCommenst from '../../components/Comment/ShowCommenst';
+import Swal from 'sweetalert2';
+import { toast, Toaster } from 'react-hot-toast';
+
+
+
+const notify = () => toast(
+  'Post saved.',
+  {
+      duration: 1500,
+      icon: '💼'
+  }
+);
+
+const notify2 = () => toast(
+  'Quit post.',
+  {
+      duration: 1500,
+      icon: '👋'
+  }
+);
 
 const ViewPost = () => {
 
@@ -73,10 +93,26 @@ const ViewPost = () => {
   }, [userP]);
 
   const deletePostComponent = async (id) => {
-      deletePostRedux(id);
-      setTimeout(() => {
-        route('/');
-    }, 1000);
+    Swal.fire({
+      title: 'Are you sure you want to remove this Post?',
+      text: "Deleted post cannot be recovered",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Yes, Delete',
+      cancelButtonText: 'No, Cancel'
+    }).then((result) => {
+      if (result.value) {
+          //consulta a la api
+          deletePostRedux(id);
+          route('/');
+      }
+    })
+      
+      // setTimeout(() => {
+        
+    // }, 1000);
   }
 
   const handleLike = async (id) => {
@@ -100,8 +136,10 @@ const handleSave = async (id) => {
     setSave(!save);
     if(save){
         setNumberSave(numberSave-1);
+        notify2()
     }else{
         setNumberSave(numberSave+1)
+        notify()
     }
     try {
         await axios.post(`http://localhost:4000/api/posts/save-post/${id}`, userP);
@@ -115,6 +153,10 @@ const handleSave = async (id) => {
   return (
     <div>
       <Sidebar />
+      <Toaster
+        position="bottom-right"
+        reverseOrder={false}
+      />
       <div className={`${theme ? ' bgt-light text-black' : 'bgt-dark text-white'} w-full sm:w-4/6 lg:w-3/6 mx-auto rounded-lg `}>
         <div className=''>
             <div className="overflow-hidden h-96">
@@ -149,13 +191,24 @@ const handleSave = async (id) => {
             <p className="mb-3 font-normal ">Posted on {new Date(post.createdAt).toDateString()}</p>
             <div className='flex justify-between'>
               <div className='flex'>
-                <p className='mx-3'>{numberLike}</p>
-                <button onClick={() => handleLike(params.id)} disabled={Object.keys(userP) != ''? false : true}>
-                  <FontAwesomeIcon 
-                    icon={faHeart} 
-                    className={`${like ? ' text-red-400' :  ' text-mode-white'}   mx-auto  rounded`}
-                  />
-                </button>
+                <div className='flex'>
+                  <p className='mx-3'>{numberLike}</p>
+                  <button onClick={() => handleLike(params.id)} disabled={Object.keys(userP) != ''? false : true}>
+                    <FontAwesomeIcon 
+                      icon={faHeart} 
+                      className={`${like ? ' text-red-400' :  ' text-mode-white'}   mx-auto  rounded`}
+                    />
+                  </button>
+                </div>
+                <div className='flex'>
+                  <div className='flex items-center'>
+                    <p className='mx-3'>{post.commenstOnPost.comments.length}</p>
+                    <FontAwesomeIcon 
+                      icon={faComment} 
+                      className={`text-white  mx-auto  rounded`}                    
+                    />
+                  </div>
+                </div>
               </div>
               <div className='flex'>
                 <p className='  mx-3'>{numberSave}</p>

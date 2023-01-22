@@ -4,9 +4,19 @@ import axios from 'axios';
 import React from 'react'
 import { useEffect } from 'react';
 import { useState } from 'react';
+import { toast, Toaster } from 'react-hot-toast';
 import { useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
+import Swal from 'sweetalert2';
 import EditComment from './EditComment';
+
+const notify = () => toast(
+    'Comment saved.',
+    {
+        duration: 1500,
+        icon: '👌'
+    }
+);
 
 const ShowCommenst = ({comment, idPost}) => {
     const PF = useSelector(state => state.posts.PFLink);
@@ -22,31 +32,59 @@ const ShowCommenst = ({comment, idPost}) => {
     
 
     const handleDeleteComment = async (id) => {
-        console.log(id);
-        try {
+
+        // console.log(id);
+        
+        Swal.fire({
+            title: 'Are you sure you want to remove this Comment?',
+            text: "Deleted comment cannot be recovered",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Yes, Delete',
+            cancelButtonText: 'No, Cancel'
+          }).then(async(result) => {
+            if (result.value) {
+                //consulta a la api
+                try {
             
-            const res =await axios.post(`http://localhost:4000/api/posts/delete-post-comment/${idPost}`, {id})
-            console.log(res);
-        } catch (error) {
-            console.log(error);
-        }
+                    const res =await axios.post(`http://localhost:4000/api/posts/delete-post-comment/${idPost}`, {id})
+                    console.log(res);
+                } catch (error) {
+                    console.log(error);
+                }
+                route('/');
+            }
+          })
+        
     }
 
     const handleEditComment = async (id) => {
 
+        notify();
         setEditActive(!editActive);
         try {
             
-            const res =await axios.post(`http://localhost:4000/api/posts/edit-post-comment/${idPost}`, {
+            const res = await axios.post(`http://localhost:4000/api/posts/edit-post-comment/${idPost}`, {
                 userID: comment.userID,
                 comment:newComment,
                 dateComment: comment.dateComment,
                 _id: comment._id
+            }).then(res =>{
+
             })
-            console.log(res);
+            
+            // console.log(res);
         } catch (error) {
             console.log(error);
         }
+        
+        // Swal.fire(
+        //     'Comment saved',
+        //     'success'
+        // )
+        // window.location.reload(`/`);
     }
 
 
@@ -54,6 +92,10 @@ const ShowCommenst = ({comment, idPost}) => {
     <div className={` ${theme ? ' bgt-light text-black' : 'bgt-dark hover:bg-zinc-700 text-white'} flex justify-center my-3 `}>
         <div className=" grid grid-cols-1 gap-4 p-4 border rounded-lg shadow-lg w-full">
             <div className='flex justify-between'>
+                <Toaster 
+                      position="bottom-right"
+                      reverseOrder={false}
+                />
                 <div className=" flex gap-4">
                     <img src={PF+comment.userID.profilePicture} 
                         className=" rounded-lg -top-8 -mb-4 bg-white border h-20 w-20" 

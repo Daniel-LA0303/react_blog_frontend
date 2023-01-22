@@ -1,4 +1,5 @@
 import axios from "axios"
+import Swal from "sweetalert2";
 import { 
     GET_USER,
     GET_USER_SUCCESS,
@@ -268,7 +269,13 @@ export function deletePostAction(id){
     return async(dispatch) => {
         dispatch(deletePost());
         try {
-            const res = await axios.delete(`http://localhost:4000/api/posts/${id}`);
+            const res = await axios.delete(`http://localhost:4000/api/posts/${id}`).then(res =>{
+                Swal.fire(
+                    'The product has been removed',
+                    // res.data.mensaje,
+                    'success'
+                )
+            });
             dispatch(deletePostSuccess(id));
         } catch (error) {
             console.log(error);
