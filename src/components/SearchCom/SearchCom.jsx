@@ -11,6 +11,7 @@ import './SearchCom.css'
 
 const SearchCom = ({cats, posts, users}) => {
   const userP = useSelector(state => state.posts.user);
+  const theme = useSelector(state => state.posts.themeW);
   const [toggleState, setToggleState] = useState(1);
 
   const toggleTab = (index) => {
@@ -19,9 +20,9 @@ const SearchCom = ({cats, posts, users}) => {
   return (
     <>
       <div className="container-search my-10 mx-auto w-5/6">
-        <div className="bloc-tabs">
+        <div className="bloc-tabs bgt-dark text-gray-500">
           <button
-            className={toggleState === 1 ? "tabs active-tabs" : "tabs"}
+            className={`${toggleState === 1 ? "tabs active-tabs" : "tabs"} `}
             onClick={() => toggleTab(1)}
           >
             <FontAwesomeIcon icon={faFile} className='text-sm w-5 h-5' /> {''}

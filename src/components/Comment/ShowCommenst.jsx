@@ -1,13 +1,54 @@
 import { faHeart, faPen, faTrash } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import axios from 'axios';
 import React from 'react'
+import { useEffect } from 'react';
+import { useState } from 'react';
 import { useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
+import EditComment from './EditComment';
 
-const ShowCommenst = ({comment}) => {
+const ShowCommenst = ({comment, idPost}) => {
     const PF = useSelector(state => state.posts.PFLink);
     const userP = useSelector(state => state.posts.user);
     const theme = useSelector(state => state.posts.themeW);
+
+    const[editActive, setEditActive] = useState(false);
+    const[newComment, setNewComment] = useState('');
+    
+    useEffect(() => {
+        setNewComment(comment.comment);
+    }, [])
+    
+
+    const handleDeleteComment = async (id) => {
+        console.log(id);
+        try {
+            
+            const res =await axios.post(`http://localhost:4000/api/posts/delete-post-comment/${idPost}`, {id})
+            console.log(res);
+        } catch (error) {
+            console.log(error);
+        }
+    }
+
+    const handleEditComment = async (id) => {
+
+        setEditActive(!editActive);
+        try {
+            
+            const res =await axios.post(`http://localhost:4000/api/posts/edit-post-comment/${idPost}`, {
+                userID: comment.userID,
+                comment:newComment,
+                dateComment: comment.dateComment,
+                _id: comment._id
+            })
+            console.log(res);
+        } catch (error) {
+            console.log(error);
+        }
+    }
+
 
   return (
     <div className={` ${theme ? ' bgt-light text-black' : 'bgt-dark hover:bg-zinc-700 text-white'} flex justify-center my-3 `}>
@@ -20,8 +61,8 @@ const ShowCommenst = ({comment}) => {
                         loading="lazy" />
                     <div className="flex flex-col w-full">
                         <div className="flex flex-row justify-between">
-                            <p className="  text-xl whitespace-nowrap truncate overflow-hidden">{comment.userID.name}</p>
-                            <a className="text-gray-500 text-xl" href="#"><i className="fa-solid fa-trash"></i></a>
+                            <Link to={`/profile/${comment.userID._id}`} className="  text-xl whitespace-nowrap truncate overflow-hidden">{comment.userID.name}</Link>
+                            
                         </div>
                         <p className="text-gray-400 text-sm">{new Date(comment.dateComment).toDateString()}</p>
                     </div>
@@ -32,28 +73,34 @@ const ShowCommenst = ({comment}) => {
                             <FontAwesomeIcon 
                                 className=' text-base text-red-500 p-2 cursor-pointer'
                                 icon={faTrash} 
+                                onClick={() => handleDeleteComment(comment._id)}
                             />
-                            <Link>
-                                <FontAwesomeIcon 
-                                    icon={faPen} 
-                                    className='text-base text-sky-500 p-2 cursor-pointer'
-                                />
-                            </Link>
+                            {editActive ? null : (
+                            // <Link>
+                            <FontAwesomeIcon 
+                                icon={faPen} 
+                                className='text-base text-sky-500 p-2 cursor-pointer'
+                                onClick={() => setEditActive(!editActive)}
+                            />
+                        // </Link>
+                            )}
+
                         </div>
                     ) :  (null)
                 }
             </div>
-            
-            <p className="mt-4 text-gray-500">{comment.comment}</p>
-            <div className='flex'>
-                <p className='  mx-3'>0</p>
-                <button>
-                    <FontAwesomeIcon 
-                        icon={faHeart} 
-                        className={`  text-white   mx-auto  rounded`}
-                    />
-                </button>
-            </div>
+            {editActive ? (
+                <EditComment 
+                    setEditActive={setEditActive}
+                    editActive={editActive}
+                    newComment={newComment}
+                    setNewComment={setNewComment}
+                    handleEditComment={handleEditComment}
+                    idComment={comment._id}
+                />
+            ): (
+                <p className="mt-4 text-gray-500">{comment.comment}</p>
+            )}            
         </div>
     </div>
   )

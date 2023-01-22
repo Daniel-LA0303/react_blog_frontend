@@ -10,7 +10,7 @@ const Aside = ({cats}) => {
 
   return (
     <>
-      <div className="w-auto mx-2 flex flex-col justify-center items-center my-3">
+      <div className="w-auto mx-2 flex flex-col justify-center items-center my-5">
         <div className={`${theme ? 'bgt-light' : 'bgt-dark text-white'} w-full max-w-md flex flex-col rounded-xl shadow-lg p-4`}>
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-4">

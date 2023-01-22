@@ -19,6 +19,7 @@ const EditProfile = () => {
     const user = useSelector(state => state.posts.user);
     const addNewFileRedux = (dataFile) => dispatch(addNewFileUserAction(dataFile));
     const PF = useSelector(state => state.posts.PFLink);
+    const theme = useSelector(state => state.posts.themeW);
 
     const[desc, setDesc] = useState('');
     const[work, setWork] = useState('');
@@ -92,8 +93,8 @@ const EditProfile = () => {
     <div className=' '>
         <Sidebar />
         <div className="h-full my-20 mx-10">
-            <div className="border-b-2 block md:flex ">
-                <div className="w-full md:w-2/5 p-4 sm:p-6 lg:p-8 bg-gray-700 shadow-md rounded">
+            <div className="block md:flex ">
+                <div className={`${theme ? 'bgt-light ' : 'bgt-dark text-white'} w-full md:w-2/5 p-4 sm:p-6 lg:p-8 shadow-md rounded`}>
                     <div className='p-5 bg-white rounded'>
                         <div className="flex justify-between">
                             <span className="text-xl font-semibold block">Admin Profile</span>
@@ -132,7 +133,7 @@ const EditProfile = () => {
                    
                 </div>
             
-                <div className="w-full md:w-3/5 p-6 bg-gray-700 lg:ml-4 shadow-md rounded">
+                <div className={`${theme ? 'bgt-light ' : 'bgt-dark'} w-full md:w-3/5 p-6 lg:ml-4 shadow-md rounded`}>
                     <form 
                         onSubmit={handleSubmit}
                     >

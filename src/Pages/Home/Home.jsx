@@ -77,7 +77,7 @@ const Home = () => {
             </>}
 
           </div>
-          <aside className=' hidden mt-5 sm:block sm:visible w-0 sm:w-4/12 lg:w-3/12'>
+          <aside className=' hidden sm:block sm:visible w-0 sm:w-4/12 lg:w-3/12'>
             {cats.map(cat => (
               <Aside 
                 cats={cat}

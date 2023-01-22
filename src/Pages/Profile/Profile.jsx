@@ -32,21 +32,30 @@ const Profile = () => {
 
   const[posts, setPosts] = useState([]);
 
+  // useEffect(() => {
+  //   fetch("http://localhost:4000/api/posts")
+  //   .then((response) => response.json())
+  //   .then((post) => {
+      
+  //     setTimeout(() => {
+  //     const postUser = post.filter(p => p.user._id === user._id)
+  //     console.log(postUser);
+      
+  //     setPosts(postUser)
+  //     }, 2000)
+      
+  //     console.log(post);
+  //   })   
+  // }, [params.id]);
+
   useEffect(() => {
-    fetch("http://localhost:4000/api/posts")
+    fetch(`http://localhost:4000/api/posts/get-user-posts/${params.id}`)
     .then((response) => response.json())
-    .then((post) => {
-      
-      setTimeout(() => {
-      const postUser = post.filter(p => p.user._id === user._id)
-      console.log(postUser);
-      
-      setPosts(postUser)
-      }, 2000)
-      
-      console.log(post);
+    .then((postU) => {
+      setPosts(postU);
+      console.log(postU);
     })   
-  }, [params.id]);
+  }, []);
 
   useEffect(() => {
     const getOneUserState = () => dispatch(getOneUserAction(params.id));
@@ -184,12 +193,17 @@ useEffect(() => {
               </>
             ): 
             <>
-              {[...posts].reverse().map(post => (
+              {posts.length === 0 ? (
+                <p className=' text-center'>There is nothing around here yet</p>
+              ) : (<>
+                {[...posts].reverse().map(post => (
                   <Post
                       key={post._id}
                       post={post}
                   />
-              ))}  
+                ))}
+              </>)}
+  
             </>}
 
           </div>

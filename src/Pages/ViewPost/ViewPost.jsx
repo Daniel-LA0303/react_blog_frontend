@@ -190,6 +190,7 @@ const handleSave = async (id) => {
         {post.commenstOnPost.comments.map(comment => (
           <ShowCommenst 
             comment={comment}
+            idPost={params.id}
           />
         ))}
         
