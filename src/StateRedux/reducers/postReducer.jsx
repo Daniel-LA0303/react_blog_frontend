@@ -29,7 +29,7 @@ import {
 
 const initialState = {
     token: JSON.parse(localStorage.getItem("token")) || null,
-    themeW: true,
+    themeW: JSON.parse(localStorage.getItem("theme")) || null,
     user: {},
     userView:{},
     posts:[],

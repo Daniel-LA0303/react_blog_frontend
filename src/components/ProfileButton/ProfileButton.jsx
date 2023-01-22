@@ -42,6 +42,8 @@ const ProfileButton = () => {
 
     const handleChange = () => {
       changeThemeRedux();
+      localStorage.removeItem('theme');
+      localStorage.setItem("theme", JSON.stringify(!theme));
       // console.log('xd');
     }
     
@@ -50,9 +52,12 @@ const ProfileButton = () => {
     <div className={`${theme ? 'bgt-light' : 'bgt-dark'}`}>
          <div className='menu-container' ref={menuRef}>
             <div className='menu-trigger mr-4 sm:mr-0' onClick={()=>{setOpen(!open)}}>
+                
                 <img
                     className='' 
-                    src={PF+user.profilePicture}    
+                    src={ 
+                      user.profilePicture != '' ? PF+user.profilePicture : 
+                      '../../public/avatar.png'}    
                 />
             </div>
 
@@ -80,14 +85,21 @@ const ProfileButton = () => {
                 </li>
                 <li>
                   <div>
-                    <h2 className='mb-3'>Theme</h2>
+                    {/* <h2 className='mb-3'>Theme</h2> */}
                     <div className='flex justify-start items-center'>
-                      <span className="switch">
+                      {/* <span className="switch">
                         <input id="switch-round" type="checkbox" onChange={handleChange}/>
-                        <label htmlFor="switch-round"></label>
-                      </span>
-                      {theme ? <FontAwesomeIcon className=' text-xl text-yellow-400 mx-1' icon={faSun} /> :
-                      <FontAwesomeIcon className=' text-xl text-gray-600 mx-1' icon={faMoon} />}
+                        <label htmlFor="switch-round"></label> */}
+                      {/* </span> */}
+                      {theme ? 
+                        <FontAwesomeIcon
+                          className=' text-4xl text-yellow-400 mx-1 cursor-pointer' icon={faSun}
+                          onClick={handleChange}
+                        /> :
+                        <FontAwesomeIcon
+                          className=' text-4xl text-gray-600 mx-1 cursor-pointer' icon={faMoon} 
+                          onClick={handleChange}
+                        />}
                       
                       
                     </div>

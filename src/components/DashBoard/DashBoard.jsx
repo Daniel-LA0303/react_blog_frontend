@@ -61,7 +61,7 @@ const DashBoard = () => {
                 </div>
                 <div className="flex-1 text-right md:text-center">
                     <h2 className="font-bold uppercase text-gray-600">Posts Saved</h2>
-                    <p className="font-bold text-3xl">{userP.postsSaved.posts.length} posts</p>
+                    <p className="font-bold text-3xl">{userP.postsSaved.posts.length}</p>
                 </div>
             </div>
         </div>

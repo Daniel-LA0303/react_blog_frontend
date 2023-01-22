@@ -108,7 +108,11 @@ useEffect(() => {
             <div className="px-2 sm:px-6 ">
               <div className="flex flex-wrap justify-center">
                 <div className="w-full px-4 flex justify-center">
-                  <img alt="..." src={PF+user.profilePicture} className=" shadow-xl image_profile  h-auto align-middle border-none  -m-16  lg:-ml-16 max-w-250-px" />  
+                  <img alt="..." 
+                    src={           
+                      user.profilePicture != '' ? PF+user.profilePicture : 
+                      '../../public/avatar.png'  } 
+                    className=" shadow-xl image_profile  h-auto align-middle border-none  -m-16  lg:-ml-16 max-w-250-px" />  
                 </div>
                 <div className='w-full flex justify-end'>
                   {(userC._id === userP._id || Object.keys(userP) == '') ? null: (                    
@@ -143,7 +147,7 @@ useEffect(() => {
                     </div>
                     <div className=" p-3 text-center">
                       <span className="text-sm font-bold block uppercase tracking-wide text-blueGray-600">
-                        {user.numberPost}
+                        {user.followersUsers.conutFollowers}
                       </span>
                       <span className="text-sm text-blueGray-400">
                         <FontAwesomeIcon icon={faUser}  className=' text-lg text-blue-700 mx-1'/>
@@ -157,32 +161,43 @@ useEffect(() => {
                 <h3 className={`${theme ? 'bgt-light ' : 'bgt-dark text-white'} text-xl font-semibold leading-normal mb-2`}>
                   {user.name}
                 </h3>
-                <div className="mb-2 text-left block sm:text-center sm:flex sm:justify-center">
-                    <h2 className=' text-xs sm:text-base font-bold'>Skills: {''}</h2>   
-                    {user.info.skills}
-                  </div>  
-                <div className='mx-auto block sm:flex'>
-                  <div className="mb-2 text-left sm:text-center  w-full sm:w-2/4">
-                    <h2 className=' text-xs sm:text-base font-bold'>Work: </h2>   
-                    {user.info.work}
-                  </div>
-                  <div className="mb-2 text-left sm:text-center w-full sm:w-2/4">
-                    <h2 className=' text-xs sm:text-base font-bold'>Education: </h2>   
-                    {user.info.education}
-                  </div>
-                </div> 
+                {user.info == null ? null: (
+                  <>
+                    <div className="mb-2 text-left block sm:text-center sm:flex sm:justify-center">
+                        <h2 className=' text-xs sm:text-base font-bold mr-1'>Skills: {''}</h2>   
+                        <p>{user.info.skills}</p>
+                    </div>  
+                    <div className='mx-auto block sm:flex'>
+                      <div className="mb-2 text-left sm:text-center  w-full sm:w-2/4">
+                        <h2 className=' text-xs sm:text-base font-bold'>Work: </h2>   
+                        {user.info.work}
+                      </div>
+                      <div className="mb-2 text-left sm:text-center w-full sm:w-2/4">
+                        <h2 className=' text-xs sm:text-base font-bold'>Education: </h2>   
+                        {user.info.education}
+                      </div>
+                    </div>
+                  </>
+                )}
+ 
 
               </div>
-              <div className="mt-10 py-10 border-t border-blueGray-200 text-center">
-                <div className="flex flex-wrap justify-center">
-                  <div className="w-full lg:w-9/12 px-4">
-                    <p className=' text-left text-2xl mb-2'>Description:</p>
-                    <p className=" text-left mb-4 text-lg leading-relaxed text-blueGray-700">
-                      {user.info.desc}
-                    </p>
+              {user.info == null ? null: (
+                <>
+                  <div className="mt-10 py-10 border-t border-blueGray-200 text-center">
+                    <div className="flex flex-wrap justify-center">
+                      <div className="w-full lg:w-9/12 px-4">
+                        <p className=' text-left text-2xl mb-2'>Description:</p>
+                        <p className=" text-left mb-4 text-lg leading-relaxed text-blueGray-700">
+                          {user.info.desc}
+                        </p>
+                      </div>
+                    </div>
                   </div>
-                </div>
-              </div>
+                </>
+              )}
+
+
             </div>
           </div>
         </div>

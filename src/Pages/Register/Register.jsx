@@ -13,13 +13,13 @@ const Register = () => {
     const user = useSelector(state => state.posts.user);
     const loading = useSelector(state => state.posts.loading);
 
-    useEffect(() => {
-        if(user._id){
-            route('/');
+    // useEffect(() => {
+    //     if(user._id){
+    //         route('/');
             
-        }
-        console.log('xd');
-    }, [user]);
+    //     }
+    //     console.log('xd');
+    // }, [user]);
 
     const[password2, setPassword2] = useState('');
     const[data, setData] = useState({

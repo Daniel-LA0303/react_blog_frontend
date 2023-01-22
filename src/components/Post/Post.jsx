@@ -112,7 +112,7 @@ const Post = ({post}) => {
                             <Link to={`/profile/${user._id}`}>
                                 <img
                                     className='border-4 img-card-post rounded-full' 
-                                    src={PP+imageProfile}    
+                                    src={imageProfile != '' ? PP+imageProfile : '../../public/avatar.png'}    
                                 />
                             </Link>
                             <p className='mx-3'>{user.name}</p>

@@ -12,11 +12,11 @@ const Login = () => {
     const user = useSelector(state => state.posts.user);
     const loading = useSelector(state => state.posts.loading);
 
-    useEffect(() => {
-        if(user._id){
-            route('/');
-        }
-    }, [user]);
+    // useEffect(() => {
+    //     if(user._id){
+    //         route('/');
+    //     }
+    // }, [user]);
 
     const[data, setData]=useState({
         email: '',
