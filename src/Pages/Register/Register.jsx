@@ -3,8 +3,10 @@ import React, { useEffect, useState } from 'react'
 
 import { Link, useNavigate } from 'react-router-dom';
 
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import Spinner from '../../components/Spinner/Spinner';
+import Alert1 from '../../components/Alerts/Alert1';
+import { alertOffAction, alertOnAction } from '../../StateRedux/actions/postAction';
 
 const Register = () => {
 
@@ -12,14 +14,11 @@ const Register = () => {
 
     const user = useSelector(state => state.posts.user);
     const loading = useSelector(state => state.posts.loading);
+    const alert1 = useSelector(state => state.posts.alertMSG);
+    const dispatch = useDispatch();
+    const alertMsg = (alert) => dispatch(alertOnAction(alert));
+    const alertOff = () => dispatch(alertOffAction());
 
-    // useEffect(() => {
-    //     if(user._id){
-    //         route('/');
-            
-    //     }
-    //     console.log('xd');
-    // }, [user]);
 
     const[password2, setPassword2] = useState('');
     const[data, setData] = useState({
@@ -27,6 +26,11 @@ const Register = () => {
         email: '',
         password: '',
     });
+
+    useEffect(() => {
+        alertOff();
+    }, [])
+    // const [alertMsg, setAlertMsg] = useState({});
 
     const {name, email, password} = data;
 
@@ -40,21 +44,45 @@ const Register = () => {
     const sendData = async (e) => {
         e.preventDefault();
         if([name, email, password, password2].includes('')){
-            alert('error');
+            // alert('error');
+            alertMsg({
+                msg: "All fields are required",
+                error: true
+            })
             return;
         }
         if(password !== password2){
-            alert('passwords ');
+            alertMsg({
+                msg: "The passwords must be the same",
+                error: true
+            })
             return;
         }
 
         try {
-            await axios.post('http://localhost:4000/api/users', data);
+            const res = await axios.post('http://localhost:4000/api/users', data);
+            alertMsg({
+                msg: res.data.msg,
+                error: false
+            })
+            setTimeout(() => {
+                route('/');
+            }, 3000);
         } catch (error) {
-            console.log(error);
+            alertMsg({
+                msg: error.response.data.msg,
+                error: true
+            })
+
         }
-        route('/');
+        setTimeout(() => {
+            alertOff();
+        }, 3000);
+        
+        
     }
+
+    const {msg} = alert1;
 
   return (
     <>
@@ -65,6 +93,7 @@ const Register = () => {
             <div className="flex flex-col items-center justify-center px-6 py-8 mx-auto md:h-screen lg:py-0">
                 <div className="w-full bg-white rounded-lg shadow dark:border md:mt-0 sm:max-w-md xl:p-0 dark:bg-gray-800 dark:border-gray-700">
                     <div className="p-6 space-y-4 md:space-y-6 sm:p-8">
+                        {msg && <Alert1 alertMsg={alertMsg} />}
                         <h1 className="text-xl text-center font-bold text-gray-900 md:text-2xl dark:text-white">
                             Sign up
                         </h1>

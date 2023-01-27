@@ -9,6 +9,7 @@ import LoadingPosts from '../../components/Spinner/LoadingPosts';
 import { getUserAction, resetStatePostAction } from '../../StateRedux/actions/postAction';
 import { useDispatch } from 'react-redux';
 import Aside from '../../components/Aside/Aside';
+import Slider from '../../components/Slider/Slider';
 
 
 const Home = () => {
@@ -35,7 +36,6 @@ const Home = () => {
         setCats(result)
       }, 1000);
       
-      console.log(result);
     })   
   }, []);
 
@@ -47,7 +47,6 @@ const Home = () => {
         setPosts(post)
       }, 1000);
       
-      console.log(post);
     })   
   }, []);
 
@@ -59,7 +58,9 @@ const Home = () => {
   return (
     <div className='  '>
         <Sidebar />
-
+        <div className=' block sm:hidden sm:visible w-full'>
+          {/* <Slider cats={cats}/> */}
+        </div>
         <div className='flex flex-row mt-10'>
           <div className=' w-full  sm:w-8/12 lg:w-9/12 flex flex-col'>
             {posts.length === 0 ? (

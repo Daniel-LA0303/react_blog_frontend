@@ -89,11 +89,6 @@ const NewPost = () => {
         addNewFileRedux(formData);
     }
     addPostRedux(newPost);
-    Swal.fire(
-        'Post Created!',
-        // 'You clicked the button!',
-        'success'
-      )
     setTimeout(() => {
         route('/');
     }, 500);

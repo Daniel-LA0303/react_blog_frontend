@@ -3,7 +3,9 @@ import React, { useEffect, useState } from 'react'
 
 import { Link, useNavigate } from 'react-router-dom';
 
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
+import Alert1 from '../../components/Alerts/Alert1';
+import { alertOffAction, alertOnAction } from '../../StateRedux/actions/postAction';
 
 const Login = () => {
 
@@ -11,17 +13,20 @@ const Login = () => {
 
     const user = useSelector(state => state.posts.user);
     const loading = useSelector(state => state.posts.loading);
-
-    // useEffect(() => {
-    //     if(user._id){
-    //         route('/');
-    //     }
-    // }, [user]);
+    const alert1 = useSelector(state => state.posts.alertMSG);
+    const dispatch = useDispatch();
+    const alertMsg = (alert) => dispatch(alertOnAction(alert));
+    const alertOff = () => dispatch(alertOffAction());
 
     const[data, setData]=useState({
         email: '',
         password: ''
     });
+
+    useEffect(() => {
+        alertOff();
+    }, [])
+    // const [alertMsg, setAlertMsg] = useState({});
 
     const{email, password} = data;
 
@@ -35,18 +40,32 @@ const Login = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         if([email, password].includes('')){
-            alert('error');
+            alertMsg({
+                msg: "All fields are required",
+                error: true
+            })
             return;
         }
         try {
             const res = await axios.post('http://localhost:4000/api/users/login', data);
             console.log(res.data.token);
             localStorage.setItem("token", JSON.stringify(res.data.token));
+            
             route('/');
+            
         } catch (error) {
             console.log(error);
+            alertMsg({
+                msg: error.response.data.msg,
+                error: true
+            })
         }
+        setTimeout(() => {
+            alertOff();
+        }, 3000);
     }
+
+    const {msg} = alert1;
 
   return (
     <>
@@ -60,6 +79,7 @@ const Login = () => {
                             <h1 className="text-xl text-center font-bold text-gray-900 md:text-2xl dark:text-white">
                                 Sign in to your account
                             </h1>
+                            {msg && <Alert1 alertMsg={alert1} />}
                             <form 
                                 onSubmit={handleSubmit}
                                 className="space-y-4 md:space-y-6"

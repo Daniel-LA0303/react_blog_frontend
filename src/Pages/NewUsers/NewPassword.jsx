@@ -3,14 +3,20 @@ import React, { useEffect, useState } from 'react'
 
 import { useParams, useNavigate, Link } from 'react-router-dom'
 
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 
 import Spinner from '../../components/Spinner/Spinner';
+import { alertOffAction, alertOnAction } from '../../StateRedux/actions/postAction';
+import Alert1 from '../../components/Alerts/Alert1';
 
 const NewPassword = () => {
 
     const user = useSelector(state => state.posts.user);
     const loading = useSelector(state => state.posts.loading);
+    const alert1 = useSelector(state => state.posts.alertMSG);
+    const dispatch = useDispatch();
+    const alertMsg = (alert) => dispatch(alertOnAction(alert));
+    const alertOff = () => dispatch(alertOffAction());
 
     const params = useParams();
     const route = useNavigate();
@@ -26,12 +32,20 @@ const NewPassword = () => {
     }, [user]);
 
     useEffect(() => {
+        alertOff();
+    }, []);
+
+    useEffect(() => {
         const tokenCheck = async () => {
             try {
-                await axios.get(`http://localhost:4000/api/users/new-password/${params.id}`);
+                const res = await axios.get(`http://localhost:4000/api/users/new-password/${params.id}`);
                 setTokenValid(true);
+
             } catch (error) {
                 console.log(error);
+                setTimeout(() => {
+                    route('/');
+                }, 3000);
             }
         }
         tokenCheck();
@@ -44,18 +58,21 @@ const NewPassword = () => {
             return;
         }
         try {
-            const {data} = await axios.post(`http://localhost:4000/api/users/new-password/${params.id}`,{password});
-            // setAlerta({
-            //     msg: data.msg,
-            //     error: false
-            // });
-            console.log(data);
+            const res = await axios.post(`http://localhost:4000/api/users/new-password/${params.id}`,{password});
+            alertMsg({
+                msg: res.data.msg,
+                error: false
+            })
+            console.log(res);
             setNewPassword(true);
         } catch (error) {
-            console.log(error);
+            alertMsg({
+                msg: error.response.data.msg,
+                error: true
+            })
         }
     }
-
+    const {msg} = alert1;
   return (
     <>
         {loading ? (
@@ -71,6 +88,7 @@ const NewPassword = () => {
                                     <h1 className="text-xl text-center font-bold text-gray-900 md:text-2xl dark:text-white">
                                         New password
                                     </h1>
+                                    {msg && <Alert1 alertMsg={alert1} />}
                                     <form 
                                         className="space-y-4 md:space-y-6"
                                         onSubmit={handleSubmit}    
@@ -91,7 +109,7 @@ const NewPassword = () => {
                                     </form>
                                 </>
                             ): (
-                                <p className='text-center text-white text-3xl'>Token no valido</p>
+                                <p className='text-center text-white text-3xl'>Invalid token</p>
                             )}
                             {newPassword && (
                                 <div className=''>

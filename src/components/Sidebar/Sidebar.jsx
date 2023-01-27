@@ -30,14 +30,14 @@ const Sidebar = () => {
         <div className={`${theme ? 'bgt-light' : 'bgt-dark'}  py-1  top-0 left-0 right-0 shadow-2xl `}>
           <div className={`flex items-center justify-between  h-14`}>
             <div className='flex items-center justify-start'>
-            {user._id ? 
-            <>
-              <button className='ml-4' onClick={() => setOpen(true)}>
-                <FontAwesomeIcon icon={faBars} className={` text-3xl ${theme ? 'text-black' : 'text-white'}`} />
-              </button>
-            </> : null}
+              {user._id ? 
+              <>
+                <button className='ml-4' onClick={() => setOpen(true)}>
+                  <FontAwesomeIcon icon={faBars} className={` text-3xl ${theme ? 'text-black' : 'text-white'}`} />
+                </button>
+              </> : null}
 
-            <Logo />
+              <Logo />
             </div>
 
             <div className=' mx-1 sm:ml-5 flex justify-end items-center'>

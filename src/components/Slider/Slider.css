@@ -1,0 +1,42 @@
+/* * {
+    padding: 0;
+    margin: 0;
+    box-sizing: border-box;
+  }
+
+.app {
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    height: 100vh;
+}
+.container{
+    height: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 25px;
+}
+.swiperContainer {
+    overflow-x: hidden;
+    margin-top: 25px;
+    padding: 0 2rem;
+}
+.pagination {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}    
+.pagination .swiper-pagination-bullet{
+    background-color: black;
+    height: 10px;
+    width: 10px;
+    margin-right: 6px;
+    opacity: 0.5;
+    cursor: pointer;
+    border-radius: 100%;
+}
+.pagination .swiper-pagination-bullet-active{
+    background-color: rgb(255, 162, 0);
+    opacity: 1;
+} */

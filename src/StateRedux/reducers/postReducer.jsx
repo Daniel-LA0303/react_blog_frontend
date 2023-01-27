@@ -24,10 +24,13 @@ import {
     DELETE_POST_SUCCESS,
     DELETE_POST_ERROR,
     RESET_STATE_POST,
-    CHANGE_THEME
+    CHANGE_THEME,
+    ALERT_ON,
+    ALERT_OFF
 } from "../types";
 
 const initialState = {
+    alertMSG:{},
     token: JSON.parse(localStorage.getItem("token")) || null,
     themeW: JSON.parse(localStorage.getItem("theme")) || null,
     user: {},
@@ -134,6 +137,16 @@ export default function(state = initialState, action){
             return{
                 ...state,
                 themeW: !state.themeW
+            }
+        case ALERT_ON:
+            return{
+                ...state,
+                alertMSG: action.payload
+            }
+        case ALERT_OFF:
+            return{
+                ...state,
+                alertMSG: {}
             }
         default: return state;
     }

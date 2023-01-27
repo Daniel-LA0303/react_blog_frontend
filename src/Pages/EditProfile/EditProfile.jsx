@@ -34,7 +34,6 @@ const EditProfile = () => {
         const getOneUser = async() => {
             try {
                 const res = await axios.get(`http://localhost:4000/api/users/get-profile/${params.id}`);
-                console.log(res.data);
                 setDesc(res.data.info.desc);
                 setWork(res.data.info.work);
                 setEducation(res.data.info.education);
@@ -82,12 +81,12 @@ const EditProfile = () => {
           }
         try {
             const res = await axios.post(`http://localhost:4000/api/users/new-info/${params.id}`, data);
-            route('/');
             Swal.fire(
-                'User saved',
+                res.data.msg,
                 // 'You clicked the button!',
                 'success'
             )
+            route('/');
         } catch (error) {
             console.log(error);
         }

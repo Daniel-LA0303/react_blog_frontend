@@ -53,7 +53,6 @@ const Profile = () => {
     .then((response) => response.json())
     .then((postU) => {
       setPosts(postU);
-      console.log(postU);
     })   
   }, []);
 

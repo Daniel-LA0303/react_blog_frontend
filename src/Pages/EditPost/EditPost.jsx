@@ -112,11 +112,6 @@ const EditPost = () => {
         addNewFileRedux(formData);
     }
     editPostRedux(params.id, postUpdate);
-    Swal.fire(
-        'Post saved',
-        // 'You clicked the button!',
-        'success'
-      )
     route('/');
 }
 

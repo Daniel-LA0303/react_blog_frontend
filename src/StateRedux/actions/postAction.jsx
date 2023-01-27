@@ -26,7 +26,9 @@ import {
     DELETE_POST_SUCCESS,
     DELETE_POST_ERROR,
     RESET_STATE_POST,
-    CHANGE_THEME
+    CHANGE_THEME,
+    ALERT_ON,
+    ALERT_OFF
 } from "../types";
 
 // export function resetStatePostAction(){
@@ -38,6 +40,32 @@ import {
 // const resetStatePost = () => ({
 //     type: RESET_STATE_POST
 // });
+
+export function alertOnAction(alertMSG){
+    // console.log('theme');
+    return (dispatch) => {
+        dispatch(alertOn(alertMSG));
+        // console.log('theme');
+    }
+}
+
+const alertOn = (alertMSG) => ({
+    type: ALERT_ON,
+    payload: alertMSG
+})
+
+export function alertOffAction(){
+    // console.log('theme');
+    return (dispatch) => {
+        dispatch(alertOff());
+        // console.log('theme');
+    }
+}
+
+const alertOff = () => ({
+    type: ALERT_OFF
+})
+
 
 export function changeThemeAction(){
     // console.log('theme');
@@ -212,7 +240,12 @@ export function addNewPostAction(newPost){
     return async (dispatch) => {
         dispatch(addNewPost());
         try {
-            await axios.post('http://localhost:4000/api/posts', newPost);
+            const res = await axios.post('http://localhost:4000/api/posts', newPost);
+            Swal.fire(
+                res.data.msg,
+                // 'You clicked the button!',
+                'success'
+              )
             dispatch(addNewPostSuccess(newPost)); 
         } catch (error) {
             console.log(error);
@@ -240,7 +273,14 @@ export function editPostAction(id, newPost){
     return async(dispatch) => {
         dispatch(editPost());
         try {
-            const res = await axios.put(`http://localhost:4000/api/posts/${id}`, newPost);
+            const res = await axios.put(`http://localhost:4000/api/posts/${id}`, newPost).then(res =>{
+                Swal.fire(
+                    res.data.msg,
+                    // res.data.mensaje,
+                    'success'
+                )
+            });;
+            // console.log(res);
             dispatch(editPostSuccess(res));
         } catch (error) {
             console.log(error);
@@ -269,9 +309,9 @@ export function deletePostAction(id){
     return async(dispatch) => {
         dispatch(deletePost());
         try {
-            const res = await axios.delete(`http://localhost:4000/api/posts/${id}`).then(res =>{
+            await axios.delete(`http://localhost:4000/api/posts/${id}`).then(res =>{
                 Swal.fire(
-                    'The product has been removed',
+                    res.data.msg,
                     // res.data.mensaje,
                     'success'
                 )
