@@ -25,7 +25,7 @@ const notify = () => toast(
   );
 
 const PostSearch = ({post}) => {
-    const {title, linkImage, categoriesPost, _id, desc, createdAt, user, likePost} = post;
+    const {title, linkImage, categoriesPost, _id, desc, createdAt, user, likePost, date} = post;
 
     const[like, setLike] = useState(false);
     const[numberLike, setNumberLike] =  useState(0);
@@ -112,7 +112,7 @@ const PostSearch = ({post}) => {
         <div className="flex flex-col  w-full  justify-between p-4 leading-normal">
             <div className='flex justify-between'>
                 <h5 className="mb-2 text-2xl w-4/6  font-bold tracking-tight ">{title}</h5>
-                <span className="mb-3 font-normal w-auto text-gray-700 dark:text-gray-400">Posted on {new Date(createdAt).toDateString()}</span>
+                <span className="mb-3 font-normal w-auto text-gray-700 dark:text-gray-400">Posted on {new Date(date).toDateString()}</span>
             </div>
             <Toaster
                 position="bottom-right"

@@ -18,8 +18,6 @@ const SavePost = () => {
       try {
         const res = await axios.get(`http://localhost:4000/api/users/get-profile/${params.id}`);
         setPosts(res.data.postsSaved.posts);
-        console.log(res.data.postsSaved.posts)
-        console.log(res.data);
       } catch (error) {
           console.log(error);
       }      

@@ -28,13 +28,13 @@ const NewPost = () => {
   const[content, setContent] = useState(''); //content
   const[file, setFile] = useState(null); //get file
   const[categoriesPost, setCategoriesPost] = useState([]); //cat that user chose
-  const[addPost, setAddPost] = useState(false);
+//   const[addPost, setAddPost] = useState(false);
 
   //redux
   const dispatch = useDispatch();
   const getAllCategoriesRedux = () => dispatch(getAllCategoriesAction());
   const categories = useSelector(state => state.posts.categories);
-  const addPostRedux = newPost => dispatch(addNewPostAction(newPost));
+  const addPostRedux = (newPost, newPostRedux) => dispatch(addNewPostAction(newPost, newPostRedux));
   const addNewFileRedux = (formData) => dispatch(addNewFilePostAction(formData));
   const loading = useSelector(state => state.posts.loading);
   const user = useSelector(state => state.posts.user);
@@ -67,11 +67,20 @@ const NewPost = () => {
   const newPost = async e => {
     e.preventDefault();
 
+    if([title, desc, content, file, categoriesPost].includes('')){
+        Swal.fire(
+            "All fields are required",
+            // 'You clicked the button!',
+            // 'success'
+        )
+        return;
+    }
+    let linkImage;
     let cats = [];
     for (let i = 0; i < categoriesPost.length; i++) {
         cats.push(categoriesPost[i].name);
     }
-
+    const newDate = Date.now()
     const newPost = {
         user: user._id,
         title: title,
@@ -79,6 +88,7 @@ const NewPost = () => {
         categoriesPost: cats,
         categoriesSelect: categoriesPost,
         desc: desc,
+        date: newDate
     }
     if(file){
         const formData = new FormData();
@@ -86,9 +96,30 @@ const NewPost = () => {
         formData.append('name', filename);
         formData.append('image', file);
         newPost.linkImage = filename
+        linkImage=filename
         addNewFileRedux(formData);
     }
-    addPostRedux(newPost);
+    addPostRedux(newPost, {
+        user: user,
+        title: title,
+        desc: desc,
+        content: content,
+        linkImage: linkImage,
+        categoriesPost: cats,
+        categoriesSelect: categoriesPost,
+        likePost:{
+            users: []
+        },
+        commenstOnPost:{
+            numberComments: 0,
+            comments: []
+        },
+        usersSavedPost:{
+            users: []
+        },
+        date: newDate
+
+    });
     setTimeout(() => {
         route('/');
     }, 500);

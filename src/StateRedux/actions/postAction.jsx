@@ -28,7 +28,11 @@ import {
     RESET_STATE_POST,
     CHANGE_THEME,
     ALERT_ON,
-    ALERT_OFF
+    ALERT_OFF,
+    GET_COMMENTS,
+    EDIT_COMMENT,
+    DELETE_COMMENT,
+    NEW_COMMENT,
 } from "../types";
 
 // export function resetStatePostAction(){
@@ -41,6 +45,7 @@ import {
 //     type: RESET_STATE_POST
 // });
 
+//*** 
 export function alertOnAction(alertMSG){
     // console.log('theme');
     return (dispatch) => {
@@ -48,7 +53,6 @@ export function alertOnAction(alertMSG){
         // console.log('theme');
     }
 }
-
 const alertOn = (alertMSG) => ({
     type: ALERT_ON,
     payload: alertMSG
@@ -61,12 +65,11 @@ export function alertOffAction(){
         // console.log('theme');
     }
 }
-
 const alertOff = () => ({
     type: ALERT_OFF
 })
 
-
+//*** 
 export function changeThemeAction(){
     // console.log('theme');
     return (dispatch) => {
@@ -74,12 +77,11 @@ export function changeThemeAction(){
         // console.log('theme');
     }
 }
-
 const changeTheme = () => ({
     type: CHANGE_THEME
 })
 
-//users
+//users ***
 export function getUserAction(token){
     return async(dispatch) => {
         dispatch(getUser());
@@ -103,17 +105,14 @@ export function getUserAction(token){
         }
     }
 }
-
 const getUser = () => ({
     type: GET_USER,
     payload: true
 });
-
 const getUserSuccess = (data) => ({
     type: GET_USER_SUCCESS,
     payload: data
 });
-
 const getUserError = (stateError) => ({
     type: GET_USER_ERROR,
     payload: stateError
@@ -124,9 +123,7 @@ export function getOneUserAction(id){
         dispatch(getOneUser());
         
         try {
-            const res = await axios.get(`http://localhost:4000/api/users/get-profile/${id}`);
-            // console.log(res.data);
-            
+            const res = await axios.get(`http://localhost:4000/api/users/get-profile/${id}`);            
             dispatch(getOneUserSuccess(res.data));
         } catch (error) {
             console.log(error);
@@ -151,7 +148,7 @@ const getOneUserError = (stateError) => ({
 });
 
 
-//categories
+//categories ***
 export function getAllCategoriesAction(){
     return async(dispatch) => {
         dispatch(getAllCategories());
@@ -165,17 +162,14 @@ export function getAllCategoriesAction(){
         }
     }
 }
-
 const getAllCategories = () => ({
     type: GET_ALL_CARTEGORIES,
     payload: true
 });
-
 const getAllCategoriesSuccess = (data) => ({
     type: GET_ALL_CARTEGORIES_SUCCESS,
     payload: data
 });
-
 const getAllCategoriesError = (stateError) => ({
     type: GET_ALL_CARTEGORIES_ERROR,
     payload: stateError
@@ -236,7 +230,7 @@ const getOnePostError =() => ({
 });
 
 //New post
-export function addNewPostAction(newPost){
+export function addNewPostAction(newPost, newPostRedux){
     return async (dispatch) => {
         dispatch(addNewPost());
         try {
@@ -246,7 +240,7 @@ export function addNewPostAction(newPost){
                 // 'You clicked the button!',
                 'success'
               )
-            dispatch(addNewPostSuccess(newPost)); 
+            dispatch(addNewPostSuccess(newPostRedux)); 
         } catch (error) {
             console.log(error);
             dispatch(addNewPostError(true));
@@ -258,9 +252,9 @@ const addNewPost = () => ({
     payload: true
 });
 
-const addNewPostSuccess = newPost => ({
+const addNewPostSuccess = newPostRedux => ({
     type: ADD_POST_SUCCESS,
-    payload: newPost
+    payload: newPostRedux
 });
 
 const addNewPostError = (stateError) => ({
@@ -269,11 +263,11 @@ const addNewPostError = (stateError) => ({
 });
 
 //edit post
-export function editPostAction(id, newPost){
+export function editPostAction(id, postUpdate , postUpdateRedux){
     return async(dispatch) => {
         dispatch(editPost());
         try {
-            const res = await axios.put(`http://localhost:4000/api/posts/${id}`, newPost).then(res =>{
+            const res = await axios.put(`http://localhost:4000/api/posts/${id}`, postUpdate).then(res =>{
                 Swal.fire(
                     res.data.msg,
                     // res.data.mensaje,
@@ -281,7 +275,7 @@ export function editPostAction(id, newPost){
                 )
             });;
             // console.log(res);
-            dispatch(editPostSuccess(res));
+            dispatch(editPostSuccess(postUpdateRedux));
         } catch (error) {
             console.log(error);
             dispatch(editPostError());
@@ -339,30 +333,66 @@ const deletePostError = () => ({
     payload: true
 });
 
-//reset state
+//COMMENTS ***
+export function getCommentsAction(comments){
+    return async(dispatch) => {
+        dispatch(getComments(comments));
+        
+    }
+}
+const getComments = (comments) => ({
+    type: GET_COMMENTS,
+    payload: comments
+});
+export function newCommentAction(comment){
+    return async(dispatch) => {
+        dispatch(newComment(comment));
+        
+    }
+}
+const newComment = (comment) => ({
+    type: NEW_COMMENT,
+    payload: comment
+});
+export function editCommentAction(comment){
+    return async(dispatch) => {
+        dispatch(editComment(comment));
+        console.log(comment);
+    }
+}
+const editComment = (comment) => ({
+    type: EDIT_COMMENT,
+    payload: comment
+});
+export function deleteCommentAction(id){
+    return async(dispatch) => {
+        dispatch(deleteComment(id));
+        console.log(id);
+    }
+}
+const deleteComment = (id) => ({
+    type: DELETE_COMMENT,
+    payload: id
+});
+//reset state ***
 export function resetStatePostAction(){
     return (dispatch) => {
         dispatch(resetStatePost());
     }       
 }
-
 const resetStatePost = () => ({
     type: RESET_STATE_POST
 });
-
-
-//files
+//files ***
 export function addNewFilePostAction(formData){
     return async() => {
         try {
             await axios.post('http://localhost:4000/api/post/uploads-post', formData);
         } catch (error) {
             console.log(error);
-
         }
     }
 }
-
 export function addNewFileUserAction(formData){
     return async() => {
         try {

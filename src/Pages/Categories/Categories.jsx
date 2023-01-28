@@ -15,9 +15,7 @@ const Categories = () => {
     const userP = useSelector(state => state.posts.user);
 
     useEffect(() => {
-      setTimeout(() => {
         getAllCategoriesRedux();
-      }, 1000);    
     }, []);
 
   return (
@@ -26,7 +24,7 @@ const Categories = () => {
         <p className=' text-center mt-10 text-3xl'>All Categories</p>
         <div className=' w-full block sm:flex sm:flex-wrap justify-center mb-10'>
           <>
-            {categories.length == 0 ? (
+            {loading ? (
               <LoadingCategory />
             ):(
               <>

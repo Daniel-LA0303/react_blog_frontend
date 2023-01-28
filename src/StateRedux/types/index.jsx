@@ -33,6 +33,11 @@ export const DELETE_POST = 'DELETE_POST';
 export const DELETE_POST_SUCCESS = 'DELETE_POST_SUCCESS';
 export const DELETE_POST_ERROR = 'DELETE_POST_ERROR';
 
+export const GET_COMMENTS = 'GET_COMMENTS';
+export const NEW_COMMENT = 'NEW_COMMENT';
+export const EDIT_COMMENT = 'EDIT_COMMENT';
+export const DELETE_COMMENT = 'DELETE_COMMENT';
+
 //reset state
 export const RESET_STATE_POST = 'RESET_STATE_POST';
 

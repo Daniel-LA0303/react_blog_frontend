@@ -5,7 +5,7 @@ const Logo = () => {
   return (
     <div className='hidden sm:block ml-5 w-10'>
         <Link to={'/'}>
-            <img src='../../public/react.png'/>
+            <img src='/react.png'/>
         </Link>
     </div>
   )

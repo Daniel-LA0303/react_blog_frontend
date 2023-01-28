@@ -5,9 +5,10 @@ import React from 'react'
 import { useEffect } from 'react';
 import { useState } from 'react';
 import { toast, Toaster } from 'react-hot-toast';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
 import Swal from 'sweetalert2';
+import { deleteCommentAction, editCommentAction } from '../../StateRedux/actions/postAction';
 import EditComment from './EditComment';
 
 const notify = () => toast(
@@ -22,6 +23,9 @@ const ShowCommenst = ({comment, idPost}) => {
     const PF = useSelector(state => state.posts.PFLink);
     const userP = useSelector(state => state.posts.user);
     const theme = useSelector(state => state.posts.themeW);
+    const dispatch = useDispatch();
+    const editCommentRedux = (comment) => dispatch(editCommentAction(comment));
+    const deleteCommentRedux = (date) => dispatch(deleteCommentAction(date));
 
     const[editActive, setEditActive] = useState(false);
     const[newComment, setNewComment] = useState('');
@@ -31,7 +35,7 @@ const ShowCommenst = ({comment, idPost}) => {
     }, [])
     
 
-    const handleDeleteComment = async (id) => {
+    const handleDeleteComment = async (id, date) => {
 
         // console.log(id);
         
@@ -47,14 +51,16 @@ const ShowCommenst = ({comment, idPost}) => {
           }).then(async(result) => {
             if (result.value) {
                 //consulta a la api
+                deleteCommentRedux(date);
                 try {
             
                     const res =await axios.post(`http://localhost:4000/api/posts/delete-post-comment/${idPost}`, {id})
-                    console.log(res);
+                    // console.log(res);
+                    
                 } catch (error) {
                     console.log(error);
                 }
-                route('/');
+                // route('/');
             }
           })
         
@@ -64,6 +70,12 @@ const ShowCommenst = ({comment, idPost}) => {
 
         notify();
         setEditActive(!editActive);
+        editCommentRedux({
+            userID: comment.userID,
+            comment:newComment,
+            dateComment: comment.dateComment,
+            _id: comment._id
+        })
         try {
             
             const res = await axios.post(`http://localhost:4000/api/posts/edit-post-comment/${idPost}`, {
@@ -79,12 +91,6 @@ const ShowCommenst = ({comment, idPost}) => {
         } catch (error) {
             console.log(error);
         }
-        
-        // Swal.fire(
-        //     'Comment saved',
-        //     'success'
-        // )
-        // window.location.reload(`/`);
     }
 
 
@@ -115,7 +121,7 @@ const ShowCommenst = ({comment, idPost}) => {
                             <FontAwesomeIcon 
                                 className=' text-base text-red-500 p-2 cursor-pointer'
                                 icon={faTrash} 
-                                onClick={() => handleDeleteComment(comment._id)}
+                                onClick={() => handleDeleteComment(comment._id, comment.dateComment)}
                             />
                             {editActive ? null : (
                             // <Link>

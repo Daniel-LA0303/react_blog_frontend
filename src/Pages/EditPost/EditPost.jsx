@@ -28,7 +28,7 @@ const EditPost = () => {
   
   const PF = useSelector(state => state.posts.PFPost);
   const dispatch = useDispatch();
-  const editPostRedux = (id, postUpdate) => dispatch(editPostAction(id, postUpdate));
+  const editPostRedux = (id, postUpdate, postUpdateRedux) => dispatch(editPostAction(id, postUpdate, postUpdateRedux));
   const addNewFileRedux = (formData) => dispatch(addNewFilePostAction(formData));
   const getAllCategoriesRedux = () => dispatch(getAllCategoriesAction());
   const categories = useSelector(state => state.posts.categories);
@@ -111,7 +111,23 @@ const EditPost = () => {
         postUpdate.linkImage = filename
         addNewFileRedux(formData);
     }
-    editPostRedux(params.id, postUpdate);
+    editPostRedux(params.id, postUpdate ,{
+        _id: post._id,
+        user: user,
+        title: title,
+        content: content,
+        categoriesPost: cats,
+        categoriesSelect: categoriesSelect,
+        desc: desc,
+        linkImage: post.linkImage,
+        likePost: post.likePost,
+        commenstOnPost: post.commenstOnPost,
+        usersSavedPost: post.usersSavedPost,
+        date: post.date,
+        createdAt: post.createdAt,
+        updatedAt: post.updatedAt
+
+    });
     route('/');
 }
 

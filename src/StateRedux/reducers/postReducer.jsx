@@ -26,7 +26,11 @@ import {
     RESET_STATE_POST,
     CHANGE_THEME,
     ALERT_ON,
-    ALERT_OFF
+    ALERT_OFF,
+    GET_COMMENTS,
+    EDIT_COMMENT,
+    DELETE_COMMENT,
+    NEW_COMMENT,
 } from "../types";
 
 const initialState = {
@@ -37,7 +41,9 @@ const initialState = {
     userView:{},
     posts:[],
     post:{},
+    comments:[],
     categories:[],
+    category: {},
     error: null,
     loading: false,
     PFLink: 'http://localhost:4000/uploads-profile/',
@@ -47,6 +53,13 @@ const initialState = {
 
 export default function(state = initialState, action){
     switch(action.type){
+        case RESET_STATE_POST :
+            return{
+                ...state,
+                post: {},
+                userView: {},
+                // user: {}
+            }
         case GET_USER:
         case GET_ALL_CARTEGORIES:
         case ADD_POST:
@@ -54,7 +67,7 @@ export default function(state = initialState, action){
         case GET_ONE_POST:
         case GET_ONE_USER:
         case EDIT_POST:
-        case DELETE_POST:
+        case DELETE_POST:  
             return{
                 ...state,
                 loading: action.payload
@@ -126,13 +139,6 @@ export default function(state = initialState, action){
                 loading: false,
                 error: action.payload
             }
-        case RESET_STATE_POST :
-            return{
-                ...state,
-                post: {},
-                userView: {},
-                // user: {}
-            }
         case CHANGE_THEME:
             return{
                 ...state,
@@ -148,6 +154,29 @@ export default function(state = initialState, action){
                 ...state,
                 alertMSG: {}
             }
+        case GET_COMMENTS:
+            return{
+                ...state,
+                comments: action.payload
+            }
+    
+        case NEW_COMMENT:
+            return{
+                ...state,
+                comments: [...state.comments, action.payload]
+            }
+        case EDIT_COMMENT:
+            return{
+                ...state,
+                comments: state.comments.map(comment => 
+                    comment._id === action.payload._id ? comment = action.payload : comment),
+            }
+        case DELETE_COMMENT:
+            return {
+                ...state,
+                comments: state.comments.filter(comment => comment.dateComment !== action.payload),
+            }
+        
         default: return state;
     }
 }

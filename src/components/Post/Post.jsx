@@ -32,7 +32,7 @@ const Post = ({post}) => {
     const getUserRedux = token => dispatch(getUserAction(token));
     const getAllPostsRedux = () => dispatch(getAllPostsAction());
 
-    const {title, linkImage, categoriesPost, _id, desc, createdAt, user, likePost, commenstOnPost} = post;
+    const {title, linkImage, categoriesPost, _id, desc, createdAt, user, likePost, commenstOnPost, date} = post;
 
     const[like, setLike] = useState(false);
     const[numberLike, setNumberLike] =  useState(0);
@@ -45,6 +45,14 @@ const Post = ({post}) => {
     const theme = useSelector(state => state.posts.themeW);
 
     useEffect(() => {
+        // fetch(`http://localhost:4000/api/posts/${post._id}`)
+        // .then((response) => response.json())
+        // .then((post) => {
+        // // setTimeout(() => {
+        //     setImageProfile(post.user.profilePicture)
+        // // }, 1000);
+        
+        // }) 
         const getOnePost = async () => {
             try {
                 const res = await axios.get(`http://localhost:4000/api/posts/${post._id}`);
@@ -58,13 +66,14 @@ const Post = ({post}) => {
     }, []);
     
     useEffect(() => {
-        const userLike = likePost.users.includes(userP._id);
-        if(userLike){
-            setLike(true);
+        if(likePost.users !== null){
+            const userLike = likePost.users.includes(userP._id);
+            if(userLike){
+                setLike(true);
+            }
+            setNumberLike(likePost.users.length);
+            console.log();
         }
-        setNumberLike(likePost.users.length);
-        console.log();
-
     }, []);
 
     useEffect(() => {
@@ -118,7 +127,7 @@ const Post = ({post}) => {
             <div className="flex flex-col  w-full  justify-between p-4 leading-normal">
                 <div className='flex justify-between'>
                     <h5 className="mb-2 text-2xl w-4/6  font-bold tracking-tight ">{title}</h5>
-                    <span className="mb-3 font-normal w-auto text-gray-700 dark:text-gray-400">Posted on {new Date(createdAt).toDateString()}</span>
+                    <span className="mb-3 font-normal w-auto text-gray-700 dark:text-gray-400">Posted on {new Date(date).toDateString()}</span>
                 </div>
                 <Toaster
                     position="bottom-right"
@@ -158,16 +167,16 @@ const Post = ({post}) => {
                                 <button onClick={() => handleLike(_id)}>
                                     <FontAwesomeIcon 
                                         icon={faHeart} 
-                                        className={`${like ? ' text-red-400' :  ' text-white'}   mx-auto  rounded`}
+                                        className={`${like ? ' text-red-400' : 'text-stone-500'} mx-auto  rounded`}
                                         
                                     />
                                 </button>
                             </div>
                             <div className='flex items-center'>
-                                <p className='mx-3'>{commenstOnPost.comments.length}</p>
+                                <p className='mx-3'>{commenstOnPost.comments.length}</p>                                
                                 <FontAwesomeIcon 
                                     icon={faComment} 
-                                    className={`text-white  mx-auto  rounded`}                    
+                                    className={`text-stone-500 mx-auto  rounded`}                    
                                 />
                             </div>
                         </div>
@@ -175,7 +184,7 @@ const Post = ({post}) => {
                         <button onClick={() => handleSave(_id)}>
                             <FontAwesomeIcon 
                                 icon={faBookmark} 
-                                className={`${save ? 'text-blue-500': 'text-white '}    mx-auto  rounded`}
+                                className={`${save ? 'text-blue-500' : 'text-stone-500'}  mx-auto  rounded`}
                             />
                         </button>
                     </div>

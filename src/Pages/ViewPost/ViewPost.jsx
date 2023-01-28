@@ -7,7 +7,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faHeart, faBookmark, faTrash, faPen, faL, faComment } from '@fortawesome/free-solid-svg-icons'
 
 import { useDispatch, useSelector } from 'react-redux';
-import { deletePostAction, getOnePostAction, getUserAction } from '../../StateRedux/actions/postAction';
+import { deletePostAction, getCommentsAction, getOnePostAction, getUserAction } from '../../StateRedux/actions/postAction';
 
 import Spinner from '../../components/Spinner/Spinner';
 import axios from 'axios';
@@ -51,8 +51,10 @@ const ViewPost = () => {
   const userP = useSelector(state => state.posts.user);
   const PF = useSelector(state => state.posts.PFPost);
   const theme = useSelector(state => state.posts.themeW);
+  const comments = useSelector(state => state.posts.comments);
   const deletePostRedux = (id) => dispatch(deletePostAction(id));
   const getUserRedux = token => dispatch(getUserAction(token));
+  const getCommentsRedux = (comments) => dispatch(getCommentsAction(comments));
 
   //get post with id
   useEffect(() => {
@@ -67,12 +69,17 @@ const ViewPost = () => {
     }
   }, []);
 
+  // useEffect(() => {
+  //   getCommentsRedux(post.commenstOnPost.comments);
+  // }, [post])
+  
+
   useEffect(() => {
     fetch(`http://localhost:4000/api/posts/${params.id}`)
     .then((response) => response.json())
     .then((post) => {
       setPost(post)
-      console.log(post);
+      getCommentsRedux(post.commenstOnPost.comments);
       const userLike = post.likePost.users.includes(userP._id);
       if(userLike){
         setLike(true);
@@ -106,7 +113,10 @@ const ViewPost = () => {
       if (result.value) {
           //consulta a la api
           deletePostRedux(id);
-          route('/');
+          setTimeout(() => {
+            route('/');
+          }, 2000);
+          
       }
     })
       
@@ -240,8 +250,15 @@ const handleSave = async (id) => {
           user={userP}
           idPost={params.id}
         />
-        {post.commenstOnPost.comments.map(comment => (
+        {/* {post.commenstOnPost.comments.map(comment => (
           <ShowCommenst 
+            comment={comment}
+            idPost={params.id}
+          />
+        ))} */}
+        {comments.map(comment => (
+          <ShowCommenst
+            key={comment.dateComment} 
             comment={comment}
             idPost={params.id}
           />
