@@ -56,7 +56,6 @@ const ViewPost = () => {
   const getUserRedux = token => dispatch(getUserAction(token));
   const getCommentsRedux = (comments) => dispatch(getCommentsAction(comments));
 
-  //get post with id
   useEffect(() => {
       const getOnePostState = () => dispatch(getOnePostAction(params.id));
       getOnePostState();
@@ -67,12 +66,7 @@ const ViewPost = () => {
     if(token){
       getUserRedux(JSON.parse(token));
     }
-  }, []);
-
-  // useEffect(() => {
-  //   getCommentsRedux(post.commenstOnPost.comments);
-  // }, [post])
-  
+  }, []);  
 
   useEffect(() => {
     fetch(`http://localhost:4000/api/posts/${params.id}`)

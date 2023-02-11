@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faHeart, faBookmark, faUser, faGear, faTableColumns, faSun, faMoon } from '@fortawesome/free-solid-svg-icons'
+import { faUser, faGear, faTableColumns, faSun, faMoon } from '@fortawesome/free-solid-svg-icons'
 import { changeThemeAction } from '../../StateRedux/actions/postAction';
 
 const ProfileButton = () => {
@@ -13,7 +13,6 @@ const ProfileButton = () => {
     const user = useSelector(state => state.posts.user);
     const theme = useSelector(state => state.posts.themeW);
     const PF = useSelector(state => state.posts.PFLink);
-
 
     const [open, setOpen] = useState(false);
     let menuRef = useRef();
@@ -26,8 +25,6 @@ const ProfileButton = () => {
         };
     
         document.addEventListener("mousedown", handler);
-        
-    
         return() =>{
           document.removeEventListener("mousedown", handler);
         }
@@ -44,7 +41,6 @@ const ProfileButton = () => {
       changeThemeRedux();
       localStorage.removeItem('theme');
       localStorage.setItem("theme", JSON.stringify(!theme));
-      // console.log('xd');
     }
     
 
@@ -52,7 +48,6 @@ const ProfileButton = () => {
     <div className={`${theme ? 'bgt-light' : 'bgt-dark'}`}>
          <div className='menu-container' ref={menuRef}>
             <div className='menu-trigger mr-4 sm:mr-0' onClick={()=>{setOpen(!open)}}>
-                
                 <img
                     className='' 
                     src={ 
@@ -85,12 +80,7 @@ const ProfileButton = () => {
                 </li>
                 <li>
                   <div>
-                    {/* <h2 className='mb-3'>Theme</h2> */}
                     <div className='flex justify-start items-center'>
-                      {/* <span className="switch">
-                        <input id="switch-round" type="checkbox" onChange={handleChange}/>
-                        <label htmlFor="switch-round"></label> */}
-                      {/* </span> */}
                       {theme ? 
                         <FontAwesomeIcon
                           className=' text-4xl text-yellow-400 mx-1 cursor-pointer' icon={faSun}
@@ -100,10 +90,7 @@ const ProfileButton = () => {
                           className=' text-4xl text-gray-600 mx-1 cursor-pointer' icon={faMoon} 
                           onClick={handleChange}
                         />}
-                      
-                      
                     </div>
-
                   </div>
                 </li>
                 <li className = 'dropdownItem '>

@@ -8,11 +8,6 @@ import Spinner from '../../components/Spinner/Spinner'
 const Search = () => {
 
   const params = useParams();
-
-  // const dispatch = useDispatch();
-  // const getAllCategoriesRedux = () => dispatch(getAllCategoriesAction());
-  // const categories = useSelector(state => state.posts.categories);
-
   const [catFilter,setCatFilter] = useState([]);
   const [postFilter, setPostFilter] = useState([]);
   const [usersFilter, setUsersFilter] = useState([]);
@@ -64,7 +59,6 @@ const Search = () => {
     console.log(params);
   }, [params])
   
-  // if(usersFilter.length == 0) return <Spinner />
   return (
     <div>
         <Sidebar />

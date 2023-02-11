@@ -3,9 +3,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import React, { useState } from 'react'
 import { useSelector } from 'react-redux';
 import NewCardCategory from '../CategoryCard/NewCardCategory';
-import Post from '../Post/Post';
 import PostSearch from '../Post/PostSearch';
-import LoadingPosts from '../Spinner/LoadingPosts';
 import UserCard from '../UserCard/UserCard';
 import './SearchCom.css'
 

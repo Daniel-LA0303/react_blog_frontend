@@ -32,7 +32,6 @@ const SavePost = () => {
   return (
     <div>
         <Sidebar />
-        {/* <p className={`${theme ? 'text-black' : ' text-white'}  mt-10 text-center text-4xl`}>Posts Saved</p> */}
         <div className=' w-full  flex flex-col mt-10'>
         {!charge ? (
           <>

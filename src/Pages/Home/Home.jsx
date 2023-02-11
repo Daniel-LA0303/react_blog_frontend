@@ -3,13 +3,11 @@ import React, { useEffect, useState } from 'react'
 //components
 import Sidebar from '../../components/Sidebar/Sidebar';
 import Post from '../../components/Post/Post';
-import Spinner from '../../components/Spinner/Spinner';
 import LoadingPosts from '../../components/Spinner/LoadingPosts';
 
 import { getAllPostsAction, getUserAction, resetStatePostAction } from '../../StateRedux/actions/postAction';
 import { useDispatch, useSelector } from 'react-redux';
 import Aside from '../../components/Aside/Aside';
-import Slider from '../../components/Slider/Slider';
 import ScrollButton from '../../components/ScrollButton/ScrollButton';
 
 
@@ -17,7 +15,6 @@ const Home = () => {
 
   const dispatch = useDispatch();
 
-  // const[posts, setPosts] = useState([]);
   const[cats, setCats] = useState([]);
 
   const posts = useSelector(state => state.posts.posts);
@@ -37,29 +34,13 @@ const Home = () => {
     .then((response) => response.json())
     .then((cats) => {
       const result = cats.filter(cat => cat.follows.countFollows > 0);
-      // setTimeout(() => {
-        setCats(result)
-      // }, 1000);
-      
+      setCats(result)      
     })   
   }, []);
 
   useEffect(() => {
-    // setTimeout(() => {
-      dispatch(getAllPostsAction())
-    // }, 2000);
-    
-    // fetch("http://localhost:4000/api/posts")
-    // .then((response) => response.json())
-    // .then((post) => {
-    //   // setTimeout(() => {
-    //     setPosts(post)
-    //   // }, 1000);
-      
-    // })   
+    dispatch(getAllPostsAction())  
   }, []);
-  console.log(posts);
-
   useEffect(() => {
     const resetState = () => dispatch(resetStatePostAction());
     resetState();

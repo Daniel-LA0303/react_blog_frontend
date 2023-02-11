@@ -1,9 +1,8 @@
-import axios from 'axios';
 import React, { useEffect, useState } from 'react'
 import { useSelector } from 'react-redux';
+import axios from 'axios';
 
 const CategoryCard = ({category}) => {
-  console.log(category);
   const userP = useSelector(state => state.posts.user);
   const theme = useSelector(state => state.posts.themeW);
   const [isFollow, setIsFollow] = useState(false);
@@ -31,9 +30,9 @@ const handleClick = async() => {
             <h5 className="mb-2 text-2xl font-bold tracking-tight">{category.name}</h5>
             {Object.keys(userP) == '' ? null : (
               <button 
-              type="button" 
-              onClick={() => handleClick()}
-              className={`focus:outline-none text-white ${isFollow ? 'bg-orange-500 hover:bg-orange-800' : 'bg-purple-800 hover:bg-purple-900'} focus:ring-4 focus:ring-purple-300 font-medium rounded-lg text-sm px-5 py-1.5 mb-2 `}
+                type="button" 
+                onClick={() => handleClick()}
+                className={`focus:outline-none text-white ${isFollow ? 'bg-orange-500 hover:bg-orange-800' : 'bg-purple-800 hover:bg-purple-900'} focus:ring-4 focus:ring-purple-300 font-medium rounded-lg text-sm px-5 py-1.5 mb-2 `}
               >{isFollow ? 'Following' : 'Follow'}</button>  
             )}
         </div>

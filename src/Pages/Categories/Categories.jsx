@@ -2,8 +2,7 @@ import React, { useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux';
 import Sidebar from '../../components/Sidebar/Sidebar'
 import { getAllCategoriesAction } from '../../StateRedux/actions/postAction';
-import NewCardCategory from '../../components/CategoryCard/NewCardCategory';
-import Spinner from '../../components/Spinner/Spinner';
+import NewCardCategory from '../../components/CategoryCard/NewCardCategory';;
 import LoadingCategory from '../../components/Spinner/LoadingCategory';
 
 const Categories = () => {

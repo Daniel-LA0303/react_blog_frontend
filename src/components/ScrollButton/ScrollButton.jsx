@@ -17,13 +17,10 @@ const ScrollButton = () => {
         setVisible(false)
       }
     };
-    
     const scrollToTop = () =>{
       window.scrollTo({
         top: 0, 
         behavior: 'smooth'
-        /* you can also use 'auto' behaviour
-           in place of 'smooth' */
       });
     };
     
@@ -39,11 +36,6 @@ const ScrollButton = () => {
         style={{display: visible ? 'inline' : 'none'}}
       />
       </div>
-
-        {/* <FontAwesomeIcon icon={faArrowUp }
-            onClick={scrollToTop}
-            style={{display: visible ? 'inline' : 'none'}}
-        /> */}
     </div>
   )
 }

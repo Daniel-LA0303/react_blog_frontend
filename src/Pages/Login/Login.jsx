@@ -10,8 +10,6 @@ import { alertOffAction, alertOnAction } from '../../StateRedux/actions/postActi
 const Login = () => {
 
     const route = useNavigate();
-
-    const user = useSelector(state => state.posts.user);
     const loading = useSelector(state => state.posts.loading);
     const alert1 = useSelector(state => state.posts.alertMSG);
     const dispatch = useDispatch();
@@ -26,7 +24,6 @@ const Login = () => {
     useEffect(() => {
         alertOff();
     }, [])
-    // const [alertMsg, setAlertMsg] = useState({});
 
     const{email, password} = data;
 

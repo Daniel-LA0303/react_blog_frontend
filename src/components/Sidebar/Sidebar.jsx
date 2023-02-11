@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react'
+import React, {useState} from 'react'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faBars, faX, faHome, faPeopleGroup, faCirclePlus, faBookmark, faCode } from '@fortawesome/free-solid-svg-icons'
 import { Link } from 'react-router-dom'
@@ -7,7 +7,6 @@ import ProfileButton from '../ProfileButton/ProfileButton'
 
 import { useSelector } from 'react-redux'
 
-import Spinner from '../Spinner/Spinner'
 import SocialMedia from '../SocialMedia/SocialMedia'
 import SearchBar from '../SearchBar/SearchBar'
 import ConfigButton from '../ConfigButton/ConfigButton'
@@ -23,7 +22,6 @@ const Sidebar = () => {
 
   return (
     <>
-
       {loading ? (
         null
       ) : (
@@ -77,21 +75,15 @@ const Sidebar = () => {
                   <FontAwesomeIcon icon={faHome} className='mx-2'/>
                   <Link to={'/'}>Home</Link>
                 </div>
-                {/* {user._id ?  */}
-                  <>
-                    <div className='text-center  text-xl hover:bg-zinc-700 hover:text-white cursor-pointer py-3 mb-2 transition'>
-                      <FontAwesomeIcon icon={faCirclePlus} className='mx-2'/>
-                      <Link to={'/new-post'}>New Post</Link>
-                    </div>
-                    <div className='text-center  text-xl hover:bg-zinc-700 hover:text-white cursor-pointer py-3 mb-2 transition'>
-                      <FontAwesomeIcon icon={faBookmark} className='mx-2'/>
-                      <Link to={`/save-posts/${user._id}`}>Saved</Link>
-                    </div>
-                  </>
-                  {/* : null */}
-                {/* } */}
 
-
+                <div className='text-center  text-xl hover:bg-zinc-700 hover:text-white cursor-pointer py-3 mb-2 transition'>
+                  <FontAwesomeIcon icon={faCirclePlus} className='mx-2'/>
+                  <Link to={'/new-post'}>New Post</Link>
+                </div>
+                <div className='text-center  text-xl hover:bg-zinc-700 hover:text-white cursor-pointer py-3 mb-2 transition'>
+                  <FontAwesomeIcon icon={faBookmark} className='mx-2'/>
+                  <Link to={`/save-posts/${user._id}`}>Saved</Link>
+                </div>
                 <div className='text-center  text-xl hover:bg-zinc-700 hover:text-white cursor-pointer py-3 mb-2 transition'>
                   <FontAwesomeIcon icon={faCode} className='mx-2'/>
                   <Link to={'/categories'}>Categories</Link>

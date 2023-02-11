@@ -25,29 +25,11 @@ const Profile = () => {
   const userP = useSelector(state => state.posts.user);
   const PF = useSelector(state => state.posts.PFLink);
   const theme = useSelector(state => state.posts.themeW);
-  // console.log(userP);
 
   const [userC, setUserC] = useState({});
   const [isFollow, setIsFollow] = useState(false);
 
   const[posts, setPosts] = useState([]);
-
-  // useEffect(() => {
-  //   fetch("http://localhost:4000/api/posts")
-  //   .then((response) => response.json())
-  //   .then((post) => {
-      
-  //     setTimeout(() => {
-  //     const postUser = post.filter(p => p.user._id === user._id)
-  //     console.log(postUser);
-      
-  //     setPosts(postUser)
-  //     }, 2000)
-      
-  //     console.log(post);
-  //   })   
-  // }, [params.id]);
-
   useEffect(() => {
     fetch(`http://localhost:4000/api/posts/get-user-posts/${params.id}`)
     .then((response) => response.json())

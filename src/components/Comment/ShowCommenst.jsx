@@ -1,13 +1,12 @@
-import { faHeart, faPen, faTrash } from '@fortawesome/free-solid-svg-icons'
+import React, {useEffect, useState} from 'react'
+import { faPen, faTrash } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import axios from 'axios';
-import React from 'react'
-import { useEffect } from 'react';
-import { useState } from 'react';
 import { toast, Toaster } from 'react-hot-toast';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
 import Swal from 'sweetalert2';
+
 import { deleteCommentAction, editCommentAction } from '../../StateRedux/actions/postAction';
 import EditComment from './EditComment';
 
@@ -35,10 +34,7 @@ const ShowCommenst = ({comment, idPost}) => {
     }, [])
     
 
-    const handleDeleteComment = async (id, date) => {
-
-        // console.log(id);
-        
+    const handleDeleteComment = async (id, date) => {        
         Swal.fire({
             title: 'Are you sure you want to remove this Comment?',
             text: "Deleted comment cannot be recovered",
@@ -50,20 +46,14 @@ const ShowCommenst = ({comment, idPost}) => {
             cancelButtonText: 'No, Cancel'
           }).then(async(result) => {
             if (result.value) {
-                //consulta a la api
                 deleteCommentRedux(date);
                 try {
-            
                     const res =await axios.post(`http://localhost:4000/api/posts/delete-post-comment/${idPost}`, {id})
-                    // console.log(res);
-                    
                 } catch (error) {
                     console.log(error);
                 }
-                // route('/');
             }
-          })
-        
+          })  
     }
 
     const handleEditComment = async (id) => {
@@ -84,10 +74,7 @@ const ShowCommenst = ({comment, idPost}) => {
                 dateComment: comment.dateComment,
                 _id: comment._id
             }).then(res =>{
-
             })
-            
-            // console.log(res);
         } catch (error) {
             console.log(error);
         }
@@ -102,8 +89,8 @@ const ShowCommenst = ({comment, idPost}) => {
                       position="bottom-right"
                       reverseOrder={false}
                 />
-                <div className=" flex gap-4">
-                    <img src={PF+comment.userID.profilePicture} 
+                <div className=" flex gap-4">    
+                    <img src={comment.userID.profilePicture ? PF+comment.userID.profilePicture : '/avatar.png'} 
                         className=" rounded-lg -top-8 -mb-4 bg-white border h-20 w-20" 
                         alt="" 
                         loading="lazy" />
@@ -124,13 +111,11 @@ const ShowCommenst = ({comment, idPost}) => {
                                 onClick={() => handleDeleteComment(comment._id, comment.dateComment)}
                             />
                             {editActive ? null : (
-                            // <Link>
                             <FontAwesomeIcon 
                                 icon={faPen} 
                                 className='text-base text-sky-500 p-2 cursor-pointer'
                                 onClick={() => setEditActive(!editActive)}
                             />
-                        // </Link>
                             )}
 
                         </div>

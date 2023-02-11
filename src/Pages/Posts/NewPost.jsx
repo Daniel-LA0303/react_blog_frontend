@@ -20,15 +20,12 @@ const NewPost = () => {
 
   const route = useNavigate();
 
-//   const notify = () => toast('Here is your toast.');
-
   //local state
   const[title, setTitle] = useState(''); //title
   const[desc, setDesc] = useState(''); //description
   const[content, setContent] = useState(''); //content
   const[file, setFile] = useState(null); //get file
   const[categoriesPost, setCategoriesPost] = useState([]); //cat that user chose
-//   const[addPost, setAddPost] = useState(false);
 
   //redux
   const dispatch = useDispatch();
@@ -70,8 +67,6 @@ const NewPost = () => {
     if([title, desc, content, file, categoriesPost].includes('')){
         Swal.fire(
             "All fields are required",
-            // 'You clicked the button!',
-            // 'success'
         )
         return;
     }

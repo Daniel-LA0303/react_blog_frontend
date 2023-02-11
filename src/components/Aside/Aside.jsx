@@ -1,12 +1,11 @@
 import { faUser } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import React, { useEffect } from 'react'
-import { useDispatch, useSelector } from 'react-redux';
+import React from 'react'
+import { useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
-import { getAllCategoriesAction } from '../../StateRedux/actions/postAction';
 
 const Aside = ({cats}) => {
-    const theme = useSelector(state => state.posts.themeW);
+  const theme = useSelector(state => state.posts.themeW);
 
   return (
     <>
@@ -16,7 +15,8 @@ const Aside = ({cats}) => {
             <div className="flex items-center space-x-4">
               <div 
                 style={{border: `solid 10px ${cats.color}`}}
-                className="rounded-full w-4 h-4"></div>
+                className="rounded-full w-4 h-4">  
+              </div>
               <Link to={`/category/${cats.name}`} className="text-md font-bold">{cats.name}</Link>
             </div>
             <div className="flex items-center">
@@ -28,9 +28,6 @@ const Aside = ({cats}) => {
               </div>
             </div>
           </div>
-          {/* <div className="mt-4 text-gray-500 font-bold text-sm">
-            # TODO
-          </div> */}
         </div>
       </div>       
     </> 

@@ -5,11 +5,8 @@ import { Link } from 'react-router-dom';
 
 
 const NewCardCategory = ({category, userP}) => {
-
   const theme = useSelector(state => state.posts.themeW);
-
   const [isFollow, setIsFollow] = useState(false);
-
   useEffect(() => {
       const userInCat = category.follows.users.includes(userP._id);
       if(userInCat){

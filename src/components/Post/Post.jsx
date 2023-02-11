@@ -45,14 +45,6 @@ const Post = ({post}) => {
     const theme = useSelector(state => state.posts.themeW);
 
     useEffect(() => {
-        // fetch(`http://localhost:4000/api/posts/${post._id}`)
-        // .then((response) => response.json())
-        // .then((post) => {
-        // // setTimeout(() => {
-        //     setImageProfile(post.user.profilePicture)
-        // // }, 1000);
-        
-        // }) 
         const getOnePost = async () => {
             try {
                 const res = await axios.get(`http://localhost:4000/api/posts/${post._id}`);
@@ -94,21 +86,17 @@ const Post = ({post}) => {
             setNumberLike(numberLike+1)
         }
         try {
-            const res =await axios.post(`http://localhost:4000/api/posts/like-post/${id}`, userP);
-            console.log(res);
+            await axios.post(`http://localhost:4000/api/posts/like-post/${id}`, userP);
         } catch (error) {
             console.log(error);
-
         }
     }
 
     const handleSave = async (id) => {
         setSave(!save);
         if(save){
-            // setNumberSave(numberSave-1);
             notify2()
         }else{
-            // setNumberSave(numberSave+1)
             notify()
         }
         try {
@@ -168,7 +156,6 @@ const Post = ({post}) => {
                                     <FontAwesomeIcon 
                                         icon={faHeart} 
                                         className={`${like ? ' text-red-400' : 'text-stone-500'} mx-auto  rounded`}
-                                        
                                     />
                                 </button>
                             </div>
@@ -180,7 +167,6 @@ const Post = ({post}) => {
                                 />
                             </div>
                         </div>
-
                         <button onClick={() => handleSave(_id)}>
                             <FontAwesomeIcon 
                                 icon={faBookmark} 
@@ -191,7 +177,6 @@ const Post = ({post}) => {
                 ): (
                     null
                 )}
-               
             </div>
         </div>
     </>

@@ -30,7 +30,6 @@ const Register = () => {
     useEffect(() => {
         alertOff();
     }, [])
-    // const [alertMsg, setAlertMsg] = useState({});
 
     const {name, email, password} = data;
 

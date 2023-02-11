@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react'
-import { faGear, faTableColumns, faUser, faRightFromBracket, faSun, faMoon } from '@fortawesome/free-solid-svg-icons';
+import { faGear, faUser, faRightFromBracket, faSun, faMoon } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { Link } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
@@ -19,20 +19,14 @@ const ConfigButton = () => {
             setOpen(false);
           }      
         };
-    
         document.addEventListener("mousedown", handler);
-        
-    
         return() =>{
           document.removeEventListener("mousedown", handler);
         }
-    
     });
 
-    
     const handleChange = () => {
         changeThemeRedux();
-        // console.log('xd');
     }
   return (
     <div className={`${theme ? 'bgt-light' : 'bgt-dark'} mx-4`}>
@@ -40,7 +34,6 @@ const ConfigButton = () => {
             <div className='menu-trigger sm:mr-0 cursor-pointer text-2xl' onClick={()=>{setOpen(!open)}}>
                     <FontAwesomeIcon icon={faGear} />
             </div>
-
             <div className={`dropdown-menu ${open? 'active' : 'inactive'} ${theme ? 'bgt-light ' : 'bgt-dark border text-white'}`} >
                 <ul>
                     <li className = 'dropdownItem p-2 hover:bg-gray-700 hover:text-white transition rounded'>
@@ -69,10 +62,7 @@ const ConfigButton = () => {
                             </span>
                             {theme ? <FontAwesomeIcon className=' text-xl text-yellow-400 mx-1' icon={faSun} /> :
                             <FontAwesomeIcon className=' text-xl text-gray-600 mx-1' icon={faMoon} />}
-                            
-                            
                             </div>
-
                         </div>
                     </li>
                 </ul>

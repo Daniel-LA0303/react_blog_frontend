@@ -89,10 +89,8 @@ const PostSearch = ({post}) => {
     const handleSave = async (id) => {
         setSave(!save);
         if(save){
-            // setNumberSave(numberSave-1);
             notify2()
         }else{
-            // setNumberSave(numberSave+1)
             notify()
         }
         try {

@@ -10,7 +10,6 @@ import Spinner from '../Spinner/Spinner'
 const DashBoard = () => {
 
     const userP = useSelector(state => state.posts.user);
-
     if(Object.keys(userP) == '') return <Spinner />
   return (
     <div className="flex flex-wrap">
