@@ -50,7 +50,7 @@ const SearchCom = ({cats, posts, users}) => {
           >
             {posts.length === 0 ? (
               <>
-                <p className=' text-center text-2xl my-10'>There were no results</p>
+                <p className={`${theme ? 'text-black' : 'text-white'} text-center text-2xl my-10`}>There were no results</p>
               </>
             ): 
             <>
@@ -68,7 +68,7 @@ const SearchCom = ({cats, posts, users}) => {
           >
             {users.length === 0 ? (
               <>
-                <p className=' text-center text-2xl my-10'>There were no results</p>
+                <p className={`${theme ? 'text-black' : 'text-white'} text-center text-2xl my-10`}>There were no results</p>
               </>
             ): 
             <div className='flex flex-wrap justify-center sm:justify-start items-center mx-auto w-full'>
@@ -87,7 +87,7 @@ const SearchCom = ({cats, posts, users}) => {
           >
             {cats.length === 0 ? (
               <>
-                <p className=' text-center text-2xl my-10'>There were no results</p>
+                <p className={`${theme ? 'text-black' : 'text-white'} text-center text-2xl my-10`}>There were no results</p>
               </>
             ): 
             <div className='flex flex-wrap justify-center lg:justify-start items-center mx-auto w-full'>

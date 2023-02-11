@@ -22,6 +22,7 @@ const Home = () => {
 
   const posts = useSelector(state => state.posts.posts);
   const loading = useSelector(state => state.posts.loading);
+  const theme = useSelector(state => state.posts.themeW);
 
 
   useEffect(() => {
@@ -78,8 +79,8 @@ const Home = () => {
               </>
             ): 
             <>
-              {posts.length < 1 ? (
-                <p className='text-white'>Aun no hay posts</p>
+              {posts.length == 0 ? (
+                <p className={`${theme ? 'text-black' : 'text-white'} text-center m-auto my-10 text-3xl`}>There is nothing around here yet</p>
               ): (
                 <>
                   {[...posts].reverse().map(post => (

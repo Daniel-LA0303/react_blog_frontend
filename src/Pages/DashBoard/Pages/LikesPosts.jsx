@@ -9,6 +9,8 @@ const LikesPosts = () => {
 
   const params = useParams();
   const[posts, setPosts] = useState([]);
+  const[charge, setCharge] =useState(false);
+  const theme = useSelector(state => state.posts.themeW);
 
   useEffect(() => {
     fetch(`http://localhost:4000/api/users/get-profile/${params.id}`)
@@ -16,7 +18,7 @@ const LikesPosts = () => {
     .then((user) => {
       setTimeout(() => {
         setPosts(user.likePost.posts);  
-        console.log(user.likePost.posts);
+        setCharge(true);
       }, 1000);
     })   
 
@@ -25,19 +27,26 @@ const LikesPosts = () => {
     <div>
       <Sidebar />
       <div className=' w-full flex flex-col'>
+        {!charge ? (
+          <>
+            <LoadingPosts />
+          </>
+        ) : (
+          <>
             {posts.length === 0 ? (
+              <p className={`${theme ? 'text-black' : 'text-white'} text-center m-auto my-10 text-3xl`}>There is nothing around here yet</p>
+            ) : (
               <>
-                <LoadingPosts />
+                {[...posts].reverse().map(post => (
+                    <Post 
+                        key={post._id}
+                        post={post}
+                    />
+                ))}  
               </>
-            ): 
-            <>
-              {[...posts].reverse().map(post => (
-                  <Post 
-                      key={post._id}
-                      post={post}
-                  />
-              ))}  
-            </>}
+            )}
+          </>
+        )}
           </div>
     </div>
   )
