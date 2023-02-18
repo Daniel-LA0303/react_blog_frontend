@@ -51,7 +51,7 @@ const ProfileButton = () => {
                 <img
                     className='' 
                     src={ 
-                      user.profilePicture != '' ? PF+user.profilePicture : 
+                      user?.profilePicture.secure_url != '' ? user.profilePicture.secure_url : 
                       '/avatar.png'}    
                 />
             </div>

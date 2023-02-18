@@ -26,7 +26,7 @@ const EditProfile = () => {
     const[work, setWork] = useState('');
     const[education, setEducation] = useState('');
     const[skills, setSkills] = useState('');
-    const[image, setImage]= useState(''); //image
+    const[image, setImage]= useState({}); //image
     const[file, setFile] = useState(null); //get new image
     const[newImage, setNewImage] = useState(false); //new image validation
 
@@ -58,26 +58,29 @@ const EditProfile = () => {
             alert('error');
             return;
         }
-        const data={
-            info: {
-                desc: desc,
-                work: work,
-                education: education,
-                skills: skills
-            }
-        }
+    
+        const data = new FormData();
+        data.append('desc', desc);
+        data.append('work', work);
+        data.append('education', education);
+        data.append('skills', skills);
+        // data.append('image', file)
+
         if(newImage){ 
-            data.previousName=image //user chose a new image
+            // data.previousName=image //user chose a new image
+            data.append('previousName', image.public_id)
         }else{
-            data.profilePicture=image //user not chose a new image
+        // if(Object.keys(image) !== ''){
+            data.append('profilePicture', JSON.stringify(image))  //user not chose a new image
         }
+        // }
         if(file){
-            const dataFile = new FormData();
-            const filename = Date.now() + file.name;
-            dataFile.append("name",filename);
-            dataFile.append("image", file);
-            data.profilePicture = filename;
-            addNewFileRedux(dataFile);
+            // const dataFile = new FormData();
+            // const filename = Date.now() + file.name;
+            // dataFile.append("name",filename);
+            data.append("image", file);
+            // data.profilePicture = filename;
+            //addNewFileRedux(dataFile);
           }
         try {
             const res = await axios.post(`http://localhost:4000/api/users/new-info/${params.id}`, data);
@@ -86,7 +89,7 @@ const EditProfile = () => {
                 // 'You clicked the button!',
                 'success'
             )
-            route('/');
+            //route('/');
         } catch (error) {
             console.log(error);
         }
@@ -127,7 +130,7 @@ const EditProfile = () => {
                                         {image !== '' ? (
                                             <img
                                                 className=""
-                                                src={PF+image}
+                                                src={image.secure_url}
                                                 alt=""
                                             />
                                         ): null}

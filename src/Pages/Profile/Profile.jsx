@@ -91,7 +91,7 @@ useEffect(() => {
                 <div className="w-full px-4 flex justify-center">
                   <img alt="..." 
                     src={           
-                      user.profilePicture != '' ? PF+user.profilePicture : 
+                      user?.profilePicture.secure_url != '' ? user.profilePicture.secure_url : 
                       '../../public/avatar.png'  } 
                     className=" shadow-xl image_profile  h-auto align-middle border-none  -m-16  lg:-ml-16 max-w-250-px" />  
                 </div>
