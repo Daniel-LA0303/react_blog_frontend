@@ -106,7 +106,7 @@ const PostSearch = ({post}) => {
   return (
     <>
     <div className={`${theme ? ' bgt-light text-black' : 'bgt-dark hover:bg-zinc-700 text-white'} flex mx-auto items-center flex-col sm:flex-row w-full sm:w-5/6 lg:w-5/6 xl:w-5/6 my-5 rounded-2xl`}>
-        <img className="object-cover w-full h-20  sm:w-2/5 sm:h-60 md:rounded-none md:rounded-l-lg" src={PF+linkImage} alt="" />   
+        <img className="object-cover w-full h-20  sm:w-2/5 sm:h-60 md:rounded-none md:rounded-l-lg" src={linkImage.secure_url} alt="" />   
         <div className="flex flex-col  w-full  justify-between p-4 leading-normal">
             <div className='flex justify-between'>
                 <h5 className="mb-2 text-2xl w-4/6  font-bold tracking-tight ">{title}</h5>

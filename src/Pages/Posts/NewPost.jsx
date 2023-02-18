@@ -15,6 +15,7 @@ import {addNewPostAction, addNewFilePostAction, getAllCategoriesAction } from '.
 
 import Spinner from '../../components/Spinner/Spinner';
 import Swal from 'sweetalert2';
+import axios from 'axios';
 
 const NewPost = () => {
 
@@ -64,12 +65,19 @@ const NewPost = () => {
   const newPost = async e => {
     e.preventDefault();
 
-    if([title, desc, content, file, categoriesPost].includes('')){
+    if([title, desc, content, categoriesPost].includes('')){
         Swal.fire(
             "All fields are required",
         )
         return;
     }
+    if(file === null){
+        Swal.fire(
+            "All fields are required",
+        )
+        return;
+    }
+    let resImage = {}
     let linkImage;
     let cats = [];
     for (let i = 0; i < categoriesPost.length; i++) {
@@ -87,12 +95,26 @@ const NewPost = () => {
     }
     if(file){
         const formData = new FormData();
-        const filename = Date.now() + file.name;
-        formData.append('name', filename);
+        // const filename = Date.now() + file.name;
+        // formData.append('name', filename);
         formData.append('image', file);
-        newPost.linkImage = filename
-        linkImage=filename
-        addNewFileRedux(formData);
+        try {
+            const res = await axios.post(`http://localhost:4000/api/posts/image-post`, formData);
+            resImage = res.data
+            // console.log(resImage);
+            // Swal.fire(
+            //     res.data.msg,
+            //     // 'You clicked the button!',
+            //     'success'
+            // )
+            //route('/');
+        } catch (error) {
+            console.log(error);
+        }
+        newPost.linkImage = resImage
+        linkImage= resImage
+        // addNewFileRedux(formData);
+
     }
     addPostRedux(newPost, {
         user: user,

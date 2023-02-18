@@ -86,6 +86,8 @@ const EditPost = () => {
   const newPost = async e => {
     e.preventDefault();
 
+    let resImage = {}
+    let linkImage;
     let cats = [];
     for (let i = 0; i < categoriesSelect.length; i++) {
         cats.push(categoriesSelect[i].name);            
@@ -98,18 +100,27 @@ const EditPost = () => {
         categoriesSelect: categoriesSelect,
         desc: desc
     }
+
     if(newImage){ 
-        postUpdate.previousName=image //user chose a new image
+        postUpdate.previousName=image.public_id//user chose a new image
+        // postUpdate.append('previousName', image.public_id)
     }else{
         postUpdate.linkImage=image //user not chose a new image
+        // postUpdate.append('linkImage', JSON.stringify(image))
     }
     if(file){
         const formData = new FormData();
-        const filename = Date.now() + file.name;
-        formData.append('name', filename);
         formData.append('image', file);
-        postUpdate.linkImage = filename
-        addNewFileRedux(formData);
+        try {
+            const res = await axios.post(`http://localhost:4000/api/posts/image-post`, formData);
+            resImage = res.data
+            console.log(resImage);
+
+        } catch (error) {
+            console.log(error);
+        }
+        postUpdate.linkImage = resImage
+        linkImage= resImage
     }
     editPostRedux(params.id, postUpdate ,{
         _id: post._id,
@@ -119,7 +130,7 @@ const EditPost = () => {
         categoriesPost: cats,
         categoriesSelect: categoriesSelect,
         desc: desc,
-        linkImage: post.linkImage,
+        linkImage: file ? linkImage : post.linkImage,
         likePost: post.likePost,
         commenstOnPost: post.commenstOnPost,
         usersSavedPost: post.usersSavedPost,
@@ -128,7 +139,10 @@ const EditPost = () => {
         updatedAt: post.updatedAt
 
     });
-    route('/');
+    setTimeout(() => {
+        route('/');
+    }, 800);
+    
 }
 
   if(Object.keys(post) === '') return <Spinner />
@@ -206,7 +220,7 @@ const EditPost = () => {
                                         {image !== '' ? (
                                             <img
                                                 className=""
-                                                src={PF+image}
+                                                src={image.secure_url}
                                                 alt=""
                                             />
                                         ): null}
