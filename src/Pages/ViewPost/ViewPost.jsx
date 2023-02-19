@@ -167,7 +167,7 @@ const handleSave = async (id) => {
                 {post.linkImage && (
                     <img 
                         className="img-cover" 
-                        src={PF+post.linkImage}
+                        src={post.linkImage.secure_url}
                         alt="Sunset in the mountains" 
                     />
                 )}

@@ -90,7 +90,7 @@ const ShowCommenst = ({comment, idPost}) => {
                       reverseOrder={false}
                 />
                 <div className=" flex gap-4">    
-                    <img src={comment.userID.profilePicture ? PF+comment.userID.profilePicture : '/avatar.png'} 
+                    <img src={comment.userID.profilePicture.secure_url ? comment.userID.profilePicture.secure_url : '/avatar.png'} 
                         className=" rounded-lg -top-8 -mb-4 bg-white border h-20 w-20" 
                         alt="" 
                         loading="lazy" />
