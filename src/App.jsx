@@ -29,6 +29,7 @@ import UserTags from "./Pages/DashBoard/Pages/UserTags";
 import LikesPosts from "./Pages/DashBoard/Pages/LikesPosts";
 import FollowedUsers from "./Pages/DashBoard/Pages/FollowedUsers";
 import FollowersUsers from "./Pages/DashBoard/Pages/FollowersUsers";
+import About from "./Pages/About/About";
 
 function App() {
 
@@ -71,6 +72,8 @@ function App() {
           <Route path="/forget-password" element={<ForgetPassword /> } />
           <Route path="/forget-password/:id" element={<NewPassword /> } />
           <Route path="/user-confirmed/:id" element={<UserConfirmed /> } />
+
+          <Route path="/about" element={<About /> } />
           
           <Route path="/new-post" element={<NewPost /> } />
           <Route path="/edit-post/:id" element={user._id ? <EditPost /> :<Login /> } />

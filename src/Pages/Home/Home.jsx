@@ -9,6 +9,7 @@ import { getAllPostsAction, getUserAction, resetStatePostAction } from '../../St
 import { useDispatch, useSelector } from 'react-redux';
 import Aside from '../../components/Aside/Aside';
 import ScrollButton from '../../components/ScrollButton/ScrollButton';
+import Slider from '../../components/Slider/Slider'
 
 
 const Home = () => {
@@ -50,7 +51,7 @@ const Home = () => {
     <div className='  '>
         <Sidebar />
         <div className=' block sm:hidden sm:visible w-full'>
-          {/* <Slider cats={cats}/> */}
+          <Slider className=" z-10" cats={cats}/>
         </div>
         <div className='flex flex-row mt-10'>
           <div className=' w-full  sm:w-8/12 lg:w-9/12 flex flex-col'>

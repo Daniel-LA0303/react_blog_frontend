@@ -1,11 +1,15 @@
 import React from 'react'
+import { useSelector } from 'react-redux';
 
 const SocialMedia = () => {
+
+  const theme = useSelector(state => state.posts.themeW);
+
   return (
     <div className=" p-6  ">
   <div className="container mx-auto">
     <div>
-      <h2 className="text-sm font-semibold text-center mb-6 text-gray-700">Social Media</h2>
+      <h2 className={`${theme ? 'bgt-light ' : 'bgt-dark text-white'} text-sm font-semibold text-center mb-6`}>Social Media</h2>
 
       <div className="flex justify-center gap-2">
         <button className="bg-blue-500 p-2 font-semibold text-white inline-flex items-center space-x-2 rounded">

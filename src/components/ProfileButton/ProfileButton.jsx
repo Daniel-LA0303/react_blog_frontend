@@ -45,7 +45,7 @@ const ProfileButton = () => {
     
 
   return (
-    <div className={`${theme ? 'bgt-light' : 'bgt-dark'}`}>
+    <div className={` ${theme ? 'bgt-light' : 'bgt-dark'}`}>
          <div className='menu-container' ref={menuRef}>
             <div className='menu-trigger mr-4 sm:mr-0' onClick={()=>{setOpen(!open)}}>
                 <img
@@ -56,51 +56,51 @@ const ProfileButton = () => {
                 />
             </div>
 
-            <div className={`dropdown-menu ${open? 'active' : 'inactive'} ${theme ? 'bgt-light border-4' : 'bgt-dark border-4 text-white'}`} >
-            <p className=' text-center text-xl sm:text-3xl'>{user.name}</p>
-            <p className='text-center'>{user.email}</p>
-            <ul>
-                <li className = 'dropdownItem p-2 hover:bg-gray-700 hover:text-white transition rounded'>
+            <div className={`dropdown-menu z-20 ${open? 'active' : 'inactive'} ${theme ? 'bgt-light border-4' : 'bgt-dark border-4 text-white'}`} >
+              <p className=' text-center text-xl sm:text-3xl'>{user.name}</p>
+              <p className='text-center'>{user.email}</p>
+              <ul>
+                  <li className = 'dropdownItem p-2 hover:bg-gray-700 hover:text-white transition rounded'>
+                      <div className='px-2'>
+                        <FontAwesomeIcon icon={faUser} />
+                      </div>
+                      <Link to={`/profile/${user._id}`}>My Profile</Link>
+                  </li>
+                  <li className = 'dropdownItem p-2 hover:bg-gray-700 hover:text-white transition rounded'>
                     <div className='px-2'>
-                      <FontAwesomeIcon icon={faUser} />
+                        <FontAwesomeIcon icon={faGear} />
+                      </div>
+                      <Link to={`/edit-profile/${user._id}`}>Settings</Link>
+                  </li>
+                  <li className = 'dropdownItem p-2 hover:bg-gray-700 hover:text-white transition rounded'>
+                      <div className='px-2'>
+                        <FontAwesomeIcon icon={faTableColumns} />
+                      </div>
+                      <Link to={`/dashboard/${user._id}`}>Dashboard</Link>
+                  </li>
+                  <li>
+                    <div>
+                      <div className='flex justify-start items-center'>
+                        {theme ? 
+                          <FontAwesomeIcon
+                            className=' text-4xl text-yellow-400 mx-1 cursor-pointer' icon={faSun}
+                            onClick={handleChange}
+                          /> :
+                          <FontAwesomeIcon
+                            className=' text-4xl text-gray-600 mx-1 cursor-pointer' icon={faMoon} 
+                            onClick={handleChange}
+                          />}
+                      </div>
                     </div>
-                    <Link to={`/profile/${user._id}`}>My Profile</Link>
-                </li>
-                <li className = 'dropdownItem p-2 hover:bg-gray-700 hover:text-white transition rounded'>
-                  <div className='px-2'>
-                      <FontAwesomeIcon icon={faGear} />
-                    </div>
-                    <Link to={`/edit-profile/${user._id}`}>Settings</Link>
-                </li>
-                <li className = 'dropdownItem p-2 hover:bg-gray-700 hover:text-white transition rounded'>
-                    <div className='px-2'>
-                      <FontAwesomeIcon icon={faTableColumns} />
-                    </div>
-                    <Link to={`/dashboard/${user._id}`}>Dashboard</Link>
-                </li>
-                <li>
-                  <div>
-                    <div className='flex justify-start items-center'>
-                      {theme ? 
-                        <FontAwesomeIcon
-                          className=' text-4xl text-yellow-400 mx-1 cursor-pointer' icon={faSun}
-                          onClick={handleChange}
-                        /> :
-                        <FontAwesomeIcon
-                          className=' text-4xl text-gray-600 mx-1 cursor-pointer' icon={faMoon} 
-                          onClick={handleChange}
-                        />}
-                    </div>
-                  </div>
-                </li>
-                <li className = 'dropdownItem '>
-                    <button 
-                        type="button" 
-                        className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800"
-                        onClick={() => handleLogOut()}
-                    >Logout</button>
-                </li>
-            </ul>
+                  </li>
+                  <li className = 'dropdownItem '>
+                      <button 
+                          type="button" 
+                          className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800"
+                          onClick={() => handleLogOut()}
+                      >Logout</button>
+                  </li>
+              </ul>
             </div>
         </div>
     </div>
