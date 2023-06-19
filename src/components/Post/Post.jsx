@@ -110,45 +110,55 @@ const Post = ({post}) => {
     if(Object.keys(post) == '' ) return <Spinner />
   return (
     <>
-        <div className={`${theme ? ' bgt-light text-black' : 'bgt-dark hover:bg-zinc-700 text-white'} flex mx-auto items-center flex-col sm:flex-row w-full sm:w-5/6 lg:w-5/6 xl:w-5/6  my-5 rounded-2xl`}>
-            <img className="object-cover w-full h-20  sm:w-2/5 sm:h-60 md:rounded-none md:rounded-l-lg" src={linkImage.secure_url} alt="" />   
-            <div className="flex flex-col  w-full  justify-between p-4 leading-normal">
-                <div className='flex justify-between'>
-                    <h5 className="mb-2 text-2xl w-4/6  font-bold tracking-tight ">{title}</h5>
-                    <span className="mb-3 font-normal w-auto text-gray-700 dark:text-gray-400">Posted on {new Date(date).toDateString()}</span>
-                </div>
+        <div className={`${theme ? ' bgt-light text-black' : 'bgt-dark hover:bg-zinc-700 text-white'} w-full flex  items-center flex-col md:flex-row md:w-5/6 lg:w-5/6 xl:w-5/6  my-4 rounded-2xl`}>
+            <div className=' w-full md:w-4/12'>
+                <img className="object-cover w-full h-20   md:h-60 md:rounded-none md:rounded-l-lg block" src={linkImage.secure_url} alt="" />  
+            </div>
+             
+            <div className=" h-full  w-full md:w-8/12 n leading-normal">
+                <div className=' px-5 h-full flex flex-col justify-evenly'>
+                {/* <div className='flex justify-between mt-2 sm:mt-0 items-center'> */}
+                    <h5 className="mb-2 text-2xl   font-bold tracking-tight ">{title}</h5>
+                    
+                {/* </div> */}
                 <Toaster
                     position="bottom-right"
                     reverseOrder={false}
                 />
-                <p className="mb-3 font-normal text-gray-700 dark:text-gray-400">{desc}</p>
+                {/* <p className="mb-3 font-normal text-gray-700 dark:text-gray-400">{desc}</p> */}
                 <div className="mb-3">
                     {categoriesPost.map(cat => (
                         <Link
                             key={cat}
                             to={`/category/${cat}`}
-                            className="inline-block bg-gray-200 rounded-full px-3 py-1 text-sm font-semibold text-gray-700 mr-2 mb-2">#{cat}</Link> 
+                            className="inline-block bg-gray-200 rounded-full px-2 py-1 text-xs font-semibold text-gray-700 mr-2 mb-2">#{cat}</Link> 
                     ))}
                 </div>
                 <div className='flex justify-between items-center'>
-                    <div className=' sm:mr-0' >
+                    <div className=' md:mr-0' >
                         <div className='flex items-center'>
                             <Link to={`/profile/${user._id}`}>
-                                <img
-                                    className='border-4 img-card-post rounded-full' 
-                                    src={imageProfile != '' ? imageProfile.secure_url : '/avatar.png'}    
-                                />
+                                <div className='w-full '>
+                                    <img
+                                        className='object-cover block border w-full h-10 rounded-full' 
+                                        src={imageProfile != '' ? imageProfile.secure_url : '/avatar.png'}   
+                                    />
+                                </div>
                             </Link>
-                            <p className='mx-3'>{user.name}</p>
+                            <div>
+                                <p className='mx-3 my-0 text-sm'>{user.name}</p>
+                                <p className="mx-3 text-xs font-normal w-auto text-gray-700 dark:text-gray-400">{new Date(date).toDateString()}</p>
+                            </div>
+
                         </div>
                     </div>
-                    <Link to={`/view-post/${_id}`} className=" w-32 h-auto inline-flex items-center px-3 py-2 text-sm font-medium text-center text-white bg-blue-700 rounded-lg hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
+                    <Link to={`/view-post/${_id}`} className=" w-28 h-auto inline-flex items-center px-3 py-2 text-xs text-center text-white bg-blue-700 rounded-lg hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
                         Read more
                         <svg aria-hidden="true" className="w-4 h-4 ml-2 -mr-1" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z" ></path></svg>
                     </Link>
                 </div>
                 {userP._id ? (
-                    <div className="flex items-center justify-between mt-5">
+                    <div className="flex items-center justify-between my-2">
                         <div className='flex'>
                             <div className='flex'>
                                 <p className='mx-3'>{numberLike}</p>
@@ -177,6 +187,8 @@ const Post = ({post}) => {
                 ): (
                     null
                 )}
+                </div>
+                
             </div>
         </div>
     </>

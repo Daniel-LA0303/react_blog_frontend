@@ -50,11 +50,11 @@ const Home = () => {
   return (
     <div className='  '>
         <Sidebar />
-        <div className=' block sm:hidden sm:visible w-full'>
+        <div className=' block md:hidden md:visible w-full'>
           <Slider className=" z-10" cats={cats}/>
         </div>
-        <div className='flex flex-row mt-10'>
-          <div className=' w-full  sm:w-8/12 lg:w-9/12 flex flex-col'>
+        <div className='flex flex-row mt-0 md:mt-10'>
+          <div className=' w-full  sm:mx-0  md:w-10/12 lg:w-10/12 flex flex-col items-center'>
             {loading ? (
               <>
                 <LoadingPosts />
@@ -62,7 +62,7 @@ const Home = () => {
             ): 
             <>
               {posts.length == 0 ? (
-                <p className={`${theme ? 'text-black' : 'text-white'} text-center m-auto my-10 text-3xl`}>There is nothing around here yet</p>
+                <p className={`${theme ? 'text-black' : 'text-white'} text-center mx-auto my-10 text-3xl`}>There is nothing around here yet</p>
               ): (
                 <>
                   {[...posts].reverse().map(post => (
@@ -77,7 +77,7 @@ const Home = () => {
             </>}
 
           </div>
-          <aside className=' hidden sm:block sm:visible w-0 sm:w-4/12 lg:w-3/12'>
+          <aside className=' hidden md:block md:visible w-0 md:w-4/12 lg:w-3/12'>
             {cats.map(cat => (
               <Aside 
                 cats={cat}

@@ -182,7 +182,7 @@ useEffect(() => {
             </div>
           </div>
         </div>
-        <div className='w-full flex flex-col mx-auto'>
+        <div className='w-full flex flex-col items-center'>
             {Object.keys(user) === '' ? (
               <>
                 <LoadingPosts />
