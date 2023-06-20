@@ -110,7 +110,7 @@ const Post = ({post}) => {
     if(Object.keys(post) == '' ) return <Spinner />
   return (
     <>
-        <div className={`${theme ? ' bgt-light text-black' : 'bgt-dark hover:bg-zinc-700 text-white'} w-full flex  items-center flex-col md:flex-row md:w-5/6 lg:w-5/6 xl:w-5/6  my-4 rounded-2xl`}>
+        <div className={`${theme ? ' bgt-light text-black' : 'bgt-dark hover:bg-zinc-700 text-white'} w-full flex  items-center flex-col md:flex-row   my-4 rounded-2xl`}>
             <div className=' w-full md:w-4/12'>
                 <img className="object-cover w-full h-20   md:h-60 md:rounded-none md:rounded-l-lg block" src={linkImage.secure_url} alt="" />  
             </div>

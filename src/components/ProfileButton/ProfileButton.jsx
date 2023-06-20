@@ -18,6 +18,8 @@ const ProfileButton = () => {
     let menuRef = useRef();
 
     useEffect(() => {
+
+
         let handler = (e)=>{
           if(!menuRef.current.contains(e.target)){
             setOpen(false);
@@ -47,7 +49,7 @@ const ProfileButton = () => {
   return (
     <div className={` ${theme ? 'bgt-light' : 'bgt-dark'}`}>
          <div className='menu-container' ref={menuRef}>
-            <div className='menu-trigger mr-4 sm:mr-0' onClick={()=>{setOpen(!open)}}>
+            <div className='menu-trigger mr-1 md:mr-0' onClick={()=>{setOpen(!open)}}>
                 <img
                     className='' 
                     src={ 
@@ -56,7 +58,9 @@ const ProfileButton = () => {
                 />
             </div>
 
-            <div className={`dropdown-menu z-20 ${open? 'active' : 'inactive'} ${theme ? 'bgt-light border-4' : 'bgt-dark border-4 text-white'}`} >
+            <div 
+              className={`dropdown-menu z-20 ${open? 'active' : 'inactive'} ${theme ? 'bgt-light border-4' : 'bgt-dark border-4 text-white'}`} 
+            >
               <p className=' text-center text-xl sm:text-3xl'>{user.name}</p>
               <p className='text-center'>{user.email}</p>
               <ul>

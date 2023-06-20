@@ -36,8 +36,8 @@ a {
 }
 
 .menu-trigger img{
-  height: 50px;
-  width: 50px;
+  height: 40px;
+  width: 40px;
   margin: 0 5px;
   border-radius: 50%;
   overflow: hidden;
@@ -47,14 +47,34 @@ a {
 
 .dropdown-menu{
   position: absolute;
+  /* top: 80px;
+  right: 20px; */
   top: 80px;
   right: 20px;
+  
   /* background-color: #fff; */
   border-radius: var(--border-radius);
   padding: 10px 20px;
   width: 200px;
 }
-
+@media (min-width: 730px) {
+  .dropdown-menu{
+    top: 80px;
+    right: 90px;
+  }
+}
+@media (min-width: 1024px) {
+  .dropdown-menu{
+    top: 80px;
+    right: 180px;
+  }
+}
+@media (min-width: 1200px) {
+  .dropdown-menu{
+    top: 80px;
+    right: 240px;
+  }
+}
 .dropdown-menu::before{
   /* content: '';
   position: absolute;

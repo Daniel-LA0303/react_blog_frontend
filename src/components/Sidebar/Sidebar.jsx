@@ -25,12 +25,12 @@ const Sidebar = () => {
       {loading ? (
         null
       ) : (
-        <div className={`${theme ? 'bgt-light' : 'bgt-dark'}  py-1  top-0 left-0 right-0 shadow-2xl `}>
-          <div className={`flex items-center justify-between  h-14`}>
-            <div className='flex items-center justify-start'>
+        <header className={`${theme ? 'bgt-light' : 'bgt-dark'}  py-1  top-0 left-0 right-0 shadow-2xl `}>
+          <div className={`flex items-center justify-between  h-14 mx-auto w-full md:w-10/12 lg:w-8/12`}>
+            <div className='flex items-center justify-start  '>
               {user._id ? 
               <>
-                <button className='ml-4' onClick={() => setOpen(true)}>
+                <button className='ml-4 md:ml-0' onClick={() => setOpen(true)}>
                   <FontAwesomeIcon icon={faBars} className={` text-3xl ${theme ? 'text-black' : 'text-white'}`} />
                 </button>
               </> : null}
@@ -38,7 +38,7 @@ const Sidebar = () => {
               <Logo />
             </div>
 
-            <div className=' mx-1 sm:ml-5 flex justify-end items-center'>
+            <div className='w-full mx-1 sm:ml-5 flex items-center justify-end'>
               <SearchBar />
               {user._id ? (
                 <div className=''>
@@ -99,7 +99,7 @@ const Sidebar = () => {
               </div>
             </div>
           </div>
-        </div>
+        </header>
       )}
     </>
   )

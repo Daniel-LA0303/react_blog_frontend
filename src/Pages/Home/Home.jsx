@@ -53,7 +53,7 @@ const Home = () => {
         <div className=' block md:hidden md:visible w-full'>
           <Slider className=" z-10" cats={cats}/>
         </div>
-        <div className='flex flex-row mt-0 md:mt-10'>
+        <div className='flex flex-row mt-0 md:mt-10 mx-auto w-full md:w-10/12 lg:w-8/12'>
           <div className=' w-full  sm:mx-0  md:w-10/12 lg:w-10/12 flex flex-col items-center'>
             {loading ? (
               <>
