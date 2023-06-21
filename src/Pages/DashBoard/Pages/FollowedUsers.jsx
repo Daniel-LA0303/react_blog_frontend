@@ -32,14 +32,15 @@ const FollowedUsers = () => {
     }, [])
 
   return (
-    <div>
+    <div className={`${theme ? 'text-black' : 'text-white'}`}>
         <Sidebar />
-        <div className='flex flex-wrap justify-center sm:justify-start items-center mx-auto w-full'>
+        <h2 className=' text-center my-5 text-2xl'>Followed</h2>
+        <div className='flex flex-row mt-0 md:mt-10 mx-auto w-full md:w-10/12 lg:w-8/12'>
         {!charge ? (
             <>
               <LoadingUser />
             </>
-          ): <>
+          ): <div className='grid gap-2 md:grid-cols-2 w-full mx-5 md:mx-0'>
               {users.length === 0 ? (
                 <p className={`${theme ? 'text-black' : 'text-white'} text-center m-auto my-10 text-3xl`}>There is nothing around here yet</p>
               ): (
@@ -53,7 +54,7 @@ const FollowedUsers = () => {
                 </>
               )}
 
-          </>}
+          </div>}
         </div>
 
     </div>

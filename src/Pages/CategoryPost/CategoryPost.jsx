@@ -67,12 +67,16 @@ if(Object.keys(category) == '') return <Spinner />
       
       <div className='w-full flex flex-wrap justify-evenly'>
       <CategoryCard category={category}/>
-        {postsFilter.map(post => (
-          <Post 
-            key={post._id}
-            post={post}
-          />
-        ))}
+      <div className='flex flex-row mt-0 md:mt-10 mx-auto w-full md:w-10/12 lg:w-8/12'>
+        <div className='w-full mx-auto sm:mx-0  flex flex-col items-center'>
+          {postsFilter.map(post => (
+            <Post 
+              key={post._id}
+              post={post}
+            />
+          ))}
+        </div>
+      </div>
       </div>
     </div>
   )

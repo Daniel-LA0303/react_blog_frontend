@@ -84,7 +84,7 @@ useEffect(() => {
     <div className=''>
       <Sidebar />
       <section className="pt-8 sm:pt-8 ">
-        <div className="w-full  sm:w-5/6 lg:w-5/6 xl:w-5/6 mx-auto">
+        <div className="w-full md:w-10/12 lg:w-8/12 mx-auto">
           <div className={`${theme ? 'bgt-light ' : 'bgt-dark text-white'} flex flex-col min-w-0 break-word w-full mb-6 shadow-xl rounded-lg mt-16`}>
             <div className="px-2 sm:px-6 ">
               <div className="flex flex-wrap justify-center">
@@ -182,27 +182,30 @@ useEffect(() => {
             </div>
           </div>
         </div>
-        <div className='w-full flex flex-col items-center'>
-            {Object.keys(user) === '' ? (
+        <div className='flex flex-row mt-0 md:mt-10 mx-auto w-full md:w-10/12 lg:w-8/12'>
+          <div className='w-full flex flex-col items-center'>
+              {Object.keys(user) === '' ? (
+                <>
+                  <LoadingPosts />
+                </>
+              ): 
               <>
-                <LoadingPosts />
-              </>
-            ): 
-            <>
-              {posts.length === 0 ? (
-                <p className=' text-center'>There is nothing around here yet</p>
-              ) : (<>
-                {[...posts].reverse().map(post => (
-                  <Post
-                      key={post._id}
-                      post={post}
-                  />
-                ))}
-              </>)}
-  
-            </>}
+                {posts.length === 0 ? (
+                  <p className=' text-center'>There is nothing around here yet</p>
+                ) : (<>
+                  {[...posts].reverse().map(post => (
+                    <Post
+                        key={post._id}
+                        post={post}
+                    />
+                  ))}
+                </>)}
+    
+              </>}
 
           </div>
+        </div>
+        
         <footer className="relative  pt-8 pb-6 mt-8">
           <div className="container mx-auto px-4">
             <div className="flex flex-wrap items-center md:justify-between justify-center">

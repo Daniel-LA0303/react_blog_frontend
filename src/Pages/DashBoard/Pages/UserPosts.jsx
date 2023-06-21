@@ -25,30 +25,34 @@ const UserPosts = () => {
 
 
   return (
-    <div>
+    <div className={`${theme ? 'text-black' : 'text-white'}`}>
       <Sidebar />
-      <div className=' w-full flex flex-col'>
-        {!charge ? (
-            <>
-              <LoadingPosts />
-            </>
-          ) : (
-            <>
-              {posts.length === 0 ? (
-                <p className={`${theme ? 'text-black' : 'text-white'} text-center m-auto my-10 text-3xl`}>There is nothing around here yet</p>
-              ) : (
-                <>
-                  {[...posts].reverse().map(post => (
-                      <Post 
-                          key={post._id}
-                          post={post}
-                      />
-                  ))}  
-                </>
-              )}
-            </>
-          )}      
+      <h2 className=' text-center my-5 text-2xl'>Your Posts</h2>
+      <div className='flex flex-row mt-0 md:mt-10 mx-auto w-full md:w-10/12 lg:w-8/12'>
+        <div className=' w-full mx-auto sm:mx-0  flex flex-col items-center'>
+          {!charge ? (
+              <>
+                <LoadingPosts />
+              </>
+            ) : (
+              <>
+                {posts.length === 0 ? (
+                  <p className={`${theme ? 'text-black' : 'text-white'} text-center m-auto my-5 text-3xl`}>There is nothing around here yet</p>
+                ) : (
+                  <>
+                    {[...posts].reverse().map(post => (
+                        <Post 
+                            key={post._id}
+                            post={post}
+                        />
+                    ))}  
+                  </>
+                )}
+              </>
+            )}      
+        </div>
       </div>
+      
     </div>
   )
 }

@@ -28,31 +28,35 @@ const UserTags = () => {
 
   
   return (
-    <div>
+    <div className={`${theme ? 'text-black' : 'text-white'}`}>
       <Sidebar />
-      <div className=' w-full block sm:flex sm:flex-wrap justify-center mb-10'>
-        {!charge ? (
-          <LoadingCategory />
-        ) : (
-          <>
-            {categories.length == 0 ? (
-                <p className={`${theme ? 'text-black' : 'text-white'} text-center m-auto my-10 text-3xl`}>There is nothing around here yet</p>
-            ) : (
-              <>
-              {categories.map(cat => (
-                  <NewCardCategory 
-                    key={cat._id}
-                    category={cat}
-                    userP={userP}
-                  />
-                ))}
-              </>
-            )} 
-          </>
-        )}
+      <h2 className=' text-center my-5 text-2xl'>Tags you follow</h2>
+      <div className='w-full md:w-10/12 lg:w-8/12 mx-auto'>
+        <div className=' grid gap-2 md:grid-cols-2 w-full '>
+          {!charge ? (
+            <LoadingCategory />
+          ) : (
+            <>
+              {categories.length == 0 ? (
+                  <p className={`${theme ? 'text-black' : 'text-white'} text-center m-auto my-10 text-3xl`}>There is nothing around here yet</p>
+              ) : (
+                <>
+                {categories.map(cat => (
+                    <NewCardCategory 
+                      key={cat._id}
+                      category={cat}
+                      userP={userP}
+                    />
+                  ))}
+                </>
+              )} 
+            </>
+          )}
 
 
         </div>
+      </div>
+      
     </div>
   )
 }

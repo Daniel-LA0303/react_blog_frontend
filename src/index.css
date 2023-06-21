@@ -55,7 +55,7 @@ a {
   /* background-color: #fff; */
   border-radius: var(--border-radius);
   padding: 10px 20px;
-  width: 200px;
+  width: 180px;
 }
 @media (min-width: 730px) {
   .dropdown-menu{
@@ -130,7 +130,7 @@ h3 span{
 
 .dropdownItem{
   display: flex;
-  margin: 10px auto;
+  margin: 3px auto;
 }
 
 .dropdownItem img{

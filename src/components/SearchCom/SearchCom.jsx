@@ -6,6 +6,7 @@ import NewCardCategory from '../CategoryCard/NewCardCategory';
 import PostSearch from '../Post/PostSearch';
 import UserCard from '../UserCard/UserCard';
 import './SearchCom.css'
+import Post from '../Post/Post';
 
 const SearchCom = ({cats, posts, users}) => {
   const userP = useSelector(state => state.posts.user);
@@ -17,7 +18,7 @@ const SearchCom = ({cats, posts, users}) => {
   };
   return (
     <>
-      <div className="container-search my-10 mx-auto w-5/6">
+      <div className="container-search my-10 mx-auto md:w-10/12 lg:w-8/12">
         <div className="bloc-tabs bgt-dark text-gray-500">
           <button
             className={`${toggleState === 1 ? "tabs active-tabs" : "tabs"} `}
@@ -53,7 +54,7 @@ const SearchCom = ({cats, posts, users}) => {
             ): 
             <>
               {posts.map(post => (
-                  <PostSearch 
+                  <Post 
                       key={post._id}
                       post={post}
                   />
@@ -69,7 +70,7 @@ const SearchCom = ({cats, posts, users}) => {
                 <p className={`${theme ? 'text-black' : 'text-white'} text-center text-2xl my-10`}>There were no results</p>
               </>
             ): 
-            <div className='flex flex-wrap justify-center sm:justify-start items-center mx-auto w-full'>
+            <div className='grid gap-2 md:grid-cols-2 w-full'>
               {users.map(user => (
                   <UserCard
                       key={user._id}
@@ -88,7 +89,7 @@ const SearchCom = ({cats, posts, users}) => {
                 <p className={`${theme ? 'text-black' : 'text-white'} text-center text-2xl my-10`}>There were no results</p>
               </>
             ): 
-            <div className='flex flex-wrap justify-center lg:justify-start items-center mx-auto w-full'>
+            <div className='grid gap-2 md:grid-cols-2 w-full'>
               {cats.map(cat => (
                 <NewCardCategory 
                   key={cat._id}

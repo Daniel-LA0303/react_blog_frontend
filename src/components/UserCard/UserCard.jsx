@@ -29,10 +29,16 @@ const UserCard = ({user}) => {
       }
     
   return (
-    <div className={`${theme ? ' bgt-light text-black' : 'bgt-dark hover:bg-zinc-700 text-white'}  mx-0 sm:mx-5 my-5 rounded-lg w-full sm:w-auto`}>
-        <div className=" py-10 px-20 shadow-md">
+    <div className={`${theme ? ' bgt-light text-black' : 'bgt-dark hover:bg-zinc-700 text-white'}  mx-0 md:mx-2 my-5 rounded-lg w-full sm:w-auto`}>
+        <div className=" py-5 px-10 shadow-md">
             <div className="flex flex-col items-center ">
-                <img className="w-24 h-24 mb-3 rounded-full shadow-lg" src={user.profilePicture.secure_url} alt="Bonnie image"/>
+                <img 
+                  className="w-24 h-24 mb-3 rounded-full shadow-lg" 
+                  // src={user.profilePicture.secure_url} 
+                  src={ 
+                    user?.profilePicture.secure_url != '' ? user.profilePicture.secure_url : 
+                    '/avatar.png'} 
+                  alt="Bonnie image"/>
                 <h5 className="mb-1 text-xl font-medium ">{user.name}</h5>
                 <span className="text-sm text-gray-500 dark:text-gray-400">{user.email}</span>
                 <div className="flex justify-center items-center flex-col sm:flex-row mt-4 md:mt-6">

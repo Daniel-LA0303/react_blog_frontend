@@ -25,7 +25,7 @@ const handleClick = async() => {
   return (
     <div
       style={{borderBottom: `solid 10px ${category.color}`}} 
-      className={` ${theme ? ' bgt-light text-black' : 'bgt-dark hover:bg-zinc-700 text-white'} sm:w-5/6 lg:w-5/6 xl:w-5/6 mt-5 px-3 py-4 rounded-lg shadow-md`}>
+      className={` ${theme ? ' bgt-light text-black' : 'bgt-dark hover:bg-zinc-700 text-white'} md:w-10/12 lg:w-8/12 mt-5 px-3 py-4 rounded-lg shadow-md`}>
         <div className='flex items-center justify-between'>
             <h5 className="mb-2 text-2xl font-bold tracking-tight">{category.name}</h5>
             {Object.keys(userP) == '' ? null : (

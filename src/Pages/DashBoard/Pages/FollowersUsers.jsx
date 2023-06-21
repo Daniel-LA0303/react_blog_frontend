@@ -30,26 +30,26 @@ const FollowersUsers = () => {
           
     }, [])
   return (
-    <div>
+    <div className={`${theme ? 'text-black' : 'text-white'}`}>
         <Sidebar />
         <h2 className=' text-center my-5 text-2xl'>Followers</h2>
-        <div className='flex flex-wrap justify-center sm:justify-start items-center mx-auto w-full'>
+        <div className='flex flex-row mt-0 md:mt-0 mx-auto w-full md:w-10/12 lg:w-8/12'>
            {!charge ? (
             <>
               <LoadingUser />
             </>
           ): <>
               {users.length === 0 ? (
-                <p className={`${theme ? 'text-black' : 'text-white'} text-center m-auto my-10 text-3xl`}>There is nothing around here yet</p>
+                <p className={` text-center m-auto my-1 text-3xl`}>There is nothing around here yet</p>
               ): (
-                <>
+                <div className='grid gap-2 md:grid-cols-2 w-full mx-5 md:mx-0'>
                   {users.map(user => (
                       <UserCard 
                           key={user._id}
                           user={user}
                       />
                   ))}
-                </>
+                </div>
               )}
 
           </>}
