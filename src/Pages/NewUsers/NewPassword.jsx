@@ -14,6 +14,7 @@ const NewPassword = () => {
     const user = useSelector(state => state.posts.user);
     const loading = useSelector(state => state.posts.loading);
     const alert1 = useSelector(state => state.posts.alertMSG);
+    const link = useSelector(state => state.posts.linkBaseBackend);
     const dispatch = useDispatch();
     const alertMsg = (alert) => dispatch(alertOnAction(alert));
     const alertOff = () => dispatch(alertOffAction());
@@ -38,7 +39,7 @@ const NewPassword = () => {
     useEffect(() => {
         const tokenCheck = async () => {
             try {
-                const res = await axios.get(`http://localhost:4000/api/users/new-password/${params.id}`);
+                const res = await axios.get(`${link}/users/new-password/${params.id}`);
                 setTokenValid(true);
 
             } catch (error) {
@@ -58,7 +59,7 @@ const NewPassword = () => {
             return;
         }
         try {
-            const res = await axios.post(`http://localhost:4000/api/users/new-password/${params.id}`,{password});
+            const res = await axios.post(`${link}/users/new-password/${params.id}`,{password});
             alertMsg({
                 msg: res.data.msg,
                 error: false

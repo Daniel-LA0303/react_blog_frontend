@@ -14,6 +14,7 @@ const UserConfirmed = () => {
     const user = useSelector(state => state.posts.user);
     const loading = useSelector(state => state.posts.loading);
     const alert1 = useSelector(state => state.posts.alertMSG);
+    const link = useSelector(state => state.posts.linkBaseBackend);
     const dispatch = useDispatch();
     const alertMsg = (alert) => dispatch(alertOnAction(alert));
     const alertOff = () => dispatch(alertOffAction());
@@ -31,7 +32,7 @@ const UserConfirmed = () => {
     useEffect(() => {
         const confirmUser = async () => {
             try {
-                const {data} = await axios.get(`http://localhost:4000/api/users/confirm/${params.id}`);
+                const {data} = await axios.get(`${link}/users/confirm/${params.id}`);
                 alertMsg({
                     msg: data.msg,
                     error: false

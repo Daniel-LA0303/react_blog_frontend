@@ -25,13 +25,14 @@ const Profile = () => {
   const userP = useSelector(state => state.posts.user);
   const PF = useSelector(state => state.posts.PFLink);
   const theme = useSelector(state => state.posts.themeW);
+  const link = useSelector(state => state.posts.linkBaseBackend);
 
   const [userC, setUserC] = useState({});
   const [isFollow, setIsFollow] = useState(false);
 
   const[posts, setPosts] = useState([]);
   useEffect(() => {
-    fetch(`http://localhost:4000/api/posts/get-user-posts/${params.id}`)
+    fetch(`${link}/posts/get-user-posts/${params.id}`)
     .then((response) => response.json())
     .then((postU) => {
       setPosts(postU);
@@ -44,7 +45,7 @@ const Profile = () => {
 }, []);
 
 useEffect(() => {
-  fetch(`http://localhost:4000/api/users/get-profile/${params.id}`)
+  fetch(`${link}/users/get-profile/${params.id}`)
   .then((response) => response.json())
   .then((post) => {
     
@@ -73,7 +74,7 @@ useEffect(() => {
   const handleClickFollow = async() => {
     setIsFollow(!isFollow);
     try {
-      const res = await axios.post(`http://localhost:4000/api/users/user-follow/${params.id}`, userP);
+      const res = await axios.post(`${link}/users/user-follow/${params.id}`, userP);
     } catch (error) {
         console.log(error)
     }

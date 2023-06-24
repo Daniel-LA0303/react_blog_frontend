@@ -12,9 +12,10 @@ const UserTags = () => {
   const userP = useSelector(state => state.posts.user);
   const[charge, setCharge] =useState(false);
   const theme = useSelector(state => state.posts.themeW);
+  const link = useSelector(state => state.posts.linkBaseBackend);
 
   useEffect(() => {
-    fetch(`http://localhost:4000/api/users/get-profile/${params.id}`)
+    fetch(`${link}/users/get-profile/${params.id}`)
     .then((response) => response.json())
     .then((user) => {
       
@@ -32,7 +33,7 @@ const UserTags = () => {
       <Sidebar />
       <h2 className=' text-center my-5 text-2xl'>Tags you follow</h2>
       <div className='w-full md:w-10/12 lg:w-8/12 mx-auto'>
-        <div className=' grid gap-2 md:grid-cols-2 w-full '>
+        <div className='  '>
           {!charge ? (
             <LoadingCategory />
           ) : (
@@ -40,7 +41,7 @@ const UserTags = () => {
               {categories.length == 0 ? (
                   <p className={`${theme ? 'text-black' : 'text-white'} text-center m-auto my-10 text-3xl`}>There is nothing around here yet</p>
               ) : (
-                <>
+                <div className='grid gap-2 md:grid-cols-2 w-full'>
                 {categories.map(cat => (
                     <NewCardCategory 
                       key={cat._id}
@@ -48,7 +49,7 @@ const UserTags = () => {
                       userP={userP}
                     />
                   ))}
-                </>
+                </div>
               )} 
             </>
           )}

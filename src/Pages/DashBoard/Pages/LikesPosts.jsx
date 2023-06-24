@@ -11,9 +11,10 @@ const LikesPosts = () => {
   const[posts, setPosts] = useState([]);
   const[charge, setCharge] =useState(false);
   const theme = useSelector(state => state.posts.themeW);
+  const link = useSelector(state => state.posts.linkBaseBackend);
 
   useEffect(() => {
-    fetch(`http://localhost:4000/api/users/get-profile/${params.id}`)
+    fetch(`${link}/users/get-profile/${params.id}`)
     .then((response) => response.json())
     .then((user) => {
       setTimeout(() => {

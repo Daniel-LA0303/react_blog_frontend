@@ -15,6 +15,7 @@ const Register = () => {
     const user = useSelector(state => state.posts.user);
     const loading = useSelector(state => state.posts.loading);
     const alert1 = useSelector(state => state.posts.alertMSG);
+    const link = useSelector(state => state.posts.linkBaseBackend);
     const dispatch = useDispatch();
     const alertMsg = (alert) => dispatch(alertOnAction(alert));
     const alertOff = () => dispatch(alertOffAction());
@@ -59,7 +60,7 @@ const Register = () => {
         }
 
         try {
-            const res = await axios.post('http://localhost:4000/api/users', data);
+            const res = await axios.post(`${link}/users`, data);
             alertMsg({
                 msg: res.data.msg,
                 error: false

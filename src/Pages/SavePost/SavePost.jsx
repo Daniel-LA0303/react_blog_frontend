@@ -13,11 +13,12 @@ const SavePost = () => {
   const[posts, setPosts] = useState([]);
   const[charge, setCharge] =useState(false);
   const theme = useSelector(state => state.posts.themeW);
+  const link = useSelector(state => state.posts.linkBaseBackend);
 
   useEffect(() => {
     const getOneUser = async() => {
       try {
-        const res = await axios.get(`http://localhost:4000/api/users/get-profile/${params.id}`);
+        const res = await axios.get(`${link}/users/get-profile/${params.id}`);
         setPosts(res.data.postsSaved.posts);
         setCharge(true);
       } catch (error) {

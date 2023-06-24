@@ -13,11 +13,12 @@ const FollowedUsers = () => {
     const[users, setUsers] = useState([]);
     const[charge, setCharge] =useState(false);
     const theme = useSelector(state => state.posts.themeW);
+    const link = useSelector(state => state.posts.linkBaseBackend);
 
     useEffect(() => {
         const getOneUserAPI = async () => {
             try {
-              const res = await axios.get(`http://localhost:4000/api/users/get-profile-follows/${params.id}`);
+              const res = await axios.get(`${link}/users/get-profile-follows/${params.id}`);
               console.log(res.data);
               setUsers(res.data.followedUsers.followed);
               setCharge(true);

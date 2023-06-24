@@ -21,7 +21,7 @@ const Home = () => {
   const posts = useSelector(state => state.posts.posts);
   const loading = useSelector(state => state.posts.loading);
   const theme = useSelector(state => state.posts.themeW);
-
+  const link = useSelector(state => state.posts.linkBaseBackend);
 
   useEffect(() => {
     const token = localStorage.getItem('token');
@@ -31,7 +31,7 @@ const Home = () => {
   }, []);
 
   useEffect(() => {
-    fetch("http://localhost:4000/api/categories")
+    fetch(`${link}/categories`)
     .then((response) => response.json())
     .then((cats) => {
       const result = cats.filter(cat => cat.follows.countFollows > 0);

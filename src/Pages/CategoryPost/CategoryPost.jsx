@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { getUserAction, resetStatePostAction } from '../../StateRedux/actions/postAction';
 
 import { useParams } from 'react-router-dom';
@@ -16,6 +16,7 @@ const CategoryPost = () => {
 
   const dispatch = useDispatch();
   const getUserRedux = token => dispatch(getUserAction(token));
+  const link = useSelector(state => state.posts.linkBaseBackend);
   const params = useParams();
 
   const[postsFilter, setPostsFilters]=useState([]);
@@ -35,7 +36,7 @@ const CategoryPost = () => {
   }, []);
   
   useEffect(() => {
-    fetch("http://localhost:4000/api/posts")
+    fetch(`${link}/posts`)
       .then((response) => response.json())
       .then((post) => {
         const filterByTags = [params.id];
@@ -51,7 +52,7 @@ const CategoryPost = () => {
 useEffect(() => {
   const getOneUser = async () => {
     try {
-      const res = await axios.get(`http://localhost:4000/api/categories/${params.id}`);
+      const res = await axios.get(`${link}/categories/${params.id}`);
       setCategory(res.data);
     } catch (error) {
         console.log(error);

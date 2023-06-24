@@ -52,6 +52,7 @@ const ViewPost = () => {
   const PF = useSelector(state => state.posts.PFPost);
   const theme = useSelector(state => state.posts.themeW);
   const comments = useSelector(state => state.posts.comments);
+  const link = useSelector(state => state.posts.linkBaseBackend);
   const deletePostRedux = (id) => dispatch(deletePostAction(id));
   const getUserRedux = token => dispatch(getUserAction(token));
   const getCommentsRedux = (comments) => dispatch(getCommentsAction(comments));
@@ -69,7 +70,7 @@ const ViewPost = () => {
   }, []);  
 
   useEffect(() => {
-    fetch(`http://localhost:4000/api/posts/${params.id}`)
+    fetch(`${link}/posts/${params.id}`)
     .then((response) => response.json())
     .then((post) => {
       setPost(post)
@@ -128,7 +129,7 @@ const ViewPost = () => {
         setNumberLike(numberLike+1)
     }
     try {
-        const res =await axios.post(`http://localhost:4000/api/posts/like-post/${id}`, userP);
+        const res =await axios.post(`${link}/posts/like-post/${id}`, userP);
         console.log(res);
     } catch (error) {
         console.log(error);
@@ -146,7 +147,7 @@ const handleSave = async (id) => {
         notify()
     }
     try {
-        await axios.post(`http://localhost:4000/api/posts/save-post/${id}`, userP);
+        await axios.post(`${link}/posts/save-post/${id}`, userP);
     } catch (error) {
         console.log(error);
 

@@ -37,6 +37,7 @@ const NewPost = () => {
   const loading = useSelector(state => state.posts.loading);
   const user = useSelector(state => state.posts.user);
   const theme = useSelector(state => state.posts.themeW);
+  const link = useSelector(state => state.posts.linkBaseBackend);
 
   useEffect(() => {
     getAllCategoriesRedux();
@@ -99,7 +100,7 @@ const NewPost = () => {
         // formData.append('name', filename);
         formData.append('image', file);
         try {
-            const res = await axios.post(`http://localhost:4000/api/posts/image-post`, formData);
+            const res = await axios.post(`${link}/posts/image-post`, formData);
             resImage = res.data
             // console.log(resImage);
             // Swal.fire(

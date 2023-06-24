@@ -95,7 +95,7 @@ export function getUserAction(token){
         // console.log(JSON.parse(token));
         // console.log(token);
         try {
-            const res = await axios.get('http://localhost:4000/api/users/profile', config);
+            const res = await axios.get(`${import.meta.env.VITE_API_URL_BACKEND}/users/profile`, config);
             // console.log(res.data);
             
             dispatch(getUserSuccess(res.data));
@@ -123,7 +123,7 @@ export function getOneUserAction(id){
         dispatch(getOneUser());
         
         try {
-            const res = await axios.get(`http://localhost:4000/api/users/get-profile/${id}`);            
+            const res = await axios.get(`${import.meta.env.VITE_API_URL_BACKEND}/users/get-profile/${id}`);            
             dispatch(getOneUserSuccess(res.data));
         } catch (error) {
             console.log(error);
@@ -153,7 +153,7 @@ export function getAllCategoriesAction(){
     return async(dispatch) => {
         dispatch(getAllCategories());
         try {
-            const res = await axios.get('http://localhost:4000/api/categories');
+            const res = await axios.get(`${import.meta.env.VITE_API_URL_BACKEND}/categories`);
             
             dispatch(getAllCategoriesSuccess(res.data));
         } catch (error) {
@@ -181,7 +181,7 @@ export function getAllPostsAction(){
     return async(dispatch) => {
         dispatch(getAllPosts());
         try {
-            const res = await axios.get('http://localhost:4000/api/posts');
+            const res = await axios.get(`${import.meta.env.VITE_API_URL_BACKEND}/posts`);
             dispatch(getAllPostsSuccess(res.data));
         } catch (error) {
             console.log(error);
@@ -208,7 +208,7 @@ export function getOnePostAction(id){
     return async(dispatch) => {
         dispatch(getOnePost());
         try {
-            const res = await axios.get(`http://localhost:4000/api/posts/${id}`);
+            const res = await axios.get(`${import.meta.env.VITE_API_URL_BACKEND}/posts/${id}`);
             dispatch(getOnePostSuccess(res.data));
         } catch (error) {
             console.log(error);
@@ -234,7 +234,7 @@ export function addNewPostAction(newPost, newPostRedux){
     return async (dispatch) => {
         dispatch(addNewPost());
         try {
-            const res = await axios.post('http://localhost:4000/api/posts', newPost);
+            const res = await axios.post(`${import.meta.env.VITE_API_URL_BACKEND}/posts`, newPost);
             Swal.fire(
                 res.data.msg,
                 // 'You clicked the button!',
@@ -267,7 +267,7 @@ export function editPostAction(id, postUpdate , postUpdateRedux){
     return async(dispatch) => {
         dispatch(editPost());
         try {
-            const res = await axios.put(`http://localhost:4000/api/posts/${id}`, postUpdate).then(res =>{
+            const res = await axios.put(`${import.meta.env.VITE_API_URL_BACKEND}/posts/${id}`, postUpdate).then(res =>{
                 Swal.fire(
                     res.data.msg,
                     // res.data.mensaje,
@@ -303,7 +303,7 @@ export function deletePostAction(id){
     return async(dispatch) => {
         dispatch(deletePost());
         try {
-            await axios.delete(`http://localhost:4000/api/posts/${id}`).then(res =>{
+            await axios.delete(`${import.meta.env.VITE_API_URL_BACKEND}/posts/${id}`).then(res =>{
                 Swal.fire(
                     res.data.msg,
                     // res.data.mensaje,
@@ -387,7 +387,7 @@ const resetStatePost = () => ({
 export function addNewFilePostAction(formData){
     return async() => {
         try {
-            await axios.post('http://localhost:4000/api/post/uploads-post', formData);
+            await axios.post(`${import.meta.env.VITE_API_URL_BACKEND}/post/uploads-post`, formData);
         } catch (error) {
             console.log(error);
         }
@@ -396,7 +396,7 @@ export function addNewFilePostAction(formData){
 export function addNewFileUserAction(formData){
     return async() => {
         try {
-            await axios.post('http://localhost:4000/api/users/uploads-profile', formData);
+            await axios.post(`${import.meta.env.VITE_API_URL_BACKEND}/users/uploads-profile`, formData);
         } catch (error) {
             console.log(error);
 

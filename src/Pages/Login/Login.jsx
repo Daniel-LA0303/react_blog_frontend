@@ -12,6 +12,7 @@ const Login = () => {
     const route = useNavigate();
     const loading = useSelector(state => state.posts.loading);
     const alert1 = useSelector(state => state.posts.alertMSG);
+    const link = useSelector(state => state.posts.linkBaseBackend);
     const dispatch = useDispatch();
     const alertMsg = (alert) => dispatch(alertOnAction(alert));
     const alertOff = () => dispatch(alertOffAction());
@@ -44,7 +45,7 @@ const Login = () => {
             return;
         }
         try {
-            const res = await axios.post('http://localhost:4000/api/users/login', data);
+            const res = await axios.post(`${link}/users/login`, data);
             console.log(res.data.token);
             localStorage.setItem("token", JSON.stringify(res.data.token));
             

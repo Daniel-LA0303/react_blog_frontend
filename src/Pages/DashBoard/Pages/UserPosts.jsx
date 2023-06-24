@@ -10,9 +10,11 @@ const UserPosts = () => {
   const[posts, setPosts] = useState([]);
   const[charge, setCharge] =useState(false);
   const theme = useSelector(state => state.posts.themeW);
+  const link = useSelector(state => state.posts.linkBaseBackend);
 
   useEffect(() => {
-    fetch("http://localhost:4000/api/posts")
+    // fetch("http://localhost:4000/api/posts")
+    fetch(`${link}/posts`)
     .then((response) => response.json())
     .then((post) => {
       const postUser = post.filter(p => p.user._id === userP._id)

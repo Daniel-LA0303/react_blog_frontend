@@ -21,6 +21,7 @@ const EditProfile = () => {
     const addNewFileRedux = (dataFile) => dispatch(addNewFileUserAction(dataFile));
     const PF = useSelector(state => state.posts.PFLink);
     const theme = useSelector(state => state.posts.themeW);
+    const link = useSelector(state => state.posts.linkBaseBackend);
 
     const[desc, setDesc] = useState('');
     const[work, setWork] = useState('');
@@ -33,7 +34,7 @@ const EditProfile = () => {
     useEffect(() => {
         const getOneUser = async() => {
             try {
-                const res = await axios.get(`http://localhost:4000/api/users/get-profile/${params.id}`);
+                const res = await axios.get(`${link}/users/get-profile/${params.id}`);
                 setDesc(res.data.info.desc);
                 setWork(res.data.info.work);
                 setEducation(res.data.info.education);
@@ -83,7 +84,7 @@ const EditProfile = () => {
             //addNewFileRedux(dataFile);
           }
         try {
-            const res = await axios.post(`http://localhost:4000/api/users/new-info/${params.id}`, data);
+            const res = await axios.post(`${link}/users/new-info/${params.id}`, data);
             Swal.fire(
                 res.data.msg,
                 // 'You clicked the button!',

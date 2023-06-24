@@ -34,6 +34,7 @@ import {
 } from "../types";
 
 const initialState = {
+    linkBaseBackend: 'http://localhost:4000/api', 
     alertMSG:{},
     token: JSON.parse(localStorage.getItem("token")) || null,
     themeW: JSON.parse(localStorage.getItem("theme")) || null,

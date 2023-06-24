@@ -33,6 +33,7 @@ const EditPost = () => {
   const getAllCategoriesRedux = () => dispatch(getAllCategoriesAction());
   const categories = useSelector(state => state.posts.categories);
   const theme = useSelector(state => state.posts.themeW);
+  const link = useSelector(state => state.posts.linkBaseBackend);
 
   //local state
   const[title, setTitle] = useState(''); //title
@@ -56,7 +57,7 @@ const EditPost = () => {
   useEffect(() => {
     const getOnePost = async() => {
       try {
-        const res = await axios.get(`http://localhost:4000/api/posts/${params.id}`);
+        const res = await axios.get(`${link}/posts/${params.id}`);
         console.log(res.data);
         setTitle(res.data.title);
         setContent(res.data.content);
@@ -112,7 +113,7 @@ const EditPost = () => {
         const formData = new FormData();
         formData.append('image', file);
         try {
-            const res = await axios.post(`http://localhost:4000/api/posts/image-post`, formData);
+            const res = await axios.post(`${link}/posts/image-post`, formData);
             resImage = res.data
             console.log(resImage);
 

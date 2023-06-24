@@ -11,10 +11,11 @@ const Search = () => {
   const [catFilter,setCatFilter] = useState([]);
   const [postFilter, setPostFilter] = useState([]);
   const [usersFilter, setUsersFilter] = useState([]);
+  const link = useSelector(state => state.posts.linkBaseBackend);
   
 
   useEffect(() => {
-    fetch("http://localhost:4000/api/categories")
+    fetch(`${link}/categories`)
     .then((response) => response.json())
     .then((cat) => {
       console.log(cat);
@@ -29,7 +30,7 @@ const Search = () => {
   }, [params]);
 
   useEffect(() => {
-    fetch("http://localhost:4000/api/posts")
+    fetch(`${link}/posts`)
     .then((response) => response.json())
     .then((post) => {
       var result= post.filter((element) => {
@@ -42,7 +43,7 @@ const Search = () => {
 
   }, [params]);
   useEffect(() => {
-    fetch("http://localhost:4000/api/users/all-users")
+    fetch(`${link}/users/all-users`)
     .then((response) => response.json())
     .then((users) => {
       var result= users.filter((element) => {
