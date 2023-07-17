@@ -23,12 +23,12 @@ const Home = () => {
   const theme = useSelector(state => state.posts.themeW);
   const link = useSelector(state => state.posts.linkBaseBackend);
 
-  useEffect(() => {
-    const token = localStorage.getItem('token');
-    if(token){
-      dispatch(getUserAction(JSON.parse(token)))
-    }
-  }, []);
+  // useEffect(() => {
+  //   const token = localStorage.getItem('token');
+  //   if(token){
+  //     dispatch(getUserAction(JSON.parse(token)))
+  //   }
+  // }, []);
 
   useEffect(() => {
     fetch(`${link}/categories`)

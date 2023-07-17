@@ -14,6 +14,8 @@ const UserTags = () => {
   const theme = useSelector(state => state.posts.themeW);
   const link = useSelector(state => state.posts.linkBaseBackend);
 
+
+  //can be a endpoint and colud be with try catch
   useEffect(() => {
     fetch(`${link}/users/get-profile/${params.id}`)
     .then((response) => response.json())

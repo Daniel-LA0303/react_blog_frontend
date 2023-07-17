@@ -15,6 +15,7 @@ const FollowedUsers = () => {
     const theme = useSelector(state => state.posts.themeW);
     const link = useSelector(state => state.posts.linkBaseBackend);
 
+    //can be a endpoint 
     useEffect(() => {
         const getOneUserAPI = async () => {
             try {

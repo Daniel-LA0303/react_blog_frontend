@@ -35,6 +35,7 @@ const CategoryPost = () => {
     }
   }, []);
   
+  //can be a endpoint and colud be with try catch
   useEffect(() => {
     fetch(`${link}/posts`)
       .then((response) => response.json())

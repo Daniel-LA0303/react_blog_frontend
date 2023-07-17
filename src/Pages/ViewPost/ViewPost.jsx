@@ -63,13 +63,6 @@ const ViewPost = () => {
   }, []);
 
   useEffect(() => {
-    const token = localStorage.getItem('token');
-    if(token){
-      getUserRedux(JSON.parse(token));
-    }
-  }, []);  
-
-  useEffect(() => {
     fetch(`${link}/posts/${params.id}`)
     .then((response) => response.json())
     .then((post) => {

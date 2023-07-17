@@ -65,23 +65,16 @@ const EditProfile = () => {
         data.append('work', work);
         data.append('education', education);
         data.append('skills', skills);
-        // data.append('image', file)
 
         if(newImage){ 
-            // data.previousName=image //user chose a new image
             data.append('previousName', image.public_id)
         }else{
-        // if(Object.keys(image) !== ''){
             data.append('profilePicture', JSON.stringify(image))  //user not chose a new image
         }
-        // }
+
         if(file){
-            // const dataFile = new FormData();
-            // const filename = Date.now() + file.name;
-            // dataFile.append("name",filename);
             data.append("image", file);
-            // data.profilePicture = filename;
-            //addNewFileRedux(dataFile);
+
           }
         try {
             const res = await axios.post(`${link}/users/new-info/${params.id}`, data);
@@ -90,7 +83,6 @@ const EditProfile = () => {
                 // 'You clicked the button!',
                 'success'
             )
-            //route('/');
         } catch (error) {
             console.log(error);
         }
@@ -101,15 +93,15 @@ const EditProfile = () => {
   return (
     <div className=' '>
         <Sidebar />
-        <div className="h-full my-20 mx-10">
-            <div className="block md:flex ">
-                <div className={`${theme ? 'bgt-light ' : 'bgt-dark text-white'} w-full md:w-2/5 p-4 sm:p-6 lg:p-8 shadow-md rounded`}>
+        <div className="h-full my-20 ">
+            <div className="block sm:flex md:w-10/12 lg:w-8/12 m-auto">
+                <div className={`${theme ? 'bgt-light ' : 'bgt-dark text-white'} w-full sm:w-2/5 p-4 sm:p-6 lg:p-8 shadow-md rounded`}>
                     <div className='p-5 bg-white rounded'>
                         <div className="flex justify-between">
-                            <span className="text-xl font-semibold block">Admin Profile</span>
+                            <span className="text-xl font-semibold block text-black">Admin Profile</span>
                         </div>
-                        <p className="text-gray-600 font-bold">Name: <span className=' text-2xl'>{user.name}</span></p>
-                        <p className="text-gray-600 font-bold">Email: <span className=' text-2xl'>{user.email}</span></p>
+                        <p className="text-gray-600 font-bold">Name: <span className=' text-lg'>{user.name}</span></p>
+                        <p className="text-gray-600 font-bold">Email: <span className=' text-lg'>{user.email}</span></p>
                         <div className="max-w-2xl mx-auto">
                             <label className="font-semibold text-gray-700 block pb-1">Upload file</label>
                             <input 
@@ -122,7 +114,8 @@ const EditProfile = () => {
                         <div className="w-full p-8 mx-2 flex justify-center">
                             {newImage ? (
                                     <img
-                                    className="writeImg"
+                                    className="w-full h-auto"
+                                    // className="writeImg"
                                     src={URL.createObjectURL(file)}
                                     alt=""
                                 />
@@ -142,7 +135,7 @@ const EditProfile = () => {
                    
                 </div>
             
-                <div className={`${theme ? 'bgt-light ' : 'bgt-dark'} w-full md:w-3/5 p-6 lg:ml-4 shadow-md rounded`}>
+                <div className={`${theme ? 'bgt-light ' : 'bgt-dark'} w-full sm:w-3/5 p-6 lg:ml-4 shadow-md rounded`}>
                     <form 
                         onSubmit={handleSubmit}
                     >
@@ -152,7 +145,7 @@ const EditProfile = () => {
                                 <div className="flex">
                                     <input 
                                         id="username" 
-                                        className="border-1  rounded-r px-4 py-2 w-full" 
+                                        className="border-1  rounded-r px-4 py-2 w-full bg-gray-200" 
                                         placeholder='Description' 
                                         type="text" 
                                         onChange={(e) => setDesc(e.target.value)}
@@ -164,7 +157,7 @@ const EditProfile = () => {
                                 <label htmlFor="about" className="font-semibold text-gray-700 block pb-1">Work</label>
                                 <input 
                                     id="email" 
-                                    className="border-1  rounded-r px-4 py-2 w-full" 
+                                    className="border-1  rounded-r px-4 py-2 w-full bg-gray-200" 
                                     placeholder='Work' 
                                     type="text" 
                                     onChange={(e) => setWork(e.target.value)}
@@ -175,7 +168,7 @@ const EditProfile = () => {
                                 <label htmlFor="about" className="font-semibold text-gray-700 block pb-1">Education</label>
                                 <input 
                                     id="email" 
-                                    className="border-1  rounded-r px-4 py-2 w-full" 
+                                    className="border-1  rounded-r px-4 py-2 w-full bg-gray-200" 
                                     placeholder='Education' 
                                     type="text" 
                                     onChange={(e) => setEducation(e.target.value)}
@@ -186,7 +179,7 @@ const EditProfile = () => {
                                 <label htmlFor="about" className="font-semibold text-gray-700 block pb-1">Skills</label>
                                 <input
                                     id="email" 
-                                    className="border-1  rounded-r px-4 py-2 w-full" 
+                                    className="border-1  rounded-r px-4 py-2 w-full bg-gray-200" 
                                     placeholder='Skills'
                                     type="text" 
                                     onChange={(e) => setSkills(e.target.value)}

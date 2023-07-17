@@ -13,6 +13,7 @@ const Search = () => {
   const [usersFilter, setUsersFilter] = useState([]);
   const link = useSelector(state => state.posts.linkBaseBackend);
   
+  //can be a endpoint and colud be with try catch
 
   useEffect(() => {
     fetch(`${link}/categories`)

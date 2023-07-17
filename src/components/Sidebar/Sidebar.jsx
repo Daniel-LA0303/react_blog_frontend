@@ -1,16 +1,17 @@
-import React, {useState} from 'react'
+import React, {useEffect, useState} from 'react'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faBars, faX, faHome, faPeopleGroup, faCirclePlus, faBookmark, faCode } from '@fortawesome/free-solid-svg-icons'
 import { Link } from 'react-router-dom'
 
 import ProfileButton from '../ProfileButton/ProfileButton'
 
-import { useSelector } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 
 import SocialMedia from '../SocialMedia/SocialMedia'
 import SearchBar from '../SearchBar/SearchBar'
 import ConfigButton from '../ConfigButton/ConfigButton'
 import Logo from '../Logo/Logo'
+import { getUserAction } from '../../StateRedux/actions/postAction'
 
 const Sidebar = () => {
 
@@ -19,6 +20,15 @@ const Sidebar = () => {
   const user = useSelector(state => state.posts.user);
   const loading = useSelector(state => state.posts.loading);
   const theme = useSelector(state => state.posts.themeW);
+
+  const dispatch = useDispatch();
+  
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    if(token){
+      dispatch(getUserAction(JSON.parse(token)))
+    }
+  }, []);
 
   return (
     <>

@@ -28,9 +28,10 @@ const Profile = () => {
   const link = useSelector(state => state.posts.linkBaseBackend);
 
   const [userC, setUserC] = useState({});
-  const [isFollow, setIsFollow] = useState(false);
+  const [isFollow, setIsFollow] = useState(null);
 
   const[posts, setPosts] = useState([]);
+
   useEffect(() => {
     fetch(`${link}/posts/get-user-posts/${params.id}`)
     .then((response) => response.json())
@@ -49,26 +50,25 @@ useEffect(() => {
   .then((response) => response.json())
   .then((post) => {
     
-    // console.log(post);
-    const userProfileFound = post.followersUsers.followers.includes(userP._id);
-    if(userProfileFound){
+    if(post.followersUsers.followers.includes(userP._id)){
       setIsFollow(true);
+    }else{
+      setIsFollow(false);
     }
     setTimeout(() => {
       setUserC(post);
-    }, 1000);
+    }, 2000);
     
-   
   })   
 }, []);
 
-useEffect(() => {
-  const getUserRedux = token => dispatch(getUserAction(token));
-  const token = localStorage.getItem('token');
-  if(token){
-    getUserRedux(JSON.parse(token));
-  }
-}, []);
+// useEffect(() => {
+//   const getUserRedux = token => dispatch(getUserAction(token));
+//   const token = localStorage.getItem('token');
+//   if(token){
+//     getUserRedux(JSON.parse(token));
+//   }
+// }, []);
 
   // console.log(user);
   const handleClickFollow = async() => {

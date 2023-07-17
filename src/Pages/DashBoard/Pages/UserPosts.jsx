@@ -12,6 +12,7 @@ const UserPosts = () => {
   const theme = useSelector(state => state.posts.themeW);
   const link = useSelector(state => state.posts.linkBaseBackend);
 
+  //can be a endpoint and colud be with try catch
   useEffect(() => {
     // fetch("http://localhost:4000/api/posts")
     fetch(`${link}/posts`)
