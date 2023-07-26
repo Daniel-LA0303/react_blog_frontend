@@ -16,19 +16,18 @@ const UserPosts = () => {
   const theme = useSelector(state => state.posts.themeW);
   const link = useSelector(state => state.posts.linkBaseBackend);
 
-  //can be a endpoint and colud be with try catch
   useEffect(() => {
-    // fetch("http://localhost:4000/api/posts")
-    fetch(`${link}/posts`)
-    .then((response) => response.json())
-    .then((post) => {
-      const postUser = post.filter(p => p.user._id === userP._id)
-      setCharge(true);
-      setTimeout(() => {
-        setPosts(postUser)
-      }, 1000);
-    })   
-  }, []);
+    try {
+      fetch(`${link}/users/get-user-posts/${params.id}`)
+      .then((response) => response.json())
+      .then((postsU) => {
+        setPosts(postsU);  
+        setCharge(true);
+      }) 
+    } catch (error) {
+      console.error(error.message);
+    }
+}, [params.id]);
 
 
   return (
