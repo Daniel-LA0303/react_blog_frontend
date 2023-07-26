@@ -3,8 +3,12 @@ import { useSelector } from 'react-redux';
 import Post from '../../../components/Post/Post';
 import Sidebar from '../../../components/Sidebar/Sidebar';
 import LoadingPosts from '../../../components/Spinner/LoadingPosts';
+import { useParams } from 'react-router-dom';
 
 const UserPosts = () => {
+
+  const params = useParams();
+  console.log(params.id);
 
   const userP = useSelector(state => state.posts.user);
   const[posts, setPosts] = useState([]);

@@ -14,18 +14,18 @@ const UserTags = () => {
   const theme = useSelector(state => state.posts.themeW);
   const link = useSelector(state => state.posts.linkBaseBackend);
 
-
-  //can be a endpoint and colud be with try catch
   useEffect(() => {
-    fetch(`${link}/users/get-profile/${params.id}`)
-    .then((response) => response.json())
-    .then((user) => {
-      
-      setTimeout(() => {
-        setCategories(user.followsTags.tags);
-        setCharge(true);
-      }, 1000);
-    })   
+    try {
+      fetch(`${link}/users/get-user-tags/${params.id}`)
+      .then((response) => response.json())
+      .then((tags) => {
+          setCategories(tags);
+          setCharge(true);
+      })  
+    } catch (error) {
+      console.error(error.message);
+    }
+ 
 
   }, [params.id]);
 

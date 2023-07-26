@@ -15,22 +15,17 @@ const FollowedUsers = () => {
     const theme = useSelector(state => state.posts.themeW);
     const link = useSelector(state => state.posts.linkBaseBackend);
 
-    //can be a endpoint 
     useEffect(() => {
         const getOneUserAPI = async () => {
             try {
               const res = await axios.get(`${link}/users/get-profile-follows/${params.id}`);
-              console.log(res.data);
               setUsers(res.data.followedUsers.followed);
               setCharge(true);
             } catch (error) {
-                console.log(error);
+                console.log(error.message);
             }
-          }
-          setTimeout(() => {
-            getOneUserAPI();
-          }, 1000);
-          
+        }
+          getOneUserAPI();       
     }, [])
 
   return (

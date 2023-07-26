@@ -13,18 +13,19 @@ const LikesPosts = () => {
   const theme = useSelector(state => state.posts.themeW);
   const link = useSelector(state => state.posts.linkBaseBackend);
 
-  //can be a endpoint and colud be with try catch
   useEffect(() => {
-    fetch(`${link}/users/get-profile/${params.id}`)
-    .then((response) => response.json())
-    .then((user) => {
-      setTimeout(() => {
-        setPosts(user.likePost.posts);  
-        setCharge(true);
-      }, 1000);
-    })   
-
+    try {
+      fetch(`${link}/users/get-user-like-posts/${params.id}`)
+      .then((response) => response.json())
+      .then((postsU) => {
+          setPosts(postsU);  
+          setCharge(true);
+      }) 
+    } catch (error) {
+      console.error(error.message);
+    }
 }, [params.id]);
+
   return (
     <div className={`${theme ? 'text-black' : 'text-white'}`}>
       <Sidebar />

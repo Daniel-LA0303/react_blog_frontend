@@ -15,20 +15,17 @@ const SavePost = () => {
   const theme = useSelector(state => state.posts.themeW);
   const link = useSelector(state => state.posts.linkBaseBackend);
 
-  //can be a endpoint
   useEffect(() => {
     const getOneUser = async() => {
       try {
-        const res = await axios.get(`${link}/users/get-profile/${params.id}`);
-        setPosts(res.data.postsSaved.posts);
+        const res = await axios.get(`${link}/users/get-user-save-post/${params.id}`);
+        setPosts(res.data);
         setCharge(true);
       } catch (error) {
           console.log(error);
       }      
     }
-    setTimeout(() => {
       getOneUser();
-    }, 1000);
   }, []);
   
   return (
