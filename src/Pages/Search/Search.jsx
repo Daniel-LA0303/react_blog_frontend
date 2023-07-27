@@ -13,54 +13,21 @@ const Search = () => {
   const [usersFilter, setUsersFilter] = useState([]);
   const link = useSelector(state => state.posts.linkBaseBackend);
   
-  //can be a endpoint and colud be with try catch
 
   useEffect(() => {
-    fetch(`${link}/categories`)
-    .then((response) => response.json())
-    .then((cat) => {
-      console.log(cat);
-      var result = cat.filter((element) => {
-        if(element.value.toString().toLowerCase().includes(params.id.toLowerCase())){
-          return element;
-        }
+    try {
+      fetch(`${link}/posts/search-by-param/${params.id}`)
+      .then((response) => response.json())
+      .then((res) => {
+        setCatFilter(res.categories);
+        setPostFilter(res.posts);
+        setUsersFilter(res.users);
       })
-      setCatFilter(result);      
-      
-    })   
-  }, [params]);
-
-  useEffect(() => {
-    fetch(`${link}/posts`)
-    .then((response) => response.json())
-    .then((post) => {
-      var result= post.filter((element) => {
-        if(element.title.toString().toLowerCase().includes(params.id.toLowerCase())){
-          return element;
-        }
-      })
-      setPostFilter(result);      
-    })   
+    } catch (error) {
+      console.error(error.message);
+    }
 
   }, [params]);
-  useEffect(() => {
-    fetch(`${link}/users/all-users`)
-    .then((response) => response.json())
-    .then((users) => {
-      var result= users.filter((element) => {
-        if(element.name.toString().toLowerCase().includes(params.id.toLowerCase())){
-          return element;
-        }
-      })
-      setUsersFilter(result); 
-    })   
-
-  }, [params]);
-
-  useEffect(() => {
-    console.log(params);
-  }, [params])
-  
   return (
     <div>
         <Sidebar />

@@ -4,7 +4,6 @@ import { useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
 
 const UserCard = ({user}) => {
-    console.log(user);
 
     const PF = useSelector(state => state.posts.PFLink);
     const userP = useSelector(state => state.posts.user);
@@ -14,7 +13,6 @@ const UserCard = ({user}) => {
 
     useEffect(() => {
         const userProfileFound = user.followersUsers.followers.includes(userP._id);
-        console.log(userProfileFound);
         if(userProfileFound){
           setIsFollow(true);
         }
