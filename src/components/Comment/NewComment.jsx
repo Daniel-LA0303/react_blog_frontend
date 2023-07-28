@@ -3,57 +3,61 @@ import React, { useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux';
 import { newCommentAction } from '../../StateRedux/actions/postAction';
 
-const NewComment = ({user, idPost}) => {
+const NewComment = ({ user, idPost }) => {
 
-    const[comment, setComment] = useState('');
+    const [comment, setComment] = useState('');
     const theme = useSelector(state => state.posts.themeW);
     const dispatch = useDispatch();
     const newCommentRedux = (comment) => dispatch(newCommentAction(comment));
+    const link = useSelector(state => state.posts.linkBaseBackend);
 
-    const newComment = async(id) => {
+    const newComment = async (id) => {
         setComment('');
-        const data={
-            userID:user._id,
-            comment:comment,
+        const data = {
+            userID: user._id,
+            comment: comment,
             dateComment: new Date(),
         }
         newCommentRedux({
             userID: user,
-            comment:comment,
+            comment: comment,
             dateComment: new Date(),
         });
         try {
-            await axios.post(`http://localhost:4000/api/posts/save-comment/${id}`,data);
+            await axios.post(`${link}/posts/save-comment/${id}`, data);
         } catch (error) {
             console.log(error);
         }
     }
 
-  return (
-    <div className={` ${theme ? ' bgt-light text-black' : 'bgt-dark hover:bg-zinc-700 text-white'} flex mx-auto items-center justify-center shadow-lg mb-4 rounded-lg`}>
-        <div className="flex flex-wrap -mx-3 mb-2">
-            <h2 className="px-4 pt-3 pb-2  text-lg">Add a new comment</h2>
-            <div className="w-full md:w-full px-3 mb-2 mt-2">
-                <textarea 
-                    className=" rounded text-black leading-normal resize-none w-full h-20 py-2 px-3 font-medium  " 
-                    name="body" 
-                    placeholder='Type Your Comment' 
-                    required
-                    onChange={(e) => setComment(e.target.value)}
-                    value={comment}
-                ></textarea>
-            </div>
-            <div className="w-full md:w-full flex justify-end items-start px-3">
-                <div className="-mr-1">
-                    <button 
-                        onClick={() => newComment(idPost)}
-                        className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800" 
-                        placeholder='Type your Comment'
-                    >Comment</button>
+    return (
+        <section className={`${theme ? ' bgt-light text-black' : 'bgt-dark hover:bg-zinc-700 text-white'} rounded-lg py-2`}>
+            <div className="max-w-2xl mx-auto px-4">
+                <div className="flex justify-between items-center mb-6">
+                    <h2 className="text-lg lg:text-2xl font-bold text-gray-900 dark:text-white">Discussion (20)</h2>
                 </div>
+                <form className="mb-6">
+                    <div className="py-2 px-4 mb-4 bg-white rounded-lg rounded-t-lg border border-gray-200 dark:bg-gray-800 dark:border-gray-700">
+                        <label for="comment" className="sr-only">Your comment</label>
+                        <textarea 
+                            id="comment" 
+                            rows="6"
+                            className="px-0 w-full text-sm text-gray-900 border-0 focus:ring-0 focus:outline-none dark:text-white dark:placeholder-gray-400 dark:bg-gray-800"
+                            name="body" 
+                            placeholder='Type Your Comment' 
+                            required
+                            onChange={(e) => setComment(e.target.value)}
+                            value={comment}
+                            ></textarea>
+                    </div>
+                        <button 
+                            onClick={() => newComment(idPost)}
+                            className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800" 
+                             placeholder='Type your Comment'
+                        >Comment</button>
+                </form>
             </div>
-        </div>
-    </div>
-  )
+        </section>
+    )
 }
 export default NewComment

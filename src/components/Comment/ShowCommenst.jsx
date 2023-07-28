@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { faPen, faTrash } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import axios from 'axios';
@@ -9,6 +9,8 @@ import Swal from 'sweetalert2';
 
 import { deleteCommentAction, editCommentAction } from '../../StateRedux/actions/postAction';
 import EditComment from './EditComment';
+import ReplyComment from './ReplyComment';
+import ShowReplies from './ShowReplies';
 
 const notify = () => toast(
     'Comment saved.',
@@ -18,23 +20,29 @@ const notify = () => toast(
     }
 );
 
-const ShowCommenst = ({comment, idPost}) => {
+const ShowCommenst = ({ comment, idPost }) => {
     const PF = useSelector(state => state.posts.PFLink);
     const userP = useSelector(state => state.posts.user);
     const theme = useSelector(state => state.posts.themeW);
+    const link = useSelector(state => state.posts.linkBaseBackend);
     const dispatch = useDispatch();
     const editCommentRedux = (comment) => dispatch(editCommentAction(comment));
     const deleteCommentRedux = (date) => dispatch(deleteCommentAction(date));
 
-    const[editActive, setEditActive] = useState(false);
-    const[newComment, setNewComment] = useState('');
-    
+    const [editActive, setEditActive] = useState(false);
+    const [newComment, setNewComment] = useState('');
+    const [replyActive, setReplyActive] = useState(false);
+    const [commentId, setCommentId] = useState('');
+
+
     useEffect(() => {
         setNewComment(comment.comment);
     }, [])
-    
 
-    const handleDeleteComment = async (id, date) => {        
+
+
+
+    const handleDeleteComment = async (id, date) => {
         Swal.fire({
             title: 'Are you sure you want to remove this Comment?',
             text: "Deleted comment cannot be recovered",
@@ -44,16 +52,16 @@ const ShowCommenst = ({comment, idPost}) => {
             cancelButtonColor: '#d33',
             confirmButtonText: 'Yes, Delete',
             cancelButtonText: 'No, Cancel'
-          }).then(async(result) => {
+        }).then(async (result) => {
             if (result.value) {
                 deleteCommentRedux(date);
                 try {
-                    const res =await axios.post(`http://localhost:4000/api/posts/delete-post-comment/${idPost}`, {id})
+                    const res = await axios.post(`${link}/posts/delete-post-comment/${idPost}`, { id })
                 } catch (error) {
                     console.log(error);
                 }
             }
-          })  
+        })
     }
 
     const handleEditComment = async (id) => {
@@ -62,81 +70,134 @@ const ShowCommenst = ({comment, idPost}) => {
         setEditActive(!editActive);
         editCommentRedux({
             userID: comment.userID,
-            comment:newComment,
+            comment: newComment,
             dateComment: comment.dateComment,
             _id: comment._id
         })
         try {
-            
-            const res = await axios.post(`http://localhost:4000/api/posts/edit-post-comment/${idPost}`, {
+
+            const res = await axios.post(`${link}/posts/edit-post-comment/${idPost}`, {
                 userID: comment.userID,
-                comment:newComment,
+                comment: newComment,
                 dateComment: comment.dateComment,
                 _id: comment._id
-            }).then(res =>{
+            }).then(res => {
             })
         } catch (error) {
             console.log(error);
         }
     }
 
+    const handleDeleteReply = async (idReply) => {
+        try {
 
-  return (
-    <div className={` ${theme ? ' bgt-light text-black' : 'bgt-dark hover:bg-zinc-700 text-white'} flex justify-center my-3 `}>
-        <div className=" grid grid-cols-1 gap-4 p-4 border rounded-lg shadow-lg w-full">
-            <div className='flex justify-between'>
-                <Toaster 
-                      position="bottom-right"
-                      reverseOrder={false}
-                />
-                <div className=" flex gap-4">    
-                    <img src={comment.userID.profilePicture.secure_url ? comment.userID.profilePicture.secure_url : '/avatar.png'} 
-                        className=" rounded-lg -top-8 -mb-4 bg-white border h-20 w-20" 
-                        alt="" 
-                        loading="lazy" />
-                    <div className="flex flex-col w-full">
-                        <div className="flex flex-row justify-between">
-                            <Link to={`/profile/${comment.userID._id}`} className="  text-xl whitespace-nowrap truncate overflow-hidden">{comment.userID.name}</Link>
-                            
-                        </div>
-                        <p className="text-gray-400 text-sm">{new Date(comment.dateComment).toDateString()}</p>
+            const res = await axios.post(`${link}/posts/delete-reply-comment/${idPost}`, {
+                idReply,
+                idComment: comment._id
+            })
+        } catch (error) {
+            console.log(error);
+        }
+    }
+
+    const handleReplyComment = async (commentId) => {
+        setReplyActive(!replyActive)
+        setCommentId(commentId);
+    }
+
+
+    return (
+
+        <div>
+            <article className={`${theme ? ' bgt-light text-black' : 'bgt-dark text-white'} p-6 mb-6 text-base rounded-lg my-2`}>
+                <footer className="flex justify-between items-center mb-2">
+                    <div className="flex items-center">
+                        <p className="inline-flex items-center mr-3 text-sm text-gray-900 dark:text-white">
+                            <img
+                                className="mr-2 w-6 h-6 rounded-full"
+                                src={comment.userID.profilePicture.secure_url ? comment.userID.profilePicture.secure_url : '/avatar.png'}
+                                alt="Michael Gough"
+                            />
+                            <Link to={`/profile/${comment.userID._id}`} className="  text-sm whitespace-nowrap truncate overflow-hidden">{comment.userID.name}</Link>
+                        </p>
+                        <p className="text-sm text-gray-600 dark:text-gray-400">{new Date(comment.dateComment).toDateString()}</p>
+
                     </div>
-                </div>
-                {
-                    userP._id === comment.userID._id ? (
-                        <div className=' flex justify-end'>
-                            <FontAwesomeIcon 
-                                className=' text-base text-red-500 p-2 cursor-pointer'
-                                icon={faTrash} 
-                                onClick={() => handleDeleteComment(comment._id, comment.dateComment)}
-                            />
-                            {editActive ? null : (
-                            <FontAwesomeIcon 
-                                icon={faPen} 
-                                className='text-base text-sky-500 p-2 cursor-pointer'
-                                onClick={() => setEditActive(!editActive)}
-                            />
-                            )}
+                    {
+                        userP._id === comment.userID._id ? (
+                            <div className=' flex justify-end'>
+                                <FontAwesomeIcon
+                                    className=' text-base text-red-500 p-2 cursor-pointer'
+                                    icon={faTrash}
+                                    onClick={() => handleDeleteComment(comment._id, comment.dateComment)}
+                                />
+                                {editActive ? null : (
+                                    <FontAwesomeIcon
+                                        icon={faPen}
+                                        className='text-base text-sky-500 p-2 cursor-pointer'
+                                        onClick={() => setEditActive(!editActive)}
+                                    />
+                                )}
 
-                        </div>
-                    ) :  (null)
-                }
-            </div>
-            {editActive ? (
-                <EditComment 
-                    setEditActive={setEditActive}
-                    editActive={editActive}
-                    newComment={newComment}
-                    setNewComment={setNewComment}
-                    handleEditComment={handleEditComment}
-                    idComment={comment._id}
-                />
-            ): (
-                <p className="mt-4 text-gray-500">{comment.comment}</p>
-            )}            
+                            </div>
+                        ) : (null)
+                    }
+
+                </footer>
+                {editActive ? (
+                    <EditComment
+                        setEditActive={setEditActive}
+                        editActive={editActive}
+                        newComment={newComment}
+                        setNewComment={setNewComment}
+                        handleEditComment={handleEditComment}
+                        idComment={comment._id}
+                    />
+                ) : (
+                    <p className="text-gray-500 dark:text-gray-400">{comment.comment}</p>
+                )}
+                <div className="flex items-center mt-4 space-x-4">
+                    <button
+                        type="button"
+                        onClick={() => handleReplyComment(comment._id)}
+                        className="flex items-center text-sm text-gray-500 hover:underline dark:text-gray-400">
+                        <svg aria-hidden="true" className="mr-1 w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path></svg>
+                        Reply
+                    </button>
+                </div>
+            </article>
+            {
+                replyActive ? (
+                    <ReplyComment
+                        setReplyActive={setReplyActive}
+                        replyActive={replyActive}
+                        userID={userP._id}
+                        commentId={commentId}
+                        idPost={idPost}
+                    />
+                ) : (null)
+            }
+            {
+                comment.replies.length > 0 ? (
+                    <>
+                        {
+                            comment.replies.map(reply => (
+                                <ShowReplies 
+                                    reply={reply}  
+                                    key={reply._id}
+                                    userP={userP}
+                                    handleDeleteReply={handleDeleteReply}
+                                    // commentId={comment._id}
+                                />
+                            ))
+                        }
+                    </>
+                ) : (null)
+            }
+
         </div>
-    </div>
-  )
+
+    )
 }
 
 export default ShowCommenst

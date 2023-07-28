@@ -66,6 +66,7 @@ const ViewPost = () => {
     fetch(`${link}/posts/${params.id}`)
     .then((response) => response.json())
     .then((post) => {
+      console.log(post);
       setPost(post)
       getCommentsRedux(post.commenstOnPost.comments);
       const userLike = post.likePost.users.includes(userP._id);
@@ -233,17 +234,11 @@ const handleSave = async (id) => {
     </div>
     
     <div className='sm:w-4/6 lg:w-3/6 mx-auto'>
-        <p className=' text-5xl my-3'>Comments:</p>
+        <p className={`${theme ? 'text-black' : ' text-white'} text-5xl my-3`}>Comments:</p>
         <NewComment 
           user={userP}
           idPost={params.id}
         />
-        {/* {post.commenstOnPost.comments.map(comment => (
-          <ShowCommenst 
-            comment={comment}
-            idPost={params.id}
-          />
-        ))} */}
         {comments.map(comment => (
           <ShowCommenst
             key={comment.dateComment} 
