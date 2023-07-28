@@ -357,7 +357,7 @@ const newComment = (comment) => ({
 export function editCommentAction(comment){
     return async(dispatch) => {
         dispatch(editComment(comment));
-        console.log(comment);
+        // console.log(comment);
     }
 }
 const editComment = (comment) => ({

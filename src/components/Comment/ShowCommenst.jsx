@@ -41,7 +41,7 @@ const ShowCommenst = ({ comment, idPost }) => {
 
 
 
-
+    // -- Actions comments start
     const handleDeleteComment = async (id, date) => {
         Swal.fire({
             title: 'Are you sure you want to remove this Comment?',
@@ -72,7 +72,8 @@ const ShowCommenst = ({ comment, idPost }) => {
             userID: comment.userID,
             comment: newComment,
             dateComment: comment.dateComment,
-            _id: comment._id
+            _id: comment._id,
+            replies: comment.replies
         })
         try {
 
@@ -88,12 +89,48 @@ const ShowCommenst = ({ comment, idPost }) => {
         }
     }
 
+    // -- Actions comments end
+
+    //-- actions replies start
     const handleDeleteReply = async (idReply) => {
         try {
 
             const res = await axios.post(`${link}/posts/delete-reply-comment/${idPost}`, {
                 idReply,
                 idComment: comment._id
+            })
+           
+            const repliesF = res.data.filter(reply => reply._id === comment._id);
+
+            editCommentRedux({
+                userID: comment.userID,
+                comment: comment.comment,
+                dateComment: comment.dateComment,
+                _id: comment._id,
+                replies: repliesF[0].replies
+            })
+        } catch (error) {
+            console.log(error);
+        }
+    }
+
+    const handleEditReply = async (newReply, reply) => {
+        // console.log(newReply, reply);
+
+        try {
+            const res = await axios.post(`${link}/posts/edit-reply-comment/${idPost}`, {
+                idReply: reply._id,
+                idComment: comment._id,
+                newContentReply: newReply
+            })
+            // console.log(res.data);
+            const repliesF = res.data.filter(reply => reply._id === comment._id);
+            editCommentRedux({
+                userID: comment.userID,
+                comment: comment.comment,
+                dateComment: comment.dateComment,
+                _id: comment._id,
+                replies: repliesF[0].replies
             })
         } catch (error) {
             console.log(error);
@@ -105,6 +142,7 @@ const ShowCommenst = ({ comment, idPost }) => {
         setCommentId(commentId);
     }
 
+    // -- actions replies end
 
     return (
 
@@ -112,7 +150,7 @@ const ShowCommenst = ({ comment, idPost }) => {
             <article className={`${theme ? ' bgt-light text-black' : 'bgt-dark text-white'} p-6 mb-6 text-base rounded-lg my-2`}>
                 <footer className="flex justify-between items-center mb-2">
                     <div className="flex items-center">
-                        <p className="inline-flex items-center mr-3 text-sm text-gray-900 dark:text-white">
+                        <p className="inline-flex items-center mr-3 text-sm">
                             <img
                                 className="mr-2 w-6 h-6 rounded-full"
                                 src={comment.userID.profilePicture.secure_url ? comment.userID.profilePicture.secure_url : '/avatar.png'}
@@ -172,7 +210,7 @@ const ShowCommenst = ({ comment, idPost }) => {
                         setReplyActive={setReplyActive}
                         replyActive={replyActive}
                         userID={userP._id}
-                        commentId={commentId}
+                        comment={comment}
                         idPost={idPost}
                     />
                 ) : (null)
@@ -187,6 +225,7 @@ const ShowCommenst = ({ comment, idPost }) => {
                                     key={reply._id}
                                     userP={userP}
                                     handleDeleteReply={handleDeleteReply}
+                                    handleEditReply={handleEditReply}
                                     // commentId={comment._id}
                                 />
                             ))

@@ -1,29 +1,44 @@
 import axios from 'axios';
 import React, { useState } from 'react'
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
+import { editCommentAction } from '../../StateRedux/actions/postAction';
 
 const ReplyComment = ({
     setReplyActive,
     replyActive,
     userID,
-    commentId,
+    comment,
     idPost
 }) => {
 
+    const dispatch = useDispatch();
+    const editCommentRedux = (comment) => dispatch(editCommentAction(comment));
     const theme = useSelector(state => state.posts.themeW);
     const link = useSelector(state => state.posts.linkBaseBackend);
 
     const [replyComment, setReplyComment] = useState('');
     //we need userId, reply, date and idComment
 
+
+    //new reply
     const replyCommentFunc = async () => {
         try {
 
             const res = await axios.post(`${link}/posts/save-reply-comment/${idPost}`, {
                 userID,
-                commentId,
+                commentId : comment._id,
                 reply: replyComment,
                 dateReply: new Date()
+            })
+
+            const repliesF = res.data.filter(reply => reply._id === comment._id);
+            // console.log(repliesF);
+            editCommentRedux({
+                userID: comment.userID,
+                comment: comment.comment,
+                dateComment: comment.dateComment,
+                _id: comment._id,
+                replies: repliesF[0].replies
             })
             console.log(res.data);
         } catch (error) {

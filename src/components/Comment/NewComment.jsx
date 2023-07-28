@@ -3,7 +3,7 @@ import React, { useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux';
 import { newCommentAction } from '../../StateRedux/actions/postAction';
 
-const NewComment = ({ user, idPost }) => {
+const NewComment = ({ user, idPost, comments }) => {
 
     const [comment, setComment] = useState('');
     const theme = useSelector(state => state.posts.themeW);
@@ -11,6 +11,7 @@ const NewComment = ({ user, idPost }) => {
     const newCommentRedux = (comment) => dispatch(newCommentAction(comment));
     const link = useSelector(state => state.posts.linkBaseBackend);
 
+    //new comment
     const newComment = async (id) => {
         setComment('');
         const data = {
@@ -22,6 +23,7 @@ const NewComment = ({ user, idPost }) => {
             userID: user,
             comment: comment,
             dateComment: new Date(),
+            replies: []
         });
         try {
             await axios.post(`${link}/posts/save-comment/${id}`, data);
@@ -31,18 +33,18 @@ const NewComment = ({ user, idPost }) => {
     }
 
     return (
-        <section className={`${theme ? ' bgt-light text-black' : 'bgt-dark hover:bg-zinc-700 text-white'} rounded-lg py-2`}>
+        <section className={`${theme ? ' bgt-light text-black' : 'bgt-dark hover:bg-zinc-900 text-white'} rounded-lg py-2`}>
             <div className="max-w-2xl mx-auto px-4">
                 <div className="flex justify-between items-center mb-6">
-                    <h2 className="text-lg lg:text-2xl font-bold text-gray-900 dark:text-white">Discussion (20)</h2>
+                    <h2 className="text-lg lg:text-2xl font-bold ">Discussion ({comments.length})</h2>
                 </div>
                 <form className="mb-6">
-                    <div className="py-2 px-4 mb-4 bg-white rounded-lg rounded-t-lg border border-gray-200 dark:bg-gray-800 dark:border-gray-700">
+                    <div className="py-2 px-4 mb-4 bg-white rounded-lg rounded-t-lg border border-gray-200 dark:bg-gray-700 dark:border-gray-700">
                         <label for="comment" className="sr-only">Your comment</label>
                         <textarea 
                             id="comment" 
                             rows="6"
-                            className="px-0 w-full text-sm text-gray-900 border-0 focus:ring-0 focus:outline-none dark:text-white dark:placeholder-gray-400 dark:bg-gray-800"
+                            className="px-0 w-full text-sm text-gray-900 border-0 focus:ring-0 focus:outline-none dark:text-white dark:placeholder-gray-400 dark:bg-gray-700"
                             name="body" 
                             placeholder='Type Your Comment' 
                             required

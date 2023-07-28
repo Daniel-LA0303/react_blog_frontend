@@ -66,7 +66,7 @@ const ViewPost = () => {
     fetch(`${link}/posts/${params.id}`)
     .then((response) => response.json())
     .then((post) => {
-      console.log(post);
+      // console.log(post);
       setPost(post)
       getCommentsRedux(post.commenstOnPost.comments);
       const userLike = post.likePost.users.includes(userP._id);
@@ -238,6 +238,7 @@ const handleSave = async (id) => {
         <NewComment 
           user={userP}
           idPost={params.id}
+          comments={comments}
         />
         {comments.map(comment => (
           <ShowCommenst
