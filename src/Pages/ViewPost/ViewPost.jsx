@@ -5,7 +5,6 @@ import { Link, useParams, useNavigate } from 'react-router-dom';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faHeart, faBookmark, faTrash, faPen, faL, faComment } from '@fortawesome/free-solid-svg-icons'
-
 import { useDispatch, useSelector } from 'react-redux';
 import { deletePostAction, getCommentsAction, getOnePostAction, getUserAction } from '../../StateRedux/actions/postAction';
 
@@ -15,10 +14,9 @@ import NewComment from '../../components/Comment/NewComment';
 import ShowCommenst from '../../components/Comment/ShowCommenst';
 import Swal from 'sweetalert2';
 import { toast, Toaster } from 'react-hot-toast';
-import { Icon } from '@mui/material';
 import { HeartBrokenOutlined } from '@mui/icons-material';
-
-
+import PostRecom from '../../components/Post/PostRecom';
+import ActionsPost from '../../components/Post/ActionsPost';
 
 const notify = () => toast(
   'Post saved.',
@@ -110,10 +108,6 @@ const ViewPost = () => {
           
       }
     })
-      
-      // setTimeout(() => {
-        
-    // }, 1000);
   }
 
   const handleLike = async (id) => {
@@ -158,109 +152,152 @@ const handleSave = async (id) => {
         position="bottom-right"
         reverseOrder={false}
       />
-      <div>
-        <div>
-        <HeartBrokenOutlined />
+      <div className='flex justify-center'>
+        <div className=' flex-col hidden sm:block text-white sticky top-10 h-[90%] p-4 mt-30'>
+          <ActionsPost 
+            user={userP}
+            like={like}
+            id={params.id}
+            numberLike={numberLike}
+            numberSave={numberSave}
+            save={save}
+            handleLike={handleLike}
+            handleSave={handleSave}
+            post={post}
+          />
         </div>
-        <div>
-          <div className={`${theme ? ' bgt-light text-black' : 'bgt-dark text-white'} w-full sm:w-4/6 lg:w-3/6 mx-auto rounded-lg `}>
-          <div className=''>
+        <div className='w-auto sm:w-4/6 lg:w-5/12'>
+          <div className={`${theme ? ' bgt-light text-black' : 'bgt-dark text-white'}    rounded-lg `}>
+            <div className=''>
               <div className="overflow-hidden h-96">
-                  {post.linkImage && (
-                      <img 
-                          className="img-cover" 
-                          src={post.linkImage.secure_url}
-                          alt="Sunset in the mountains" 
-                      />
-                  )}
+                {post.linkImage && (
+                  <img
+                    className="img-cover"
+                    src={post.linkImage.secure_url}
+                    alt="Sunset in the mountains"
+                  />
+                )}
               </div>
-          </div>
-          {userP._id === post.user._id ? (
-            <div className=' flex justify-end'>
-              <FontAwesomeIcon 
-                onClick={() => deletePostComponent(params.id)}
-                className=' text-2xl text-red-500 p-2 cursor-pointer'
-                icon={faTrash} 
-              />
-              <Link
-                to={`/edit-post/${params.id}`}
-              >
-                <FontAwesomeIcon 
-                  icon={faPen} 
-                  className=' text-2xl text-sky-500 p-2 cursor-pointer'
-                />
-              </Link>
             </div>
-          ): null} 
-          <div className=" mt-2 px-4 py-1">
+            {userP._id === post.user._id ? (
+              <div className=' flex justify-end'>
+                <FontAwesomeIcon
+                  onClick={() => deletePostComponent(params.id)}
+                  className=' text-2xl text-red-500 p-2 cursor-pointer'
+                  icon={faTrash}
+                />
+                <Link
+                  to={`/edit-post/${params.id}`}
+                >
+                  <FontAwesomeIcon
+                    icon={faPen}
+                    className=' text-2xl text-sky-500 p-2 cursor-pointer'
+                  />
+                </Link>
+              </div>
+            ) : null}
+            <div className=" mt-2 px-4 py-1">
               <h2 className=' font-bold text-5xl mb-3'>{post.title}</h2>
               <p className="mb-3 font-normal ">Posted on {new Date(post.createdAt).toDateString()}</p>
               <div className='flex justify-between'>
                 <div className='flex'>
                   <div className='flex'>
                     <p className='mx-3'>{numberLike}</p>
-                    <button onClick={() => handleLike(params.id)} disabled={Object.keys(userP) != ''? false : true}>
-                      <FontAwesomeIcon 
-                        icon={faHeart} 
-                        className={`${like ? ' text-red-400' :  ' text-mode-white'}   mx-auto  rounded`}
+                    <button onClick={() => handleLike(params.id)} disabled={Object.keys(userP) != '' ? false : true}>
+                      <FontAwesomeIcon
+                        icon={faHeart}
+                        className={`${like ? ' text-red-400' : ' text-mode-white'}   mx-auto  rounded`}
                       />
                     </button>
                   </div>
                   <div className='flex'>
                     <div className='flex items-center'>
                       <p className='mx-3'>{post.commenstOnPost.comments.length}</p>
-                      <FontAwesomeIcon 
-                        icon={faComment} 
-                        className={`text-white  mx-auto  rounded`}                    
+                      <FontAwesomeIcon
+                        icon={faComment}
+                        className={`text-white  mx-auto  rounded`}
                       />
                     </div>
                   </div>
                 </div>
                 <div className='flex'>
                   <p className='  mx-3'>{numberSave}</p>
-                  <button onClick={() => handleSave(params.id)} disabled={Object.keys(userP) != ''? false : true}>
-                    <FontAwesomeIcon 
-                      icon={faBookmark} 
-                      className={`${save ? 'text-blue-500': 'text-mode-white '}    mx-auto  rounded`}          
+                  <button onClick={() => handleSave(params.id)} disabled={Object.keys(userP) != '' ? false : true}>
+                    <FontAwesomeIcon
+                      icon={faBookmark}
+                      className={`${save ? 'text-blue-500' : 'text-mode-white '}    mx-auto  rounded`}
                     />
                   </button>
                 </div>
-              
+
               </div>
               {post.categoriesPost.map(cat => (
-                  <Link
-                      key={cat}
-                      to={`/category/${cat}`}
-                      className="inline-block hover:bg-gray-700 hover:text-mode-white transition bg-gray-200 rounded-full px-3 py-1 text-sm font-semibold text-gray-700 mr-2 mb-2">#{cat}</Link> 
-                  ))}
-              <div 
-                  className="ql-editor post bg-content" 
-                  dangerouslySetInnerHTML={{ __html: post.content}}  
+                <Link
+                  key={cat}
+                  to={`/category/${cat}`}
+                  className="inline-block hover:bg-gray-700 hover:text-mode-white transition bg-gray-200 rounded-full px-3 py-1 text-sm font-semibold text-gray-700 mr-2 mb-2">#{cat}</Link>
+              ))}
+              <div
+                className="ql-editor post bg-content"
+                dangerouslySetInnerHTML={{ __html: post.content }}
               />
+            </div>
           </div>
-          </div>
-      
-          <div className='sm:w-4/6 lg:w-3/6 mx-auto'>
-          <p className={`${theme ? 'text-black' : ' text-white'} text-5xl my-3`}>Comments:</p>
-          <NewComment 
-            user={userP}
-            idPost={params.id}
-            comments={comments}
-          />
-          {comments.map(comment => (
-            <ShowCommenst
-              key={comment.dateComment} 
-              comment={comment}
+
+          <div className=''>
+            <p className={`${theme ? 'text-black' : ' text-white'} text-5xl my-3`}>Comments:</p>
+            <NewComment
+              user={userP}
               idPost={params.id}
+              comments={comments}
             />
-          ))}
-          
+            {comments.map(comment => (
+              <ShowCommenst
+                key={comment.dateComment}
+                comment={comment}
+                idPost={params.id}
+              />
+            ))}
+
+          </div>
+
+          <div className='block sm:hidden'>
+            <PostRecom 
+              title={post.title}
+              id={params.id}
+            />
+          </div>
+
+        </div>
+        <div className='mx-2 hidden md:block'>
+          <PostRecom 
+            title={post.title}
+            id={params.id}
+          />
+        </div>
+
+
+
+        <div className={`${theme ? ' bgt-light text-black' : 'bgt-dark'} text-white fixed bottom-0 w-full p-1 block sm:hidden`}>
+          {/* Contenido del menú o cualquier otro contenido que desees */}
+          <div className='flex justify-center '>
+          <ActionsPost 
+                        user={userP}
+                        like={like}
+                        id={params.id}
+                        numberLike={numberLike}
+                        numberSave={numberSave}
+                        save={save}
+                        handleLike={handleLike}
+                        handleSave={handleSave}
+                        post={post}
+          />
           </div>
         </div>
       </div>
-     
- 
-  </div>
+
+
+    </div>
   )
 }
 
