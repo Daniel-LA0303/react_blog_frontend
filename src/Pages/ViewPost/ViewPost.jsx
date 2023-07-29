@@ -15,6 +15,8 @@ import NewComment from '../../components/Comment/NewComment';
 import ShowCommenst from '../../components/Comment/ShowCommenst';
 import Swal from 'sweetalert2';
 import { toast, Toaster } from 'react-hot-toast';
+import { Icon } from '@mui/material';
+import { HeartBrokenOutlined } from '@mui/icons-material';
 
 
 
@@ -156,99 +158,108 @@ const handleSave = async (id) => {
         position="bottom-right"
         reverseOrder={false}
       />
-      <div className={`${theme ? ' bgt-light text-black' : 'bgt-dark text-white'} w-full sm:w-4/6 lg:w-3/6 mx-auto rounded-lg `}>
-        <div className=''>
-            <div className="overflow-hidden h-96">
-                {post.linkImage && (
-                    <img 
-                        className="img-cover" 
-                        src={post.linkImage.secure_url}
-                        alt="Sunset in the mountains" 
-                    />
-                )}
-            </div>
+      <div>
+        <div>
+        <HeartBrokenOutlined />
         </div>
-        {userP._id === post.user._id ? (
-          <div className=' flex justify-end'>
-            <FontAwesomeIcon 
-              onClick={() => deletePostComponent(params.id)}
-              className=' text-2xl text-red-500 p-2 cursor-pointer'
-              icon={faTrash} 
-            />
-            <Link
-              to={`/edit-post/${params.id}`}
-            >
-              <FontAwesomeIcon 
-                icon={faPen} 
-                className=' text-2xl text-sky-500 p-2 cursor-pointer'
-              />
-            </Link>
+        <div>
+          <div className={`${theme ? ' bgt-light text-black' : 'bgt-dark text-white'} w-full sm:w-4/6 lg:w-3/6 mx-auto rounded-lg `}>
+          <div className=''>
+              <div className="overflow-hidden h-96">
+                  {post.linkImage && (
+                      <img 
+                          className="img-cover" 
+                          src={post.linkImage.secure_url}
+                          alt="Sunset in the mountains" 
+                      />
+                  )}
+              </div>
           </div>
-         ): null} 
-        <div className=" mt-2 px-4 py-1">
-            <h2 className=' font-bold text-5xl mb-3'>{post.title}</h2>
-            <p className="mb-3 font-normal ">Posted on {new Date(post.createdAt).toDateString()}</p>
-            <div className='flex justify-between'>
-              <div className='flex'>
+          {userP._id === post.user._id ? (
+            <div className=' flex justify-end'>
+              <FontAwesomeIcon 
+                onClick={() => deletePostComponent(params.id)}
+                className=' text-2xl text-red-500 p-2 cursor-pointer'
+                icon={faTrash} 
+              />
+              <Link
+                to={`/edit-post/${params.id}`}
+              >
+                <FontAwesomeIcon 
+                  icon={faPen} 
+                  className=' text-2xl text-sky-500 p-2 cursor-pointer'
+                />
+              </Link>
+            </div>
+          ): null} 
+          <div className=" mt-2 px-4 py-1">
+              <h2 className=' font-bold text-5xl mb-3'>{post.title}</h2>
+              <p className="mb-3 font-normal ">Posted on {new Date(post.createdAt).toDateString()}</p>
+              <div className='flex justify-between'>
                 <div className='flex'>
-                  <p className='mx-3'>{numberLike}</p>
-                  <button onClick={() => handleLike(params.id)} disabled={Object.keys(userP) != ''? false : true}>
+                  <div className='flex'>
+                    <p className='mx-3'>{numberLike}</p>
+                    <button onClick={() => handleLike(params.id)} disabled={Object.keys(userP) != ''? false : true}>
+                      <FontAwesomeIcon 
+                        icon={faHeart} 
+                        className={`${like ? ' text-red-400' :  ' text-mode-white'}   mx-auto  rounded`}
+                      />
+                    </button>
+                  </div>
+                  <div className='flex'>
+                    <div className='flex items-center'>
+                      <p className='mx-3'>{post.commenstOnPost.comments.length}</p>
+                      <FontAwesomeIcon 
+                        icon={faComment} 
+                        className={`text-white  mx-auto  rounded`}                    
+                      />
+                    </div>
+                  </div>
+                </div>
+                <div className='flex'>
+                  <p className='  mx-3'>{numberSave}</p>
+                  <button onClick={() => handleSave(params.id)} disabled={Object.keys(userP) != ''? false : true}>
                     <FontAwesomeIcon 
-                      icon={faHeart} 
-                      className={`${like ? ' text-red-400' :  ' text-mode-white'}   mx-auto  rounded`}
+                      icon={faBookmark} 
+                      className={`${save ? 'text-blue-500': 'text-mode-white '}    mx-auto  rounded`}          
                     />
                   </button>
                 </div>
-                <div className='flex'>
-                  <div className='flex items-center'>
-                    <p className='mx-3'>{post.commenstOnPost.comments.length}</p>
-                    <FontAwesomeIcon 
-                      icon={faComment} 
-                      className={`text-white  mx-auto  rounded`}                    
-                    />
-                  </div>
-                </div>
+              
               </div>
-              <div className='flex'>
-                <p className='  mx-3'>{numberSave}</p>
-                <button onClick={() => handleSave(params.id)} disabled={Object.keys(userP) != ''? false : true}>
-                  <FontAwesomeIcon 
-                    icon={faBookmark} 
-                    className={`${save ? 'text-blue-500': 'text-mode-white '}    mx-auto  rounded`}          
-                  />
-                </button>
-              </div>
-             
-            </div>
-            {post.categoriesPost.map(cat => (
-                <Link
-                    key={cat}
-                    to={`/category/${cat}`}
-                    className="inline-block hover:bg-gray-700 hover:text-mode-white transition bg-gray-200 rounded-full px-3 py-1 text-sm font-semibold text-gray-700 mr-2 mb-2">#{cat}</Link> 
-                ))}
-            <div 
-                className="ql-editor post bg-content" 
-                dangerouslySetInnerHTML={{ __html: post.content}}  
-            />
-        </div>
-    </div>
-    
-    <div className='sm:w-4/6 lg:w-3/6 mx-auto'>
-        <p className={`${theme ? 'text-black' : ' text-white'} text-5xl my-3`}>Comments:</p>
-        <NewComment 
-          user={userP}
-          idPost={params.id}
-          comments={comments}
-        />
-        {comments.map(comment => (
-          <ShowCommenst
-            key={comment.dateComment} 
-            comment={comment}
+              {post.categoriesPost.map(cat => (
+                  <Link
+                      key={cat}
+                      to={`/category/${cat}`}
+                      className="inline-block hover:bg-gray-700 hover:text-mode-white transition bg-gray-200 rounded-full px-3 py-1 text-sm font-semibold text-gray-700 mr-2 mb-2">#{cat}</Link> 
+                  ))}
+              <div 
+                  className="ql-editor post bg-content" 
+                  dangerouslySetInnerHTML={{ __html: post.content}}  
+              />
+          </div>
+          </div>
+      
+          <div className='sm:w-4/6 lg:w-3/6 mx-auto'>
+          <p className={`${theme ? 'text-black' : ' text-white'} text-5xl my-3`}>Comments:</p>
+          <NewComment 
+            user={userP}
             idPost={params.id}
+            comments={comments}
           />
-        ))}
-        
-    </div>
+          {comments.map(comment => (
+            <ShowCommenst
+              key={comment.dateComment} 
+              comment={comment}
+              idPost={params.id}
+            />
+          ))}
+          
+          </div>
+        </div>
+      </div>
+     
+ 
   </div>
   )
 }
