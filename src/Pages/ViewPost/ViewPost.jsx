@@ -46,6 +46,7 @@ const ViewPost = () => {
   const[save, setSave] = useState(false);
   const[numberSave, setNumberSave] = useState(0);
   const[post, setPost] = useState({})
+  
 
   //redux
   const userP = useSelector(state => state.posts.user);
@@ -63,21 +64,31 @@ const ViewPost = () => {
   }, []);
 
   useEffect(() => {
-    fetch(`${link}/posts/${params.id}`)
-    .then((response) => response.json())
-    .then((post) => {
-      // console.log(post);
-      setPost(post)
-      getCommentsRedux(post.commenstOnPost.comments);
-      const userLike = post.likePost.users.includes(userP._id);
-      if(userLike){
-        setLike(true);
-      }
-      setNumberLike(post.likePost.users.length);
-      setNumberSave(post.usersSavedPost.users.length)
-    })   
-
+    try {
+      fetch(`${link}/posts/${params.id}`)
+      .then((response) => response.json())
+      .then((post) => {
+        setPost(post)
+        getCommentsRedux(post.commenstOnPost.comments);
+        setNumberLike(post.likePost.users.length);
+        setNumberSave(post.usersSavedPost.users.length)
+      })  
+    } catch (error) {
+     console.log(error); 
+    }
   }, [params.id]);
+
+  useEffect(() => {
+    if(Object.keys(userP) != ''){
+      const userPost = userP.likePost.posts.includes(params.id);
+      if(userPost){
+        setLike(true);
+        
+      }
+      // console.log('in');
+    } 
+
+  }, [userP, params.id]);
 
   useEffect(() => {
       if(Object.keys(userP) != ''){
@@ -85,8 +96,22 @@ const ViewPost = () => {
         if(userPost){
           setSave(true);
         }
+        // console.log('in');
       } 
-  }, [userP]);
+  }, [userP, params.id]);
+
+  const scrollToTop = () => {
+    window.scrollTo({
+      top: 0,
+      behavior: 'auto', // Use 'auto' for instant scrolling or 'smooth' for smooth scrolling
+    });
+  };
+
+  // useEffect to scroll to the top when a post recommended is clicked
+  useEffect(() => {
+    scrollToTop();
+  }, [params.id]); // Empty dependency array to ensure the useEffect runs only once
+
 
   const deletePostComponent = async (id) => {
     Swal.fire({
@@ -152,7 +177,9 @@ const handleSave = async (id) => {
         position="bottom-right"
         reverseOrder={false}
       />
-      <div className='flex justify-center'>
+      <div 
+        className='flex justify-center'
+      >
         <div className=' flex-col hidden sm:block text-white sticky top-10 h-[90%] p-4 mt-30'>
           <ActionsPost 
             user={userP}
@@ -169,7 +196,7 @@ const handleSave = async (id) => {
         <div className='w-auto sm:w-4/6 lg:w-5/12'>
           <div className={`${theme ? ' bgt-light text-black' : 'bgt-dark text-white'}    rounded-lg `}>
             <div className=''>
-              <div className="overflow-hidden h-96">
+              <div className="overflow-hidden h-AUTO">
                 {post.linkImage && (
                   <img
                     className="img-cover"
@@ -204,10 +231,19 @@ const handleSave = async (id) => {
                   <div className='flex'>
                     <p className='mx-3'>{numberLike}</p>
                     <button onClick={() => handleLike(params.id)} disabled={Object.keys(userP) != '' ? false : true}>
-                      <FontAwesomeIcon
-                        icon={faHeart}
-                        className={`${like ? ' text-red-400' : ' text-mode-white'}   mx-auto  rounded`}
-                      />
+                      {
+                        like ? 
+                          <FontAwesomeIcon
+                            icon={faHeart}
+                            className={` text-red-400  mx-auto  rounded`}
+                          /> 
+                          : 
+                          <FontAwesomeIcon
+                          icon={faHeart}
+                          className={` text-mode-white  mx-auto  rounded`}
+                        />
+                      }
+
                     </button>
                   </div>
                   <div className='flex'>
@@ -265,6 +301,7 @@ const handleSave = async (id) => {
             <PostRecom 
               title={post.title}
               id={params.id}
+              user={post.user}
             />
           </div>
 
@@ -273,25 +310,25 @@ const handleSave = async (id) => {
           <PostRecom 
             title={post.title}
             id={params.id}
+            user={post.user}
           />
         </div>
 
 
 
-        <div className={`${theme ? ' bgt-light text-black' : 'bgt-dark'} text-white fixed bottom-0 w-full p-1 block sm:hidden`}>
-          {/* Contenido del menú o cualquier otro contenido que desees */}
+        <div className={`${theme ? ' bgt-light text-black' : 'bgt-dark'} text-white fixed z-1 bottom-0 w-full p-1 block sm:hidden`}>
           <div className='flex justify-center '>
-          <ActionsPost 
-                        user={userP}
-                        like={like}
-                        id={params.id}
-                        numberLike={numberLike}
-                        numberSave={numberSave}
-                        save={save}
-                        handleLike={handleLike}
-                        handleSave={handleSave}
-                        post={post}
-          />
+            <ActionsPost
+              user={userP}
+              like={like}
+              id={params.id}
+              numberLike={numberLike}
+              numberSave={numberSave}
+              save={save}
+              handleLike={handleLike}
+              handleSave={handleSave}
+              post={post}
+            />
           </div>
         </div>
       </div>
