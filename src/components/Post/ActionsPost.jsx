@@ -11,33 +11,33 @@ const ActionsPost = ({
     numberLike,
     numberSave,
     id,
-    post,
+    post, 
     user
 }) => {
   return (
     <>
-        <div className='my-3 text-2xl mx-10 sm:mx-0 cursor-pointer flex flex-row sm:flex-col justify-center items-center'>
-            <p 
-              className={`${like ? ' text-red-400' : ' text-mode-white'} `}
+        <div className='my-3 text-2xl mx-10 sm:mx-0 flex flex-row sm:flex-col justify-center items-center'>
+            <button 
+              className={`${like ? ' text-red-400' : ' text-mode-white'} cursor-pointer`}
               onClick={() => handleLike(id)} disabled={Object.keys(user) != '' ? false : true}
             >
               <FavoriteBorderIcon fontSize='default'/>
-            </p>
+            </button>
             <p>{numberLike}</p>
           </div>
-          <div className='my-3 text-2xl mx-10 sm:mx-0 cursor-pointer flex flex-row sm:flex-col justify-center items-center'>
+          <div className='my-3 text-2xl mx-10 sm:mx-0 flex flex-row sm:flex-col justify-center items-center'>
             <p>
               <ChatBubbleOutlineIcon fontSize='default'/>
             </p>
             <p>{post.commenstOnPost.comments.length}</p>
           </div>
-          <div className='my-3 text-2xl mx-10 sm:mx-0 cursor-pointer flex flex-row sm:flex-col justify-center items-center'>
-            <p 
-              className={`${save ? 'text-blue-500' : 'text-mode-white '} `}
+          <div className='my-3 text-2xl mx-10 sm:mx-0 flex flex-row sm:flex-col justify-center items-center'>
+            <button 
+              className={`${save ? 'text-blue-500' : 'text-mode-white '} cursor-pointer`}
               onClick={() => handleSave(id)} disabled={Object.keys(user) != '' ? false : true}
             >
               <BookmarkBorderIcon fontSize='default'/>
-            </p>
+            </button>
             <p>{numberSave}</p>
           </div>
     </>

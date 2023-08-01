@@ -249,3 +249,34 @@ h1{
   width: 50px;
   height: 50px;
 }
+
+
+.custom-button {
+  padding: 8px 16px;
+  border: 2px solid white;
+  border-radius: 4px;
+  background-color: transparent;
+  color: white;
+  cursor: pointer;
+}
+.custom-button:hover {
+  background-color: white;
+  color: black;
+}
+
+
+.scroll-box {
+  overflow-y: auto; /* Habilita el scroll vertical */
+  max-height: 200px; /* Altura máxima del contenedor antes de que aparezca el scroll */
+}
+
+/* Estilos para la barra de desplazamiento */
+.scroll-box::-webkit-scrollbar {
+  width: 8px; /* Ancho de la barra de desplazamiento */
+}
+
+.scroll-box::-webkit-scrollbar-thumb {
+  background-color: #ccc; /* Color del "pulggar" de la barra de desplazamiento */
+  border-radius: 4px; /* Borde redondeado del "pulggar" */
+}
+

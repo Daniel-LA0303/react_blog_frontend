@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faUser, faGear, faTableColumns, faSun, faMoon } from '@fortawesome/free-solid-svg-icons'
+import { faUser, faGear, faTableColumns, faSun, faMoon, faPlusSquare } from '@fortawesome/free-solid-svg-icons'
 import { changeThemeAction } from '../../StateRedux/actions/postAction';
 
 const ProfileButton = () => {
@@ -81,6 +81,12 @@ const ProfileButton = () => {
                         <FontAwesomeIcon icon={faTableColumns} />
                       </div>
                       <Link to={`/dashboard/${user._id}`}>Dashboard</Link>
+                  </li>
+                  <li className = 'dropdownItem p-1 hover:bg-gray-700 hover:text-white transition rounded'>
+                      <div className='px-2'>
+                        <FontAwesomeIcon icon={faPlusSquare} />
+                      </div>
+                      <Link to='/new-post'>New Post</Link>
                   </li>
                   <li>
                     <div>

@@ -10,6 +10,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import Aside from '../../components/Aside/Aside';
 import ScrollButton from '../../components/ScrollButton/ScrollButton';
 import Slider from '../../components/Slider/Slider'
+import AsideMenu from '../../components/Aside/AsideMenu';
 
 
 const Home = () => {
@@ -19,6 +20,7 @@ const Home = () => {
   const[cats, setCats] = useState([]);
 
   const posts = useSelector(state => state.posts.posts);
+  const user = useSelector(state => state.posts.user);
   const loading = useSelector(state => state.posts.loading);
   const theme = useSelector(state => state.posts.themeW);
   const link = useSelector(state => state.posts.linkBaseBackend);
@@ -53,8 +55,13 @@ const Home = () => {
         <div className=' block z-10 md:hidden md:visible w-full'>
           <Slider className=" " cats={cats}/>
         </div>
-        <div className='flex flex-row mt-0 md:mt-10 mx-auto w-full md:w-10/12 lg:w-8/12'>
-          <div className=' w-full  sm:mx-0  md:w-10/12 lg:w-10/12 flex flex-col items-center'>
+        <div className='flex flex-row mt-0 md:mt-10 mx-auto w-full md:w-11/12  lg:w-11/12'>
+          <aside className='hidden md:block w-0 md:w-3/12  lg:w-2/12 mt-5'>
+            <AsideMenu 
+              user={user}
+            />
+          </aside>
+          <div className=' w-full  sm:mx-0   lg:w-7/12 flex flex-col items-center'>
             {loading ? (
               <>
                 <LoadingPosts />
@@ -77,7 +84,7 @@ const Home = () => {
             </>}
 
           </div>
-          <aside className=' hidden md:block md:visible w-0 md:w-4/12 lg:w-3/12'>
+          <aside className=' hidden lg:block w-0 md:w-3/12  lg:w-2/12'>
             {cats.map(cat => (
               <Aside 
                 cats={cat}

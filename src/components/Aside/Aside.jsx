@@ -17,10 +17,10 @@ const Aside = ({cats}) => {
                 style={{border: `solid 10px ${cats.color}`}}
                 className="rounded-full w-4 h-4">  
               </div>
-              <Link to={`/category/${cats.name}`} className=" text-sm md:text-base ">{cats.name}</Link>
+              <Link to={`/category/${cats.name}`} className=" text-sm md:text-xs ">{cats.name}</Link>
             </div>
             <div className="flex items-center">
-              <div className="text-gray-500 hover:text-gray-300 cursor-pointer mx-2">
+              <div className="text-gray-500 hover:text-gray-300 cursor-pointer mx-1 text-sm md:text-xs">
                 {cats.follows.countFollows}
               </div>
               <div className="text-gray-500 hover:text-gray-300 cursor-pointer">

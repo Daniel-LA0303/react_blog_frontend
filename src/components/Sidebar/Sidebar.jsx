@@ -12,6 +12,10 @@ import SearchBar from '../SearchBar/SearchBar'
 import ConfigButton from '../ConfigButton/ConfigButton'
 import Logo from '../Logo/Logo'
 import { getUserAction } from '../../StateRedux/actions/postAction'
+import NotificationsNoneIcon from '@mui/icons-material/NotificationsNone';
+import { Badge, IconButton } from '@mui/material'
+import { Notifications } from '@mui/icons-material'
+import AsideMenu from '../Aside/AsideMenu'
 
 const Sidebar = () => {
 
@@ -41,24 +45,36 @@ const Sidebar = () => {
         null
       ) : (
         <header className={`${theme ? 'bgt-light' : 'bgt-dark'} ${isHome ? '' : ' sticky'} py-1  top-0 left-0 right-0 shadow-2xl `}>
-          <div className={`flex items-center justify-between  h-14 mx-auto w-full md:w-10/12 lg:w-8/12`}>
+          <div className={`flex items-center justify-between  h-14 mx-auto w-full md:w-11/12 lg:w-11/12`}>
             <div className='flex items-center justify-start  '>
-              {user._id ? 
-              <>
-                <button className='ml-4 md:ml-0' onClick={() => setOpen(true)}>
-                  <FontAwesomeIcon icon={faBars} className={` text-3xl ${theme ? 'text-black' : 'text-white'}`} />
-                </button>
-              </> : null}
+              {/* {user._id ?  */}
+                {/* // <> */}
+                  <button className='ml-4 md:ml-0 block md:hidden' onClick={() => setOpen(true)}>
+                    <FontAwesomeIcon icon={faBars} className={` text-3xl ${theme ? 'text-black' : 'text-white'}`} />
+                  </button>
+                {/* </> : null} */}
 
               <Logo />
+              <SearchBar />
             </div>
 
             <div className='w-full mx-1 sm:ml-5 flex items-center justify-end'>
-              <SearchBar />
               {user._id ? (
-                <div className=''>
-                  <ProfileButton />
-                </div>
+                <>
+                  <Link to='/new-post' className="hidden md:block custom-button ml-4">
+                    New Post
+                  </Link>
+                  
+                  <Badge badgeContent={2} color="secondary">
+                    <IconButton>
+                      <Notifications />
+                    </IconButton>
+                  </Badge>
+                  <div className=''>
+                    <ProfileButton />
+                  </div>
+                </>
+
               ) : (
                 <>
                   <div className=' block sm:hidden'>
@@ -86,31 +102,9 @@ const Sidebar = () => {
                 <FontAwesomeIcon icon={faX} className=' text-xl' />
               </button>
               <div className=''>
-                <div className='text-center  text-xl hover:bg-zinc-700 hover:text-white cursor-pointer py-3 mb-2 transition'>
-                  <FontAwesomeIcon icon={faHome} className='mx-2'/>
-                  <Link to={'/'}>Home</Link>
-                </div>
-
-                <div className='text-center  text-xl hover:bg-zinc-700 hover:text-white cursor-pointer py-3 mb-2 transition'>
-                  <FontAwesomeIcon icon={faCirclePlus} className='mx-2'/>
-                  <Link to={'/new-post'}>New Post</Link>
-                </div>
-                <div className='text-center  text-xl hover:bg-zinc-700 hover:text-white cursor-pointer py-3 mb-2 transition'>
-                  <FontAwesomeIcon icon={faBookmark} className='mx-2'/>
-                  <Link to={`/save-posts/${user._id}`}>Saved</Link>
-                </div>
-                <div className='text-center  text-xl hover:bg-zinc-700 hover:text-white cursor-pointer py-3 mb-2 transition'>
-                  <FontAwesomeIcon icon={faCode} className='mx-2'/>
-                  <Link to={'/categories'}>Categories</Link>
-                </div>
-                <div className='text-center  text-xl hover:bg-zinc-700 hover:text-white cursor-pointer py-3 mb-2 transition'>
-                  <FontAwesomeIcon icon={faPeopleGroup} className='mx-2'/>
-                  <Link to={'/about'}>About</Link>
-                </div>
-                <div>
-                  <SocialMedia />
-                </div>
-
+                <AsideMenu 
+                  user={user}
+                />
               </div>
             </div>
           </div>
