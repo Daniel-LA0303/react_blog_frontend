@@ -266,17 +266,23 @@ h1{
 
 
 .scroll-box {
-  overflow-y: auto; /* Habilita el scroll vertical */
-  max-height: 200px; /* Altura máxima del contenedor antes de que aparezca el scroll */
+  overflow-y: auto; 
+  max-height: 300px; 
 }
 
-/* Estilos para la barra de desplazamiento */
+@media (max-width: 600px) {
+  .scroll-box {
+    max-height: 150px; 
+  }
+}
+
+
 .scroll-box::-webkit-scrollbar {
-  width: 8px; /* Ancho de la barra de desplazamiento */
+  width: 8px; 
 }
 
 .scroll-box::-webkit-scrollbar-thumb {
-  background-color: #ccc; /* Color del "pulggar" de la barra de desplazamiento */
-  border-radius: 4px; /* Borde redondeado del "pulggar" */
+  background-color: #ccc; 
+  border-radius: 4px; 
 }
 

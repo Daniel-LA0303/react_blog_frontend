@@ -1,15 +1,22 @@
 import axios from 'axios';
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux';
 import { newCommentAction } from '../../StateRedux/actions/postAction';
+import { io } from 'socket.io-client';
 
-const NewComment = ({ user, idPost, comments }) => {
+let socket;
+
+const NewComment = ({ user, idPost, comments, userPost }) => {
 
     const [comment, setComment] = useState('');
     const theme = useSelector(state => state.posts.themeW);
     const dispatch = useDispatch();
     const newCommentRedux = (comment) => dispatch(newCommentAction(comment));
     const link = useSelector(state => state.posts.linkBaseBackend);
+
+    useEffect(() => {
+        socket = io('http://localhost:4000')
+      }, []);
 
     //new comment
     const newComment = async (id) => {
@@ -26,7 +33,9 @@ const NewComment = ({ user, idPost, comments }) => {
             replies: []
         });
         try {
-            await axios.post(`${link}/posts/save-comment/${id}`, data);
+            await axios.post(`${link}/posts/save-comment/${id}`, {data, userPost});
+            console.log('emit');
+            socket.emit('newComment' ,data);
         } catch (error) {
             console.log(error);
         }

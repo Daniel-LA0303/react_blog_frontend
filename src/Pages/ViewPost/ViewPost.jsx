@@ -286,6 +286,7 @@ const handleSave = async (id) => {
               user={userP}
               idPost={params.id}
               comments={comments}
+              userPost={post.user}
             />
             {comments.map(comment => (
               <ShowCommenst

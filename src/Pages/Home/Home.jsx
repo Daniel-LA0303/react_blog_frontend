@@ -55,7 +55,7 @@ const Home = () => {
         <div className=' block z-10 md:hidden md:visible w-full'>
           <Slider className=" " cats={cats}/>
         </div>
-        <div className='flex flex-row mt-0 md:mt-10 mx-auto w-full md:w-11/12  lg:w-11/12'>
+        <div className='flex flex-row justify-center mt-0 md:mt-10 mx-auto w-full md:w-11/12  lg:w-11/12'>
           <aside className='hidden md:block w-0 md:w-3/12  lg:w-2/12 mt-5'>
             <AsideMenu 
               user={user}

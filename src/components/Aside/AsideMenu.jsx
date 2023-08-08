@@ -28,29 +28,29 @@ const AsideMenu = ({user}) => {
 
   return (
       <div className={`${theme ? 'bgt-light ' : 'bgt-dark text-white'} mx-2 rounded-sm`}>
-          <div className='text-center text-xl md:text-sm hover:bg-zinc-700 hover:text-white cursor-pointer py-3 mb-2 transition'>
+          <div className='text-center text-sm hover:bg-zinc-700 hover:text-white cursor-pointer py-3 mb-2 transition'>
               <FontAwesomeIcon icon={faHome} className='mx-2' />
               <Link to={'/'}>Home</Link>
           </div>
 
             {!user._id ? null : (
                 <>
-                  <div className='text-center text-xl md:text-sm hover:bg-zinc-700 hover:text-white cursor-pointer py-3 mb-2 transition'>
+                  <div className='text-center text-sm hover:bg-zinc-700 hover:text-white cursor-pointer py-3 mb-2 transition'>
                       <FontAwesomeIcon icon={faCirclePlus} className='mx-2' />
                       <Link to={'/new-post'}>New Post</Link>
                   </div>
-                  <div className='text-center text-xl md:text-sm hover:bg-zinc-700 hover:text-white cursor-pointer py-3 mb-2 transition'>
+                  <div className='text-center text-sm hover:bg-zinc-700 hover:text-white cursor-pointer py-3 mb-2 transition'>
                       <FontAwesomeIcon icon={faBookmark} className='mx-2' />
                       <Link to={`/save-posts/${user._id}`}>Saved</Link>
                   </div>
                 </>
             )}
 
-          <div className='text-center text-xl md:text-sm hover:bg-zinc-700 hover:text-white cursor-pointer py-3 mb-2 transition'>
+          <div className='text-center text-sm hover:bg-zinc-700 hover:text-white cursor-pointer py-3 mb-2 transition'>
               <FontAwesomeIcon icon={faCode} className='mx-2' />
               <Link to={'/categories'}>Categories</Link>
           </div>
-          <div className='text-center text-xl md:text-sm hover:bg-zinc-700 hover:text-white cursor-pointer py-3 mb-2 transition'>
+          <div className='text-center text-sm hover:bg-zinc-700 hover:text-white cursor-pointer py-3 mb-2 transition'>
               <FontAwesomeIcon icon={faPeopleGroup} className='mx-2' />
               <Link to={'/about'}>About</Link>
           </div>
@@ -65,7 +65,7 @@ const AsideMenu = ({user}) => {
                           {categoriesUser === null ? null : (
                     <div
                         className='mx-2 scroll-box'
-                        style={{ maxHeight: '300px', overflowY: 'auto' }}
+                        // style={{ maxHeight: '100px', overflowY: 'auto' }}
                     >
                         {categoriesUser.map(cat => (
                             <Aside

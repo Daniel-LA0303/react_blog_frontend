@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react'
+import React, { useEffect, useState } from 'react'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faBars, faX, faHome, faPeopleGroup, faCirclePlus, faBookmark, faCode } from '@fortawesome/free-solid-svg-icons'
 import { Link } from 'react-router-dom'
@@ -17,6 +17,10 @@ import { Badge, IconButton } from '@mui/material'
 import { Notifications } from '@mui/icons-material'
 import AsideMenu from '../Aside/AsideMenu'
 
+import { io } from 'socket.io-client'
+
+let socket;
+
 const Sidebar = () => {
 
   const [open, setOpen] = useState(false);
@@ -24,15 +28,64 @@ const Sidebar = () => {
   const user = useSelector(state => state.posts.user);
   const loading = useSelector(state => state.posts.loading);
   const theme = useSelector(state => state.posts.themeW);
+  const link = useSelector(state => state.posts.linkBaseBackend);
+
+  const [notifications, setNotifications] = useState([])
+
 
   const dispatch = useDispatch();
-  
+
   useEffect(() => {
     const token = localStorage.getItem('token');
-    if(token){
-      dispatch(getUserAction(JSON.parse(token)))
+    if (token) {
+      dispatch(getUserAction(JSON.parse(token)));
     }
   }, []);
+
+  useEffect(() => {
+    setNotifications(user.notifications)
+  }, [user]);
+
+  useEffect(() => {
+    const socket = io('http://localhost:4000');
+
+    // Suscribirse al evento newNotification
+    socket.on('newNotification', (newNotification) => {
+        if (user._id !== newNotification.userID) {
+          setNotifications(prevNotifications => [...prevNotifications, newNotification]);
+        }
+        // console.log('newNotification', newNotification);
+        
+    });
+}, );
+
+
+  // useEffect(() => {
+  //   socket = io('http://localhost:4000')  
+  //   socket.on('newCommentNo', (data) => {
+  //     if(data.userId === user._id){
+  //       console.log('xd', data);
+  //     }
+
+  //   })
+  // })
+
+
+
+  /*ya se resolvio lo de socket.io
+  emite desde el front, llega al back y en el back emite de nuevo
+  despues y finalmente llega al front y se muestra en el navegador
+  
+  */
+
+  // useEffect(() => {
+  //   socket = io('http://localhost:4000');
+  //   socket.on('newNotification', (newNotification) => {
+  //     setNotifications(prevNotifications => [...prevNotifications, newNotification]);
+  // });
+  // socket.emit('test')
+  //   console.log('conectado');
+  // }, []);
 
   const homePath = "/";
 
@@ -48,11 +101,11 @@ const Sidebar = () => {
           <div className={`flex items-center justify-between  h-14 mx-auto w-full md:w-11/12 lg:w-11/12`}>
             <div className='flex items-center justify-start  '>
               {/* {user._id ?  */}
-                {/* // <> */}
-                  <button className='ml-4 md:ml-0 block md:hidden' onClick={() => setOpen(true)}>
-                    <FontAwesomeIcon icon={faBars} className={` text-3xl ${theme ? 'text-black' : 'text-white'}`} />
-                  </button>
-                {/* </> : null} */}
+              {/* // <> */}
+              <button className='ml-4 md:ml-0 block md:hidden' onClick={() => setOpen(true)}>
+                <FontAwesomeIcon icon={faBars} className={` text-3xl ${theme ? 'text-black' : 'text-white'}`} />
+              </button>
+              {/* </> : null} */}
 
               <Logo />
               <SearchBar />
@@ -64,8 +117,8 @@ const Sidebar = () => {
                   <Link to='/new-post' className="hidden md:block custom-button ml-4">
                     New Post
                   </Link>
-                  
-                  <Badge badgeContent={2} color="secondary">
+
+                  <Badge badgeContent={notifications ? notifications.length : null} color="secondary">
                     <IconButton>
                       <Notifications />
                     </IconButton>
@@ -89,7 +142,7 @@ const Sidebar = () => {
                     </div>
                   </div>
 
-                
+
                 </>
               )}
             </div>
@@ -102,7 +155,7 @@ const Sidebar = () => {
                 <FontAwesomeIcon icon={faX} className=' text-xl' />
               </button>
               <div className=''>
-                <AsideMenu 
+                <AsideMenu
                   user={user}
                 />
               </div>
