@@ -47,16 +47,16 @@ const Sidebar = () => {
   }, [user]);
 
   useEffect(() => {
-    const socket = io('http://localhost:4000');
+    // const socket = io('http://localhost:4000');
 
-    // Suscribirse al evento newNotification
-    socket.on('newNotification', (newNotification) => {
-        if (user._id !== newNotification.userID) {
-          setNotifications(prevNotifications => [...prevNotifications, newNotification]);
-        }
-        // console.log('newNotification', newNotification);
+    // // Suscribirse al evento newNotification
+    // socket.on('newNotification', (newNotification) => {
+    //     if (user._id !== newNotification.userID) {
+    //       setNotifications(prevNotifications => [...prevNotifications, newNotification]);
+    //     }
+    //     // console.log('newNotification', newNotification);
         
-    });
+    // });
 }, );
 
 
@@ -117,12 +117,13 @@ const Sidebar = () => {
                   <Link to='/new-post' className="hidden md:block custom-button ml-4">
                     New Post
                   </Link>
-
-                  <Badge badgeContent={notifications ? notifications.length : null} color="secondary">
-                    <IconButton>
-                      <Notifications />
-                    </IconButton>
-                  </Badge>
+                  <Link to='/notifications' >
+                    <Badge badgeContent={notifications ? notifications.length : null} color="secondary">
+                      <IconButton>
+                        <Notifications />
+                      </IconButton>
+                    </Badge>
+                  </Link>
                   <div className=''>
                     <ProfileButton />
                   </div>

@@ -57,24 +57,24 @@ a {
   padding: 10px 20px;
   width: 180px;
 }
-@media (min-width: 730px) {
+/* @media (min-width: 730px) {
   .dropdown-menu{
     top: 80px;
     right: 90px;
   }
-}
-@media (min-width: 1024px) {
+} */
+/* @media (min-width: 1024px) {
   .dropdown-menu{
     top: 80px;
     right: 180px;
   }
-}
-@media (min-width: 1200px) {
+} */
+/* @media (min-width: 1200px) {
   .dropdown-menu{
     top: 80px;
     right: 240px;
   }
-}
+} */
 .dropdown-menu::before{
   /* content: '';
   position: absolute;

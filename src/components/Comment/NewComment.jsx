@@ -14,9 +14,9 @@ const NewComment = ({ user, idPost, comments, userPost }) => {
     const newCommentRedux = (comment) => dispatch(newCommentAction(comment));
     const link = useSelector(state => state.posts.linkBaseBackend);
 
-    useEffect(() => {
-        socket = io('http://localhost:4000')
-      }, []);
+    // useEffect(() => {
+    //     socket = io('http://localhost:4000')
+    //   }, []);
 
     //new comment
     const newComment = async (id) => {
@@ -35,7 +35,7 @@ const NewComment = ({ user, idPost, comments, userPost }) => {
         try {
             await axios.post(`${link}/posts/save-comment/${id}`, {data, userPost});
             console.log('emit');
-            socket.emit('newComment' ,data);
+            // socket.emit('newComment' ,data);
         } catch (error) {
             console.log(error);
         }

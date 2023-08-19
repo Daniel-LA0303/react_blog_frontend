@@ -30,6 +30,7 @@ import LikesPosts from "./Pages/DashBoard/Pages/LikesPosts";
 import FollowedUsers from "./Pages/DashBoard/Pages/FollowedUsers";
 import FollowersUsers from "./Pages/DashBoard/Pages/FollowersUsers";
 import About from "./Pages/About/About";
+import Notifications from "./Pages/Notifications/Notifications";
 
 function App() {
 
@@ -96,6 +97,7 @@ function App() {
           <Route path="/profile/:id" element={<Profile /> } />
           <Route path="/edit-profile/:id" element={user._id ? <EditProfile /> : <Login /> } />
           <Route path="/search/:id" element={<Search /> } />
+          <Route path="/notifications" element={user._id ? <Notifications /> : <Login />} />
         </Routes>
       </BrowserRouter>
   )

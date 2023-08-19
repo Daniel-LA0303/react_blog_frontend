@@ -55,9 +55,9 @@ useEffect(() => {
     }else{
       setIsFollow(false);
     }
-    setTimeout(() => {
+    // setTimeout(() => {
       setUserC(post);
-    }, 2000);
+    // }, 2000);
     
   })   
 }, []);
