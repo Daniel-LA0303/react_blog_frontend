@@ -135,14 +135,22 @@ const ViewPost = () => {
     })
   }
 
+
+  //*****this type of functions we can use it as a context****//
+  const handleDislike = async (id) => {
+    setLike(false);
+    setNumberLike(numberLike-1);
+    try {
+      await axios.post(`${link}/posts/dislike-post/${id}`, userP);
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
   const handleLike = async (id) => {
         
-    setLike(!like);
-    if(like){
-        setNumberLike(numberLike-1);
-    }else{
-        setNumberLike(numberLike+1)
-    }
+    setLike(true);
+    setNumberLike(numberLike+1);
     try {
         const res =await axios.post(`${link}/posts/like-post/${id}`, userP);
         console.log(res);
@@ -189,6 +197,7 @@ const handleSave = async (id) => {
             numberSave={numberSave}
             save={save}
             handleLike={handleLike}
+            handleDislike={handleDislike}
             handleSave={handleSave}
             post={post}
           />
@@ -230,21 +239,23 @@ const handleSave = async (id) => {
                 <div className='flex'>
                   <div className='flex'>
                     <p className='mx-3'>{numberLike}</p>
-                    <button onClick={() => handleLike(params.id)} disabled={Object.keys(userP) != '' ? false : true}>
-                      {
-                        like ? 
-                          <FontAwesomeIcon
-                            icon={faHeart}
-                            className={` text-red-400  mx-auto  rounded`}
-                          /> 
-                          : 
-                          <FontAwesomeIcon
-                          icon={faHeart}
-                          className={` text-mode-white  mx-auto  rounded`}
-                        />
-                      }
-
-                    </button>
+                    {
+                      like ? (
+                        <button onClick={() => handleDislike(params.id)}>
+                          <FontAwesomeIcon 
+                              icon={faHeart} 
+                              className={` text-red-400  mx-auto  rounded`}
+                          />
+                        </button>
+                      ) : (
+                        <button onClick={() => handleLike(params.id)}>
+                            <FontAwesomeIcon 
+                                icon={faHeart} 
+                                className={`text-stone-500 mx-auto  rounded`}
+                            />
+                        </button>
+                      )
+                    }
                   </div>
                   <div className='flex'>
                     <div className='flex items-center'>

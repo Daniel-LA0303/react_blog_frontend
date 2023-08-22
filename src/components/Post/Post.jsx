@@ -39,6 +39,7 @@ const Post = ({post}) => {
     const[save, setSave] = useState(false);
     const[imageProfile, setImageProfile] = useState('');
 
+    const link = useSelector(state => state.posts.linkBaseBackend);
     const PF = useSelector(state => state.posts.PFPost);
     const PP = useSelector(state => state.posts.PFLink);
     const userP = useSelector(state => state.posts.user);
@@ -47,7 +48,7 @@ const Post = ({post}) => {
     useEffect(() => {
         const getOnePost = async () => {
             try {
-                const res = await axios.get(`http://localhost:4000/api/posts/${post._id}`);
+                const res = await axios.get(`${link}/posts/${post._id}`);
                 setImageProfile(res.data.user.profilePicture)
             } catch (error) {
                 console.log(error);
@@ -76,17 +77,22 @@ const Post = ({post}) => {
             }
         }
     }, []);
+
+    const handleDislike = async (id) => {
+        setLike(false);
+        setNumberLike(numberLike-1)
+        try {
+            await axios.post(`${link}/posts/dislike-post/${id}`, userP);
+        } catch (error) {
+            console.log(error);
+        }
+    }
     
     const handleLike = async (id) => {
-        
-        setLike(!like);
-        if(like){
-            setNumberLike(numberLike-1);
-        }else{
-            setNumberLike(numberLike+1)
-        }
+        setLike(true);
+        setNumberLike(numberLike+1);
         try {
-            await axios.post(`http://localhost:4000/api/posts/like-post/${id}`, userP);
+            await axios.post(`${link}/posts/like-post/${id}`, userP);
         } catch (error) {
             console.log(error);
         }
@@ -100,7 +106,7 @@ const Post = ({post}) => {
             notify()
         }
         try {
-            await axios.post(`http://localhost:4000/api/posts/save-post/${id}`, userP);
+            await axios.post(`${link}/posts/save-post/${id}`, userP);
         } catch (error) {
             console.log(error);
 
@@ -162,12 +168,25 @@ const Post = ({post}) => {
                         <div className='flex'>
                             <div className='flex'>
                                 <p className='mx-3'>{numberLike}</p>
-                                <button onClick={() => handleLike(_id)}>
-                                    <FontAwesomeIcon 
-                                        icon={faHeart} 
-                                        className={`${like ? ' text-red-400' : 'text-stone-500'} mx-auto  rounded`}
-                                    />
-                                </button>
+                                {
+                                    like ? (
+                                        //dislike button
+                                        <button onClick={() => handleDislike(_id)}>
+                                            <FontAwesomeIcon 
+                                                icon={faHeart} 
+                                                className={` text-red-400  mx-auto  rounded`}
+                                            />
+                                        </button>
+                                    ) : (
+                                        //like button
+                                        <button onClick={() => handleLike(_id)}>
+                                            <FontAwesomeIcon 
+                                                icon={faHeart} 
+                                                className={`text-stone-500 mx-auto  rounded`}
+                                            />
+                                        </button>
+                                    )
+                                }
                             </div>
                             <div className='flex items-center'>
                                 <p className='mx-3'>{commenstOnPost.comments.length}</p>                                

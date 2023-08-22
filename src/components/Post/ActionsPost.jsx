@@ -5,6 +5,7 @@ import ChatBubbleOutlineIcon from '@mui/icons-material/ChatBubbleOutline';
 
 const ActionsPost = ({
     handleLike,
+    handleDislike,
     handleSave,
     like,
     save,
@@ -17,12 +18,23 @@ const ActionsPost = ({
   return (
     <>
         <div className='my-3 text-2xl mx-10 sm:mx-0 flex flex-row sm:flex-col justify-center items-center'>
-            <button 
-              className={`${like ? ' text-red-400' : ' text-mode-white'} cursor-pointer`}
-              onClick={() => handleLike(id)} disabled={Object.keys(user) != '' ? false : true}
-            >
-              <FavoriteBorderIcon fontSize='default'/>
-            </button>
+            {
+              like ? (
+                <button 
+                  onClick={() => handleDislike(id)}
+                  className='text-red-400  cursor-pointer'  
+                >
+                    <FavoriteBorderIcon fontSize='default'/>
+                </button>
+              ) : (
+                <button 
+                  onClick={() => handleLike(id)}
+                  className='text-white cursor-pointer'
+                >
+                    <FavoriteBorderIcon fontSize='default'/>
+                </button>
+              )
+            }
             <p>{numberLike}</p>
           </div>
           <div className='my-3 text-2xl mx-10 sm:mx-0 flex flex-row sm:flex-col justify-center items-center'>

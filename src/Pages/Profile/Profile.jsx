@@ -62,21 +62,21 @@ useEffect(() => {
   })   
 }, []);
 
-// useEffect(() => {
-//   const getUserRedux = token => dispatch(getUserAction(token));
-//   const token = localStorage.getItem('token');
-//   if(token){
-//     getUserRedux(JSON.parse(token));
-//   }
-// }, []);
-
-  // console.log(user);
-  const handleClickFollow = async() => {
-    setIsFollow(!isFollow);
+  const handleUnFollowUser = async() => {
+    setIsFollow(false);
     try {
-      const res = await axios.post(`${link}/users/user-follow/${params.id}`, userP);
+      await axios.post(`${link}/users/user-unfollow/${user._id}`, userP);
     } catch (error) {
-        console.log(error)
+      console.log(error);
+    }
+  }
+
+  const handleFollowUser = async() => {
+    setIsFollow(true);
+    try {
+      await axios.post(`${link}/users/user-follow/${user._id}`, userP);
+    } catch (error) {
+      console.log(error);
     }
   }
 
@@ -98,12 +98,25 @@ useEffect(() => {
                 </div>
                 <div className='w-full flex justify-end'>
                   {(userC._id === userP._id || Object.keys(userP) == '') ? null: (                    
-                  <button 
-                    type="button" 
-                    onClick={() => handleClickFollow()}
-                    className={`focus:outline-none text-white ${isFollow ? 'bg-orange-500 hover:bg-orange-800' : 'bg-purple-800 hover:bg-purple-900'} focus:ring-4 focus:ring-purple-300 font-medium rounded-lg text-sm px-5 py-1.5 mb-2 `}
-                    >{isFollow ? 'Following' : 'Follow'}
-                  </button>  
+                    <>
+                      {isFollow ? (
+                        <button
+                          type="button"
+                          onClick={() => handleUnFollowUser()}
+                          className={`mx-1 bg-orange-500 hover:bg-orange-800  focus:outline-none text-white  focus:ring-4 focus:ring-purple-300 font-medium rounded-lg text-sm px-5 py-2`}
+                        >
+                          Following
+                        </button>
+                      ) : (
+                        <button
+                          type="button"
+                          onClick={() => handleFollowUser()}
+                          className={`mx-1 bg-purple-800 hover:bg-purple-900  focus:outline-none text-white  focus:ring-4 focus:ring-purple-300 font-medium rounded-lg text-sm px-5 py-2 `}
+                        >
+                          Follow
+                        </button>
+                      )}
+                    </>
                   )}
                 </div>            
                 <div className="w-full px-4 text-center mt-10">

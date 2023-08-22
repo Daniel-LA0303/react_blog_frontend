@@ -6,6 +6,7 @@ import { Link } from 'react-router-dom';
 
 const NewCardCategory = ({category, userP}) => {
   const theme = useSelector(state => state.posts.themeW);
+  const link = useSelector(state => state.posts.linkBaseBackend);
   const [isFollow, setIsFollow] = useState(false);
   useEffect(() => {
       const userInCat = category.follows.users.includes(userP._id);
@@ -14,10 +15,19 @@ const NewCardCategory = ({category, userP}) => {
       }
   }, [userP])
   
-  const handleClick = async() => {
+  const handleFollowTag = async() => {
     setIsFollow(!isFollow);
     try {
-      await axios.post(`http://localhost:4000/api/users/save-follow/${userP._id}`, category);
+      await axios.post(`${link}/users/save-follow/${userP._id}`, category);
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  const handleUnFollowTag = async() => {
+    setIsFollow(false);
+    try {
+      await axios.post(`${link}/users/unfollow-tag/${userP._id}`, category);
     } catch (error) {
       console.log(error);
     }
@@ -30,11 +40,23 @@ const NewCardCategory = ({category, userP}) => {
         <div className='flex items-center justify-between'>
             <Link to={`/category/${category.name}`} className="mb-2 text-2xl font-bold tracking-tight ">{category.name}</Link>
             {Object.keys(userP) == '' ? null : (
-              <button 
-              type="button" 
-              onClick={() => handleClick()}
-              className={`focus:outline-none text-white ${isFollow ? 'bg-orange-500 hover:bg-orange-800' : 'bg-purple-800 hover:bg-purple-900'} focus:ring-4 focus:ring-purple-300 font-medium rounded-lg text-sm px-5 py-1.5 mb-2 `}
-            >{isFollow ? 'Following' : 'Follow'}</button> 
+              <>
+                {
+                  isFollow ? (
+                    <button 
+                      type="button" 
+                      onClick={() => handleUnFollowTag()}
+                      className={`focus:outline-none text-white bg-orange-500 hover:bg-orange-800 focus:ring-4 focus:ring-purple-300 font-medium rounded-lg text-sm px-5 py-1.5 mb-2 `}
+                    >Following</button>  
+                  ) : (
+                    <button 
+                    type="button" 
+                    onClick={() => handleFollowTag()}
+                    className={`focus:outline-none text-white bg-purple-800 hover:bg-purple-900 focus:ring-4 focus:ring-purple-300 font-medium rounded-lg text-sm px-5 py-1.5 mb-2 `}
+                  >Follow</button>  
+                  )
+                }
+              </>
             )}
         </div>
         <p className="font-normal ">{category.desc}</p>         
