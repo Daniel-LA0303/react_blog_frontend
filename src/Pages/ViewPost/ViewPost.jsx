@@ -161,16 +161,23 @@ const ViewPost = () => {
   }
 
 const handleSave = async (id) => {
-    setSave(!save);
-    if(save){
-        setNumberSave(numberSave-1);
-        notify2()
-    }else{
-        setNumberSave(numberSave+1)
-        notify()
-    }
+    setSave(true);
+    setNumberSave(numberSave+1)
+    notify()
     try {
         await axios.post(`${link}/posts/save-post/${id}`, userP);
+    } catch (error) {
+        console.log(error);
+
+    }
+}
+
+const handleUnsave = async (id) => {
+    setSave(false);
+    setNumberSave(numberSave-1);
+    notify2()
+    try {
+        await axios.post(`${link}/posts/unsave-post/${id}`, userP);
     } catch (error) {
         console.log(error);
 
@@ -199,6 +206,7 @@ const handleSave = async (id) => {
             handleLike={handleLike}
             handleDislike={handleDislike}
             handleSave={handleSave}
+            handleUnsave={handleUnsave}
             post={post}
           />
         </div>
@@ -269,12 +277,21 @@ const handleSave = async (id) => {
                 </div>
                 <div className='flex'>
                   <p className='  mx-3'>{numberSave}</p>
-                  <button onClick={() => handleSave(params.id)} disabled={Object.keys(userP) != '' ? false : true}>
-                    <FontAwesomeIcon
-                      icon={faBookmark}
-                      className={`${save ? 'text-blue-500' : 'text-mode-white '}    mx-auto  rounded`}
-                    />
-                  </button>
+                  {save ? (
+                    <button onClick={() => handleUnsave(params.id)} disabled={Object.keys(userP) != '' ? false : true}>
+                        <FontAwesomeIcon
+                        icon={faBookmark}
+                        className={` text-blue-500  mx-auto  rounded`}
+                        />
+                    </button>
+                    ) : (
+                    <button onClick={() => handleSave(params.id)} disabled={Object.keys(userP) != '' ? false : true}>
+                        <FontAwesomeIcon
+                        icon={faBookmark}
+                        className={`text-stone-500 mx-auto  rounded`}
+                        />
+                    </button>
+                    )}
                 </div>
 
               </div>
