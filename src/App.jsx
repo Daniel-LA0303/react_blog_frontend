@@ -97,7 +97,7 @@ function App() {
           <Route path="/profile/:id" element={<Profile /> } />
           <Route path="/edit-profile/:id" element={user._id ? <EditProfile /> : <Login /> } />
           <Route path="/search/:id" element={<Search /> } />
-          <Route path="/notifications" element={user._id ? <Notifications /> : <Login />} />
+          <Route path="/notifications/:id" element={user._id ? <Notifications /> : <Login />} />
         </Routes>
       </BrowserRouter>
   )

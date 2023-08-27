@@ -117,7 +117,7 @@ const Sidebar = () => {
                   <Link to='/new-post' className="hidden md:block custom-button ml-4">
                     New Post
                   </Link>
-                  <Link to='/notifications' >
+                  <Link to={`/notifications/${user._id}`} >
                     <Badge badgeContent={notifications ? notifications.length : null} color="secondary">
                       <IconButton>
                         <Notifications />
