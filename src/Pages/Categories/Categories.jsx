@@ -12,6 +12,7 @@ const Categories = () => {
     const categories = useSelector(state => state.posts.categories);
     const loading = useSelector(state => state.posts.loading);
     const userP = useSelector(state => state.posts.user);
+    const theme = useSelector(state => state.posts.themeW);
 
     useEffect(() => {
         getAllCategoriesRedux();
@@ -20,8 +21,8 @@ const Categories = () => {
   return (
     <div>
         <Sidebar />
-        <p className=' text-center mt-10 text-3xl'>All Categories</p>
-        <div className=' w-full block sm:flex sm:flex-wrap justify-center mb-10'>
+        <p className={`${theme ? ' text-black' : 'text-white'} text-center mt-10 text-3xl`}>All Categories</p>
+        <div className=' grid gap-2 md:grid-cols-4 w-full md:w-11/12 lg:w-11/12 mx-auto mb-10'>
           <>
             {loading ? (
               <LoadingCategory />
