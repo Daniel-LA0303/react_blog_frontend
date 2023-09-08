@@ -18,7 +18,7 @@ const NewCardCategory = ({category, userP}) => {
   const handleFollowTag = async() => {
     setIsFollow(!isFollow);
     try {
-      await axios.post(`${link}/users/save-follow/${userP._id}`, category);
+      await axios.post(`${link}/users/follow-tag/${userP._id}`, category);
     } catch (error) {
       console.log(error);
     }
