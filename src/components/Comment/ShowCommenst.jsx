@@ -20,7 +20,7 @@ const notify = () => toast(
     }
 );
 
-const ShowCommenst = ({ comment, idPost }) => {
+const ShowCommenst = ({ comment, idPost, userAutor }) => {
     const PF = useSelector(state => state.posts.PFLink);
     const userP = useSelector(state => state.posts.user);
     const theme = useSelector(state => state.posts.themeW);
@@ -212,6 +212,7 @@ const ShowCommenst = ({ comment, idPost }) => {
                         userID={userP._id}
                         comment={comment}
                         idPost={idPost}
+                        userAutor={userAutor}
                     />
                 ) : (null)
             }

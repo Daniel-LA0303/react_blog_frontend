@@ -151,8 +151,12 @@ const ViewPost = () => {
         
     setLike(true);
     setNumberLike(numberLike+1);
+    const data = {
+      userID: userP._id, //id user like post
+      dateLike: new Date(),
+    }
     try {
-        const res =await axios.post(`${link}/posts/like-post/${id}`, userP);
+        const res =await axios.post(`${link}/posts/like-post/${id}`, {data, userP : userP._id, userAutor: post.user._id});
         console.log(res);
     } catch (error) {
         console.log(error);
@@ -321,6 +325,7 @@ const handleUnsave = async (id) => {
                 key={comment.dateComment}
                 comment={comment}
                 idPost={params.id}
+                userAutor={post.user._id}
               />
             ))}
 

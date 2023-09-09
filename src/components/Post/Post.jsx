@@ -91,8 +91,12 @@ const Post = ({post}) => {
     const handleLike = async (id) => {
         setLike(true);
         setNumberLike(numberLike+1);
+        const data = {
+          userID: userP._id, //id user like post
+          dateLike: new Date(),
+        }
         try {
-            await axios.post(`${link}/posts/like-post/${id}`, userP);
+            await axios.post(`${link}/posts/like-post/${id}`, {data, userP: userP._id,  userAutor: user._id});
         } catch (error) {
             console.log(error);
         }
