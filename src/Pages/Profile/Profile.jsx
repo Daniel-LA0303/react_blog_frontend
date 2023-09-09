@@ -2,6 +2,11 @@ import React, {useEffect, useState} from 'react'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faUser, faHeart, faFile } from '@fortawesome/free-solid-svg-icons';
 
+import CakeIcon from '@mui/icons-material/Cake';
+import FavoriteIcon from '@mui/icons-material/Favorite';
+import InsertDriveFileIcon from '@mui/icons-material/InsertDriveFile';
+import PersonIcon from '@mui/icons-material/Person';
+
 import { useDispatch, useSelector } from 'react-redux';
 import { getOneUserAction, getUserAction } from '../../StateRedux/actions/postAction';
 
@@ -89,12 +94,12 @@ useEffect(() => {
           <div className={`${theme ? 'bgt-light ' : 'bgt-dark text-white'} flex flex-col min-w-0 break-word w-full mb-6 shadow-xl rounded-lg mt-16`}>
             <div className="px-2 sm:px-6 ">
               <div className="flex flex-wrap justify-center">
-                <div className="w-full px-4 flex justify-center">
+                <div className="w-full ml-10 md:ml-0 px-4 flex justify-start sm:justify-center">
                   <img alt="..." 
                     src={           
                       user?.profilePicture.secure_url != '' ? user.profilePicture.secure_url : 
                       '/avatar.png'  } 
-                    className=" shadow-xl image_profile  h-auto align-middle border-none  -m-16  lg:-ml-16 max-w-250-px" />  
+                    className=" shadow-xl image_profile  h-auto align-middle border-none  -m-16  lg:-ml-16 max-w-150-px" />  
                 </div>
                 <div className='w-full flex justify-end'>
                   {(userC._id === userP._id || Object.keys(userP) == '') ? null: (                    
@@ -119,105 +124,125 @@ useEffect(() => {
                     </>
                   )}
                 </div>            
-                <div className="w-full px-4 text-center mt-10">
-                  <div className="flex justify-center py-4 lg:pt-4 pt-8">
-                    <div className=" p-3 text-center">
-                      <span className="text-sm font-bold block uppercase tracking-wide text-blueGray-600">
-                        {user.numberPost}
+              </div>
+              <div className=" ">
+                <h3 className={`${theme ? 'bgt-light ' : 'bgt-dark text-white'} text-left md:text-center text-xl mt-5 md:mt-10 font-bold leading-normal mb-2`}>
+                  {user.name}
+                </h3>
+                {user.info == null ? null: (
+                  <>
+
+                    <div className="flex flex-wrap justify-center">
+                      <div className="w-full lg:w-9/12">
+                        <p className=" text-left md:text-center text-sm mb-4 leading-relaxed text-blueGray-700">
+                          {user.info.desc}
+                        </p>
+                      </div>
+                    </div>
+                    <div className="flex flex-wrap justify-center">
+                      <div className="w-full lg:w-9/12">
+                        <p className=" text-left md:text-center text-sm mb-4 leading-relaxed text-blueGray-700">
+                          <CakeIcon /> {''}
+                          Joined on {''}
+                          {new Date(user.createdAt).toDateString()}
+                        </p>
+                      </div>
+                    </div>
+                    <div className=" my-2 border-t border-0.5 text-center"></div>
+                    <div className='mx-auto block sm:flex'>
+                      <div className="my-3 text-left sm:text-center  w-full sm:w-2/4">
+                        <h2 className=' text-sm sm:text-xs font-bold'>Work: </h2>   
+                        <p className=' text-lg'>{user.info.work}</p>       
+                      </div>
+                      <div className="my-3 text-left sm:text-center w-full sm:w-2/4">
+                        <h2 className=' text-sm sm:text-xs font-bold'>Education: </h2>   
+                        <p className='text-lg'>{user.info.education}</p>
+                      </div>
+                    </div>
+                  </>
+                )}
+
+              </div>
+            </div>
+          </div>
+        </div>
+        {/* Content here */}
+        <div className='block sm:flex mx-auto w-full md:w-10/12 lg:w-8/12'> 
+            <div className='w-full sm:w-3/12 mr-0 sm:mr-2'>
+              {user.info == null ? null: (
+                <div className={`${theme ? 'bgt-light ' : 'bgt-dark text-white'} flex flex-col min-w-0 break-word w-full my-1 shadow-xl rounded-lg mt-4`}>
+                  <div className=" px-2 mb-2 mt-4 text-left block sm:text-center  sm:justify-center">
+                    <h2 className=' text-sm sm:text-xs font-bold'>Skills:</h2>
+                    <div className=" my-2 border-t border-0.5 text-center"></div>
+                    <p>{user.info.skills}</p>
+                  </div>
+                </div>
+              )}
+              <div>
+                <div className={`${theme ? 'bgt-light ' : 'bgt-dark text-white'} flex flex-col min-w-0 break-word w-full mb-6 shadow-xl rounded-lg text-center `}>
+                  <div className=" py-4 lg:pt-4 ">
+                    <div className="flex items-center p-3 text-center">
+                      {/* <FontAwesomeIcon icon={faFile} className=' text-lg text-green-600 mr-3' /> */}
+                      <InsertDriveFileIcon />
+                      <span className="text-sm font-bold block uppercase tracking-wide text-blueGray-600 mx-1">
+                        {user.numberPost} {''}
                       </span>
-                      <span className="text-sm text-blueGray-400">
-                        <FontAwesomeIcon icon={faFile} className=' text-lg text-green-600 mx-1'/>
-                        Posts
+                      <span className="text-sm text-blueGray-400">           
+                        Posts published
                       </span>
                     </div>
-                    
-                    <div className=" p-3 text-center">
-                      <span className="text-sm font-bold block uppercase tracking-wide text-blueGray-600">
+
+                    <div className="flex items-center p-3 text-center">
+                      {/* <FontAwesomeIcon icon={faHeart} className=' text-lg text-red-500 mr-3' />  */}
+                      <FavoriteIcon />
+                      <span className="text-sm font-bold block uppercase tracking-wide text-blueGray-600 mx-1">
                         {user.likePost.posts.length}
                       </span>
                       <span className="text-sm text-blueGray-400">
-                        <FontAwesomeIcon icon={faHeart} className=' text-lg text-red-500 mx-1'/>
-                        Likes
+                        Likes on posts
                       </span>
                     </div>
-                    <div className=" p-3 text-center">
-                      <span className="text-sm font-bold block uppercase tracking-wide text-blueGray-600">
+                    <div className="flex items-center p-3 text-center">
+                      {/* <FontAwesomeIcon icon={faUser} className=' text-lg text-blue-700 mr-3' /> */}
+                      <PersonIcon />
+                      <span className="text-sm font-bold block uppercase tracking-wide text-blueGray-600 mx-1">
                         {user.followersUsers.conutFollowers}
                       </span>
                       <span className="text-sm text-blueGray-400">
-                        <FontAwesomeIcon icon={faUser}  className=' text-lg text-blue-700 mx-1'/>
                         Followers
                       </span>
                     </div>
                   </div>
                 </div>
               </div>
-              <div className=" ">
-                <h3 className={`${theme ? 'bgt-light ' : 'bgt-dark text-white'} text-xl font-semibold leading-normal mb-2`}>
-                  {user.name}
-                </h3>
-                {user.info == null ? null: (
+            </div>
+            <div className='w-full sm:w-9/12'>
+              <div className='w-full flex flex-col items-center'>
+                {Object.keys(user) === '' ? (
                   <>
-                    <div className="mb-2 text-left block sm:text-center sm:flex sm:justify-center">
-                        <h2 className=' text-xs sm:text-base font-bold mr-1'>Skills: {''}</h2>   
-                        <p>{user.info.skills}</p>
-                    </div>  
-                    <div className='mx-auto block sm:flex'>
-                      <div className="mb-2 text-left sm:text-center  w-full sm:w-2/4">
-                        <h2 className=' text-xs sm:text-base font-bold'>Work: </h2>   
-                        {user.info.work}
-                      </div>
-                      <div className="mb-2 text-left sm:text-center w-full sm:w-2/4">
-                        <h2 className=' text-xs sm:text-base font-bold'>Education: </h2>   
-                        {user.info.education}
-                      </div>
-                    </div>
+                    <LoadingPosts />
                   </>
-                )}
- 
+                ): 
+                <>
+                  {posts.length === 0 ? (
+                    <p className=' text-center'>There is nothing around here yet</p>
+                  ) : (<>
+                    {[...posts].reverse().map(post => (
+                      <Post
+                          key={post._id}
+                          post={post}
+                      />
+                    ))}
+                  </>)}
+      
+                </>}
 
               </div>
-              {user.info == null ? null: (
-                <>
-                  <div className="mt-10 py-10 border-t border-blueGray-200 text-center">
-                    <div className="flex flex-wrap justify-center">
-                      <div className="w-full lg:w-9/12 px-4">
-                        <p className=' text-left text-2xl mb-2'>Description:</p>
-                        <p className=" text-left mb-4 text-lg leading-relaxed text-blueGray-700">
-                          {user.info.desc}
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-                </>
-              )}
-
-
             </div>
-          </div>
         </div>
+        
         <div className='flex flex-row mt-0 md:mt-10 mx-auto w-full md:w-10/12 lg:w-8/12'>
-          <div className='w-full flex flex-col items-center'>
-              {Object.keys(user) === '' ? (
-                <>
-                  <LoadingPosts />
-                </>
-              ): 
-              <>
-                {posts.length === 0 ? (
-                  <p className=' text-center'>There is nothing around here yet</p>
-                ) : (<>
-                  {[...posts].reverse().map(post => (
-                    <Post
-                        key={post._id}
-                        post={post}
-                    />
-                  ))}
-                </>)}
-    
-              </>}
 
-          </div>
         </div>
         
         <footer className="relative  pt-8 pb-6 mt-8">
