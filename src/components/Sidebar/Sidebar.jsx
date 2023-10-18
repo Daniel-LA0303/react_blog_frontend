@@ -118,9 +118,11 @@ const Sidebar = () => {
                     New Post
                   </Link>
                   <Link to={`/notifications/${user._id}`} >
-                    <Badge badgeContent={notifications ? notifications.length : null} color="secondary">
+                    <Badge badgeContent={notifications ? notifications.length : null} color={theme ? 'error' : 'primary'}>
                       <IconButton>
-                        <Notifications />
+                        <Notifications 
+                          style={{ color: theme ? 'black' : 'white' }}
+                        />
                       </IconButton>
                     </Badge>
                   </Link>

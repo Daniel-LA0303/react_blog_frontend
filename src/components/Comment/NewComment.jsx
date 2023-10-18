@@ -33,7 +33,7 @@ const NewComment = ({ user, idPost, comments, userPost }) => {
             replies: []
         });
         try {
-            await axios.post(`${link}/posts/save-comment/${id}`, {data, userPost});
+            await axios.post(`${link}/posts/save-comment/${id}`, {data, userPost: userPost._id});
             console.log('emit');
             // socket.emit('newComment' ,data);
         } catch (error) {

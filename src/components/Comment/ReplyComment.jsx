@@ -9,7 +9,7 @@ const ReplyComment = ({
     userID,
     comment,
     idPost,
-    userAutor
+    commentAutor
 }) => {
 
     const dispatch = useDispatch();
@@ -30,7 +30,7 @@ const ReplyComment = ({
                 commentId : comment._id,
                 reply: replyComment,
                 dateReply: new Date(),
-                userAutor
+                commentAutor
             })
 
             const repliesF = res.data.filter(reply => reply._id === comment._id);

@@ -42,7 +42,13 @@ const PostRecom = ({title, id, user}) => {
                   key={post._id}
                   onClick={ () => redir(post._id)}
                   // to={`/view-post/${post._id}`} 
-                  className={`${theme ? ' bgt-light text-black' : 'bgt-dark text-white'} my-2 block max-w-sm p-6 cursor-pointer  border border-gray-200 rounded-lg shadow `}>
+                  className={`${theme ? ' bgt-light text-black' : 'bgt-dark text-white'} my-2 block max-w-sm p-6 cursor-pointer  border border-gray-200 rounded-lg shadow `}
+                  style={{
+                    backgroundImage: `url('${post.linkImage.secure_url}')`, // Reemplaza 'imageUrl' con tu URL de imagen
+                    backgroundSize: 'cover',
+                    backgroundPosition: 'center',
+                  }}
+                >
                     <h5 className="mb-2 text-2xl font-bold tracking-tight">{post.title}</h5>
                     <p className="font-normal ">{post.desc}</p>
                     <div className="mb-3">
@@ -56,8 +62,6 @@ const PostRecom = ({title, id, user}) => {
                 </div>
             ))
         }
-
-
     </div>
   )
 }

@@ -325,7 +325,6 @@ const handleUnsave = async (id) => {
                 key={comment.dateComment}
                 comment={comment}
                 idPost={params.id}
-                userAutor={post.user._id}
               />
             ))}
 
