@@ -38,6 +38,10 @@ const initialState = {
     alertMSG:{},
     token: JSON.parse(localStorage.getItem("token")) || null,
     themeW: JSON.parse(localStorage.getItem("theme")) || null,
+    /**
+     * User Auth we need this user for the login and register
+     */
+    userAuth:{}, 
     user: {},
     userView:{},
     posts:[],

@@ -81,9 +81,18 @@ const changeTheme = () => ({
     type: CHANGE_THEME
 })
 
-//users ***
+/**
+ * Function to get user form the service
+ * 
+ * @param {*} token 
+ * @returns 
+ */
 export function getUserAction(token){
     return async(dispatch) => {
+
+        /**
+         * Dispatch the user GET_USER
+         */
         dispatch(getUser());
         
         const config = {
@@ -92,19 +101,27 @@ export function getUserAction(token){
                 Authorization: `Bearer ${token}`
             }
         }
-        // console.log(JSON.parse(token));
-        // console.log(token);
         try {
             const res = await axios.get(`${import.meta.env.VITE_API_URL_BACKEND}/users/profile`, config);
-            // console.log(res.data);
             
+            /**
+             * Dispatch the user to the state
+             */
             dispatch(getUserSuccess(res.data));
         } catch (error) {
+            /**
+             * Dispatch the error to the state
+             */
             console.log(error);
             dispatch(getUserError(true));
         }
     }
 }
+
+/**
+ * 
+ * @returns null
+ */
 const getUser = () => ({
     type: GET_USER,
     payload: true

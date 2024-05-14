@@ -101,21 +101,29 @@ const NewPost = () => {
         formData.append('image', file);
         try {
             const res = await axios.post(`${link}/posts/image-post`, formData);
-            resImage = res.data
-            // console.log(resImage);
-            // Swal.fire(
-            //     res.data.msg,
-            //     // 'You clicked the button!',
-            //     'success'
-            // )
-            //route('/');
+            resImage = res.data;
+            console.log(res);
         } catch (error) {
-            console.log(error);
+            if (error.response) {
+        
+                console.log(error.response.status); 
+                console.log(error.response.data);   
+                //here we can send a message in a modal or alert
+                if (error.response.status === 404) {
+                    console.log("User not found");
+                } else if (error.response.status === 500) {
+                    console.log("Internal Server Error");
+                } else {
+                    console.log("Unexpected error");
+                }
+            } else if (error.request) {
+                console.log(error.request);
+            } else {
+                console.log('Error', error.message);
+            }
         }
         newPost.linkImage = resImage
         linkImage= resImage
-        // addNewFileRedux(formData);
-
     }
     addPostRedux(newPost, {
         user: user,

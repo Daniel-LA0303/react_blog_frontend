@@ -23,73 +23,68 @@ let socket;
 
 const Sidebar = () => {
 
-  const [open, setOpen] = useState(false);
-
+  /**
+   * Get user from the state
+   */
   const user = useSelector(state => state.posts.user);
+
+  /**
+   * Get loading from the state
+   */
   const loading = useSelector(state => state.posts.loading);
+
+  /**
+   * Get theme from the state
+   */
   const theme = useSelector(state => state.posts.themeW);
+
+  /**
+   * Get link from the state
+   */
   const link = useSelector(state => state.posts.linkBaseBackend);
 
-  const [notifications, setNotifications] = useState([])
-
-
+  /**
+   * Dispatch from redux
+   */
   const dispatch = useDispatch();
 
-  useEffect(() => {
-    const token = localStorage.getItem('token');
-    if (token) {
-      dispatch(getUserAction(JSON.parse(token)));
-    }
-  }, []);
+  /**
+   * State for notifications
+   */
+  const [notifications, setNotifications] = useState([]);
 
+  /**
+   * State for open sidebar
+   */
+  const [open, setOpen] = useState(false);
+
+  //***************************************************** */
+  //* This useEffect is not necesary */
+  /**
+   * Get token from localStorage
+   */
+  // useEffect(() => {
+  //   const token = localStorage.getItem('token');
+  //   if (token) {
+  //     dispatch(getUserAction(JSON.parse(token)));
+  //   }
+  // }, []);
+
+  /**
+   * Set notifications from state user
+   */
   useEffect(() => {
     setNotifications(user.notifications)
   }, [user]);
 
-  useEffect(() => {
-    // const socket = io('http://localhost:4000');
-
-    // // Suscribirse al evento newNotification
-    // socket.on('newNotification', (newNotification) => {
-    //     if (user._id !== newNotification.userID) {
-    //       setNotifications(prevNotifications => [...prevNotifications, newNotification]);
-    //     }
-    //     // console.log('newNotification', newNotification);
-        
-    // });
-}, );
-
-
-  // useEffect(() => {
-  //   socket = io('http://localhost:4000')  
-  //   socket.on('newCommentNo', (data) => {
-  //     if(data.userId === user._id){
-  //       console.log('xd', data);
-  //     }
-
-  //   })
-  // })
-
-
-
-  /*ya se resolvio lo de socket.io
-  emite desde el front, llega al back y en el back emite de nuevo
-  despues y finalmente llega al front y se muestra en el navegador
-  
-  */
-
-  // useEffect(() => {
-  //   socket = io('http://localhost:4000');
-  //   socket.on('newNotification', (newNotification) => {
-  //     setNotifications(prevNotifications => [...prevNotifications, newNotification]);
-  // });
-  // socket.emit('test')
-  //   console.log('conectado');
-  // }, []);
-
+  /**
+   * Path to home
+   */
   const homePath = "/";
 
-  // Comprobar si estás en la página "Home"
+  /**
+   * Check if the user is in the home page
+   */
   const isHome = location.pathname === homePath;
 
   return (

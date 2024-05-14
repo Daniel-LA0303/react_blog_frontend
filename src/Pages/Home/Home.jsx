@@ -32,6 +32,9 @@ const Home = () => {
   //   }
   // }, []);
 
+  /**
+   * Get all categories with followers 
+   */
   useEffect(() => {
     fetch(`${link}/categories`)
     .then((response) => response.json())
@@ -41,13 +44,20 @@ const Home = () => {
     })   
   }, []);
 
+  /**
+   * Get all posts on the state
+   */
   useEffect(() => {
     dispatch(getAllPostsAction())  
   }, []);
-  useEffect(() => {
-    const resetState = () => dispatch(resetStatePostAction());
-    resetState();
-  }, []);
+
+  /**
+   * Reset state when the component is unmounted
+   */
+  // useEffect(() => {
+  //   const resetState = () => dispatch(resetStatePostAction());
+  //   resetState();
+  // }, []);
     
   return (
     <div className='  '>

@@ -32,7 +32,7 @@ const Post = ({post}) => {
     const getUserRedux = token => dispatch(getUserAction(token));
     const getAllPostsRedux = () => dispatch(getAllPostsAction());
 
-    const {title, linkImage, categoriesPost, _id, desc, createdAt, user, likePost, commenstOnPost, date} = post;
+    const {title, linkImage, categoriesPost, _id, user, likePost, commenstOnPost, date} = post;
 
     const[like, setLike] = useState(false);
     const[numberLike, setNumberLike] =  useState(0);
