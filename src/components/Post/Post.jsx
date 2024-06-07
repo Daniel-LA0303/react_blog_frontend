@@ -45,19 +45,11 @@ const Post = ({post}) => {
     const userP = useSelector(state => state.posts.user);
     const theme = useSelector(state => state.posts.themeW);
 
-    useEffect(() => {
-        const getOnePost = async () => {
-            try {
-                const res = await axios.get(`${link}/posts/${post._id}`);
-                setImageProfile(res.data.user.profilePicture)
-            } catch (error) {
-                console.log(error);
-            }
-        }
-        getOnePost();
-
-    }, []);
     
+    useEffect(() => {
+      setImageProfile(user.profilePicture);
+    }, []);
+
     useEffect(() => {
         if(likePost.users !== null){
             const userLike = likePost.users.includes(userP._id);

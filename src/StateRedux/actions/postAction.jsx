@@ -33,6 +33,12 @@ import {
     EDIT_COMMENT,
     DELETE_COMMENT,
     NEW_COMMENT,
+    GET_ALL_CARTEGORIES_HOME,
+    GET_ALL_CARTEGORIES_HOME_SUCCESS,
+    GET_ALL_CARTEGORIES_HOME_ERROR,
+    GET_PAGE_HOME_POSTS_CATS,
+    GET_PAGE_HOME_POSTS_CATS_SUCCESS,
+    GET_PAGE_HOME_POSTS_CATS_ERROR,
 } from "../types";
 
 // export function resetStatePostAction(){
@@ -165,7 +171,9 @@ const getOneUserError = (stateError) => ({
 });
 
 
-//categories ***
+/**
+ ********** Actions Categories *******
+ */
 export function getAllCategoriesAction(){
     return async(dispatch) => {
         dispatch(getAllCategories());
@@ -189,6 +197,36 @@ const getAllCategoriesSuccess = (data) => ({
 });
 const getAllCategoriesError = (stateError) => ({
     type: GET_ALL_CARTEGORIES_ERROR,
+    payload: stateError
+});
+
+/**
+ * This Action is to get all categories for the home page
+ * 
+ */
+export function getAllCategoriesHomeAction(){
+    return async(dispatch) => {
+        dispatch(getAllCategoriesHome());
+        try {
+            const res = await axios.get(`${import.meta.env.VITE_API_URL_BACKEND}/categories`);
+            
+            dispatch(getAllCategoriesHomeSuccess(res.data));
+        } catch (error) {
+            console.log(error);
+            dispatch(getAllCategoriesHomeError(true));
+        }
+    }
+}
+const getAllCategoriesHome = () => ({
+    type: GET_ALL_CARTEGORIES_HOME,
+    payload: true
+});
+const getAllCategoriesHomeSuccess = (data) => ({
+    type: GET_ALL_CARTEGORIES_HOME_SUCCESS,
+    payload: data
+});
+const getAllCategoriesHomeError = (stateError) => ({
+    type: GET_ALL_CARTEGORIES_HOME_ERROR,
     payload: stateError
 });
 
@@ -420,4 +458,35 @@ export function addNewFileUserAction(formData){
         }
     }
 }
+
+
+/**
+ * PAGES
+ */
+export function getPageHomeAction(){
+    return async (dispatch) => {
+        dispatch(getPageHome());
+        try {
+            const res = await axios.get(`${import.meta.env.VITE_API_URL_BACKEND}/pages/page-home`);
+            dispatch(getPageHomeSuccess(res.data)); 
+        } catch (error) {
+            console.log(error);
+            dispatch(getPageHomeError(true));
+        }
+    }
+}
+const getPageHome = () => ({
+    type: GET_PAGE_HOME_POSTS_CATS,
+    payload: true
+});
+
+const getPageHomeSuccess = newPostRedux => ({
+    type: GET_PAGE_HOME_POSTS_CATS_SUCCESS,
+    payload: newPostRedux
+});
+
+const getPageHomeError = (stateError) => ({
+    type: GET_PAGE_HOME_POSTS_CATS_ERROR,
+    payload: stateError
+});
 

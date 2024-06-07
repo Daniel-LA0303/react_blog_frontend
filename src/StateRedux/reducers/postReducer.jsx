@@ -31,6 +31,12 @@ import {
     EDIT_COMMENT,
     DELETE_COMMENT,
     NEW_COMMENT,
+    GET_ALL_CARTEGORIES_HOME,
+    GET_ALL_CARTEGORIES_HOME_SUCCESS,
+    GET_ALL_CARTEGORIES_HOME_ERROR,
+    GET_PAGE_HOME_POSTS_CATS_ERROR,
+    GET_PAGE_HOME_POSTS_CATS,
+    GET_PAGE_HOME_POSTS_CATS_SUCCESS,
 } from "../types";
 
 const initialState = {
@@ -48,11 +54,21 @@ const initialState = {
     post:{},
     comments:[],
     categories:[],
+
+    /**
+     * Categories for the home page
+     */
+    categoriesHome:[],
     category: {},
     error: null,
     loading: false,
     PFLink: 'http://localhost:4000/uploads-profile/',
-    PFPost: 'http://localhost:4000/uploads-post/'
+    PFPost: 'http://localhost:4000/uploads-post/',
+
+    /**
+     * PAGES
+     */
+    pageHome: {},
 }
 
 
@@ -67,6 +83,7 @@ export default function(state = initialState, action){
             }
         case GET_USER:
         case GET_ALL_CARTEGORIES:
+        case GET_PAGE_HOME_POSTS_CATS:
         case ADD_POST:
         case GET_ALL_POSTS:
         case GET_ONE_POST:
@@ -90,6 +107,13 @@ export default function(state = initialState, action){
                 loading: false,
                 error: null,
                 categories: action.payload
+            }
+        case GET_PAGE_HOME_POSTS_CATS_SUCCESS:
+            return{
+                ...state,
+                loading: false,
+                error: null,
+                pageHome: action.payload
             }
         case ADD_POST_SUCCESS:
             return{
@@ -133,6 +157,7 @@ export default function(state = initialState, action){
             }
         case GET_USER_ERROR:
         case GET_ALL_CARTEGORIES_ERROR:
+        case GET_PAGE_HOME_POSTS_CATS_ERROR:
         case ADD_POST_ERROR:
         case GET_ALL_POSTS_ERROR:
         case GET_ONE_POST_ERROR:

@@ -73,9 +73,11 @@ const Sidebar = () => {
   /**
    * Set notifications from state user
    */
-  useEffect(() => {
-    setNotifications(user.notifications)
-  }, [user]);
+  // useEffect(() => {
+  //   setNotifications(user.notifications)
+  // }, [user]);
+
+  
 
   /**
    * Path to home
