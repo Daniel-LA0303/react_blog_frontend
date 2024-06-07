@@ -39,7 +39,14 @@ import {
     GET_PAGE_HOME_POSTS_CATS,
     GET_PAGE_HOME_POSTS_CATS_SUCCESS,
     GET_PAGE_HOME_POSTS_CATS_ERROR,
+    GET_PAGE_POST_BY_CATEGORY,
+    GET_PAGE_POST_BY_CATEGORY_SUCCESS,
+    GET_PAGE_POST_BY_CATEGORY_ERROR,
+    GET_PAGE_DASHBOARD,
+    GET_PAGE_DASHBOARD_SUCCESS,
+    GET_PAGE_DASHBOARD_ERROR,
 } from "../types";
+import Categories from "../../Pages/Categories/Categories";
 
 // export function resetStatePostAction(){
 //     return (dispatch) => {
@@ -178,9 +185,9 @@ export function getAllCategoriesAction(){
     return async(dispatch) => {
         dispatch(getAllCategories());
         try {
-            const res = await axios.get(`${import.meta.env.VITE_API_URL_BACKEND}/categories`);
-            
-            dispatch(getAllCategoriesSuccess(res.data));
+            const res = await axios.get(`${import.meta.env.VITE_API_URL_BACKEND}/pages/page-categories`);
+            console.log(res.data.categories);
+            dispatch(getAllCategoriesSuccess(res.data.categories));
         } catch (error) {
             console.log(error);
             dispatch(getAllCategoriesError(true));
@@ -429,6 +436,9 @@ const deleteComment = (id) => ({
     type: DELETE_COMMENT,
     payload: id
 });
+
+
+/**DELETE THIS */
 //reset state ***
 export function resetStatePostAction(){
     return (dispatch) => {
@@ -438,6 +448,9 @@ export function resetStatePostAction(){
 const resetStatePost = () => ({
     type: RESET_STATE_POST
 });
+/*** */
+
+
 //files ***
 export function addNewFilePostAction(formData){
     return async() => {
@@ -463,6 +476,11 @@ export function addNewFileUserAction(formData){
 /**
  * PAGES
  */
+
+/**
+ * State page home
+ * @returns 
+ */
 export function getPageHomeAction(){
     return async (dispatch) => {
         dispatch(getPageHome());
@@ -487,6 +505,72 @@ const getPageHomeSuccess = newPostRedux => ({
 
 const getPageHomeError = (stateError) => ({
     type: GET_PAGE_HOME_POSTS_CATS_ERROR,
+    payload: stateError
+});
+
+
+/**
+ * State page post by category
+ * @param {*} id 
+ * @returns 
+ */
+export function getPagePostByCategoryAction(id){
+    return async (dispatch) => {
+        dispatch(getPagePostByCategory());
+        try {
+            
+            const res = await axios.get(`${import.meta.env.VITE_API_URL_BACKEND}/pages/page-category-post/${id}`);
+            dispatch(getPagePostByCategorySuccess(res.data)); 
+        } catch (error) {
+            console.log(error);
+            dispatch(getPagePostByCategoryError(true));
+        }
+    }
+}
+const getPagePostByCategory = () => ({
+    type: GET_PAGE_POST_BY_CATEGORY,
+    payload: true
+});
+
+const getPagePostByCategorySuccess = newPostRedux => ({
+    type: GET_PAGE_POST_BY_CATEGORY_SUCCESS,
+    payload: newPostRedux
+});
+
+const getPagePostByCategoryError = (stateError) => ({
+    type: GET_PAGE_POST_BY_CATEGORY_ERROR,
+    payload: stateError
+});
+
+/**
+ * State page dashboard
+ * @param {*} id 
+ * @returns 
+ */
+export function getPageDasboardAction(id){
+    return async (dispatch) => {
+        dispatch(getPageDasboard());
+        try {  
+            const res = await axios.get(`${import.meta.env.VITE_API_URL_BACKEND}/pages/page-dashboard/${id}`);
+            dispatch(getPageDasboardSuccess(res.data)); 
+        } catch (error) {
+            console.log(error);
+            dispatch(getPageDasboardError(true));
+        }
+    }
+}
+const getPageDasboard = () => ({
+    type: GET_PAGE_DASHBOARD,
+    payload: true
+});
+
+const getPageDasboardSuccess = newPostRedux => ({
+    type: GET_PAGE_DASHBOARD_SUCCESS,
+    payload: newPostRedux
+});
+
+const getPageDasboardError = (stateError) => ({
+    type: GET_PAGE_DASHBOARD_ERROR,
     payload: stateError
 });
 

@@ -31,12 +31,15 @@ import {
     EDIT_COMMENT,
     DELETE_COMMENT,
     NEW_COMMENT,
-    GET_ALL_CARTEGORIES_HOME,
-    GET_ALL_CARTEGORIES_HOME_SUCCESS,
-    GET_ALL_CARTEGORIES_HOME_ERROR,
     GET_PAGE_HOME_POSTS_CATS_ERROR,
     GET_PAGE_HOME_POSTS_CATS,
     GET_PAGE_HOME_POSTS_CATS_SUCCESS,
+    GET_PAGE_POST_BY_CATEGORY_SUCCESS,
+    GET_PAGE_POST_BY_CATEGORY_ERROR,
+    GET_PAGE_POST_BY_CATEGORY,
+    GET_PAGE_DASHBOARD,
+    GET_PAGE_DASHBOARD_ERROR,
+    GET_PAGE_DASHBOARD_SUCCESS,
 } from "../types";
 
 const initialState = {
@@ -69,21 +72,25 @@ const initialState = {
      * PAGES
      */
     pageHome: {},
+    pageCategoryByPost: {},
+    pageDashboard: {}
 }
 
 
 export default function(state = initialState, action){
     switch(action.type){
-        case RESET_STATE_POST :
-            return{
-                ...state,
-                post: {},
-                userView: {},
-                // user: {}
-            }
+        // case RESET_STATE_POST :
+        //     return{
+        //         ...state,
+        //         post: {},
+        //         userView: {},
+        //         // user: {}
+        //     }
         case GET_USER:
         case GET_ALL_CARTEGORIES:
         case GET_PAGE_HOME_POSTS_CATS:
+        case GET_PAGE_POST_BY_CATEGORY:
+        case GET_PAGE_DASHBOARD:
         case ADD_POST:
         case GET_ALL_POSTS:
         case GET_ONE_POST:
@@ -114,6 +121,20 @@ export default function(state = initialState, action){
                 loading: false,
                 error: null,
                 pageHome: action.payload
+            }
+        case GET_PAGE_POST_BY_CATEGORY_SUCCESS:
+            return{
+                ...state,
+                loading: false,
+                error: null,
+                pageCategoryByPost: action.payload
+            }
+        case GET_PAGE_DASHBOARD_SUCCESS:
+            return{
+                ...state,
+                loading: false,
+                error: null,
+                pageDashboard: action.payload
             }
         case ADD_POST_SUCCESS:
             return{
@@ -158,6 +179,8 @@ export default function(state = initialState, action){
         case GET_USER_ERROR:
         case GET_ALL_CARTEGORIES_ERROR:
         case GET_PAGE_HOME_POSTS_CATS_ERROR:
+        case GET_PAGE_POST_BY_CATEGORY_ERROR:
+        case GET_PAGE_DASHBOARD_ERROR:
         case ADD_POST_ERROR:
         case GET_ALL_POSTS_ERROR:
         case GET_ONE_POST_ERROR:

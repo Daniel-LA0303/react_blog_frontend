@@ -7,10 +7,11 @@ import { useSelector } from 'react-redux'
 
 import Spinner from '../Spinner/Spinner'
 
-const DashBoard = () => {
+const DashBoard = ({counts}) => {
 
     const userP = useSelector(state => state.posts.user);
     if(Object.keys(userP) == '') return <Spinner />
+    
   return (
     <div className="mx-auto grid gap-2 md:grid-cols-2 w-full md:w-10/12 lg:w-8/12">
         <div className="w-full  p-6 md:p-4">
@@ -21,7 +22,7 @@ const DashBoard = () => {
                     </div>
                     <div className="flex-1 text-right md:text-center">
                         <h2 className="font-bold uppercase text-gray-600">Total Posts Publish</h2>
-                    <p className="font-bold text-3xl">{userP.numberPost} <span className="text-green-500"><i className="fas fa-caret-up"></i></span></p>
+                    <p className="font-bold text-3xl">{counts.postsCount} <span className="text-green-500"><i className="fas fa-caret-up"></i></span></p>
                     </div>
                 </div>
             </div>
@@ -34,7 +35,7 @@ const DashBoard = () => {
                     </div>
                     <div className="flex-1 text-right md:text-center">
                         <h2 className="font-bold uppercase text-gray-600">Followers</h2>
-                        <p className="font-bold text-3xl">{userP.followersUsers.conutFollowers} <span className="text-pink-500"><i className="fas fa-exchange-alt"></i></span></p>
+                        <p className="font-bold text-3xl">{counts.followersCount} <span className="text-pink-500"><i className="fas fa-exchange-alt"></i></span></p>
                     </div>
                 </div>
             </div>
@@ -47,7 +48,7 @@ const DashBoard = () => {
                     </div>
                     <div className="flex-1 text-right md:text-center">
                         <h2 className="font-bold uppercase text-gray-600">Posts Likes</h2>
-                        <p className="font-bold text-3xl">{userP.likePost.posts.length} <span className="text-yellow-600"><i className="fas fa-caret-up"></i></span></p>
+                        <p className="font-bold text-3xl">{counts.likePostsCount} <span className="text-yellow-600"><i className="fas fa-caret-up"></i></span></p>
                     </div>
                 </div>
             </div>
@@ -60,7 +61,7 @@ const DashBoard = () => {
                     </div>
                     <div className="flex-1 text-right md:text-center">
                         <h2 className="font-bold uppercase text-gray-600">Posts Saved</h2>
-                        <p className="font-bold text-3xl">{userP.postsSaved.posts.length}</p>
+                        <p className="font-bold text-3xl">{counts.savedPostsCount}</p>
                     </div>
                 </div>
             </div>
@@ -73,7 +74,7 @@ const DashBoard = () => {
                     </div>
                     <div className="flex-1 text-right md:text-center">
                         <h2 className="font-bold uppercase text-gray-600">Tags saved</h2>
-                        <p className="font-bold text-3xl">{userP.followsTags.tags.length}</p>
+                        <p className="font-bold text-3xl">{counts.tagsCount}</p>
                     </div>
                 </div>
             </div>
@@ -86,7 +87,7 @@ const DashBoard = () => {
                     </div>
                     <div className="flex-1 text-right md:text-center">
                         <h2 className="font-bold uppercase text-gray-600">Followed</h2>
-                        <p className="font-bold text-3xl">{userP.followedUsers.conutFollowed} <span className="text-red-500"><i className="fas fa-caret-up"></i></span></p>
+                        <p className="font-bold text-3xl">{counts.followedUsersCount} <span className="text-red-500"><i className="fas fa-caret-up"></i></span></p>
                     </div>
                 </div>
             </div>

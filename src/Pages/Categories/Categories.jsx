@@ -22,12 +22,12 @@ const Categories = () => {
     <div className='mb-10'>
         <Sidebar />
         <p className={`${theme ? ' text-black' : 'text-white'} text-center mt-10 text-3xl`}>All Categories</p>
-        <div className=' grid gap-2 md:grid-cols-4 w-full md:w-11/12 lg:w-11/12 mx-auto mb-10'>
+        <div >
           <>
             {loading ? (
               <LoadingCategory />
             ):(
-              <>
+              <div className=' grid gap-2 lg:grid-cols-4 w-full lg:w-11/12 mx-auto mb-10'>
                 {categories.map(cat => (
                   <NewCardCategory 
                     key={cat._id}
@@ -35,8 +35,8 @@ const Categories = () => {
                     userP={userP}
                   />
                 ))}
-              </>
-            )}
+              </div>
+            )} 
           </>
 
         </div>
