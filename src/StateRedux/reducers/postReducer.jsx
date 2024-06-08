@@ -40,6 +40,18 @@ import {
     GET_PAGE_DASHBOARD,
     GET_PAGE_DASHBOARD_ERROR,
     GET_PAGE_DASHBOARD_SUCCESS,
+    GET_PAGE_DASHBOARD_LIKE_POST_USER,
+    GET_PAGE_DASHBOARD_LIKE_POST_USER_ERROR,
+    GET_PAGE_DASHBOARD_LIKE_POST_USER_SUCCESS,
+    GET_PAGE_DASHBOARD_FOLLOWED_FOLLOWERS__USER,
+    GET_PAGE_DASHBOARD_FOLLOWED_FOLLOWERS__USER_ERROR,
+    GET_PAGE_DASHBOARD_FOLLOWED_FOLLOWERS__USER_SUCCESS,
+    GET_PAGE_DASHBOARD_SAVED_POST_USER_SUCCESS,
+    GET_PAGE_DASHBOARD_SAVED_POST_USER_ERROR,
+    GET_PAGE_DASHBOARD_SAVED_POST_USER,
+    GET_PAGE_DASHBOARD_TAGS_USER_ERROR,
+    GET_PAGE_DASHBOARD_TAGS_USER,
+    GET_PAGE_DASHBOARD_TAGS_USER_SUCCESS,
 } from "../types";
 
 const initialState = {
@@ -73,7 +85,11 @@ const initialState = {
      */
     pageHome: {},
     pageCategoryByPost: {},
-    pageDashboard: {}
+    pageDashboard: {},
+    pageDashboardLikePostUser: {},
+    pagesDashboardFollowedFollowersUser: {},
+    pageSavedPostUser: {},
+    pageTagsUser: {},
 }
 
 
@@ -91,6 +107,10 @@ export default function(state = initialState, action){
         case GET_PAGE_HOME_POSTS_CATS:
         case GET_PAGE_POST_BY_CATEGORY:
         case GET_PAGE_DASHBOARD:
+        case GET_PAGE_DASHBOARD_LIKE_POST_USER:
+        case GET_PAGE_DASHBOARD_FOLLOWED_FOLLOWERS__USER:
+        case GET_PAGE_DASHBOARD_SAVED_POST_USER:
+        case GET_PAGE_DASHBOARD_TAGS_USER:
         case ADD_POST:
         case GET_ALL_POSTS:
         case GET_ONE_POST:
@@ -136,6 +156,34 @@ export default function(state = initialState, action){
                 error: null,
                 pageDashboard: action.payload
             }
+        case GET_PAGE_DASHBOARD_LIKE_POST_USER_SUCCESS:
+            return{
+                ...state,
+                loading: false,
+                error: null,
+                pageDashboardLikePostUser: action.payload
+            }
+        case GET_PAGE_DASHBOARD_FOLLOWED_FOLLOWERS__USER_SUCCESS:
+            return{
+                ...state,
+                loading: false,
+                error: null,
+                pagesDashboardFollowedFollowersUser: action.payload
+            }
+        case GET_PAGE_DASHBOARD_SAVED_POST_USER_SUCCESS:
+            return{
+                ...state,
+                loading: false,
+                error: null,
+                pageSavedPostUser: action.payload
+            }
+        case GET_PAGE_DASHBOARD_TAGS_USER_SUCCESS:
+                return{
+                    ...state,
+                    loading: false,
+                    error: null,
+                    pageTagsUser: action.payload
+                }
         case ADD_POST_SUCCESS:
             return{
                 ...state,
@@ -181,6 +229,10 @@ export default function(state = initialState, action){
         case GET_PAGE_HOME_POSTS_CATS_ERROR:
         case GET_PAGE_POST_BY_CATEGORY_ERROR:
         case GET_PAGE_DASHBOARD_ERROR:
+        case GET_PAGE_DASHBOARD_LIKE_POST_USER_ERROR:
+        case GET_PAGE_DASHBOARD_FOLLOWED_FOLLOWERS__USER_ERROR:
+        case GET_PAGE_DASHBOARD_SAVED_POST_USER_ERROR:
+        case GET_PAGE_DASHBOARD_TAGS_USER_ERROR:
         case ADD_POST_ERROR:
         case GET_ALL_POSTS_ERROR:
         case GET_ONE_POST_ERROR:

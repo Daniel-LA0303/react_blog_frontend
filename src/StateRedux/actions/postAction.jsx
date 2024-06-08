@@ -45,6 +45,18 @@ import {
     GET_PAGE_DASHBOARD,
     GET_PAGE_DASHBOARD_SUCCESS,
     GET_PAGE_DASHBOARD_ERROR,
+    GET_PAGE_DASHBOARD_LIKE_POST_USER,
+    GET_PAGE_DASHBOARD_LIKE_POST_USER_SUCCESS,
+    GET_PAGE_DASHBOARD_LIKE_POST_USER_ERROR,
+    GET_PAGE_DASHBOARD_FOLLOWED_FOLLOWERS__USER_ERROR,
+    GET_PAGE_DASHBOARD_FOLLOWED_FOLLOWERS__USER_SUCCESS,
+    GET_PAGE_DASHBOARD_FOLLOWED_FOLLOWERS__USER,
+    GET_PAGE_DASHBOARD_SAVED_POST_USER,
+    GET_PAGE_DASHBOARD_SAVED_POST_USER_SUCCESS,
+    GET_PAGE_DASHBOARD_SAVED_POST_USER_ERROR,
+    GET_PAGE_DASHBOARD_TAGS_USER_ERROR,
+    GET_PAGE_DASHBOARD_TAGS_USER_SUCCESS,
+    GET_PAGE_DASHBOARD_TAGS_USER,
 } from "../types";
 import Categories from "../../Pages/Categories/Categories";
 
@@ -574,3 +586,131 @@ const getPageDasboardError = (stateError) => ({
     payload: stateError
 });
 
+
+/**
+ * State page dashboard like post by user
+ * @param {*} id 
+ * @returns 
+ */
+export function getPageDasboardLikePostUserAction(id){
+    return async (dispatch) => {
+        dispatch(getPageDasboardLikePostUser());
+        try {  
+            const res = await axios.get(`${import.meta.env.VITE_API_URL_BACKEND}/pages/page-dashboard-liked-post-user/${id}`);
+            dispatch(getPageDasboardLikePostUserSuccess(res.data)); 
+        } catch (error) {
+            console.log(error);
+            dispatch(getPageDasboardLikePostUserError(true));
+        }
+    }
+}
+const getPageDasboardLikePostUser = () => ({
+    type: GET_PAGE_DASHBOARD_LIKE_POST_USER,
+    payload: true
+});
+
+const getPageDasboardLikePostUserSuccess = newPostRedux => ({
+    type: GET_PAGE_DASHBOARD_LIKE_POST_USER_SUCCESS,
+    payload: newPostRedux
+});
+
+const getPageDasboardLikePostUserError = (stateError) => ({
+    type: GET_PAGE_DASHBOARD_LIKE_POST_USER_ERROR,
+    payload: stateError
+});
+
+/**
+ * State page dashboard we get follwers and followed
+ * @param {*} id 
+ * @returns 
+ */
+export function getPageDasboardFollowtUserAction(id){
+    return async (dispatch) => {
+        dispatch(getPageDasboardFollowtUser());
+        try {  
+            const res = await axios.get(`${import.meta.env.VITE_API_URL_BACKEND}/pages/page-dashboard-follow-user/${id}`);
+            dispatch(getPageDasboardFollowtUserSuccess(res.data)); 
+        } catch (error) {
+            console.log(error);
+            dispatch(getPageDasboardFollowtUserError(true));
+        }
+    }
+}
+const getPageDasboardFollowtUser = () => ({
+    type: GET_PAGE_DASHBOARD_FOLLOWED_FOLLOWERS__USER,
+    payload: true
+});
+
+const getPageDasboardFollowtUserSuccess = newPostRedux => ({
+    type: GET_PAGE_DASHBOARD_FOLLOWED_FOLLOWERS__USER_SUCCESS,
+    payload: newPostRedux
+});
+
+const getPageDasboardFollowtUserError = (stateError) => ({
+    type: GET_PAGE_DASHBOARD_FOLLOWED_FOLLOWERS__USER_ERROR,
+    payload: stateError
+});
+
+/**
+ * State page saved post buy user
+ * @param {*} id 
+ * @returns 
+ */
+export function getPageDasboardSavedPostUserAction(id){
+    return async (dispatch) => {
+        dispatch(getPageDasboardSavedPostUser());
+        try {  
+            const res = await axios.get(`${import.meta.env.VITE_API_URL_BACKEND}/pages/page-dashboard-saved-post-user/${id}`);
+            dispatch(getPageDasboardSavedPostUserSuccess(res.data)); 
+        } catch (error) {
+            console.log(error);
+            dispatch(getPageDasboardSavedPostUserError(true));
+        }
+    }
+}
+const getPageDasboardSavedPostUser = () => ({
+    type: GET_PAGE_DASHBOARD_SAVED_POST_USER,
+    payload: true
+});
+
+const getPageDasboardSavedPostUserSuccess = newPostRedux => ({
+    type: GET_PAGE_DASHBOARD_SAVED_POST_USER_SUCCESS,
+    payload: newPostRedux
+});
+
+const getPageDasboardSavedPostUserError = (stateError) => ({
+    type: GET_PAGE_DASHBOARD_SAVED_POST_USER_ERROR,
+    payload: stateError
+});
+
+/**
+ * State page tags by user
+ * @param {*} id 
+ * @returns 
+ */
+export function getPageDasboardTagsUserAction(id){
+    return async (dispatch) => {
+        dispatch(getPageDasboardTagsUser());
+        try {  
+            const res = await axios.get(`${import.meta.env.VITE_API_URL_BACKEND}/pages/page-dashboard-tag-use/${id}`);
+            dispatch(getPageDasboardTagsUserSuccess(res.data)); 
+        } catch (error) {
+            console.log(error);
+            dispatch(getPageDasboardTagsUserError(true));
+        }
+    }
+}
+const getPageDasboardTagsUser = () => ({
+    type: GET_PAGE_DASHBOARD_TAGS_USER,
+    payload: true
+});
+
+const getPageDasboardTagsUserSuccess = newPostRedux => ({
+    type: GET_PAGE_DASHBOARD_TAGS_USER_SUCCESS,
+    payload: newPostRedux
+});
+
+const getPageDasboardTagsUserError = (stateError) => ({
+    type: GET_PAGE_DASHBOARD_TAGS_USER_ERROR,
+    payload: stateError
+});

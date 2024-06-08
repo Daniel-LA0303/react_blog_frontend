@@ -1,30 +1,27 @@
 import React, { useEffect, useState } from 'react'
-import { useSelector } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import Sidebar from '../../../components/Sidebar/Sidebar'
 import LoadingPosts from '../../../components/Spinner/LoadingPosts'
 import Post from '../../../components/Post/Post'
 import { useParams } from 'react-router-dom'
+import { getPageDasboardLikePostUserAction } from '../../../StateRedux/actions/postAction'
 
 const LikesPosts = () => {
 
-  const params = useParams();
-  const[posts, setPosts] = useState([]);
-  const[charge, setCharge] =useState(false);
-  const theme = useSelector(state => state.posts.themeW);
-  const link = useSelector(state => state.posts.linkBaseBackend);
+  const dispatch = useDispatch();
 
-  useEffect(() => {
-    try {
-      fetch(`${link}/users/get-user-like-posts/${params.id}`)
-      .then((response) => response.json())
-      .then((postsU) => {
-          setPosts(postsU);  
-          setCharge(true);
-      }) 
-    } catch (error) {
-      console.error(error.message);
-    }
+  const params = useParams();
+  const theme = useSelector(state => state.posts.themeW);
+  const posts = useSelector(state => state.posts.pageDashboardLikePostUser.userInfo);
+  const loading = useSelector(state => state.posts.loading);
+
+
+
+useEffect(() => {
+  dispatch(getPageDasboardLikePostUserAction(params.id));
 }, [params.id]);
+
+
 
   return (
     <div className={`${theme ? 'text-black' : 'text-white'}`}>
@@ -32,13 +29,13 @@ const LikesPosts = () => {
       <h2 className=' text-center my-5 text-2xl'>Posts you liked</h2>
       <div className='flex flex-row mt-0 md:mt-10 mx-auto w-full md:w-10/12 lg:w-8/12'>
         <div className=' w-full  flex flex-col items-center'>
-          {!charge ? (
+          {loading ? (
             <>
               <LoadingPosts />
             </>
           ) : (
             <>
-              {posts.length === 0 ? (
+              {posts === undefined ? (
                 <p className={`${theme ? 'text-black' : 'text-white'} text-center m-auto my-10 text-3xl`}>There is nothing around here yet</p>
               ) : (
                 <>
