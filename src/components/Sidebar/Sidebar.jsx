@@ -91,9 +91,10 @@ const Sidebar = () => {
 
   return (
     <>
-      {loading ? (
+      {/* {
+      loading ? (
         null
-      ) : (
+      ) : ( */}
         <header className={`${theme ? 'bgt-light' : 'bgt-dark'} ${isHome ? '' : ' sticky'} py-1  top-0 left-0 right-0 shadow-2xl `}>
           <div className={`flex items-center justify-between  h-14 mx-auto w-full md:w-11/12 lg:w-11/12`}>
             <div className='flex items-center justify-start  '>
@@ -162,7 +163,7 @@ const Sidebar = () => {
             </div>
           </div>
         </header>
-      )}
+      {/* )} */}
     </>
   )
 }

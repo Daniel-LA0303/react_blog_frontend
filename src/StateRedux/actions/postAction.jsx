@@ -57,6 +57,15 @@ import {
     GET_PAGE_DASHBOARD_TAGS_USER_ERROR,
     GET_PAGE_DASHBOARD_TAGS_USER_SUCCESS,
     GET_PAGE_DASHBOARD_TAGS_USER,
+    GET_PAGE_PROFILE_USER,
+    GET_PAGE_PROFILE_USER_SUCCESS,
+    GET_PAGE_PROFILE_USER_ERROR,
+    GET_PAGE_NEW_POST_ERROR,
+    GET_PAGE_NEW_POST_SUCCESS,
+    GET_PAGE_NEW_POST,
+    GET_PAGE_DASHBOARD_POSTS_USER,
+    GET_PAGE_DASHBOARD_POSTS_USER_SUCCESS,
+    GET_PAGE_DASHBOARD_POSTS_USER_ERROR,
 } from "../types";
 import Categories from "../../Pages/Categories/Categories";
 
@@ -198,7 +207,6 @@ export function getAllCategoriesAction(){
         dispatch(getAllCategories());
         try {
             const res = await axios.get(`${import.meta.env.VITE_API_URL_BACKEND}/pages/page-categories`);
-            console.log(res.data.categories);
             dispatch(getAllCategoriesSuccess(res.data.categories));
         } catch (error) {
             console.log(error);
@@ -304,7 +312,7 @@ const getOnePostError =() => ({
 });
 
 //New post
-export function addNewPostAction(newPost, newPostRedux){
+export function addNewPostAction(newPost){
     return async (dispatch) => {
         dispatch(addNewPost());
         try {
@@ -314,7 +322,7 @@ export function addNewPostAction(newPost, newPostRedux){
                 // 'You clicked the button!',
                 'success'
               )
-            dispatch(addNewPostSuccess(newPostRedux)); 
+            dispatch(addNewPostSuccess(res.data.msg)); 
         } catch (error) {
             console.log(error);
             dispatch(addNewPostError(true));
@@ -712,5 +720,104 @@ const getPageDasboardTagsUserSuccess = newPostRedux => ({
 
 const getPageDasboardTagsUserError = (stateError) => ({
     type: GET_PAGE_DASHBOARD_TAGS_USER_ERROR,
+    payload: stateError
+});
+
+/**
+ * State page post by user
+ * @param {*} id 
+ * @returns 
+ */
+export function getPageDasboardPostsUserAction(id){
+    return async (dispatch) => {
+        dispatch(getPageDasboardPostsUser());
+        try {  
+            const res = await axios.get(`${import.meta.env.VITE_API_URL_BACKEND}/pages/page-dashboard-post-user/${id}`);
+            console.log(res.data);
+            dispatch(getPageDasboardPostsUserSuccess(res.data)); 
+        } catch (error) {
+            console.log(error);
+            dispatch(getPageDasboardPostsUserError(true));
+        }
+    }
+}
+const getPageDasboardPostsUser = () => ({
+    type: GET_PAGE_DASHBOARD_POSTS_USER,
+    payload: true
+});
+
+const getPageDasboardPostsUserSuccess = newPostRedux => ({
+    type: GET_PAGE_DASHBOARD_POSTS_USER_SUCCESS,
+    payload: newPostRedux
+});
+
+const getPageDasboardPostsUserError = (stateError) => ({
+    type: GET_PAGE_DASHBOARD_POSTS_USER_ERROR,
+    payload: stateError
+});
+
+
+/**
+ * State page profile user
+ * @param {*} id 
+ * @returns 
+ */
+export function getPageProfileUserAction(id){
+    return async (dispatch) => {
+        dispatch(getPageProfileUser());
+        try {  
+            const res = await axios.get(`${import.meta.env.VITE_API_URL_BACKEND}/pages/page-profile-user/${id}`);
+            dispatch(getPageProfileUserSuccess(res.data)); 
+        } catch (error) {
+            console.log(error);
+            dispatch(getPageProfileUserError(true));
+        }
+    }
+}
+const getPageProfileUser = () => ({
+    type: GET_PAGE_PROFILE_USER,
+    payload: true
+});
+
+const getPageProfileUserSuccess = newPostRedux => ({
+    type: GET_PAGE_PROFILE_USER_SUCCESS,
+    payload: newPostRedux
+});
+
+const getPageProfileUserError = (stateError) => ({
+    type: GET_PAGE_PROFILE_USER_ERROR,
+    payload: stateError
+});
+
+/**
+ * State page new post
+ * @param {*} id 
+ * @returns 
+ */
+export function getPageNewPostAction(){
+    return async (dispatch) => {
+        dispatch(getPageNewPost());
+        try {  
+            const res = await axios.get(`${import.meta.env.VITE_API_URL_BACKEND}/pages/page-new-post`);
+            console.log(res.data);
+            dispatch(getPageNewPostSuccess(res.data)); 
+        } catch (error) {
+            console.log(error);
+            dispatch(getPageNewPostError(true));
+        }
+    }
+}
+const getPageNewPost = () => ({
+    type: GET_PAGE_NEW_POST,
+    payload: true
+});
+
+const getPageNewPostSuccess = newPostRedux => ({
+    type: GET_PAGE_NEW_POST_SUCCESS,
+    payload: newPostRedux
+});
+
+const getPageNewPostError = (stateError) => ({
+    type: GET_PAGE_NEW_POST_ERROR,
     payload: stateError
 });

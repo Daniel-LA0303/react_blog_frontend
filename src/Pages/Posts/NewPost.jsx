@@ -11,13 +11,16 @@ import EditorToolBar, { modules, formats } from '../../components/EditorToolBar/
 import Select from 'react-select'
 
 import { useDispatch, useSelector } from 'react-redux';
-import {addNewPostAction, addNewFilePostAction, getAllCategoriesAction } from '../../StateRedux/actions/postAction';
+import {addNewPostAction, getPageNewPostAction } from '../../StateRedux/actions/postAction';
 
 import Spinner from '../../components/Spinner/Spinner';
 import Swal from 'sweetalert2';
 import axios from 'axios';
 
 const NewPost = () => {
+
+  let resImage = {} //-> String res from Cloudinary
+  let cats = []; //-> Array of categories for select 
 
   const route = useNavigate();
 
@@ -30,60 +33,36 @@ const NewPost = () => {
 
   //redux
   const dispatch = useDispatch();
-  const getAllCategoriesRedux = () => dispatch(getAllCategoriesAction());
-  const categories = useSelector(state => state.posts.categories);
   const addPostRedux = (newPost, newPostRedux) => dispatch(addNewPostAction(newPost, newPostRedux));
-  const addNewFileRedux = (formData) => dispatch(addNewFilePostAction(formData));
   const loading = useSelector(state => state.posts.loading);
+  const loadingPost = useSelector(state => state.posts.loadingPost);
+  const msgPost = useSelector(state => state.posts.msgPost);
   const user = useSelector(state => state.posts.user);
   const theme = useSelector(state => state.posts.themeW);
   const link = useSelector(state => state.posts.linkBaseBackend);
-
+  const categories = useSelector(state => state.posts.pageNewPost.categories);
+  
   useEffect(() => {
-    getAllCategoriesRedux();
+      dispatch(getPageNewPostAction());
   }, []);
 
-  useEffect(() => {
-    if(!user._id){
-        route('/');
-        
-    }
-}, [user]);
-
-
+  //content post
   const onContent = (value) => {
     setContent(value);
   }
 
+  //select categories
   const handleChangeS = (select) => {
     setCategoriesPost(select);
   }
   
+  //get file
   const getFile = e => {
     setFile(e.target.files[0]);
   }
 
-  const newPost = async e => {
-    e.preventDefault();
-
-    if([title, desc, content, categoriesPost].includes('')){
-        Swal.fire(
-            "All fields are required",
-        )
-        return;
-    }
-    if(file === null){
-        Swal.fire(
-            "All fields are required",
-        )
-        return;
-    }
-    let resImage = {}
-    let linkImage;
-    let cats = [];
-    for (let i = 0; i < categoriesPost.length; i++) {
-        cats.push(categoriesPost[i].name);
-    }
+  //build obj
+  const createObj = () => {
     const newDate = Date.now()
     const newPost = {
         user: user._id,
@@ -94,16 +73,44 @@ const NewPost = () => {
         desc: desc,
         date: newDate
     }
+    return newPost;
+}
+
+  const newPost = async e => {
+    e.preventDefault();
+    
+    //validate
+    if([title, desc, content, categoriesPost].includes('')){
+        Swal.fire(
+            "All fields are required",
+        )
+        return;
+    }
+    //validate file
+    if(file === null){
+        Swal.fire(
+            "All fields are required",
+        )
+        return;
+    }
+
+    cats = categoriesPost.map(category => category.name);
+
+    //create obj
+    const newPost = createObj();
+    
     if(file){
+        //Build the form data for the image
         const formData = new FormData();
-        // const filename = Date.now() + file.name;
-        // formData.append('name', filename);
         formData.append('image', file);
+
         try {
             const res = await axios.post(`${link}/posts/image-post`, formData);
-            resImage = res.data;
+            resImage = res.data; //-> we get the res from Cloudinary
             console.log(res);
         } catch (error) {
+            //catch errors
+            //we can do a file validation here with switch and status
             if (error.response) {
         
                 console.log(error.response.status); 
@@ -123,33 +130,15 @@ const NewPost = () => {
             }
         }
         newPost.linkImage = resImage
-        linkImage= resImage
     }
-    addPostRedux(newPost, {
-        user: user,
-        title: title,
-        desc: desc,
-        content: content,
-        linkImage: linkImage,
-        categoriesPost: cats,
-        categoriesSelect: categoriesPost,
-        likePost:{
-            users: []
-        },
-        commenstOnPost:{
-            numberComments: 0,
-            comments: []
-        },
-        usersSavedPost:{
-            users: []
-        },
-        date: newDate
+    
+    //add post with redux
+    addPostRedux(newPost);
 
-    });
     setTimeout(() => {
         route('/');
     }, 500);
-    
+
 }
 
   return (
@@ -158,7 +147,7 @@ const NewPost = () => {
             <Spinner />
         ):(
             <>
-                {/* <Sidebar />    */}
+                <Sidebar />   
 
             <div className=" w-5/6  mx-auto my-20  ">
             <div className='flex justify-start'>

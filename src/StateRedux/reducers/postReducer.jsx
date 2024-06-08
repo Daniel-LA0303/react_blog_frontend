@@ -52,11 +52,21 @@ import {
     GET_PAGE_DASHBOARD_TAGS_USER_ERROR,
     GET_PAGE_DASHBOARD_TAGS_USER,
     GET_PAGE_DASHBOARD_TAGS_USER_SUCCESS,
+    GET_PAGE_PROFILE_USER_SUCCESS,
+    GET_PAGE_PROFILE_USER_ERROR,
+    GET_PAGE_PROFILE_USER,
+    GET_PAGE_NEW_POST_ERROR,
+    GET_PAGE_NEW_POST,
+    GET_PAGE_NEW_POST_SUCCESS,
+    GET_PAGE_DASHBOARD_POSTS_USER,
+    GET_PAGE_DASHBOARD_POSTS_USER_ERROR,
+    GET_PAGE_DASHBOARD_POSTS_USER_SUCCESS,
 } from "../types";
 
 const initialState = {
     linkBaseBackend: 'http://localhost:4000/api', 
     alertMSG:{},
+    msgPost:{},
     token: JSON.parse(localStorage.getItem("token")) || null,
     themeW: JSON.parse(localStorage.getItem("theme")) || null,
     /**
@@ -64,9 +74,9 @@ const initialState = {
      */
     userAuth:{}, 
     user: {},
-    userView:{},
-    posts:[],
-    post:{},
+    // userView:{},
+    // posts:[],
+    // post:{},
     comments:[],
     categories:[],
 
@@ -76,7 +86,9 @@ const initialState = {
     categoriesHome:[],
     category: {},
     error: null,
+    errorPost: null,
     loading: false,
+    loadingPost: false,
     PFLink: 'http://localhost:4000/uploads-profile/',
     PFPost: 'http://localhost:4000/uploads-post/',
 
@@ -90,6 +102,12 @@ const initialState = {
     pagesDashboardFollowedFollowersUser: {},
     pageSavedPostUser: {},
     pageTagsUser: {},
+    pagePostUser: {},
+    /**
+     * 
+     */
+    pageProfileUser: {},
+    pageNewPost: {}
 }
 
 
@@ -111,7 +129,9 @@ export default function(state = initialState, action){
         case GET_PAGE_DASHBOARD_FOLLOWED_FOLLOWERS__USER:
         case GET_PAGE_DASHBOARD_SAVED_POST_USER:
         case GET_PAGE_DASHBOARD_TAGS_USER:
-        case ADD_POST:
+        case GET_PAGE_PROFILE_USER:
+        case GET_PAGE_NEW_POST:
+        case GET_PAGE_DASHBOARD_POSTS_USER:
         case GET_ALL_POSTS:
         case GET_ONE_POST:
         case GET_ONE_USER:
@@ -184,11 +204,43 @@ export default function(state = initialState, action){
                     error: null,
                     pageTagsUser: action.payload
                 }
-        case ADD_POST_SUCCESS:
+        case GET_PAGE_DASHBOARD_POSTS_USER_SUCCESS:
             return{
                 ...state,
                 loading: false,
-                posts: [...state.posts, action.payload]
+                error: null,
+                pagePostUser: action.payload
+            }
+        case GET_PAGE_PROFILE_USER_SUCCESS:
+            return{
+                ...state,
+                loading: false,
+                error: null,
+                pageProfileUser: action.payload
+            }
+        case GET_PAGE_NEW_POST_SUCCESS:
+            return{
+                ...state,
+                loading: false,
+                error: null,
+                pageNewPost: action.payload
+            }
+        case ADD_POST:
+            return{
+                ...state,
+                loadingPost: action.payload
+            }
+        case ADD_POST_SUCCESS:
+            return{
+                ...state,
+                loadingPost: false,
+                msgPost: action.payload
+            }
+        case ADD_POST_ERROR:
+            return{
+                ...state,
+                loadingPost: false,
+                errorPost: action.payload
             }
         case GET_ALL_POSTS_SUCCESS: 
             return{
@@ -233,7 +285,9 @@ export default function(state = initialState, action){
         case GET_PAGE_DASHBOARD_FOLLOWED_FOLLOWERS__USER_ERROR:
         case GET_PAGE_DASHBOARD_SAVED_POST_USER_ERROR:
         case GET_PAGE_DASHBOARD_TAGS_USER_ERROR:
-        case ADD_POST_ERROR:
+        case GET_PAGE_DASHBOARD_POSTS_USER_ERROR:
+        case GET_PAGE_PROFILE_USER_ERROR:
+        case GET_PAGE_NEW_POST_ERROR:
         case GET_ALL_POSTS_ERROR:
         case GET_ONE_POST_ERROR:
         case GET_ONE_USER_ERROR:
