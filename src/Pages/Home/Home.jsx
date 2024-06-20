@@ -4,17 +4,18 @@ import React, { useEffect, useState } from 'react'
 import Sidebar from '../../components/Sidebar/Sidebar';
 import Post from '../../components/Post/Post';
 import LoadingPosts from '../../components/Spinner/LoadingPosts';
-
-import { getAllCategoriesHomeAction, getAllPostsAction, getPageHomeAction, getUserAction, resetStatePostAction } from '../../StateRedux/actions/postAction';
 import { useDispatch, useSelector } from 'react-redux';
 import Aside from '../../components/Aside/Aside';
 import ScrollButton from '../../components/ScrollButton/ScrollButton';
 import Slider from '../../components/Slider/Slider'
 import AsideMenu from '../../components/Aside/AsideMenu';
 import axios from 'axios';
+import usePages from '../../context/hooks/usePages';
 
 
 const Home = () => {
+
+  const {getPageHome, pageHome, loadingPage} = usePages();
 
   const dispatch = useDispatch();
 
@@ -23,11 +24,11 @@ const Home = () => {
   const theme = useSelector(state => state.posts.themeW);
 
 
-  const postsHome = useSelector(state => state.posts.pageHome.posts);
-  const categories = useSelector(state => state.posts.pageHome.categories);
+  // const postsHome = useSelector(state => state.posts.pageHome.posts);
+  // const categories = useSelector(state => state.posts.pageHome.categories);
 
   useEffect(() => {
-    dispatch(getPageHomeAction());
+    getPageHome();
   }, []);
 
 
@@ -42,7 +43,7 @@ const Home = () => {
            */
         }
         <div className=' block z-10 md:hidden md:visible w-full'>
-          {categories === undefined ? null : <Slider className=" " cats={categories}/> }
+          {pageHome.categories === undefined ? null : <Slider className=" " cats={pageHome.categories}/> }
         </div>
 
 
@@ -53,7 +54,9 @@ const Home = () => {
            * for Home page
            * 
            */}
-          {postsHome === undefined || categories === undefined ? (
+          {
+          // pageHome.posts === undefined || pageHome.categories === undefined 
+            loadingPage ? (
               <LoadingPosts />
             ): (
               <>
@@ -76,11 +79,11 @@ const Home = () => {
                    */
                 }
                 <div className=' w-full  sm:mx-0   lg:w-7/12 flex flex-col items-center'>                  
-                    {postsHome===undefined ? (
+                    {pageHome.posts===undefined ? (
                       <p className={`${theme ? 'text-black' : 'text-white'} text-center mx-auto my-10 text-3xl`}>There is nothing around here yet</p>
                     ): (
                       <>
-                        {[...postsHome].reverse().map(post => (
+                        {[...pageHome.posts].reverse().map(post => (
                           <Post 
                               key={post._id}
                               post={post}
@@ -97,17 +100,17 @@ const Home = () => {
                  * This aside shows ALL CATEGORIES
                  * 
                  */}
-                <aside className=' hidden lg:block w-0 md:w-3/12  lg:w-2/12 border-solid border-red-300 '>
+                {/* <aside className=' hidden lg:block w-0 md:w-3/12  lg:w-2/12 border-solid border-red-300 '>
                   {categories.map(cat => (
                     <Aside 
                       key={cat._id}
                       cats={cat}
                     />
                   ))}
-                </aside>
+                </aside> */}
               </>
-            )
-          }
+             )
+            } 
           <ScrollButton />
         </div>
 

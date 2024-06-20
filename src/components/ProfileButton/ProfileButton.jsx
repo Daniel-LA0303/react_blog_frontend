@@ -5,12 +5,15 @@ import { useDispatch, useSelector } from 'react-redux';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faUser, faGear, faTableColumns, faSun, faMoon, faPlusSquare } from '@fortawesome/free-solid-svg-icons'
 import { changeThemeAction } from '../../StateRedux/actions/postAction';
+import usePages from '../../context/hooks/usePages';
 
 const ProfileButton = () => {
 
+  const {pageDashboard, getPageDashboard, loadingPage, user} = usePages();
+
     const dispatch = useDispatch();
     const changeThemeRedux = () => dispatch(changeThemeAction());
-    const user = useSelector(state => state.posts.user);
+    // const user = useSelector(state => state.posts.user);
     const theme = useSelector(state => state.posts.themeW);
     const PF = useSelector(state => state.posts.PFLink);
 
@@ -53,7 +56,7 @@ const ProfileButton = () => {
                 <img
                     className='' 
                     src={ 
-                      user?.profilePicture.secure_url != '' ? user.profilePicture.secure_url : 
+                      // user?.profilePicture.secure_url != '' ? user.profilePicture.secure_url : 
                       '/avatar.png'}    
                 />
             </div>

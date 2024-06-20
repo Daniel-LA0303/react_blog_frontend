@@ -8,7 +8,6 @@ import InsertDriveFileIcon from '@mui/icons-material/InsertDriveFile';
 import PersonIcon from '@mui/icons-material/Person';
 
 import { useDispatch, useSelector } from 'react-redux';
-import { getOneUserAction, getPageProfileUserAction, getUserAction } from '../../StateRedux/actions/postAction';
 
 import Sidebar from '../../components/Sidebar/Sidebar';
 
@@ -19,39 +18,53 @@ import axios from 'axios';
 import LoadingPosts from '../../components/Spinner/LoadingPosts';
 import Post from '../../components/Post/Post';
 import ProfileView from '../../components/ProfileView/ProfileView';
+import usePages from '../../context/hooks/usePages';
 
 
 const Profile = () => {
 
   const params = useParams();
+  const navigate = useNavigate();
+
+  const {pageProfile, getProfilePage, loadingPage, user} = usePages();
   const dispatch = useDispatch();
   
   const userP = useSelector(state => state.posts.user);
   const loading = useSelector(state => state.posts.loading);
 
   const posts = useSelector(state => state.posts.pageProfileUser.posts);
-  const user = useSelector(state => state.posts.pageProfileUser.user);
+  // const user = useSelector(state => state.posts.pageProfileUser.user);
+
+
+
   const [isFollow, setIsFollow] = useState(null);
 
 
   useEffect(() => {
-    dispatch(getPageProfileUserAction(params.id));
+    // dispatch(getPageProfileUserAction(params.id));
+    setTimeout(() => {
+      if(Object.keys(pageProfile).length === 0){
+        getProfilePage(params.id);
+      }else if(!user._id){
+        navigate('/')
+      }
+    }, 500);
   }, [params.id]);
 
 
 
-  if(loading) return <Spinner/>
+  if(loadingPage) return <Spinner/>
   return (
     <div className=''>
       <Sidebar />
       <section className="pt-8 sm:pt-8 ">
 
         {
-          user === undefined ? 'Cargando' : 
+          Object.keys(pageProfile).length === 0 ? 'Cargando' : 
           <ProfileView 
-            user={user}
-            userP={userP}
-            posts={posts}
+            user={pageProfile.user}
+            userP={user}
+            posts={pageProfile.posts}
             setIsFollow={setIsFollow}
             isFollow={isFollow}
 

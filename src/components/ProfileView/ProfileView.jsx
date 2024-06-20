@@ -138,7 +138,7 @@ const ProfileView = ({user, userP, posts, isFollow, setIsFollow}) => {
                       {/* <FontAwesomeIcon icon={faFile} className=' text-lg text-green-600 mr-3' /> */}
                       <InsertDriveFileIcon />
                       <span className="text-sm font-bold block uppercase tracking-wide text-blueGray-600 mx-1">
-                        {/* {user.numberPost} {''} */}
+                        {user.posts.length} {''}
                       </span>
                       <span className="text-sm text-blueGray-400">           
                         Posts published
@@ -149,7 +149,7 @@ const ProfileView = ({user, userP, posts, isFollow, setIsFollow}) => {
                       {/* <FontAwesomeIcon icon={faHeart} className=' text-lg text-red-500 mr-3' />  */}
                       <FavoriteIcon />
                       <span className="text-sm font-bold block uppercase tracking-wide text-blueGray-600 mx-1">
-                        {/* {user.likePost.posts.length} */}
+                        {user.likePost.posts.length}
                       </span>
                       <span className="text-sm text-blueGray-400">
                         Likes on posts
@@ -159,7 +159,7 @@ const ProfileView = ({user, userP, posts, isFollow, setIsFollow}) => {
                       {/* <FontAwesomeIcon icon={faUser} className=' text-lg text-blue-700 mr-3' /> */}
                       <PersonIcon />
                       <span className="text-sm font-bold block uppercase tracking-wide text-blueGray-600 mx-1">
-                        {/* {user.followersUsers.conutFollowers} */}
+                        {user.followersUsers.followers.length}
                       </span>
                       <span className="text-sm text-blueGray-400">
                         Followers

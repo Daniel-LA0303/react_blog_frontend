@@ -87,7 +87,9 @@ const initialState = {
     category: {},
     error: null,
     errorPost: null,
-    loading: false,
+    loading: false, //-> loading for the loadding pages
+    loadingUser: false, //-> loading for the user
+    errorUser: null, //-> error for the user
     loadingPost: false,
     PFLink: 'http://localhost:4000/uploads-profile/',
     PFPost: 'http://localhost:4000/uploads-post/',
@@ -121,6 +123,23 @@ export default function(state = initialState, action){
         //         // user: {}
         //     }
         case GET_USER:
+            return{
+                ...state,
+                loadingUser: action.payload
+            }
+        case GET_USER_ERROR:
+            return{
+                ...state,
+                loadingUser: false,
+                errorUser: action.payload
+            }
+        case GET_USER_SUCCESS:
+            return{
+                ...state,
+                loadingUser: false,
+                errorUser: null,
+                user: action.payload
+            }
         case GET_ALL_CARTEGORIES:
         case GET_PAGE_HOME_POSTS_CATS:
         case GET_PAGE_POST_BY_CATEGORY:
@@ -276,7 +295,6 @@ export default function(state = initialState, action){
                 posts: state.posts.filter(post => post._id !== action.payload),
                 post: {}
             }
-        case GET_USER_ERROR:
         case GET_ALL_CARTEGORIES_ERROR:
         case GET_PAGE_HOME_POSTS_CATS_ERROR:
         case GET_PAGE_POST_BY_CATEGORY_ERROR:

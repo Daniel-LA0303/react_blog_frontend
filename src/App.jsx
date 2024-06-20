@@ -31,6 +31,8 @@ import FollowedUsers from "./Pages/DashBoard/Pages/FollowedUsers";
 import FollowersUsers from "./Pages/DashBoard/Pages/FollowersUsers";
 import About from "./Pages/About/About";
 import Notifications from "./Pages/Notifications/Notifications";
+import { Pages } from "@mui/icons-material";
+import { PagesProvider } from "./context/PagesProvider";
 
 function App() {
 
@@ -41,12 +43,7 @@ function App() {
   const user = useSelector(state => state.posts.user);
   const theme = useSelector(state => state.posts.themeW);
 
-  useEffect(() => {
-    const token = localStorage.getItem('token');
-    if(token){
-      getUserRedux(JSON.parse(token));
-    }
-  }, []);
+
 
   // useEffect(() => {
   //   getAllPostsRedux();
@@ -66,39 +63,41 @@ function App() {
 
   return (
       <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<Home /> } />
-          <Route path="/login" element={<Login />} />
-          <Route path="/register" element={<Register /> } />
-          <Route path="/forget-password" element={<ForgetPassword /> } />
-          <Route path="/forget-password/:id" element={<NewPassword /> } />
-          <Route path="/user-confirmed/:id" element={<UserConfirmed /> } />
+        <PagesProvider>
+          <Routes>
+            <Route path="/" element={<Home /> } />
+            <Route path="/login" element={<Login />} />
+            <Route path="/register" element={<Register /> } />
+            <Route path="/forget-password" element={<ForgetPassword /> } />
+            <Route path="/forget-password/:id" element={<NewPassword /> } />
+            <Route path="/user-confirmed/:id" element={<UserConfirmed /> } />
 
-          <Route path="/about" element={<About /> } />
-          
-          <Route path="/new-post" element={<NewPost /> } />
-          <Route path="/edit-post/:id" element={user._id ? <EditPost /> :<Login /> } />
-          <Route path="/view-post/:id" element={<ViewPost /> } />
-          <Route path="/category/:id" element={<CategoryPost /> } />
-          <Route path="/categories/" element={<Categories /> } />
-          <Route path="/dashboard/:id" element={<DashBoardProfile />} />
-          
-          {/* DashBoard */}
-          <Route path="/dashboard/:id" element={<DashBoardProfile />} />
-          
-          <Route path="/save-posts/:id" element={user._id  ? <SavePost /> : <Login />}/>
-          <Route path="/user-posts/:id" element={user._id  ? <UserPosts /> : <Login />} />
-          <Route path="/user-tags/:id" element={user._id  ? < UserTags/> : <Login />} />
-          <Route path="/user-likes-posts/:id" element={user._id  ? <LikesPosts/> : <Login />} />
-          <Route path="/followed-users/:id" element={user._id  ? <FollowedUsers/> : <Login />} />
-          <Route path="/followers-users/:id" element={user._id  ? <FollowersUsers/> : <Login />} />
-          
+            <Route path="/about" element={<About /> } />
+            
+            <Route path="/new-post" element={<NewPost /> } />
+            <Route path="/edit-post/:id" element={user._id ? <EditPost /> :<Login /> } />
+            <Route path="/view-post/:id" element={<ViewPost /> } />
+            <Route path="/category/:id" element={<CategoryPost /> } />
+            <Route path="/categories/" element={<Categories /> } />
+            <Route path="/dashboard/:id" element={<DashBoardProfile />} />
+            
+            {/* DashBoard */}
+            <Route path="/dashboard/:id" element={<DashBoardProfile />} />
+            
+            <Route path="/save-posts/:id" element={<SavePost /> }/>
+            <Route path="/user-posts/:id" element={<UserPosts />} />
+            <Route path="/user-tags/:id" element={< UserTags/>} />
+            <Route path="/user-likes-posts/:id" element={<LikesPosts/> } />
+            <Route path="/followed-users/:id" element={<FollowedUsers/> } />
+            <Route path="/followers-users/:id" element={ <FollowersUsers/>} />
+            
 
-          <Route path="/profile/:id" element={<Profile /> } />
-          <Route path="/edit-profile/:id" element={user._id ? <EditProfile /> : <Login /> } />
-          <Route path="/search/:id" element={<Search /> } />
-          <Route path="/notifications/:id" element={user._id ? <Notifications /> : <Login />} />
-        </Routes>
+            <Route path="/profile/:id" element={<Profile /> } />
+            <Route path="/edit-profile/:id" element={user._id ? <EditProfile /> : <Login /> } />
+            <Route path="/search/:id" element={<Search /> } />
+            <Route path="/notifications/:id" element={user._id ? <Notifications /> : <Login />} />
+          </Routes>
+        </PagesProvider>
       </BrowserRouter>
   )
 }

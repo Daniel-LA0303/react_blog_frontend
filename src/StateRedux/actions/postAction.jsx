@@ -36,38 +36,7 @@ import {
     GET_ALL_CARTEGORIES_HOME,
     GET_ALL_CARTEGORIES_HOME_SUCCESS,
     GET_ALL_CARTEGORIES_HOME_ERROR,
-    GET_PAGE_HOME_POSTS_CATS,
-    GET_PAGE_HOME_POSTS_CATS_SUCCESS,
-    GET_PAGE_HOME_POSTS_CATS_ERROR,
-    GET_PAGE_POST_BY_CATEGORY,
-    GET_PAGE_POST_BY_CATEGORY_SUCCESS,
-    GET_PAGE_POST_BY_CATEGORY_ERROR,
-    GET_PAGE_DASHBOARD,
-    GET_PAGE_DASHBOARD_SUCCESS,
-    GET_PAGE_DASHBOARD_ERROR,
-    GET_PAGE_DASHBOARD_LIKE_POST_USER,
-    GET_PAGE_DASHBOARD_LIKE_POST_USER_SUCCESS,
-    GET_PAGE_DASHBOARD_LIKE_POST_USER_ERROR,
-    GET_PAGE_DASHBOARD_FOLLOWED_FOLLOWERS__USER_ERROR,
-    GET_PAGE_DASHBOARD_FOLLOWED_FOLLOWERS__USER_SUCCESS,
-    GET_PAGE_DASHBOARD_FOLLOWED_FOLLOWERS__USER,
-    GET_PAGE_DASHBOARD_SAVED_POST_USER,
-    GET_PAGE_DASHBOARD_SAVED_POST_USER_SUCCESS,
-    GET_PAGE_DASHBOARD_SAVED_POST_USER_ERROR,
-    GET_PAGE_DASHBOARD_TAGS_USER_ERROR,
-    GET_PAGE_DASHBOARD_TAGS_USER_SUCCESS,
-    GET_PAGE_DASHBOARD_TAGS_USER,
-    GET_PAGE_PROFILE_USER,
-    GET_PAGE_PROFILE_USER_SUCCESS,
-    GET_PAGE_PROFILE_USER_ERROR,
-    GET_PAGE_NEW_POST_ERROR,
-    GET_PAGE_NEW_POST_SUCCESS,
-    GET_PAGE_NEW_POST,
-    GET_PAGE_DASHBOARD_POSTS_USER,
-    GET_PAGE_DASHBOARD_POSTS_USER_SUCCESS,
-    GET_PAGE_DASHBOARD_POSTS_USER_ERROR,
 } from "../types";
-import Categories from "../../Pages/Categories/Categories";
 
 // export function resetStatePostAction(){
 //     return (dispatch) => {
@@ -169,6 +138,8 @@ const getUserError = (stateError) => ({
     payload: stateError
 });
 
+
+
 export function getOneUserAction(id){
     return async(dispatch) => {
         dispatch(getOneUser());
@@ -206,8 +177,11 @@ export function getAllCategoriesAction(){
     return async(dispatch) => {
         dispatch(getAllCategories());
         try {
+            console.log("Consulta page categories start");
             const res = await axios.get(`${import.meta.env.VITE_API_URL_BACKEND}/pages/page-categories`);
+            console.log(res.data);
             dispatch(getAllCategoriesSuccess(res.data.categories));
+            console.log("Consulta page categories end");
         } catch (error) {
             console.log(error);
             dispatch(getAllCategoriesError(true));
@@ -235,9 +209,11 @@ export function getAllCategoriesHomeAction(){
     return async(dispatch) => {
         dispatch(getAllCategoriesHome());
         try {
+            console.log("Consulta page categories in Home start");
             const res = await axios.get(`${import.meta.env.VITE_API_URL_BACKEND}/categories`);
             
             dispatch(getAllCategoriesHomeSuccess(res.data));
+            console.log("Consulta page categories in Home end");
         } catch (error) {
             console.log(error);
             dispatch(getAllCategoriesHomeError(true));
@@ -263,6 +239,7 @@ export function getAllPostsAction(){
     return async(dispatch) => {
         dispatch(getAllPosts());
         try {
+            
             const res = await axios.get(`${import.meta.env.VITE_API_URL_BACKEND}/posts`);
             dispatch(getAllPostsSuccess(res.data));
         } catch (error) {
@@ -494,330 +471,5 @@ export function addNewFileUserAction(formData){
 
 
 /**
- * PAGES
+ * PAGES -> Context
  */
-
-/**
- * State page home
- * @returns 
- */
-export function getPageHomeAction(){
-    return async (dispatch) => {
-        dispatch(getPageHome());
-        try {
-            const res = await axios.get(`${import.meta.env.VITE_API_URL_BACKEND}/pages/page-home`);
-            dispatch(getPageHomeSuccess(res.data)); 
-        } catch (error) {
-            console.log(error);
-            dispatch(getPageHomeError(true));
-        }
-    }
-}
-const getPageHome = () => ({
-    type: GET_PAGE_HOME_POSTS_CATS,
-    payload: true
-});
-
-const getPageHomeSuccess = newPostRedux => ({
-    type: GET_PAGE_HOME_POSTS_CATS_SUCCESS,
-    payload: newPostRedux
-});
-
-const getPageHomeError = (stateError) => ({
-    type: GET_PAGE_HOME_POSTS_CATS_ERROR,
-    payload: stateError
-});
-
-
-/**
- * State page post by category
- * @param {*} id 
- * @returns 
- */
-export function getPagePostByCategoryAction(id){
-    return async (dispatch) => {
-        dispatch(getPagePostByCategory());
-        try {
-            
-            const res = await axios.get(`${import.meta.env.VITE_API_URL_BACKEND}/pages/page-category-post/${id}`);
-            dispatch(getPagePostByCategorySuccess(res.data)); 
-        } catch (error) {
-            console.log(error);
-            dispatch(getPagePostByCategoryError(true));
-        }
-    }
-}
-const getPagePostByCategory = () => ({
-    type: GET_PAGE_POST_BY_CATEGORY,
-    payload: true
-});
-
-const getPagePostByCategorySuccess = newPostRedux => ({
-    type: GET_PAGE_POST_BY_CATEGORY_SUCCESS,
-    payload: newPostRedux
-});
-
-const getPagePostByCategoryError = (stateError) => ({
-    type: GET_PAGE_POST_BY_CATEGORY_ERROR,
-    payload: stateError
-});
-
-/**
- * State page dashboard
- * @param {*} id 
- * @returns 
- */
-export function getPageDasboardAction(id){
-    return async (dispatch) => {
-        dispatch(getPageDasboard());
-        try {  
-            const res = await axios.get(`${import.meta.env.VITE_API_URL_BACKEND}/pages/page-dashboard/${id}`);
-            dispatch(getPageDasboardSuccess(res.data)); 
-        } catch (error) {
-            console.log(error);
-            dispatch(getPageDasboardError(true));
-        }
-    }
-}
-const getPageDasboard = () => ({
-    type: GET_PAGE_DASHBOARD,
-    payload: true
-});
-
-const getPageDasboardSuccess = newPostRedux => ({
-    type: GET_PAGE_DASHBOARD_SUCCESS,
-    payload: newPostRedux
-});
-
-const getPageDasboardError = (stateError) => ({
-    type: GET_PAGE_DASHBOARD_ERROR,
-    payload: stateError
-});
-
-
-/**
- * State page dashboard like post by user
- * @param {*} id 
- * @returns 
- */
-export function getPageDasboardLikePostUserAction(id){
-    return async (dispatch) => {
-        dispatch(getPageDasboardLikePostUser());
-        try {  
-            const res = await axios.get(`${import.meta.env.VITE_API_URL_BACKEND}/pages/page-dashboard-liked-post-user/${id}`);
-            dispatch(getPageDasboardLikePostUserSuccess(res.data)); 
-        } catch (error) {
-            console.log(error);
-            dispatch(getPageDasboardLikePostUserError(true));
-        }
-    }
-}
-const getPageDasboardLikePostUser = () => ({
-    type: GET_PAGE_DASHBOARD_LIKE_POST_USER,
-    payload: true
-});
-
-const getPageDasboardLikePostUserSuccess = newPostRedux => ({
-    type: GET_PAGE_DASHBOARD_LIKE_POST_USER_SUCCESS,
-    payload: newPostRedux
-});
-
-const getPageDasboardLikePostUserError = (stateError) => ({
-    type: GET_PAGE_DASHBOARD_LIKE_POST_USER_ERROR,
-    payload: stateError
-});
-
-/**
- * State page dashboard we get follwers and followed
- * @param {*} id 
- * @returns 
- */
-export function getPageDasboardFollowtUserAction(id){
-    return async (dispatch) => {
-        dispatch(getPageDasboardFollowtUser());
-        try {  
-            const res = await axios.get(`${import.meta.env.VITE_API_URL_BACKEND}/pages/page-dashboard-follow-user/${id}`);
-            dispatch(getPageDasboardFollowtUserSuccess(res.data)); 
-        } catch (error) {
-            console.log(error);
-            dispatch(getPageDasboardFollowtUserError(true));
-        }
-    }
-}
-const getPageDasboardFollowtUser = () => ({
-    type: GET_PAGE_DASHBOARD_FOLLOWED_FOLLOWERS__USER,
-    payload: true
-});
-
-const getPageDasboardFollowtUserSuccess = newPostRedux => ({
-    type: GET_PAGE_DASHBOARD_FOLLOWED_FOLLOWERS__USER_SUCCESS,
-    payload: newPostRedux
-});
-
-const getPageDasboardFollowtUserError = (stateError) => ({
-    type: GET_PAGE_DASHBOARD_FOLLOWED_FOLLOWERS__USER_ERROR,
-    payload: stateError
-});
-
-/**
- * State page saved post buy user
- * @param {*} id 
- * @returns 
- */
-export function getPageDasboardSavedPostUserAction(id){
-    return async (dispatch) => {
-        dispatch(getPageDasboardSavedPostUser());
-        try {  
-            const res = await axios.get(`${import.meta.env.VITE_API_URL_BACKEND}/pages/page-dashboard-saved-post-user/${id}`);
-            dispatch(getPageDasboardSavedPostUserSuccess(res.data)); 
-        } catch (error) {
-            console.log(error);
-            dispatch(getPageDasboardSavedPostUserError(true));
-        }
-    }
-}
-const getPageDasboardSavedPostUser = () => ({
-    type: GET_PAGE_DASHBOARD_SAVED_POST_USER,
-    payload: true
-});
-
-const getPageDasboardSavedPostUserSuccess = newPostRedux => ({
-    type: GET_PAGE_DASHBOARD_SAVED_POST_USER_SUCCESS,
-    payload: newPostRedux
-});
-
-const getPageDasboardSavedPostUserError = (stateError) => ({
-    type: GET_PAGE_DASHBOARD_SAVED_POST_USER_ERROR,
-    payload: stateError
-});
-
-/**
- * State page tags by user
- * @param {*} id 
- * @returns 
- */
-export function getPageDasboardTagsUserAction(id){
-    return async (dispatch) => {
-        dispatch(getPageDasboardTagsUser());
-        try {  
-            const res = await axios.get(`${import.meta.env.VITE_API_URL_BACKEND}/pages/page-dashboard-tag-use/${id}`);
-            dispatch(getPageDasboardTagsUserSuccess(res.data)); 
-        } catch (error) {
-            console.log(error);
-            dispatch(getPageDasboardTagsUserError(true));
-        }
-    }
-}
-const getPageDasboardTagsUser = () => ({
-    type: GET_PAGE_DASHBOARD_TAGS_USER,
-    payload: true
-});
-
-const getPageDasboardTagsUserSuccess = newPostRedux => ({
-    type: GET_PAGE_DASHBOARD_TAGS_USER_SUCCESS,
-    payload: newPostRedux
-});
-
-const getPageDasboardTagsUserError = (stateError) => ({
-    type: GET_PAGE_DASHBOARD_TAGS_USER_ERROR,
-    payload: stateError
-});
-
-/**
- * State page post by user
- * @param {*} id 
- * @returns 
- */
-export function getPageDasboardPostsUserAction(id){
-    return async (dispatch) => {
-        dispatch(getPageDasboardPostsUser());
-        try {  
-            const res = await axios.get(`${import.meta.env.VITE_API_URL_BACKEND}/pages/page-dashboard-post-user/${id}`);
-            console.log(res.data);
-            dispatch(getPageDasboardPostsUserSuccess(res.data)); 
-        } catch (error) {
-            console.log(error);
-            dispatch(getPageDasboardPostsUserError(true));
-        }
-    }
-}
-const getPageDasboardPostsUser = () => ({
-    type: GET_PAGE_DASHBOARD_POSTS_USER,
-    payload: true
-});
-
-const getPageDasboardPostsUserSuccess = newPostRedux => ({
-    type: GET_PAGE_DASHBOARD_POSTS_USER_SUCCESS,
-    payload: newPostRedux
-});
-
-const getPageDasboardPostsUserError = (stateError) => ({
-    type: GET_PAGE_DASHBOARD_POSTS_USER_ERROR,
-    payload: stateError
-});
-
-
-/**
- * State page profile user
- * @param {*} id 
- * @returns 
- */
-export function getPageProfileUserAction(id){
-    return async (dispatch) => {
-        dispatch(getPageProfileUser());
-        try {  
-            const res = await axios.get(`${import.meta.env.VITE_API_URL_BACKEND}/pages/page-profile-user/${id}`);
-            dispatch(getPageProfileUserSuccess(res.data)); 
-        } catch (error) {
-            console.log(error);
-            dispatch(getPageProfileUserError(true));
-        }
-    }
-}
-const getPageProfileUser = () => ({
-    type: GET_PAGE_PROFILE_USER,
-    payload: true
-});
-
-const getPageProfileUserSuccess = newPostRedux => ({
-    type: GET_PAGE_PROFILE_USER_SUCCESS,
-    payload: newPostRedux
-});
-
-const getPageProfileUserError = (stateError) => ({
-    type: GET_PAGE_PROFILE_USER_ERROR,
-    payload: stateError
-});
-
-/**
- * State page new post
- * @param {*} id 
- * @returns 
- */
-export function getPageNewPostAction(){
-    return async (dispatch) => {
-        dispatch(getPageNewPost());
-        try {  
-            const res = await axios.get(`${import.meta.env.VITE_API_URL_BACKEND}/pages/page-new-post`);
-            console.log(res.data);
-            dispatch(getPageNewPostSuccess(res.data)); 
-        } catch (error) {
-            console.log(error);
-            dispatch(getPageNewPostError(true));
-        }
-    }
-}
-const getPageNewPost = () => ({
-    type: GET_PAGE_NEW_POST,
-    payload: true
-});
-
-const getPageNewPostSuccess = newPostRedux => ({
-    type: GET_PAGE_NEW_POST_SUCCESS,
-    payload: newPostRedux
-});
-
-const getPageNewPostError = (stateError) => ({
-    type: GET_PAGE_NEW_POST_ERROR,
-    payload: stateError
-});

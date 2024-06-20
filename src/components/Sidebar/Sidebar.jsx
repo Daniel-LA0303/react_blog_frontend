@@ -18,15 +18,20 @@ import { Notifications } from '@mui/icons-material'
 import AsideMenu from '../Aside/AsideMenu'
 
 import { io } from 'socket.io-client'
+import usePages from '../../context/hooks/usePages'
 
 let socket;
 
 const Sidebar = () => {
 
+  const {pageSavedPostUser, getPageSavedPostUser, loadingPage, user} = usePages();
+
+  const getUserRedux = token => dispatch(getUserAction(token));
+
   /**
    * Get user from the state
    */
-  const user = useSelector(state => state.posts.user);
+  // const user = useSelector(state => state.posts.user);
 
   /**
    * Get loading from the state
@@ -77,6 +82,16 @@ const Sidebar = () => {
   //   setNotifications(user.notifications)
   // }, [user]);
 
+  // useEffect(() => {
+  //   const token = localStorage.getItem('token');
+
+  //   if(token && !user._id){
+  //     getUserRedux(JSON.parse(token));
+  //     console.log('token', token);
+  //   }else{
+
+  //   }
+  // }, []);
   
 
   /**

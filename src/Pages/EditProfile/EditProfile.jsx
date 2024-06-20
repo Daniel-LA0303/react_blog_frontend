@@ -35,11 +35,12 @@ const EditProfile = () => {
         const getOneUser = async() => {
             try {
                 const res = await axios.get(`${link}/users/get-profile/${params.id}`);
-                setDesc(res.data.info.desc);
-                setWork(res.data.info.work);
-                setEducation(res.data.info.education);
-                setSkills(res.data.info.skills);
-                setImage(res.data.profilePicture);
+                console.log(res.data.info);
+                setDesc(res?.data.info.desc);
+                setWork(res?.data.info.work);
+                setEducation(res?.data.info.education);
+                setSkills(res?.data.info.skills);
+                setImage(res?.data.profilePicture);
             } catch (error) {
                 console.log(error);  
             }

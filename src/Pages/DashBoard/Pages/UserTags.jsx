@@ -1,14 +1,18 @@
 import React, { useEffect, useState } from 'react'
 import Sidebar from '../../../components/Sidebar/Sidebar'
 import LoadingCategory from '../../../components/Spinner/LoadingCategory'
-import { useParams } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
 import NewCardCategory from '../../../components/CategoryCard/NewCardCategory'
 import { useDispatch, useSelector } from 'react-redux'
-import { getPageDasboardTagsUserAction } from '../../../StateRedux/actions/postAction'
+import usePages from '../../../context/hooks/usePages'
 
 const UserTags = () => {
   
+  const {pageTagsUser, getPageTagsUser, loadingPage, user} = usePages();
+
   const dispatch = useDispatch();
+
+  const navigate = useNavigate();
 
   const params = useParams();
   const theme = useSelector(state => state.posts.themeW);
@@ -19,7 +23,15 @@ const UserTags = () => {
 
 
 useEffect(() => {
-  dispatch(getPageDasboardTagsUserAction(params.id));
+
+  setTimeout(() => {
+    if(Object.keys(pageTagsUser).length === 0){
+      getPageTagsUser(params.id);
+    }else if(!user._id){
+      navigate('/')
+    }
+  }, 500);
+  
 }, [params.id]);
   
   return (
@@ -28,15 +40,15 @@ useEffect(() => {
       <h2 className=' text-center my-5 text-2xl'>Tags you follow</h2>
       <div className='w-full md:w-10/12 lg:w-8/12 mx-auto mb-10'>
         <div className='  '>
-          {loading ? (
+          {loadingPage || pageTagsUser.categories === undefined ? (
             <LoadingCategory />
           ) : (
             <>
-              {categories === undefined ? (
+              {pageTagsUser.categories === undefined ? (
                   <p className={`${theme ? 'text-black' : 'text-white'} text-center m-auto my-10 text-3xl`}>There is nothing around here yet</p>
               ) : (
                 <div className='grid gap-2 md:grid-cols-2 w-full'>
-                {categories.map(cat => (
+                {pageTagsUser.categories.map(cat => (
                     <NewCardCategory 
                       key={cat._id}
                       category={cat}

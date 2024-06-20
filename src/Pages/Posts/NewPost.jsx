@@ -11,13 +11,16 @@ import EditorToolBar, { modules, formats } from '../../components/EditorToolBar/
 import Select from 'react-select'
 
 import { useDispatch, useSelector } from 'react-redux';
-import {addNewPostAction, getPageNewPostAction } from '../../StateRedux/actions/postAction';
+import {addNewPostAction } from '../../StateRedux/actions/postAction';
 
 import Spinner from '../../components/Spinner/Spinner';
 import Swal from 'sweetalert2';
 import axios from 'axios';
+import usePages from '../../context/hooks/usePages';
 
 const NewPost = () => {
+
+  const {pageAllCategories, getAllCategories, loadingPage, user} = usePages();
 
   let resImage = {} //-> String res from Cloudinary
   let cats = []; //-> Array of categories for select 
@@ -33,18 +36,24 @@ const NewPost = () => {
 
   //redux
   const dispatch = useDispatch();
+//   const getAllCategoriesRedux = () => dispatch(getPageNewPostAction());
   const addPostRedux = (newPost, newPostRedux) => dispatch(addNewPostAction(newPost, newPostRedux));
-  const loading = useSelector(state => state.posts.loading);
-  const loadingPost = useSelector(state => state.posts.loadingPost);
-  const msgPost = useSelector(state => state.posts.msgPost);
-  const user = useSelector(state => state.posts.user);
+//   const loading = useSelector(state => state.posts.loading);
+//   const loadingPost = useSelector(state => state.posts.loadingPost);
+//   const msgPost = useSelector(state => state.posts.msgPost);
+//   const user = useSelector(state => state.posts.user);
   const theme = useSelector(state => state.posts.themeW);
   const link = useSelector(state => state.posts.linkBaseBackend);
-  const categories = useSelector(state => state.posts.pageNewPost.categories);
+//   const categories = useSelector(state => state.posts.pageNewPost.categories);
   
   useEffect(() => {
-      dispatch(getPageNewPostAction());
-  }, []);
+    setTimeout(() => {
+      if(Object.keys(pageAllCategories).length === 0){
+        getAllCategories(); //-> we use the same function to get the categories for the select
+      }
+    }, 500);
+    // getAllCategoriesRedux();
+}, []);
 
   //content post
   const onContent = (value) => {
@@ -143,7 +152,7 @@ const NewPost = () => {
 
   return (
     <div>
-        {loading ? (
+        {loadingPage ? (
             <Spinner />
         ):(
             <>
@@ -189,7 +198,7 @@ const NewPost = () => {
                                 <label  className="block text-gray-700 text-sm font-bold mb-2">Select an option</label>
                                 <Select 
                                     onChange={handleChangeS}
-                                    options={categories}
+                                    options={pageAllCategories}
                                     isMulti 
                                 />
                         </div>
