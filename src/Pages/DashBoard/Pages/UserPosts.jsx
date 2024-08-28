@@ -1,39 +1,72 @@
 import React, { useEffect, useState } from 'react'
-import { useDispatch, useSelector } from 'react-redux';
+import { useSelector } from 'react-redux';
 import Post from '../../../components/Post/Post';
 import Sidebar from '../../../components/Sidebar/Sidebar';
 import LoadingPosts from '../../../components/Spinner/LoadingPosts';
 import { useNavigate, useParams } from 'react-router-dom';
+import axios from 'axios';
 import usePages from '../../../context/hooks/usePages';
 
 const UserPosts = () => {
 
-  const {pagePostUser, getPagePostUser, loadingPage, user} = usePages();
-
+  /**
+   * route
+   */
   const params = useParams();
-  const dispatch = useDispatch();
-  const navigate = useNavigate();
+  const navigate = useNavigate(); 
+  
+  /**
+   * states
+   */
+  const[posts, setPosts] = useState([]);
+  const[loading, setLoading] = useState(false);
 
-  const userP = useSelector(state => state.posts.user);
-  // const[posts, setPosts] = useState([]);
-  // const[charge, setCharge] =useState(false);
+  /**
+   * states Redux
+   */
   const theme = useSelector(state => state.posts.themeW);
-  const posts = useSelector(state => state.posts.pagePostUser.posts);
-  const loading = useSelector(state => state.posts.loading);
   const link = useSelector(state => state.posts.linkBaseBackend);
+  const userP = useSelector(state => state.posts.user);
 
+  /**
+   * useEffect
+   */
   useEffect(() => {
-    // dispatch(getPageDasboardPostsUserAction(params.id));
-    setTimeout(() => {
-      if(Object.keys(pagePostUser).length === 0){
-        getPagePostUser(params.id);
-      }else if(!user._id){
-        navigate('/')
+    setLoading(true);
+    axios.get(`${link}/pages/page-dashboard-post-user/${params.id}?user=${userP._id}`)
+      .then((response) => {
+        setPosts(response.data.posts);  
+        setTimeout(() => {
+          setLoading(false);
+        }, 200);
+        
+    }).catch((error) => {
+      console.log(error);
+      if(error.code === 'ERR_NETWORK'){
+        const data ={
+          error: true,
+            message: {
+              status: null,
+              message: 'Network Error',
+              desc: null
+            }
+        }
+        setLoading(false);
+        navigate('/error', {state: data});
+      }else{
+        const data = {
+          error: true,
+            message: {
+              status: error.response.status,
+              message: error.message,
+              desc: error.response.data.msg
+            }
+        }
+        setLoading(false);
+        navigate('/error', {state: data});
       }
-    }, 500);
-    
+    });
   }, [params.id]);
-
 
   return (
     <div className={`${theme ? 'text-black' : 'text-white'}`}>
@@ -41,17 +74,16 @@ const UserPosts = () => {
       <h2 className=' text-center my-5 text-2xl'>Your Posts</h2>
       <div className='flex flex-row mt-0 md:mt-10 mx-auto w-full md:w-10/12 lg:w-8/12'>
         <div className=' w-full mx-auto sm:mx-0  flex flex-col items-center'>
-          {loadingPage || pagePostUser.posts === undefined ? (
+          {loading ? (
               <>
                 <LoadingPosts />
               </>
             ) : (
               <>
-                {pagePostUser.posts === undefined ? (
-                  <p className={`${theme ? 'text-black' : 'text-white'} text-center m-auto my-5 text-3xl`}>There is nothing around here yet</p>
-                ) : (
+                {posts.length == 0 ? <p className={`${theme ? 'text-black' : 'text-white'} text-center m-auto my-5 text-3xl`}>There is nothing around here yet</p>
+                 : (
                   <>
-                    {[...pagePostUser.posts].reverse().map(post => (
+                    {[...posts].reverse().map(post => (
                         <Post 
                             key={post._id}
                             post={post}

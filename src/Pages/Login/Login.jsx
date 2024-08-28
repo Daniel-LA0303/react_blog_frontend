@@ -9,7 +9,23 @@ import { alertOffAction, alertOnAction } from '../../StateRedux/actions/postActi
 
 const Login = () => {
 
+    /**
+     * route 
+     */
     const route = useNavigate();
+
+    /**
+     * states
+     */
+    const[data, setData]=useState({
+        email: '',
+        password: ''
+    });
+    const{email, password} = data;
+
+    /**
+     * states redux
+     */
     const loading = useSelector(state => state.posts.loading);
     const alert1 = useSelector(state => state.posts.alertMSG);
     const link = useSelector(state => state.posts.linkBaseBackend);
@@ -17,17 +33,16 @@ const Login = () => {
     const alertMsg = (alert) => dispatch(alertOnAction(alert));
     const alertOff = () => dispatch(alertOffAction());
 
-    const[data, setData]=useState({
-        email: '',
-        password: ''
-    });
-
+    /**
+     * useEffect
+     */
     useEffect(() => {
         alertOff();
     }, [])
 
-    const{email, password} = data;
-
+    /**
+     * functions
+     */
     const getData = (e) => {
         setData({
             ...data,
@@ -64,8 +79,7 @@ const Login = () => {
     }
 
     const {msg} = alert1;
-
-  return (
+    return (
     <>
         {loading ? (
             null

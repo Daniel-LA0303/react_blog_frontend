@@ -3,6 +3,7 @@ import React, { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux';
 import { newCommentAction } from '../../StateRedux/actions/postAction';
 import { io } from 'socket.io-client';
+import Swal from 'sweetalert2';
 
 let socket;
 
@@ -20,11 +21,19 @@ const NewComment = ({ user, idPost, comments, userPost }) => {
 
     //new comment
     const newComment = async (id) => {
+
+        if(comment.trim() === ''){
+            Swal.fire({
+                title: 'Error',
+                text: 'The comment is empty',
+                icon: 'error',
+            });
+        }
         setComment('');
         const data = {
             userID: user._id,
             comment: comment,
-            dateComment: new Date(),
+            // dateComment: new Date(),
         }
         newCommentRedux({
             userID: user,
@@ -33,11 +42,16 @@ const NewComment = ({ user, idPost, comments, userPost }) => {
             replies: []
         });
         try {
-            await axios.post(`${link}/posts/save-comment/${id}`, {data, userPost: userPost._id});
+            // await axios.post(`${link}/posts/save-comment/${id}`, {data, userPost});
+            await axios.post(`${link}/comments/new-comment/${id}`, data);
             console.log('emit');
             // socket.emit('newComment' ,data);
         } catch (error) {
             console.log(error);
+            Swal.fire({
+                title: 'Error deleting the post',
+                text: "Status " + error.response.status + " " + error.response.data.msg,
+            });
         }
     }
 

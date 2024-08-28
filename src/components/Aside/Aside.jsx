@@ -5,6 +5,10 @@ import { useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
 
 const Aside = ({cats}) => {
+
+  /**
+   * States Redux
+   */
   const theme = useSelector(state => state.posts.themeW);
 
   return (

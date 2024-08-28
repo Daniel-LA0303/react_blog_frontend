@@ -16,21 +16,35 @@ const CategoryCard = ({category}) => {
 }, [userP]);
 
 const handleFollowTag = async() => {
-  setIsFollow(true);
-  try {
-    await axios.post(`${link}/users/follow-tag/${userP._id}`, category);
-  } catch (error) {
-    console.log(error);
-  }
+
+  await axios.post(`${link}/users/follow-tag/${userP._id}`, category)
+    .then(() => {
+      setIsFollow(true);
+    })
+    .catch((error) => {
+      Swal.fire({
+        title: error.response.data.msg,
+        text: "Status " + error.response.status,
+        icon: 'error',
+        confirmButtonText: 'OK'
+      });
+    })
 }
 
 const handleUnFollowTag = async() => {
-  setIsFollow(false);
-  try {
-    await axios.post(`${link}/users/unfollow-tag/${userP._id}`, category);
-  } catch (error) {
-    console.log(error);
-  }
+
+  await axios.post(`${link}/users/unfollow-tag/${userP._id}`, category)
+    .then(() => {
+      setIsFollow(false);
+    })
+    .catch((error) => {
+      Swal.fire({
+        title: error.response.data.msg,
+        text: "Status " + error.response.status,
+        icon: 'error',
+        confirmButtonText: 'OK'
+      });
+    })
 }
 
   return (

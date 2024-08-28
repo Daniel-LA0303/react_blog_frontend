@@ -2,14 +2,14 @@ import axios from 'axios';
 import React, { useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux';
 import { editCommentAction } from '../../StateRedux/actions/postAction';
+import Swal from 'sweetalert2';
 
 const ReplyComment = ({
     setReplyActive,
     replyActive,
     userID,
     comment,
-    idPost,
-    commentAutor
+    idPost
 }) => {
 
     const dispatch = useDispatch();
@@ -25,26 +25,25 @@ const ReplyComment = ({
     const replyCommentFunc = async () => {
         try {
 
-            const res = await axios.post(`${link}/posts/save-reply-comment/${idPost}`, {
-                userID,
-                commentId : comment._id,
+            const res = await axios.post(`${link}/replies/new-reply/${comment._id}`, {
                 reply: replyComment,
-                dateReply: new Date(),
-                commentAutor
+                userID,
+                postID: idPost
             })
 
-            const repliesF = res.data.filter(reply => reply._id === comment._id);
-            // console.log(repliesF);
             editCommentRedux({
                 userID: comment.userID,
                 comment: comment.comment,
                 dateComment: comment.dateComment,
                 _id: comment._id,
-                replies: repliesF[0].replies
+                replies: res.data.replies
             })
-            console.log(res.data);
         } catch (error) {
             console.log(error);
+            Swal.fire({
+                title: 'Error deleting the post',
+                text: "Status " + error.response.status + " " + error.response.data.msg,
+            });
         }
 
         setReplyActive(!replyActive);

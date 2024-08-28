@@ -8,23 +8,34 @@ import Aside from './Aside'
 
 const AsideMenu = ({user}) => {
 
-    const theme = useSelector(state => state.posts.themeW);
-    const link = useSelector(state => state.posts.linkBaseBackend);
+    /**
+     * States
+     */
     const[categoriesUser, setCategoriesUser] = useState([]);
 
+    /**
+     * States Redux
+     */
+    const theme = useSelector(state => state.posts.themeW);
+    const link = useSelector(state => state.posts.linkBaseBackend);
+    
+    /**
+     * useEffect
+     */
     useEffect(() => {
-        if (user && user._id) {
-            try {
-                fetch(`${link}/users/get-user-tags/${user._id}`)
-                    .then((response) => response.json())
-                    .then((tags) => {
-                        setCategoriesUser(tags);
-                    })
-            } catch (error) {
-                console.error(error.message);
-            }
-        }
-    }, [user, link]);
+        if(user){
+          try {
+            fetch(`${link}/pages/page-dashboard-tag-use/${user._id}`)
+                .then((response) => response.json())
+                .then((tags) => {
+                    setCategoriesUser(tags.categories);
+                    console.log(tags.categories);
+                })
+          } catch (error) {
+              console.error(error.message);
+          }
+        }      
+      }, [user]);
 
   return (
       <div className={`${theme ? 'bgt-light ' : 'bgt-dark text-white'} mx-2 rounded-sm`}>
@@ -54,29 +65,25 @@ const AsideMenu = ({user}) => {
               <FontAwesomeIcon icon={faPeopleGroup} className='mx-2' />
               <Link to={'/about'}>About</Link>
           </div>
-          <div className='mb-5 md:mb-10'>
+          <div className='mb-3 md:mb-3'>
               <SocialMedia />
           </div>
 
             {
                 !user._id ? null : (
-                      <div className='my-5 py-5'>
-                          <p className=' text-center'>My Tags</p>
-                          {categoriesUser === null ? null : (
-                    <div
-                        className='mx-2 scroll-box'
-                        // style={{ maxHeight: '100px', overflowY: 'auto' }}
-                    >
-                        {categoriesUser.map(cat => (
-                            <Aside
-                                key={cat._id}
-                                cats={cat}
-                            />
-                        ))}
+                    <div className='my-2'>
+                        <p className=' text-center'>My Tags</p>
+                        <div className='mx-2 scroll-box'>   
+                            {categoriesUser === undefined ? null : 
+                                categoriesUser.map(cat => (
+                                    <Aside
+                                        key={cat._id}
+                                        cats={cat}
+                                    />
+                                ))
+                            }
+                            </div>
                     </div>
-                )}
-
-                      </div>
                 )
             }
       </div>

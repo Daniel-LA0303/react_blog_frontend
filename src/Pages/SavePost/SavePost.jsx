@@ -4,33 +4,69 @@ import Post from '../../components/Post/Post'
 import { useNavigate, useParams } from 'react-router-dom'
 import axios from 'axios'
 import LoadingPosts from '../../components/Spinner/LoadingPosts'
-import { useDispatch, useSelector } from 'react-redux'
-import usePages from '../../context/hooks/usePages'
+import { useSelector } from 'react-redux'
 
 const SavePost = () => {
 
-  const {pageSavedPostUser, getPageSavedPostUser, loadingPage, user} = usePages();
-
-  const dispatch = useDispatch();
-
+  /**
+   * route
+   */
+  const params = useParams();
   const navigate = useNavigate();
 
-  const params = useParams();
+  /**
+   * states
+   */
+  const[posts, setPosts] = useState([]);
+  const[loading, setLoading] = useState(false);
+
+  /**
+   * states Redux
+   */
   const theme = useSelector(state => state.posts.themeW);
-  const posts = useSelector(state => state.posts.pageSavedPostUser.posts);
-  // const user = useSelector(state => state.posts.user);
-  const loading = useSelector(state => state.posts.loading);
+  const link = useSelector(state => state.posts.linkBaseBackend);
+  const userP = useSelector(state => state.posts.user);
 
-
+  /**
+   * useEffect
+   */
   useEffect(() => {
-    setTimeout(() => {
-      if(Object.keys(pageSavedPostUser).length === 0){
-        getPageSavedPostUser(params.id);
-      }else if(!user._id){
-        navigate('/')
-      }
-    }, 500);
-  }, [params.id])
+    setLoading(true);
+    axios.get(`${link}/pages/page-dashboard-saved-post-user/${params.id}?user=${userP._id}`)
+      .then((response) => {
+        setPosts(response.data.posts); 
+        console.log(response.data);
+        setTimeout(() => {
+          setLoading(false);
+        }, 500);
+      })
+      .catch((error) => {
+        console.log(error);
+        if(error.code === 'ERR_NETWORK'){
+          const data ={
+            error: true,
+              message: {
+                status: null,
+                message: 'Network Error',
+                desc: null
+              }
+          }
+          setLoading(false);
+          navigate('/error', {state: data});
+        }else{
+          const data = {
+            error: true,
+              message: {
+                status: error.response.status,
+                message: error.message,
+                desc: error.response.data.msg
+              }
+          }
+          setLoading(false);
+          navigate('/error', {state: data});
+        }
+      })
+  }, [params.id]);
   
   return (
     <div className={`${theme ? 'text-black' : 'text-white'}`}>
@@ -39,17 +75,17 @@ const SavePost = () => {
         <div className='flex flex-row mt-0 md:mt-10 mx-auto w-full md:w-10/12 lg:w-8/12'>
           <div className=' w-full  flex flex-col items-center'>
 
-            {loadingPage || pageSavedPostUser.posts === undefined ? (
+            {loading ? (
               <>
                 <LoadingPosts />
               </>
             ) : (
               <>
-                {pageSavedPostUser.posts === undefined ? (
+                {posts.length === 0 ? (
                   <p className={`${theme ? 'text-black' : 'text-white'} text-center m-auto my-10 text-3xl`}>There is nothing around here yet</p>
                 ) : (
                   <>
-                    {[...pageSavedPostUser.posts].reverse().map(post => (
+                    {[...posts].reverse().map(post => (
                         <Post 
                             key={post._id}
                             post={post}

@@ -3,19 +3,30 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import React, { useState } from 'react'
 import { useSelector } from 'react-redux';
 import NewCardCategory from '../CategoryCard/NewCardCategory';
-import PostSearch from '../Post/PostSearch';
 import UserCard from '../UserCard/UserCard';
 import './SearchCom.css'
 import Post from '../Post/Post';
 
 const SearchCom = ({cats, posts, users}) => {
-  const userP = useSelector(state => state.posts.user);
-  const theme = useSelector(state => state.posts.themeW);
+
+  /**
+   * states
+   */
   const [toggleState, setToggleState] = useState(1);
 
+  /**
+   * states Redux
+   */
+  const userP = useSelector(state => state.posts.user);
+  const theme = useSelector(state => state.posts.themeW);
+  
+  /**
+   * functions
+   */
   const toggleTab = (index) => {
     setToggleState(index);
-  };
+  }; 
+  
   return (
     <>
       <div className="container-search my-10 mx-auto md:w-10/12 lg:w-8/12">
@@ -25,21 +36,21 @@ const SearchCom = ({cats, posts, users}) => {
             onClick={() => toggleTab(1)}
           >
             <FontAwesomeIcon icon={faFile} className='text-sm w-5 h-5' /> {''}
-            Posts
+            Posts <span className=' font-semibold text-red-400'>{posts.length}</span>
           </button>
           <button
             className={toggleState === 2 ? "tabs active-tabs" : "tabs"}
             onClick={() => toggleTab(2)}
           >
             <FontAwesomeIcon  icon={faUser} className='text-sm w-5 h-5' /> {''}
-            Users
+            Users <span className=' font-semibold text-red-400'>{users.length}</span>
           </button>
           <button
             className={toggleState === 3 ? "tabs active-tabs" : "tabs"}
             onClick={() => toggleTab(3)}
           >
             <FontAwesomeIcon  icon={faTags} className='text-sm w-5 h-5' /> {''}
-            Tags
+            Tags <span className=' font-semibold text-red-400'>{cats.length}</span>
           </button>
         </div>
 

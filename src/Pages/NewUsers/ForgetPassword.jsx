@@ -11,8 +11,19 @@ import Alert1 from '../../components/Alerts/Alert1';
 
 const ForgetPassword = () => {
 
+    /**
+     * route
+     */
     const route = useNavigate();
 
+    /**
+     * states
+     */
+    const[email, setEmail] = useState('');
+
+    /**
+     * states redux
+     */
     const user = useSelector(state => state.posts.user);
     const loading = useSelector(state => state.posts.loading);
     const alert1 = useSelector(state => state.posts.alertMSG);
@@ -21,6 +32,9 @@ const ForgetPassword = () => {
     const alertMsg = (alert) => dispatch(alertOnAction(alert));
     const alertOff = () => dispatch(alertOffAction());
 
+    /**
+     * useEffect
+     */
     useEffect(() => {
         if(user._id){
             route('/');
@@ -31,8 +45,9 @@ const ForgetPassword = () => {
         alertOff();
     }, [])
 
-    const[email, setEmail] = useState('');
-
+    /**
+     * functions
+     */
     const handleSubmit = async (e) => {
         e.preventDefault();
         if([email].includes('')){

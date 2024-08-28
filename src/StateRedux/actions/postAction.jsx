@@ -33,9 +33,6 @@ import {
     EDIT_COMMENT,
     DELETE_COMMENT,
     NEW_COMMENT,
-    GET_ALL_CARTEGORIES_HOME,
-    GET_ALL_CARTEGORIES_HOME_SUCCESS,
-    GET_ALL_CARTEGORIES_HOME_ERROR,
 } from "../types";
 
 // export function resetStatePostAction(){
@@ -84,18 +81,9 @@ const changeTheme = () => ({
     type: CHANGE_THEME
 })
 
-/**
- * Function to get user form the service
- * 
- * @param {*} token 
- * @returns 
- */
+//users ***
 export function getUserAction(token){
     return async(dispatch) => {
-
-        /**
-         * Dispatch the user GET_USER
-         */
         dispatch(getUser());
         
         const config = {
@@ -104,27 +92,20 @@ export function getUserAction(token){
                 Authorization: `Bearer ${token}`
             }
         }
+        // console.log(JSON.parse(token));
+        // console.log(token);
         try {
             const res = await axios.get(`${import.meta.env.VITE_API_URL_BACKEND}/users/profile`, config);
+            // console.log(res.data);
             
-            /**
-             * Dispatch the user to the state
-             */
             dispatch(getUserSuccess(res.data));
         } catch (error) {
-            /**
-             * Dispatch the error to the state
-             */
             console.log(error);
+            localStorage.removeItem('token');
             dispatch(getUserError(true));
         }
     }
 }
-
-/**
- * 
- * @returns null
- */
 const getUser = () => ({
     type: GET_USER,
     payload: true
@@ -137,8 +118,6 @@ const getUserError = (stateError) => ({
     type: GET_USER_ERROR,
     payload: stateError
 });
-
-
 
 export function getOneUserAction(id){
     return async(dispatch) => {
@@ -170,18 +149,14 @@ const getOneUserError = (stateError) => ({
 });
 
 
-/**
- ********** Actions Categories *******
- */
+//categories ***
 export function getAllCategoriesAction(){
     return async(dispatch) => {
         dispatch(getAllCategories());
         try {
-            console.log("Consulta page categories start");
-            const res = await axios.get(`${import.meta.env.VITE_API_URL_BACKEND}/pages/page-categories`);
-            console.log(res.data);
-            dispatch(getAllCategoriesSuccess(res.data.categories));
-            console.log("Consulta page categories end");
+            const res = await axios.get(`${import.meta.env.VITE_API_URL_BACKEND}/categories`);
+            
+            dispatch(getAllCategoriesSuccess(res.data));
         } catch (error) {
             console.log(error);
             dispatch(getAllCategoriesError(true));
@@ -201,45 +176,12 @@ const getAllCategoriesError = (stateError) => ({
     payload: stateError
 });
 
-/**
- * This Action is to get all categories for the home page
- * 
- */
-export function getAllCategoriesHomeAction(){
-    return async(dispatch) => {
-        dispatch(getAllCategoriesHome());
-        try {
-            console.log("Consulta page categories in Home start");
-            const res = await axios.get(`${import.meta.env.VITE_API_URL_BACKEND}/categories`);
-            
-            dispatch(getAllCategoriesHomeSuccess(res.data));
-            console.log("Consulta page categories in Home end");
-        } catch (error) {
-            console.log(error);
-            dispatch(getAllCategoriesHomeError(true));
-        }
-    }
-}
-const getAllCategoriesHome = () => ({
-    type: GET_ALL_CARTEGORIES_HOME,
-    payload: true
-});
-const getAllCategoriesHomeSuccess = (data) => ({
-    type: GET_ALL_CARTEGORIES_HOME_SUCCESS,
-    payload: data
-});
-const getAllCategoriesHomeError = (stateError) => ({
-    type: GET_ALL_CARTEGORIES_HOME_ERROR,
-    payload: stateError
-});
-
 //posts
 //get all posts
 export function getAllPostsAction(){
     return async(dispatch) => {
         dispatch(getAllPosts());
         try {
-            
             const res = await axios.get(`${import.meta.env.VITE_API_URL_BACKEND}/posts`);
             dispatch(getAllPostsSuccess(res.data));
         } catch (error) {
@@ -289,7 +231,7 @@ const getOnePostError =() => ({
 });
 
 //New post
-export function addNewPostAction(newPost){
+export function addNewPostAction(newPost, newPostRedux){
     return async (dispatch) => {
         dispatch(addNewPost());
         try {
@@ -299,7 +241,7 @@ export function addNewPostAction(newPost){
                 // 'You clicked the button!',
                 'success'
               )
-            dispatch(addNewPostSuccess(res.data.msg)); 
+            dispatch(addNewPostSuccess(newPostRedux)); 
         } catch (error) {
             console.log(error);
             dispatch(addNewPostError(true));
@@ -433,9 +375,6 @@ const deleteComment = (id) => ({
     type: DELETE_COMMENT,
     payload: id
 });
-
-
-/**DELETE THIS */
 //reset state ***
 export function resetStatePostAction(){
     return (dispatch) => {
@@ -445,9 +384,6 @@ export function resetStatePostAction(){
 const resetStatePost = () => ({
     type: RESET_STATE_POST
 });
-/*** */
-
-
 //files ***
 export function addNewFilePostAction(formData){
     return async() => {
@@ -469,7 +405,3 @@ export function addNewFileUserAction(formData){
     }
 }
 
-
-/**
- * PAGES -> Context
- */

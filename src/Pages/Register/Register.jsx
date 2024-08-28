@@ -10,9 +10,25 @@ import { alertOffAction, alertOnAction } from '../../StateRedux/actions/postActi
 
 const Register = () => {
 
+    /**
+     * route
+     */
     const route = useNavigate();
 
-    const user = useSelector(state => state.posts.user);
+    /**
+     * states
+     */
+    const[password2, setPassword2] = useState('');
+    const[data, setData] = useState({
+        name: '',
+        email: '',
+        password: '',
+    });
+    const {name, email, password} = data;
+
+    /**
+     * states redux
+     */
     const loading = useSelector(state => state.posts.loading);
     const alert1 = useSelector(state => state.posts.alertMSG);
     const link = useSelector(state => state.posts.linkBaseBackend);
@@ -20,20 +36,16 @@ const Register = () => {
     const alertMsg = (alert) => dispatch(alertOnAction(alert));
     const alertOff = () => dispatch(alertOffAction());
 
-
-    const[password2, setPassword2] = useState('');
-    const[data, setData] = useState({
-        name: '',
-        email: '',
-        password: '',
-    });
-
+    /**
+     * useEffect
+     */
     useEffect(() => {
         alertOff();
     }, [])
 
-    const {name, email, password} = data;
-
+    /**
+     * functions
+     */
     const getData = (e) => {
         setData({
             ...data,
@@ -44,7 +56,6 @@ const Register = () => {
     const sendData = async (e) => {
         e.preventDefault();
         if([name, email, password, password2].includes('')){
-            // alert('error');
             alertMsg({
                 msg: "All fields are required",
                 error: true

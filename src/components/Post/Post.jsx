@@ -1,14 +1,14 @@
 import React, { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 
-import { useDispatch, useSelector } from 'react-redux'
+import { useSelector } from 'react-redux'
 import Spinner from '../Spinner/Spinner'
 import axios from 'axios'
 
 import { faHeart, faBookmark, faComment } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { getAllPostsAction, getUserAction } from '../../StateRedux/actions/postAction'
 import { toast, Toaster } from 'react-hot-toast'
+import Swal from 'sweetalert2'
 
 const notify = () => toast(
     'Post saved.',
@@ -28,28 +28,32 @@ const notify = () => toast(
 
 const Post = ({post}) => {
 
-    const dispatch = useDispatch();
-    const getUserRedux = token => dispatch(getUserAction(token));
-    const getAllPostsRedux = () => dispatch(getAllPostsAction());
-
-    const {title, linkImage, categoriesPost, _id, user, likePost, commenstOnPost, date} = post;
-
+    /**
+     * states
+     */
     const[like, setLike] = useState(false);
     const[numberLike, setNumberLike] =  useState(0);
     const[save, setSave] = useState(false);
     const[imageProfile, setImageProfile] = useState('');
 
+    const {title, linkImage, categoriesPost, _id, desc, createdAt, user, likePost, commenstOnPost, date, comments} = post;
+
+    /**
+     * states Redux
+     */
     const link = useSelector(state => state.posts.linkBaseBackend);
     const PF = useSelector(state => state.posts.PFPost);
     const PP = useSelector(state => state.posts.PFLink);
     const userP = useSelector(state => state.posts.user);
     const theme = useSelector(state => state.posts.themeW);
 
-    
+    /**
+     * useEffect
+     */
     useEffect(() => {
-      setImageProfile(user.profilePicture);
+        setImageProfile(user.profilePicture);
     }, []);
-
+    
     useEffect(() => {
         if(likePost.users !== null){
             const userLike = likePost.users.includes(userP._id);
@@ -70,51 +74,70 @@ const Post = ({post}) => {
         }
     }, []);
 
+    /**
+     * functions
+     */
     const handleDislike = async (id) => {
+
+      try {
+        await axios.post(`${link}/posts/dislike-post/${id}`, userP);
         setLike(false);
-        setNumberLike(numberLike-1)
-        try {
-            await axios.post(`${link}/posts/dislike-post/${id}`, userP);
-        } catch (error) {
-            console.log(error);
-        }
+        setNumberLike(numberLike-1);
+      } catch (error) {
+        console.log(error);
+        Swal.fire({
+          title: 'Error deleting the post',
+          text: "Status " + error.response.status + " " + error.response.data.msg,
+        });
+      }
     }
-    
+  
     const handleLike = async (id) => {
-        setLike(true);
-        setNumberLike(numberLike+1);
-        const data = {
-          userID: userP._id, //id user like post
-          dateLike: new Date(),
-        }
-        try {
-            await axios.post(`${link}/posts/like-post/${id}`, {data, userP: userP._id,  userAutor: user._id});
-        } catch (error) {
-            console.log(error);
-        }
+  
+      try {
+          const res =await axios.post(`${link}/posts/like-post/${id}`, userP);
+          setLike(true);
+          setNumberLike(numberLike+1);
+          console.log(res);
+      } catch (error) {
+          console.log(error);
+          Swal.fire({
+            title: 'Error deleting the post',
+            text: "Status " + error.response.status + " " + error.response.data.msg,
+          });
+      }
     }
 
     const handleSave = async (id) => {
-        setSave(true);
-        notify()
+        
         try {
             await axios.post(`${link}/posts/save-post/${id}`, userP);
+            setSave(true);
+            notify();
         } catch (error) {
             console.log(error);
-
+            Swal.fire({
+              title: 'Error deleting the post',
+              text: "Status " + error.response.status + " " + error.response.data.msg,
+            });
         }
     }
 
     const handleUnSave = async (id) => {
-        notify2()
-        setSave(false);
+
         try {
             await axios.post(`${link}/posts/unsave-post/${id}`, userP);
+            notify2()
+            setSave(false);
         } catch (error) {
             console.log(error);
+            Swal.fire({
+              title: 'Error deleting the post',
+              text: "Status " + error.response.status + " " + error.response.data.msg,
+            });
         }
     }
-    if(Object.keys(post) == '' ) return <Spinner />
+
   return (
     <>
       <div
@@ -134,14 +157,10 @@ const Post = ({post}) => {
 
         <div className=" h-full  w-full md:w-8/12 n leading-normal">
           <div className=" px-5 h-full flex flex-col justify-evenly">
-            {/* <div className='flex justify-between mt-2 sm:mt-0 items-center'> */}
             <h5 className="mb-2 text-2xl   font-bold tracking-tight ">
               {title}
             </h5>
-
-            {/* </div> */}
             <Toaster position="bottom-right" reverseOrder={false} />
-            {/* <p className="mb-3 font-normal text-gray-700 dark:text-gray-400">{desc}</p> */}
             <div className="mb-3">
               {categoriesPost.map((cat) => (
                 <Link
@@ -216,7 +235,7 @@ const Post = ({post}) => {
                     )}
                   </div>
                   <div className="flex items-center">
-                    <p className="mx-3">{commenstOnPost.comments.length}</p>
+                    <p className="mx-3">{comments.length}</p>
                     <FontAwesomeIcon
                       icon={faComment}
                       className={`text-stone-500 mx-auto  rounded`}

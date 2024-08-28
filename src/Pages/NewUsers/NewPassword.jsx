@@ -11,6 +11,22 @@ import Alert1 from '../../components/Alerts/Alert1';
 
 const NewPassword = () => {
 
+    /**
+     * route
+     */
+    const params = useParams();
+    const route = useNavigate();
+
+    /**
+     * states
+     */
+    const[password, setPassword] = useState('');
+    const[newPassword, setNewPassword] = useState(false);
+    const[tokenValid, setTokenValid] = useState(false);
+
+    /**
+     * states redux
+     */
     const user = useSelector(state => state.posts.user);
     const loading = useSelector(state => state.posts.loading);
     const alert1 = useSelector(state => state.posts.alertMSG);
@@ -19,13 +35,9 @@ const NewPassword = () => {
     const alertMsg = (alert) => dispatch(alertOnAction(alert));
     const alertOff = () => dispatch(alertOffAction());
 
-    const params = useParams();
-    const route = useNavigate();
-
-    const[password, setPassword] = useState('');
-    const[newPassword, setNewPassword] = useState(false);
-    const[tokenValid, setTokenValid] = useState(false);
-
+    /**
+     * useEffect
+     */
     useEffect(() => {
         if(user._id){
             route('/');
@@ -52,6 +64,9 @@ const NewPassword = () => {
         tokenCheck();
     }, []);
 
+    /**
+     * functions
+     */
     const handleSubmit = async (e) => {
         e.preventDefault();
         if([password].includes('')){
@@ -74,7 +89,7 @@ const NewPassword = () => {
         }
     }
     const {msg} = alert1;
-  return (
+    return (
     <>
         {loading ? (
             <Spinner />

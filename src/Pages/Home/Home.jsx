@@ -4,116 +4,127 @@ import React, { useEffect, useState } from 'react'
 import Sidebar from '../../components/Sidebar/Sidebar';
 import Post from '../../components/Post/Post';
 import LoadingPosts from '../../components/Spinner/LoadingPosts';
-import { useDispatch, useSelector } from 'react-redux';
+
+import { useSelector } from 'react-redux';
 import Aside from '../../components/Aside/Aside';
 import ScrollButton from '../../components/ScrollButton/ScrollButton';
 import Slider from '../../components/Slider/Slider'
 import AsideMenu from '../../components/Aside/AsideMenu';
-import axios from 'axios';
 import usePages from '../../context/hooks/usePages';
+import Error from '../../components/Error/Error';
+import axios from 'axios';
 
 
 const Home = () => {
 
-  const {getPageHome, pageHome, loadingPage} = usePages();
+  /**
+   * context
+   */
+  const {errorPage, setErrorPage} = usePages();
+  const {error, message} = errorPage;
 
-  const dispatch = useDispatch();
+  /**
+   * States
+   */
+  const[cats, setCats] = useState([]);
+  const[posts, setPosts] = useState([]);
+  const[loading, setLoading] = useState(false);
 
+  /**
+   * States Redux
+   */
   const user = useSelector(state => state.posts.user);
-  const loading = useSelector(state => state.posts.loading);
   const theme = useSelector(state => state.posts.themeW);
+  const link = useSelector(state => state.posts.linkBaseBackend);
 
+  /**
+   * useEffect
+   */
+  useEffect(() => {
+    setLoading(true);
+    axios.get(`${link}/pages/page-home`)
+        .then((response) => {
+            setCats(response.data.categories);
+            setPosts(response.data.posts);
+            console.log(response.data);
+            setLoading(false);
+        })
+        .catch((error) => {
+          console.log(error);
+          if(error.code === 'ERR_NETWORK'){
+            setErrorPage({
+                error: true,
+                message: {
+                  status: null,
+                  message: 'Network Error',
+                  desc: null
+                }
+            });
+            setLoading(false);
+          }else{
+            setErrorPage({
+                error: true,
+                message: {
+                  status: error.response.status,
+                  message: error.message,
+                  desc: error.response.data.message
+                }
+            });
+            setLoading(false);
+          }
 
-  // const postsHome = useSelector(state => state.posts.pageHome.posts);
-  // const categories = useSelector(state => state.posts.pageHome.categories);
+        });
+}, []);
 
   useEffect(() => {
-    getPageHome();
+    setErrorPage({
+      error: false,
+      message: {}
+  });
   }, []);
 
-
+    
   return (
     <div className='  '>
         <Sidebar />
-
         {
-          /**
-           * Slider component
-           * This component is only visible on mobile devices
-           */
-        }
-        <div className=' block z-10 md:hidden md:visible w-full'>
-          {pageHome.categories === undefined ? null : <Slider className=" " cats={pageHome.categories}/> }
-        </div>
+          error ? <Error message={message}/>:
+          loading && !error ? <LoadingPosts/> : 
+        <>
+          <div className=' block z-10 md:hidden md:visible w-full'>
+            <Slider className=" " cats={cats}/>
+          </div>
+          <div className='flex flex-row justify-center mt-0 md:mt-10 mx-auto w-full md:w-11/12  lg:w-11/12'>
+            <aside className='hidden md:block w-0 md:w-3/12  lg:w-2/12 mt-5'>
+              <AsideMenu 
+                user={user}
+              />
+            </aside>
+            <div className=' w-full  sm:mx-0   lg:w-7/12 flex flex-col items-center'>
+                {posts.length == 0 ? (
+                  <p className={`${theme ? 'text-black' : 'text-white'} text-center mx-auto my-10 text-3xl`}>There is nothing around here yet</p>
+                ): (
+                  <>
+                    {[...posts].reverse().map(post => (
+                      <Post 
+                          key={post._id}
+                          post={post}
+                      />
+                    ))}  
+                  </>
+                )} 
+            </div>
+            <aside className=' hidden lg:block w-0 md:w-3/12  lg:w-2/12'>
+              {cats.map(cat => (
+                <Aside 
+                  cats={cat}
+                />
+              ))}
 
-
-        <div className='flex flex-row justify-center mt-0 md:mt-10 mx-auto w-full md:w-11/12  lg:w-11/12'>
-
-          {/**
-           * Aside component, this is a menu that is just
-           * for Home page
-           * 
-           */}
-          {
-          // pageHome.posts === undefined || pageHome.categories === undefined 
-            loadingPage ? (
-              <LoadingPosts />
-            ): (
-              <>
-                {
-                  /**
-                   * Aside Menu just home page
-                   */
-                }
-                <aside className='hidden md:block w-0 md:w-3/12  lg:w-2/12 mt-5'>
-                  <AsideMenu 
-                    user={user}
-                  />
-                </aside>
-
-                {
-                  /**
-                   * Posts component
-                   * We are going to show the posts in this part
-                   * 
-                   */
-                }
-                <div className=' w-full  sm:mx-0   lg:w-7/12 flex flex-col items-center'>                  
-                    {pageHome.posts===undefined ? (
-                      <p className={`${theme ? 'text-black' : 'text-white'} text-center mx-auto my-10 text-3xl`}>There is nothing around here yet</p>
-                    ): (
-                      <>
-                        {[...pageHome.posts].reverse().map(post => (
-                          <Post 
-                              key={post._id}
-                              post={post}
-                          />
-                        ))}  
-                      </>
-                    )}
-                </div>
-
-                {/**
-                 * Aside component for desktop
-                 * This aside is hidden on mobile devices and 
-                 * visible on desktop devices.
-                 * This aside shows ALL CATEGORIES
-                 * 
-                 */}
-                {/* <aside className=' hidden lg:block w-0 md:w-3/12  lg:w-2/12 border-solid border-red-300 '>
-                  {categories.map(cat => (
-                    <Aside 
-                      key={cat._id}
-                      cats={cat}
-                    />
-                  ))}
-                </aside> */}
-              </>
-             )
-            } 
-          <ScrollButton />
-        </div>
-
+            </aside>
+            <ScrollButton />
+          </div>
+        </>}
     </div>
   )
 }

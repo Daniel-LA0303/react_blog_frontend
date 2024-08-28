@@ -5,47 +5,85 @@ import Sidebar from '../../../components/Sidebar/Sidebar';
 import { useNavigate, useParams } from 'react-router-dom';
 import UserCard from '../../../components/UserCard/UserCard';
 import LoadingUser from '../../../components/Spinner/LoadingUser';
-import { useDispatch, useSelector } from 'react-redux';
-import usePages from '../../../context/hooks/usePages';
+import { useSelector } from 'react-redux';
 
 const FollowedUsers = () => {
 
-  const {pagesDashboardFollowedFollowersUser, getPagesDashboardFollowedFollowersUser, loadingPage, user} = usePages();
+    /**
+     * route
+     */
+    const params = useParams();
+    const navigate = useNavigate();
 
-  const navigate = useNavigate();
-  const dispatch = useDispatch();
-  const params = useParams();
-  const theme = useSelector(state => state.posts.themeW);
-  const users = useSelector(state => state.posts.pagesDashboardFollowedFollowersUser.followed);
-  const loading = useSelector(state => state.posts.loading);
+    /**
+     * states
+     */
+    const[users, setUsers] = useState([]);
+    const[loading, setLoading] = useState(false);
 
-  useEffect(() => {
-    // dispatch(getPageDasboardFollowtUserAction(params.id));
-    
-    setTimeout(() => {
-      if(Object.keys(pagesDashboardFollowedFollowersUser).length === 0){
-        getPagesDashboardFollowedFollowersUser(params.id);
-      }else if(!user._id){
-        navigate('/')
+    /**
+     * states Redux
+     */
+    const theme = useSelector(state => state.posts.themeW);
+    const link = useSelector(state => state.posts.linkBaseBackend);
+    const userP = useSelector(state => state.posts.user);
+
+    /**
+     * useEffect
+     */
+    useEffect(() => {
+      setLoading(true);
+      axios.get(`${link}/pages/page-dashboard-follow-user/${params.id}?user=${userP._id}`)
+      .then((response) => {
+        console.log(response.data);
+        setUsers(response.data.followed);  
+        setTimeout(() => {
+          setLoading(false);
+        }, 500);
+        
+    }).catch((error) => {
+      console.log(error);
+      if(error.code === 'ERR_NETWORK'){
+        const data ={
+          error: true,
+            message: {
+              status: null,
+              message: 'Network Error',
+              desc: null
+            }
+        }
+        setLoading(false);
+        navigate('/error', {state: data});
+      }else{
+        const data = {
+          error: true,
+            message: {
+              status: error.response.status,
+              message: error.message,
+              desc: error.response.data.msg
+            }
+        }
+        setLoading(false);
+        navigate('/error', {state: data});
       }
-    }, 500);
-  }, [params.id]);
+    });
+    }, [params.id]);
 
   return (
     <div className={`${theme ? 'text-black' : 'text-white'}`}>
         <Sidebar />
         <h2 className=' text-center my-5 text-2xl'>Followed</h2>
         <div className='flex flex-row mt-0 md:mt-10 mx-auto w-full md:w-10/12 lg:w-8/12'>
-        {loadingPage || pagesDashboardFollowedFollowersUser.followed === undefined ? (
+        {loading ? (
             <>
               <LoadingUser />
             </>
-          ): <div className='grid gap-2 md:grid-cols-2 w-full mx-5 md:mx-0'>
-              {pagesDashboardFollowedFollowersUser.followed === undefined ? (
-                <p className={`${theme ? 'text-black' : 'text-white'} text-center m-auto my-10 text-3xl`}>There is nothing around here yet</p>
+          ): <>
+              {users.length === 0 ? (
+                <p className={`${theme ? 'text-black' : 'text-white'} text-center m-auto my-1 text-3xl`}>There is nothing around here yet</p>
               ): (
                 <>
-                  {pagesDashboardFollowedFollowersUser.followed.map(user => (
+                  {users.map(user => (
                       <UserCard 
                           key={user._id}
                           user={user}
@@ -54,7 +92,7 @@ const FollowedUsers = () => {
                 </>
               )}
 
-          </div>}
+          </>}
         </div>
 
     </div>

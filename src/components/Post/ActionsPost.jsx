@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import BookmarkBorderIcon from '@mui/icons-material/BookmarkBorder';
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
 import ChatBubbleOutlineIcon from '@mui/icons-material/ChatBubbleOutline';
@@ -13,7 +13,7 @@ const ActionsPost = ({
     numberLike,
     numberSave,
     id,
-    post, 
+    numberComments, 
     user
 }) => {
   return (
@@ -40,7 +40,7 @@ const ActionsPost = ({
         <p>
           <ChatBubbleOutlineIcon fontSize="default" />
         </p>
-        <p>{post.commenstOnPost.comments.length}</p>
+        <p>{numberComments}</p>
       </div>
       <div className="my-3 text-2xl mx-10 sm:mx-0 flex flex-row sm:flex-col justify-center items-center">
         {save ? (

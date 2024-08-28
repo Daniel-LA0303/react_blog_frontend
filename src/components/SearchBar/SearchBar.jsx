@@ -7,15 +7,30 @@ import { faSearch } from '@fortawesome/free-solid-svg-icons';
 
 const SearchBar = () => {
 
-  const route = useNavigate()
+  /**
+   * route
+   */
+  const route = useNavigate();
+
+    /**
+   * states
+   */
+    const [isOpen, setIsOpen] = useState("");
+    const [search, setSearch] = useState("");
+
+  /**
+   * states Redux
+   */
   const theme = useSelector(state => state.posts.themeW);
 
-  const [isOpen, setIsOpen] = useState("");
-  const [search, setSearch] = useState("");
+  /**
+   * useRef
+   */
+  const inputRef = useRef(null);  
 
-  const inputRef = useRef(null);
-
-
+  /**
+   * functions
+   */
   const handleClick = () => {
     if (!isOpen) {
       inputRef.current?.focus();

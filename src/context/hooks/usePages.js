@@ -1,5 +1,5 @@
 import { useContext } from "react";
-import PagesContext from "../PagesProvider";
+import PagesContext from "../PagesProfile";
 
 const usePages = () => {
     return useContext(PagesContext);

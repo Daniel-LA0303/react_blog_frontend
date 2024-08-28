@@ -8,9 +8,15 @@ import { alertOffAction, alertOnAction } from '../../StateRedux/actions/postActi
 
 const UserConfirmed = () => {
 
+    /**
+     * route
+     */
     const params = useParams();
     const route = useNavigate();
 
+    /**
+     * states redux
+     */
     const user = useSelector(state => state.posts.user);
     const loading = useSelector(state => state.posts.loading);
     const alert1 = useSelector(state => state.posts.alertMSG);
@@ -19,6 +25,9 @@ const UserConfirmed = () => {
     const alertMsg = (alert) => dispatch(alertOnAction(alert));
     const alertOff = () => dispatch(alertOffAction());
 
+    /**
+     * useEffect
+     */
     useEffect(() => {
         if(user._id){
             route('/');
@@ -53,7 +62,7 @@ const UserConfirmed = () => {
 
     const {msg} = alert1;
     
-  return (
+    return (
     <>
         {loading ? (
             <Spinner />
