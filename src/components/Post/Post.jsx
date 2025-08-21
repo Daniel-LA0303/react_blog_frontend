@@ -235,7 +235,7 @@ const Post = ({post}) => {
                     )}
                   </div>
                   <div className="flex items-center">
-                    <p className="mx-3">{comments.length}</p>
+                    <p className="mx-3">{comments?.length === undefined ? post.commenstOnPost.numberComments : comments.length}</p>
                     <FontAwesomeIcon
                       icon={faComment}
                       className={`text-stone-500 mx-auto  rounded`}

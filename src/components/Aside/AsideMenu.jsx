@@ -38,7 +38,7 @@ const AsideMenu = ({user}) => {
       }, [user]);
 
   return (
-      <div className={`${theme ? 'bgt-light ' : 'bgt-dark text-white'} mx-2 rounded-sm`}>
+      <div className={`${theme ? 'bgt-light ' : 'bgt-dark text-white'}  rounded-sm`}>
           <div className='text-center text-sm hover:bg-zinc-700 hover:text-white cursor-pointer py-3 mb-2 transition'>
               <FontAwesomeIcon icon={faHome} className='mx-2' />
               <Link to={'/'}>Home</Link>

@@ -29,7 +29,7 @@ const SearchCom = ({cats, posts, users}) => {
   
   return (
     <>
-      <div className="container-search my-10 mx-auto md:w-10/12 lg:w-8/12">
+      <div className="container-search my-10 mx-auto ">
         <div className="bloc-tabs bgt-dark text-gray-500">
           <button
             className={`${toggleState === 1 ? "tabs active-tabs" : "tabs"} `}

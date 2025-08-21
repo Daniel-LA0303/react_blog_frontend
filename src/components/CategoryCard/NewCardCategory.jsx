@@ -65,7 +65,7 @@ const NewCardCategory = ({category, userP}) => {
   return (
     <div 
         style={{borderBottom: `solid 10px ${category.color}`}}
-        className={` ${theme ? ' bgt-light text-black' : 'bgt-dark hover:bg-zinc-700 text-white'} w-full mt-10 px-3 py-4 rounded-lg shadow-md `}>
+        className={` ${theme ? ' bgt-light text-black' : 'bgt-dark hover:bg-zinc-700 text-white'} w-full mt-5 px-3 py-4 rounded-lg shadow-md `}>
         <div className='flex items-center justify-between'>
             <Link to={`/category/${category.name}`} className="mb-2 text-2xl font-bold tracking-tight ">{category.name}</Link>
             {Object.keys(userP) == '' ? null : (

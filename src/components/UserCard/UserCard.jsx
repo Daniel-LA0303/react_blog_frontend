@@ -66,7 +66,7 @@ const UserCard = ({user}) => {
         theme
           ? " bgt-light text-black"
           : "bgt-dark hover:bg-zinc-700 text-white"
-      }  mx-0 md:mx-2 my-5 rounded-lg w-full sm:w-auto`}
+      }   rounded-lg w-full sm:w-auto`}
     >
       <div className=" py-5 px-8 shadow-md">
         <div className="flex flex-col items-center ">

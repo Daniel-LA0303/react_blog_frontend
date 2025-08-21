@@ -195,10 +195,10 @@ const NewPost = () => {
             <>
             <Sidebar />   
 
-            <div className=" w-5/6  mx-auto sm:my-20 my-5  ">
-            <div className='flex justify-start'>
-                <Link to='/' class="text-center w-full sm:w-auto focus:outline-none text-white bg-red-700 hover:bg-red-800 focus:ring-4 focus:ring-red-300 font-medium rounded text-sm px-5 py-2.5 mb-2 dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-900">Cancel</Link>
-            </div>
+            <div className="  mx-auto px-4 sm:px-6 lg:px-8 max-w-screen-xl sm:my-20 my-5  ">
+                <div className='flex justify-start'>
+                    <Link to='/' class="text-center w-full sm:w-auto focus:outline-none text-white bg-red-700 hover:bg-red-800 focus:ring-4 focus:ring-red-300 font-medium rounded text-sm px-5 py-2.5 mb-2 dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-900">Cancel</Link>
+                </div>
             <form 
                 className={`${theme ? ' bgt-light text-black' : 'bgt-dark text-white'}  bg-gray-700 shadow-md rounded px-8 pt-6 pb-8 mb-4`}
                 onSubmit={newPost}

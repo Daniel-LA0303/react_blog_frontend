@@ -76,11 +76,13 @@ const Search = () => {
         loading ? <Spinner/> :
         <>
           <Sidebar />
-          <SearchCom 
-            cats={catFilter}
-            posts={postFilter}
-            users={usersFilter}
-          />
+          <div className='mx-auto px-4 sm:px-6 lg:px-8 max-w-screen-xl'>
+            <SearchCom 
+              cats={catFilter}
+              posts={postFilter}
+              users={usersFilter}
+            />
+          </div>
         </>
       }
     </div>

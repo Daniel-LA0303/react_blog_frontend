@@ -72,7 +72,7 @@ const LikesPosts = () => {
     <div className={`${theme ? 'text-black' : 'text-white'}`}>
       <Sidebar />
       <h2 className=' text-center my-5 text-2xl'>Posts you liked</h2>
-      <div className='flex flex-row mt-0 md:mt-10 mx-auto w-full md:w-10/12 lg:w-8/12'>
+      <div className='flex flex-row mx-auto w-full md:w-10/12 lg:w-8/12'>
         <div className=' w-full  flex flex-col items-center'>
           {loading ? (
             <>

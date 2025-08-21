@@ -73,7 +73,7 @@ const UserTags = () => {
     <div className={`${theme ? 'text-black' : 'text-white'}`}>
       <Sidebar />
       <h2 className=' text-center my-5 text-2xl'>Tags you follow</h2>
-      <div className='w-full md:w-10/12 lg:w-8/12 mx-auto mb-10'>
+      <div className='w-full md:w-10/12 lg:w-8/12 mx-auto'>
         <div className='  '>
           {loading ? (
             <LoadingCategory />

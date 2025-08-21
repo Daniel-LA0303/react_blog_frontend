@@ -57,11 +57,11 @@ const Sidebar = () => {
         null
       ) : (
         <header className={`${theme ? 'bgt-light' : 'bgt-dark'} ${isHome ? '' : ' sticky'} py-1  top-0 left-0 right-0 shadow-2xl `}>
-          <div className={`flex items-center justify-between  h-14 mx-auto w-full md:w-11/12 lg:w-11/12`}>
+          <div className={`flex mx-auto px-4 sm:px-6 lg:px-8 max-w-screen-xl`}>
             <div className='flex items-center justify-start  '>
               {/* {user._id ?  */}
               {/* // <> */}
-              <button className='ml-4 md:ml-0 block md:hidden text-xs' onClick={() => setOpen(true)}>
+              <button className=' md:ml-0 block md:hidden text-xs' onClick={() => setOpen(true)}>
                 <FontAwesomeIcon icon={faBars} className={` text-2xl ${theme ? 'text-black' : 'text-white'}`} />
               </button>
               {/* </> : null} */}
@@ -70,9 +70,9 @@ const Sidebar = () => {
               <SearchBar />
             </div>
 
-            <div className='w-full sm:ml-5 flex items-center justify-end'>
+            <div className='w-full  flex items-center justify-end'>
               {user._id ? (
-                <div className='flex mr-0'>
+                <div className='flex '>
                   <Link to='/new-post' className="hidden md:block custom-button ">
                     New Post
                   </Link>

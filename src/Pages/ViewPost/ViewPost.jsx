@@ -243,7 +243,7 @@ const ViewPost = () => {
         position="bottom-right"
         reverseOrder={false}
       />
-      <div className='flex justify-center'>
+      <div className='flex mx-auto px-4 sm:px-6 lg:px-8 max-w-screen-xl'>
         <div className='flex-col hidden sm:block text-white sticky top-10 h-[90%] p-4 mt-30'>
           {
             Object.keys(userP).length != 0 && (
@@ -265,7 +265,7 @@ const ViewPost = () => {
           }
           
         </div>
-        <div className='w-full sm:w-4/6 lg:w-5/12'>
+        <div className='w-full md:w-4/6 lg:w-9/12'>
           <div className={`${theme ? ' bgt-light text-black' : 'bgt-dark text-white'} rounded-lg`}>
             <div className='flex justify-center items-center'>
               <div className="overflow-hidden h-40 sm:h-72 w-full">
@@ -391,7 +391,7 @@ const ViewPost = () => {
 
 
         </div>
-        <div className='w-auto hidden sm:block lg:w-3/12'>
+        <div className='w-auto hidden md:block lg:w-3/12 ml-3 mt-7'>
             <UserCard user={post.user} />
         </div>
 

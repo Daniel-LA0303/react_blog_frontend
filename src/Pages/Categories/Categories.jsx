@@ -78,7 +78,7 @@ const Categories = () => {
   return (
     <div className='mb-10'>
         <Sidebar />
-        <div className=''>
+        <div className='mx-auto px-4 sm:px-6 lg:px-8 max-w-screen-xl'>
           <>
             {
             error ? <Error message={message}/>:
@@ -86,8 +86,8 @@ const Categories = () => {
               <LoadingCategory />
             ):(
               <>
-                <p className={`${theme ? ' text-black' : 'text-white'} text-center mt-10 text-3xl`}>All Categories</p>
-                <div className=' grid gap-2 lg:grid-cols-4 w-full lg:w-11/12 mx-auto mb-10'>
+                <p className={`${theme ? ' text-black' : 'text-white'} text-left mt-5 text-3xl`}>Categories</p>
+                <div className=' grid gap-2 md:grid-cols-2 lg:grid-cols-4 w-full mx-auto mb-5'>
                 {categories.map(cat => (
                   <NewCardCategory 
                     key={cat._id}

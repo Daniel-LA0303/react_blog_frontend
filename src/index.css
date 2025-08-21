@@ -38,7 +38,7 @@ a {
 .menu-trigger img{
   height: 40px;
   width: 40px;
-  margin: 0 5px;
+  margin: 0 0px;
   border-radius: 50%;
   overflow: hidden;
   cursor: pointer;
@@ -190,7 +190,7 @@ h3 span{
   transition: 0.3s;
 }
 .bgt-black{
-  background-color: black;
+  background-color: #121212;
   transition: 0.3s all ease-in;
 }
 .bgt-white{

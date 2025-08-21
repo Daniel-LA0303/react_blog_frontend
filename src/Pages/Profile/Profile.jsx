@@ -140,7 +140,7 @@ const Profile = () => {
         error ? <Error message={message}/>:
         loading && !error ? <Spinner/> :
         <section className="pt-8 sm:pt-8 ">
-        <div className="w-full md:w-10/12 lg:w-8/12 mx-auto">
+        <div className="flex mx-auto px-4 sm:px-6 lg:px-8 max-w-screen-xl">
           <div className={`${theme ? 'bgt-light ' : 'bgt-dark text-white'} flex flex-col min-w-0 break-word w-full mb-6 shadow-xl rounded-lg mt-16`}>
             <div className="px-2 sm:px-6 ">
               <div className="flex flex-wrap justify-center">
@@ -218,7 +218,7 @@ const Profile = () => {
           </div>
         </div>
         {/* Content here */}
-        <div className='block sm:flex mx-auto w-full md:w-10/12 lg:w-8/12'> 
+        <div className='block sm:flex mx-auto px-4 sm:px-6 lg:px-8 max-w-screen-xl'> 
             <div className='w-full sm:w-3/12 mr-0 sm:mr-2'>
               {user.info == null ? null: (
                 <div className={`${theme ? 'bgt-light ' : 'bgt-dark text-white'} flex flex-col min-w-0 break-word w-full my-1 shadow-xl rounded-lg mt-4`}>

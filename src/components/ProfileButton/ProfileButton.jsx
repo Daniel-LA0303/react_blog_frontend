@@ -51,7 +51,7 @@ const ProfileButton = () => {
          <div className='menu-container' ref={menuRef}>
             <div className='menu-trigger md:mr-0' onClick={()=>{setOpen(!open)}}>
                 <img
-                    className='' 
+                    className='mx-0 px-0' 
                     src={ 
                       user?.profilePicture.secure_url != '' ? user.profilePicture.secure_url : 
                       '/avatar.png'}    

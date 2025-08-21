@@ -94,13 +94,13 @@ const Home = () => {
           <div className=' block z-10 md:hidden md:visible w-full'>
             <Slider className=" " cats={cats}/>
           </div>
-          <div className='flex flex-row justify-center mt-0 md:mt-10 mx-auto w-full md:w-11/12  lg:w-11/12'>
-            <aside className='hidden md:block w-0 md:w-3/12  lg:w-2/12 mt-5'>
+          <div className='flex mx-auto px-4 sm:px-6 lg:px-8 max-w-screen-xl'>
+            <aside className='hidden mr-2 md:block w-0 md:w-3/12  lg:w-2/12 mt-4'>
               <AsideMenu 
                 user={user}
               />
             </aside>
-            <div className=' w-full  sm:mx-0   lg:w-7/12 flex flex-col items-center'>
+            <div className=' w-full  sm:mx-0   lg:w-8/12 flex flex-col items-center'>
                 {posts.length == 0 ? (
                   <p className={`${theme ? 'text-black' : 'text-white'} text-center mx-auto my-10 text-3xl`}>There is nothing around here yet</p>
                 ): (
@@ -114,7 +114,7 @@ const Home = () => {
                   </>
                 )} 
             </div>
-            <aside className=' hidden lg:block w-0 md:w-3/12  lg:w-2/12'>
+            <aside className=' hidden ml-2 mt-4 lg:block w-0 md:w-3/12  lg:w-2/12'>
               {cats.map(cat => (
                 <Aside 
                   cats={cat}
