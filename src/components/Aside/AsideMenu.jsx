@@ -22,20 +22,20 @@ const AsideMenu = ({user}) => {
     /**
      * useEffect
      */
-    useEffect(() => {
-        if(user){
-          try {
-            fetch(`${link}/pages/page-dashboard-tag-use/${user._id}`)
-                .then((response) => response.json())
-                .then((tags) => {
-                    setCategoriesUser(tags.categories);
-                    console.log(tags.categories);
-                })
-          } catch (error) {
-              console.error(error.message);
-          }
-        }      
-      }, [user]);
+    // useEffect(() => {
+    //     if(user){
+    //       try {
+    //         fetch(`${link}/pages/page-dashboard-tag-use/${user._id}`)
+    //             .then((response) => response.json())
+    //             .then((tags) => {
+    //                 setCategoriesUser(tags.categories);
+    //                 console.log(tags.categories);
+    //             })
+    //       } catch (error) {
+    //           console.error(error.message);
+    //       }
+    //     }      
+    //   }, [user]);
 
   return (
       <div className={`${theme ? 'bgt-light ' : 'bgt-dark text-white'}  rounded-sm`}>

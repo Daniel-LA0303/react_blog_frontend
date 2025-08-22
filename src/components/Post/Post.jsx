@@ -36,7 +36,7 @@ const Post = ({post}) => {
     const[save, setSave] = useState(false);
     const[imageProfile, setImageProfile] = useState('');
 
-    const {title, linkImage, categoriesPost, _id, desc, createdAt, user, likePost, commenstOnPost, date, comments} = post;
+    const {title, linkImage, categories, _id, desc, createdAt, user, likePost, commenstOnPost, date, comments} = post;
 
     /**
      * states Redux
@@ -162,13 +162,13 @@ const Post = ({post}) => {
             </h5>
             <Toaster position="bottom-right" reverseOrder={false} />
             <div className="mb-3">
-              {categoriesPost.map((cat) => (
+              {categories.map((cat) => (
                 <Link
-                  key={cat}
-                  to={`/category/${cat}`}
+                  key={cat._id}
+                  to={`/category/${cat.name}`}
                   className="inline-block bg-gray-200 rounded-full px-2 py-1 text-xs font-semibold text-gray-700 mr-2 mb-2"
                 >
-                  #{cat}
+                  #{cat.name}
                 </Link>
               ))}
             </div>

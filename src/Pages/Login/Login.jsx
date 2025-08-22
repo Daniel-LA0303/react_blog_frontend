@@ -65,6 +65,7 @@ const Login = () => {
             const res = await axios.post(`${link}/users/login`, data);
             console.log(res.data.token);
             localStorage.setItem("token", JSON.stringify(res.data.token));
+            localStorage.setItem("tokenAuthUser", res.data.token); 
             
             route('/');
             

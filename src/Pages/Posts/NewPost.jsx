@@ -17,6 +17,7 @@ import Swal from 'sweetalert2';
 import axios from 'axios';
 import usePages from '../../context/hooks/usePages';
 import Error from '../../components/Error/Error';
+import clientAuthAxios from '../../services/clientAuthAxios';
 
 const NewPost = () => {
 
@@ -48,6 +49,7 @@ const NewPost = () => {
     const user = useSelector(state => state.posts.user);
     const theme = useSelector(state => state.posts.themeW);
     const link = useSelector(state => state.posts.linkBaseBackend);
+    const token = useSelector(state => state.posts.token);
 
     /**
      * useEffect
@@ -111,57 +113,67 @@ const NewPost = () => {
     const newPost = async e => {
         e.preventDefault();
 
+        // 1. validate data
         if ([title, desc, content, categoriesPost].includes('')) {
             Swal.fire(
                 "All fields are required",
             )
             return;
         }
+
+        // 2. validate img
         if (file === null) {
             Swal.fire(
                 "All fields are required",
             )
             return;
         }
+
+        // 3. preparate data
         let resImage = {}
         let linkImage;
-        let cats = [];
+        let catsIds = [];
+
+        // 4. get ids categories
         for (let i = 0; i < categoriesPost.length; i++) {
-            cats.push(categoriesPost[i].name);
+            catsIds.push(categoriesPost[i]._id);
         }
+
+        // 5. assamble data
         const newDate = Date.now()
         const newPost = {
             // user: user._id,
             user: user._id,
             title: title,
             content: content,
-            categoriesPost: cats,
-            categoriesSelect: categoriesPost,
+            categories: catsIds,
             desc: desc,
             date: newDate
         }
+
+        // 6. upload image
         if (file) {
+
             const formData = new FormData();
-            // const filename = Date.now() + file.name;
-            // formData.append('name', filename);
             formData.append('image', file);
+
             try {
-                const res = await axios.post(`${link}/posts/image-post`, formData);
+                const res = await clientAuthAxios.post(`/posts/image-post`, formData);
                 resImage = res.data
+
             } catch (error) {
                 console.log(error);
             }
             newPost.linkImage = resImage
             linkImage = resImage
-            // addNewFileRedux(formData);
         }
 
+        // 7. we create the post with the image link if it exists
         try {
-            await axios.post(`${import.meta.env.VITE_API_URL_BACKEND}/posts`, newPost)
+            await clientAuthAxios.post(`/posts/`, newPost)
                 .then((response) => {
-                    console.log(response.data);
                     Swal.fire(
-                        response.data.msg,
+                        response.data.message,
                         'success'
                     )
                     setTimeout(() => {
@@ -177,13 +189,9 @@ const NewPost = () => {
                         confirmButtonText: 'OK'
                     });
                 });
-
-
         } catch (error) {
             console.log(error);
         }
-
-
     }
 
     return (
