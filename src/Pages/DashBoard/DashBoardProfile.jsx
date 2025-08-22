@@ -87,8 +87,8 @@ const DashBoardProfile = () => {
           loading && !error ? <Spinner/> : (
             <>
               <Sidebar />
-              <h1 className={`${theme ? 'text-black' : 'text-white'} text-center mt-10`}>Dashboard</h1>
-              <div className=' mt-2'>
+              <h1 className={`${theme ? 'text-black' : 'text-white'} text-center mt-5`}>Dashboard</h1>
+              <div className=' mt-5'>
                 <DashBoard counts={pageDashboard}/>
               </div>
             </>

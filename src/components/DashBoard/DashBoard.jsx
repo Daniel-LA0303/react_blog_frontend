@@ -7,93 +7,90 @@ import { useSelector } from 'react-redux'
 
 import Spinner from '../Spinner/Spinner'
 
-const DashBoard = ({counts}) => {
+const DashBoard = ({ counts }) => {
 
     /**
      * states Redux
      */
     const userP = useSelector(state => state.posts.user);
+    const theme = useSelector(state => state.posts.themeW);
 
-    if(Object.keys(userP) == '') return <Spinner />
+    if (Object.keys(userP) == '') return <Spinner />
     return (
-        <div className="mx-auto grid gap-2 md:grid-cols-2 w-full md:w-10/12 lg:w-8/12">
-            <div className="w-full  p-6 md:p-4">
-                <div className="bg-gradient-to-b from-green-200 to-green-100 border-b-4 border-green-600 rounded-lg shadow-xl p-5">
-                    <div className="flex flex-row items-center">
-                        <div className="flex-shrink pr-4">
-                            <Link to={`/user-posts/${userP._id}`} className="rounded-full block px-4 py-3 bg-green-600"><FontAwesomeIcon  icon={faFile} className='text-white text-sm w-5 h-5' /></Link>
-                        </div>
-                        <div className="flex-1 text-right md:text-center">
-                            <h2 className="font-bold uppercase text-gray-600">Total Posts Publish</h2>
-                            <p className="font-bold text-3xl">{counts.postsCount} <span className="text-green-500"><i className="fas fa-caret-up"></i></span></p>
-                        </div>
-                    </div>
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+            {/* Información del usuario - estática */}
+            <div className={`rounded-2xl p-6 text-center shadow-sm ${theme
+                    ? " bgt-light text-black"
+                    : "bgt-dark hover:bg-zinc-700 text-white"
+                } flex flex-col items-center gap-6 rounded-2xl  p-8 shadow-sm`}>
+                <div className="flex flex-col items-center text-center">
+                    <Link
+                        to={`/profile/${userP._id}`}  
+                    >
+                        <img
+                            alt="User Avatar"
+                            className="mb-4 h-32 w-32 rounded-full object-cover ring-4 ring-white"
+                            src={userP?.profilePicture?.secure_url ? userP.profilePicture.secure_url : '/avatar.png'} 
+                        />
+                    </Link>
+                    <Link 
+                        to={`/profile/${userP._id}`}
+                        className="text-2xl font-bold">{userP.name}
+                    </Link>
+                    <p className="my-1">{userP.info.desc}</p>
+                    <p className="text-sm text-gray-400">Joined in {new Date(userP.createdAt).getFullYear()}</p>
                 </div>
             </div>
-            <div className="w-full  p-6 md:p-4">
-                <div className="bg-gradient-to-b from-pink-200 to-pink-100 border-b-4 border-pink-500 rounded-lg shadow-xl p-5">
-                    <div className="flex flex-row items-center">
-                        <div className="flex-shrink pr-4">
-                            <Link to={`/followers-users/${userP._id}`} className="rounded-full block px-4 py-3 bg-pink-600"><FontAwesomeIcon  icon={faUser} className='text-white text-sm w-5 h-5' /></Link>
-                        </div>
-                        <div className="flex-1 text-right md:text-center">
-                            <h2 className="font-bold uppercase text-gray-600">Followers</h2>
-                            <p className="font-bold text-3xl">{counts.followersCount} <span className="text-pink-500"><i className="fas fa-exchange-alt"></i></span></p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div className="w-full  p-6 md:p-4">
-                <div className="bg-gradient-to-b from-yellow-200 to-yellow-100 border-b-4 border-yellow-600 rounded-lg shadow-xl p-5">
-                    <div className="flex flex-row items-center">
-                        <div className="flex-shrink pr-4">
-                            <Link to={`/user-likes-posts/${userP._id}`} className="rounded-full block px-4 py-3 bg-yellow-600"><FontAwesomeIcon  icon={faHeart} className='text-white text-sm w-5 h-5' /></Link>
-                        </div>
-                        <div className="flex-1 text-right md:text-center">
-                            <h2 className="font-bold uppercase text-gray-600">Posts Likes</h2>
-                            <p className="font-bold text-3xl">{counts.likePostsCount} <span className="text-yellow-600"><i className="fas fa-caret-up"></i></span></p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div className="w-full  p-6 md:p-4">
-                <div className="bg-gradient-to-b from-blue-200 to-blue-100 border-b-4 border-blue-500 rounded-lg shadow-xl p-5">
-                    <div className="flex flex-row items-center">
-                        <div className="flex-shrink pr-4">
-                            <Link to={`/save-posts/${userP._id}`} className="rounded-full block  px-4 py-3 bg-blue-600"><FontAwesomeIcon  icon={faBookmark} className='text-white text-sm w-5 h-5' /></Link>
-                        </div>
-                        <div className="flex-1 text-right md:text-center">
-                            <h2 className="font-bold uppercase text-gray-600">Posts Saved</h2>
-                            <p className="font-bold text-3xl">{counts.savedPostsCount}</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div className="w-full  p-6 md:p-4">
-                <div className="bg-gradient-to-b from-indigo-200 to-indigo-100 border-b-4 border-indigo-500 rounded-lg shadow-xl p-5">
-                    <div className="flex flex-row items-center">
-                        <div className="flex-shrink pr-4">
-                            <Link to={`/user-tags/${userP._id}`} className="rounded-full block px-4 py-3 bg-indigo-600"><FontAwesomeIcon  icon={faTags} className='text-white text-sm w-5 h-5' /></Link>
-                        </div>
-                        <div className="flex-1 text-right md:text-center">
-                            <h2 className="font-bold uppercase text-gray-600">Tags saved</h2>
-                            <p className="font-bold text-3xl">{counts.tagsCount}</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div className="w-full  p-6 md:p-4">
-                <div className="bg-gradient-to-b from-red-200 to-red-100 border-b-4 border-red-500 rounded-lg shadow-xl p-5">
-                    <div className="flex flex-row items-center">
-                        <div className="flex-shrink pr-4">
-                            <Link to={`/followed-users/${userP._id}`} className="rounded-full block px-4 py-3 bg-red-600"><FontAwesomeIcon  icon={faUserPlus} className='text-white text-sm w-5 h-5' /></Link>
-                        </div>
-                        <div className="flex-1 text-right md:text-center">
-                            <h2 className="font-bold uppercase text-gray-600">Followed</h2>
-                            <p className="font-bold text-3xl">{counts.followedUsersCount} <span className="text-red-500"><i className="fas fa-caret-up"></i></span></p>
-                        </div>
-                    </div>
-                </div>
+
+            {/* Cards con counts y links */}
+            <div className="mt-8 grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3">
+                <Link to={`/user-posts/${userP._id}`} className={`rounded-2xl p-6 text-center shadow-sm ${theme
+                        ? " bgt-light text-black"
+                        : "bgt-dark hover:bg-zinc-700 text-white"
+                    }`}>
+                    <p className="text-3xl font-bold">{counts.postsCount}</p>
+                    <p className="mt-1 text-sm font-medium ">Blogs Published</p>
+                </Link>
+
+                <Link to={`/followers-users/${userP._id}`} className={`rounded-2xl p-6 text-center shadow-sm ${theme
+                        ? " bgt-light text-black"
+                        : "bgt-dark hover:bg-zinc-700 text-white"
+                    }`}>
+                    <p className="text-3xl font-bold">{counts.followersCount}</p>
+                    <p className="mt-1 text-sm font-medium">Followers</p>
+                </Link>
+
+                <Link to={`/followed-users/${userP._id}`} className={`rounded-2xl p-6 text-center shadow-sm ${theme
+                        ? " bgt-light text-black"
+                        : "bgt-dark hover:bg-zinc-700 text-white"
+                    }`}>
+                    <p className="text-3xl font-bold">{counts.followedUsersCount}</p>
+                    <p className="mt-1 text-sm font-medium">Following</p>
+                </Link>
+
+                <Link to={`/user-likes-posts/${userP._id}`} className={`rounded-2xl p-6 text-center shadow-sm ${theme
+                        ? " bgt-light text-black"
+                        : "bgt-dark hover:bg-zinc-700 text-white"
+                    }`}>
+                    <p className="text-3xl font-bold">{counts.likePostsCount}</p>
+                    <p className="mt-1 text-sm font-medium text-gray-500">Post Likes</p>
+                </Link>
+
+                <Link to={`/save-posts/${userP._id}`} className={`rounded-2xl p-6 text-center shadow-sm ${theme
+                        ? " bgt-light text-black"
+                        : "bgt-dark hover:bg-zinc-700 text-white"
+                    }`}>
+                    <p className="text-3xl font-bold">{counts.savedPostsCount}</p>
+                    <p className="mt-1 text-sm font-medium">Posts Saved</p>
+                </Link>
+
+                <Link to={`/user-tags/${userP._id}`} className={`rounded-2xl p-6 text-center shadow-sm ${theme
+                        ? " bgt-light text-black"
+                        : "bgt-dark hover:bg-zinc-700 text-white"
+                    }`}>
+                    <p className="text-3xl font-bold">{counts.tagsCount}</p>
+                    <p className="mt-1 text-sm font-medium">Tags Saved</p>
+                </Link>
             </div>
         </div>
     )
