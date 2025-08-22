@@ -62,7 +62,7 @@ const Sidebar = () => {
               {/* {user._id ?  */}
               {/* // <> */}
               <button className=' md:ml-0 block md:hidden text-xs' onClick={() => setOpen(true)}>
-                <FontAwesomeIcon icon={faBars} className={` text-2xl ${theme ? 'text-black' : 'text-white'}`} />
+                <FontAwesomeIcon icon={faBars} className={`text-2xl ${theme ? 'text-black' : 'text-white'}`} />
               </button>
               {/* </> : null} */}
 
