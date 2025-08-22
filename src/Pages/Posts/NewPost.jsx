@@ -23,8 +23,8 @@ const NewPost = () => {
     /**
      * context
      */
-    const {errorPage, setErrorPage} = usePages();
-    const {error, message} = errorPage;
+    const { errorPage, setErrorPage } = usePages();
+    const { error, message } = errorPage;
 
     /**
      * router
@@ -34,13 +34,13 @@ const NewPost = () => {
     /**
      * states
      */
-    const[title, setTitle] = useState(''); //title
-    const[desc, setDesc] = useState(''); //description
-    const[content, setContent] = useState(''); //content
-    const[file, setFile] = useState(null); //get file
-    const[categoriesPost, setCategoriesPost] = useState([]); //cat that user chose
-    const[loading, setLoading] = useState(false);
-    const[categories, setCategories] = useState([]);
+    const [title, setTitle] = useState(''); //title
+    const [desc, setDesc] = useState(''); //description
+    const [content, setContent] = useState(''); //content
+    const [file, setFile] = useState(null); //get file
+    const [categoriesPost, setCategoriesPost] = useState([]); //cat that user chose
+    const [loading, setLoading] = useState(false);
+    const [categories, setCategories] = useState([]);
 
     /**
      * states Redux
@@ -61,37 +61,37 @@ const NewPost = () => {
             })
             .catch((error) => {
                 console.log(error);
-                if(error.code === 'ERR_NETWORK'){
-                  setErrorPage({
-                      error: true,
-                      message: {
-                        status: null,
-                        message: 'Network Error',
-                        desc: null
-                      }
-                  });
-                  setLoading(false);
-                }else{
-                  setErrorPage({
-                      error: true,
-                      message: {
-                        status: error.response.status,
-                        message: error.message,
-                        desc: error.response.data.message
-                      }
-                  });
-                  setLoading(false);
+                if (error.code === 'ERR_NETWORK') {
+                    setErrorPage({
+                        error: true,
+                        message: {
+                            status: null,
+                            message: 'Network Error',
+                            desc: null
+                        }
+                    });
+                    setLoading(false);
+                } else {
+                    setErrorPage({
+                        error: true,
+                        message: {
+                            status: error.response.status,
+                            message: error.message,
+                            desc: error.response.data.message
+                        }
+                    });
+                    setLoading(false);
                 }
             })
     }, []);
 
     useEffect(() => {
         setErrorPage({
-          error: false,
-          message: {}
-      });
-      }, []);
-    
+            error: false,
+            message: {}
+        });
+    }, []);
+
 
     /**
      * functions
@@ -103,7 +103,7 @@ const NewPost = () => {
     const handleChangeS = (select) => {
         setCategoriesPost(select);
     }
-    
+
     const getFile = e => {
         setFile(e.target.files[0]);
     }
@@ -111,13 +111,13 @@ const NewPost = () => {
     const newPost = async e => {
         e.preventDefault();
 
-        if([title, desc, content, categoriesPost].includes('')){
+        if ([title, desc, content, categoriesPost].includes('')) {
             Swal.fire(
                 "All fields are required",
             )
             return;
         }
-        if(file === null){
+        if (file === null) {
             Swal.fire(
                 "All fields are required",
             )
@@ -140,7 +140,7 @@ const NewPost = () => {
             desc: desc,
             date: newDate
         }
-        if(file){
+        if (file) {
             const formData = new FormData();
             // const filename = Date.now() + file.name;
             // formData.append('name', filename);
@@ -152,13 +152,13 @@ const NewPost = () => {
                 console.log(error);
             }
             newPost.linkImage = resImage
-            linkImage= resImage
+            linkImage = resImage
             // addNewFileRedux(formData);
         }
 
         try {
             await axios.post(`${import.meta.env.VITE_API_URL_BACKEND}/posts`, newPost)
-                .then((response) => {   
+                .then((response) => {
                     console.log(response.data);
                     Swal.fire(
                         response.data.msg,
@@ -182,113 +182,144 @@ const NewPost = () => {
         } catch (error) {
             console.log(error);
         }
-        
 
-}
 
-  return (
-    <div>
-        {error ? <Error message={message}/>: 
-        loading && !error ? (
-            <Spinner />
-        ):(
-            <>
-            <Sidebar />   
+    }
 
-            <div className="  mx-auto px-4 sm:px-6 lg:px-8 max-w-screen-xl sm:my-20 my-5  ">
-                <div className='flex justify-start'>
-                    <Link to='/' class="text-center w-full sm:w-auto focus:outline-none text-white bg-red-700 hover:bg-red-800 focus:ring-4 focus:ring-red-300 font-medium rounded text-sm px-5 py-2.5 mb-2 dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-900">Cancel</Link>
-                </div>
-            <form 
-                className={`${theme ? ' bgt-light text-black' : 'bgt-dark text-white'}  bg-gray-700 shadow-md rounded px-8 pt-6 pb-8 mb-4`}
-                onSubmit={newPost}
-            >
-                <div className="bg-white p-5 block sm:flex justify-between w-full rounded">
-                    <div className="w-full sm:w-3/6">
-                        <div className="mb-2 w-full ">
-                            <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="username">
-                                Title
-                            </label>
-                            <input 
-                                className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" 
-                                id="username" 
-                                type="text" 
-                                placeholder="Title" 
-                                onChange={(e) => setTitle(e.target.value)}
-                                value={title}
-                            />
-                        </div>
-                        <div className="mb-2 w-full ">
-                            <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="username">
-                                Description
-                            </label>
-                            <input 
-                                className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" 
-                                id="username" 
-                                type="text" 
-                                placeholder="Description" 
-                                onChange={(e) => setDesc(e.target.value)}
-                                value={desc}
-                            />
-                        </div>
-                        <div className="mb-4 w-full text-black">
-                                <label  className="block text-gray-700 text-sm font-bold mb-2">Select an option</label>
-                                <Select 
-                                    onChange={handleChangeS}
-                                    options={categories}
-                                    isMulti 
-                                />
-                        </div>
-                    </div>
+    return (
+        <div>
+            {error ? <Error message={message} /> :
+                loading && !error ? (
+                    <Spinner />
+                ) : (
+                    <>
+                        <Sidebar />
 
-                    <div className="mb-4 w-full sm:w-2/5">
-                        <label className="block text-gray-700 text-sm font-bold mb-2" >
-                            Image
-                        </label>
-                        <input 
-                            className="block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 dark:text-gray-400 focus:outline-none dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400" 
-                            id="file_input" 
-                            type="file" 
-                            onChange={getFile}
-                        />
-                        <div className='my-2'>
-                            {file && 
-                                <img
-                                className="img-preview"
-                                src={URL.createObjectURL(file)}
-                                alt=""
-                                />
-                            }
-                        </div>
-                    </div>
-                </div>
+                        <main className="mx-auto w-full max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
+                            <div className="space-y-8">
+                                <div
+                                    className={`${theme ? 'text-black' : 'text-white'}`}
+                                >
+                                    <h2 className="text-3xl font-extrabold tracking-tight ">Create a new post</h2>
+                                    <p className="mt-2 text-lg text-[var(--secondary-text-color)]">
+                                        Fill out the form below to publish a new masterpiece.
+                                    </p>
+                                </div>
 
-                <div className="mb-4 bg-white p-4 text-black">
-                    <EditorToolBar toolbarId={'t1'}/>
-                    <ReactQuill
-                        theme="snow"
-                        value={content}
-                        onChange={onContent}
-                        placeholder={"Write something awesome..."}
-                        modules={modules('t1')}
-                        formats={formats}
-                    />
-                </div>
+                                <form
+                                    className={`${theme ? 'bgt-light text-black' : 'bgt-dark text-white'} rounded-lg p-6 shadow-sm sm:p-8`}
+                                    onSubmit={newPost}
+                                >
+                                    <div className="grid grid-cols-1 gap-x-8 gap-y-6 md:grid-cols-2">
 
-                <div className="flex items-center justify-between">
-                    <input 
-                        className="bg-blue-500 hover:cursor-pointer hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" 
-                        value='Add Post'
-                        type="submit" 
-                    />
-                </div>
-            </form>
+                                        {/* Left column: Title, Description, Category */}
+                                        <div className="space-y-6">
+                                            <div>
+                                                <label className="block text-sm font-medium" htmlFor="title">Title</label>
+                                                <div className="mt-1">
+                                                    <input
+                                                        className="p-2 rounded-sm w-full text-black"
+                                                        id="title"
+                                                        name="title"
+                                                        type="text"
+                                                        placeholder="e.g. My Awesome Post"
+                                                        value={title}
+                                                        onChange={(e) => setTitle(e.target.value)}
+                                                    />
+                                                </div>
+                                            </div>
+                                            <div>
+                                                <label className="block text-sm font-medium" htmlFor="description">Description</label>
+                                                <div className="mt-1">
+                                                    <input
+                                                        className="p-2 rounded-sm w-full text-black"
+                                                        id="description"
+                                                        name="description"
+                                                        type="text"
+                                                        placeholder="A short and sweet description."
+                                                        value={desc}
+                                                        onChange={(e) => setDesc(e.target.value)}
+                                                    />
+                                                </div>
+                                            </div>
+                                            <div>
+                                                <label className="block text-sm font-medium " htmlFor="category">Category</label>
+                                                <div className="mt-1 text-black">
+                                                    <Select
+                                                        onChange={handleChangeS}
+                                                        options={categories}
+                                                        isMulti
+                                                    />
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div className="space-y-6">
+                                            <div>
+                                                <label className="block text-sm font-medium " htmlFor="file_input">
+                                                    Featured Image
+                                                </label>
+                                                <input
+                                                    className="block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 focus:outline-none"
+                                                    id="file_input"
+                                                    type="file"
+                                                    onChange={getFile}
+                                                />
+                                                <div className="my-2">
+                                                    {file && (
+                                                        <img
+                                                            src={URL.createObjectURL(file)}
+                                                            alt="Preview"
+                                                            className="mx-auto max-h-48 rounded"
+                                                        />
+                                                    )}
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        {/* Content area */}
+                                        <div className="md:col-span-2 mt-6">
+                                            <label className="block text-sm font-medium " htmlFor="content">Content</label>
+                                            <div className="mt-1 bg-white  text-black rounded">
+                                                <EditorToolBar toolbarId="t1" />
+                                                <ReactQuill
+                                                    theme="snow"
+                                                    value={content}
+                                                    onChange={onContent}
+                                                    placeholder="Write something awesome..."
+                                                    modules={modules("t1")}
+                                                    formats={formats}
+                                                    style={{ minHeight: '400px' }}
+                                                />
+                                            </div>
+                                        </div>
+
+                                    </div>
+
+                                    {/* Submit button */}
+                                    <div className="flex justify-between pt-8 gap-4">
+                                        <button
+                                            type="button"
+                                            className="text-black flex h-10 min-w-[84px] cursor-pointer items-center justify-center rounded-md bg-white px-4 text-sm font-semibold hover:bg-gray-400"
+                                            onClick={() => route(-1)}
+                                        >
+                                            <span className="truncate">Cancel</span>
+                                        </button>
+                                        <button
+                                            type="submit"
+                                            className="bg-blue-600 hover:bg-blue-700 flex h-10 min-w-[84px] cursor-pointer items-center justify-center rounded-md px-4 text-sm font-semibold text-white shadow-sm"
+                                        >
+                                            <span className="truncate">Save</span>
+                                        </button>
+                                    </div>
+
+                                </form>
+                            </div>
+                        </main>
+                    </>
+                )}
         </div>
-            </>
-        )}
-
-    </div>
-  )
+    )
 }
 
 export default NewPost
