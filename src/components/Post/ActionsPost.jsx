@@ -2,6 +2,7 @@ import React, { useEffect } from 'react'
 import BookmarkBorderIcon from '@mui/icons-material/BookmarkBorder';
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
 import ChatBubbleOutlineIcon from '@mui/icons-material/ChatBubbleOutline';
+import { useSelector } from 'react-redux';
 
 const ActionsPost = ({
     handleLike,
@@ -16,9 +17,17 @@ const ActionsPost = ({
     numberComments, 
     user
 }) => {
+
+  const theme = useSelector(state => state.posts.themeW);
+
   return (
-    <>
-      <div className="my-3 text-2xl mx-10 sm:mx-0 flex flex-row sm:flex-col justify-center items-center">
+    <div
+    className={`${theme ? ' text-black' : ' text-white'} my-3 text-2xl mx-10 sm:mx-0 flex flex-row sm:flex-col justify-center items-center`}
+        // className=""
+    >
+      <div 
+    
+      >
         {like ? (
           <button
             onClick={() => handleDislike(id)}
@@ -34,7 +43,7 @@ const ActionsPost = ({
             <FavoriteBorderIcon fontSize="default" />
           </button>
         )}
-        <p>{numberLike}</p>
+        <p className='text-center'>{numberLike}</p>
       </div>
       <div className="my-3 text-2xl mx-10 sm:mx-0 flex flex-row sm:flex-col justify-center items-center">
         <p>
@@ -60,7 +69,7 @@ const ActionsPost = ({
         )}
         <p>{numberSave}</p>
       </div>
-    </>
+    </div>
   );
 }
 

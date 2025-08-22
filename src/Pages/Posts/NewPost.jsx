@@ -195,7 +195,7 @@ const NewPost = () => {
                     <>
                         <Sidebar />
 
-                        <main className="mx-auto w-full max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
+                        <main className="mx-auto w-full max-w-screen-xl px-4 py-12 sm:px-6 lg:px-8">
                             <div className="space-y-8">
                                 <div
                                     className={`${theme ? 'text-black' : 'text-white'}`}

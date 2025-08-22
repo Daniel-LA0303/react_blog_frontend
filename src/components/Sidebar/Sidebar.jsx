@@ -57,7 +57,7 @@ const Sidebar = () => {
         null
       ) : (
         <header className={`${theme ? 'bgt-light' : 'bgt-dark'} ${isHome ? '' : ' sticky'} py-1  top-0 left-0 right-0 shadow-2xl `}>
-          <div className={`flex mx-auto px-4 sm:px-6 lg:px-8 max-w-screen-xl`}>
+          <div className={`flex justify-center items-center mx-auto px-4 sm:px-6 lg:px-8 max-w-screen-xl`}>
             <div className='flex items-center justify-start  '>
               {/* {user._id ?  */}
               {/* // <> */}
@@ -70,19 +70,28 @@ const Sidebar = () => {
               <SearchBar />
             </div>
 
-            <div className='w-full  flex items-center justify-end'>
+            <div className='w-full flex items-center justify-end'>
               {user._id ? (
-                <div className='flex '>
-                  <Link to='/new-post' className="hidden md:block custom-button ">
-                    New Post
-                  </Link>
-                  <Link to={`/notifications/${user._id}`} >
+                <div className='flex  items-center '>
+                <Link
+                  to="/new-post"
+                  className={`hidden md:block px-2 py-2 border-2 rounded 
+                    transition-colors duration-200 font-medium
+                    ${theme 
+                      ? 'border-black text-black hover:bg-black hover:text-white'  
+                      : 'text-white hover:bg-white hover:text-black border-white' 
+                    }`}
+                >
+                  New Post
+                </Link>
+
+                  {/* <Link to={`/notifications/${user._id}`} >
                     <Badge badgeContent={notifications ? notifications.length : null} color="secondary">
                       <IconButton>
                         <Notifications />
                       </IconButton>
                     </Badge>
-                  </Link>
+                  </Link> */}
                   <div className=''>
                     <ProfileButton />
                   </div>
