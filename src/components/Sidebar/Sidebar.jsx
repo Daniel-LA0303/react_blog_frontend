@@ -73,30 +73,21 @@ const Sidebar = () => {
             <div className='w-full flex items-center justify-end'>
               {user._id ? (
                 <div className='flex  items-center '>
-                <Link
-                  to="/new-post"
-                  className={`hidden md:block px-2 py-2 border-2 rounded 
-                    transition-colors duration-200 font-medium
-                    ${theme 
-                      ? 'border-black text-black hover:bg-black hover:text-white'  
-                      : 'text-white hover:bg-white hover:text-black border-white' 
-                    }`}
-                >
-                  New Post
-                </Link>
-
-                  {/* <Link to={`/notifications/${user._id}`} >
-                    <Badge badgeContent={notifications ? notifications.length : null} color="secondary">
-                      <IconButton>
-                        <Notifications />
-                      </IconButton>
-                    </Badge>
-                  </Link> */}
+                  <Link
+                    to="/new-post"
+                    className={`hidden md:block px-2 py-2 border-2 rounded 
+                      transition-colors duration-200 font-medium
+                      ${theme 
+                        ? 'border-black text-black hover:bg-black hover:text-white'  
+                        : 'text-white hover:bg-white hover:text-black border-white' 
+                      }`}
+                  >
+                    New Post
+                  </Link>
                   <div className=''>
                     <ProfileButton />
                   </div>
                 </div>
-
               ) : (
                 <>
                   <div className=' block sm:hidden mx-1'>

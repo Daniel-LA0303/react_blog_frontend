@@ -45,29 +45,27 @@ button {
 }
 
 .search.open input {
-    max-width: 150px;
-    max-height: 40px;
+  width: 300px;           /* tamaño en desktop */
+  max-height: 40px;
 }
 
 @media (max-width: 820px) {
-    .search.open input{
-      /* border-radius: 10%; */
-      /* height: 150px; */
-      width: 120px;
-    }
+  .search.open input {
+    width: 250px;         /* tablets */
   }
+}
+
 @media (max-width: 600px) {
-    .search.open input{
-      /* border-radius: 10%; */
-      /* height: 150px; */
-      width: 125px;
-    }
+  .search.open input {
+    width: 150px;         /* móviles */
   }
+}
+
 
 .search input {
   background: transparent;
   border: 0;
-  max-width: 0;
+  width: 0;
   padding: 0;
   text-indent: 20px;
   /* color: #222222; */

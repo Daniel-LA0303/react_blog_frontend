@@ -47,12 +47,12 @@ const ProfileButton = () => {
 
 
   return (
-    <div className={`relative ${theme ? 'bgt-ligh text-blackt' : 'bgt-dark '} ml-2 border border-gray-300 dark:border-gray-600 rounded-full`}>
+    <div className={`relative ${theme ? 'bgt-light text-black' : 'bgt-dark '} ml-2 border border-gray-300 dark:border-gray-600 rounded-full`}>
       <div ref={menuRef}>
         {/* Botón de perfil */}
         <button
           type="button"
-          className="rounded-md py-2 px-2 border border-1 border-zinc-900 text-center text-sm text-white transition-all "
+          className="rounded-md py-2 px-2 border border-1 border-zinc-900 text-center text-sm text-white transition-all"
           onClick={() => setOpen(!open)}
         >
           <img
@@ -95,6 +95,7 @@ const ProfileButton = () => {
 
             {/* Theme toggle */}
             <li className="flex justify-center p-2">
+              <p className='mr-2'>Theme</p>
               {theme ? (
                 <FontAwesomeIcon
                   icon={faSun}
