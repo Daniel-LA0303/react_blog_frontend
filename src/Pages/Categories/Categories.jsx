@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { useSelector } from 'react-redux';
 import Sidebar from '../../components/Sidebar/Sidebar'
 import NewCardCategory from '../../components/CategoryCard/NewCardCategory';;
@@ -8,103 +8,96 @@ import Error from '../../components/Error/Error';
 import axios from 'axios';
 
 const Categories = () => {
+  const { errorPage, setErrorPage } = usePages();
+  const { error, message } = errorPage;
 
-    /**
-     * context
-     */
-    const {errorPage, setErrorPage} = usePages();
-    const {error, message} = errorPage;
+  const userP = useSelector((state) => state.posts.user);
+  const theme = useSelector((state) => state.posts.themeW);
+  const link = useSelector((state) => state.posts.linkBaseBackend);
 
-    /**
-     * states
-     */
-    const[categories, setCategories] = useState([]);
-    const[loading, setLoading] = useState(false);
+  const [categories, setCategories] = useState([]);
+  const [page, setPage] = useState(0); // Primera página
+  const [loading, setLoading] = useState(false);
+  const [hasMore, setHasMore] = useState(true);
+  const limit = 20;
 
-    /**
-     * states Redux
-     */
-    const userP = useSelector(state => state.posts.user);
-    const theme = useSelector(state => state.posts.themeW);
-    const link = useSelector(state => state.posts.linkBaseBackend);
+  // Fetch paginado
+  const fetchCategories = async (pageToFetch = page) => {
+    if (loading || !hasMore) return;
+    setLoading(true);
 
-    /**
-     * useEffect
-     */
+    try {
+      const response = await axios.get(`${link}/pages/page-categories`, {
+        params: { page: pageToFetch, limit },
+      });
 
-    useEffect(() => {
-      setLoading(true);
-      axios.get(`${link}/pages/page-categories/`)
-          .then((cats) => {
-            setCategories(cats.data.categories);
-            console.log(cats.data.categories);
-            setLoading(false);
-          })
-          .catch((error) => {
-            console.log(error);
-            if(error.code === 'ERR_NETWORK'){
-              setErrorPage({
-                  error: true,
-                  message: {
-                    status: null,
-                    message: 'Network Error',
-                    desc: null
-                  }
-              });
-              setLoading(false);
-            }else{
-              setErrorPage({
-                  error: true,
-                  message: {
-                    status: error.response.status,
-                    message: error.message,
-                    desc: error.response.data.msg
-                  }
-              });
-              setLoading(false);
-            }
-  
-          });
-    }, []);
-
-    useEffect(() => {
+      const { data, meta } = response.data.data; // tu backend devuelve data + meta
+      if (data && data.length > 0) {
+        setCategories((prev) => [...prev, ...data]);
+        setPage(pageToFetch + 1);
+        setHasMore(pageToFetch < meta.totalPages);
+      } else {
+        setHasMore(false);
+      }
+    } catch (err) {
+      console.error(err);
       setErrorPage({
-        error: false,
-        message: {}
-    });
-    }, []);
-  
+        error: true,
+        message: {
+          status: err.response?.status || null,
+          message: err.message,
+          desc: err.response?.data?.msg || null,
+        },
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Fetch inicial
+  useEffect(() => {
+    fetchCategories(1); // siempre inicia en la página 1
+  }, [link]);
+
+  // Scroll infinito
+  useEffect(() => {
+    const handleScroll = () => {
+      if (
+        !loading &&
+        hasMore &&
+        window.innerHeight + document.documentElement.scrollTop + 50 >=
+          document.documentElement.scrollHeight
+      ) {
+        fetchCategories(); // usa la página actual
+      }
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, [loading, hasMore, page]);
 
   return (
-    <div className='mb-10'>
-        <Sidebar />
-        <div className='mx-auto px-4 sm:px-6 lg:px-8 max-w-screen-xl'>
+    <div className="mb-10">
+      <Sidebar />
+      <div className="mx-auto px-4 sm:px-6 lg:px-8 max-w-screen-xl">
+        {error ? (
+          <Error message={message} />
+        ) : (
           <>
-            {
-            error ? <Error message={message}/>:
-            loading ? (
-              <LoadingCategory />
-            ):(
-              <>
-                <p className={`${theme ? ' text-black' : 'text-white'} text-left mt-5 text-3xl`}>Categories</p>
-                <div className=' grid gap-2 md:grid-cols-2 lg:grid-cols-4 w-full mx-auto mb-5'>
-                {categories.map(cat => (
-                  <NewCardCategory 
-                    key={cat._id}
-                    category={cat}
-                    userP={userP}
-                  />
-                ))}
-              </div>
-              </>
-
-            )}
+            <p className={`${theme ? 'text-black' : 'text-white'} text-left mt-5 text-3xl`}>
+              Categories
+            </p>
+            <div className="grid gap-2 md:grid-cols-2 lg:grid-cols-3 w-full mx-auto mb-5">
+              {categories.map((cat) => (
+                <NewCardCategory key={cat._id} category={cat} userP={userP} />
+              ))}
+            </div>
+            {loading && <LoadingCategory />}
           </>
-
-        </div>
-
+        )}
+      </div>
     </div>
-  )
-}
+  );
+};
 
-export default Categories
+export default Categories;
