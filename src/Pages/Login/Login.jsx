@@ -9,6 +9,8 @@ import { alertOffAction, alertOnAction } from '../../StateRedux/actions/postActi
 
 const Login = () => {
 
+    const theme = useSelector(state => state.posts.themeW);
+
     /**
      * route 
      */
@@ -81,62 +83,97 @@ const Login = () => {
     const {msg} = alert1;
     return (
     <>
-        {loading ? (
-            null
-        ):(
-            <section className="">
-                <div className="flex flex-col items-center justify-center px-6 py-8 mx-auto md:h-screen lg:py-0">
-                    <div className="w-full bg-white rounded-lg shadow dark:border md:mt-0 sm:max-w-md xl:p-0 dark:bg-gray-800 dark:border-gray-700">
-                        <div className="p-6 space-y-4 md:space-y-6 sm:p-8">
-                            <h1 className="text-xl text-center font-bold text-gray-900 md:text-2xl dark:text-white">
-                                Sign in to your account
-                            </h1>
-                            {msg && <Alert1 alertMsg={alert1} />}
-                            <form 
-                                onSubmit={handleSubmit}
-                                className="space-y-4 md:space-y-6"
-                            >
-                                <div>
-                                    <label htmlFor="email" className="block mb-2 text-sm text-white">Your email</label>
-                                    <input 
-                                        type="email" 
-                                        name="email" 
-                                        id="email" 
-                                        className="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" 
-                                        placeholder="name@company.com" 
-                                        required="" 
-                                        onChange={getData}
-                                        value={email}
-                                    />
-                                </div>
-                                <div>
-                                    <label htmlFor="password" className="block mb-2 text-sm text-white">Password</label>
-                                    <input 
-                                        type="password" 
-                                        name="password" 
-                                        id="password" 
-                                        placeholder="••••••••" 
-                                        className="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" 
-                                        required="" 
-                                        onChange={getData}
-                                        value={password}
-                                    />
-                                </div>
-                                <div className="flex items-center justify-between">
-                                    <Link to={'/forget-password'} className="text-white">Forgot password?</Link>
-                                </div>
-                                <button type="submit" className="w-full text-white bg-sky-600 py-2 rounded">Sign in</button>
-                                <p className="text-sm font-light text-gray-500 dark:text-gray-400">
-                                    Don’t have an account yet? <Link to={'/register'} className="font-medium text-primary-600 hover:underline dark:text-primary-500">Sign up</Link>
-                                </p>
-                            </form>
-                        </div>
-                    </div>
+    {loading ? null : (
+      <section className='min-h-screen flex items-center justify-center'>
+        <div 
+            className={`${
+            theme
+                ? " bgt-light text-black"
+                : "bgt-dark hover:bg-zinc-700 text-white"
+            }  w-full max-w-screen-md flex flex-col items-center justify-center rounded-lg shadow p-6`}
+        >
+          <div className="w-full max-w-md space-y-8">
+            <div>
+              <h2 className="mt-6 text-center text-3xl font-bold tracking-tight">
+                Welcome back
+              </h2>
+              <p className="mt-2 text-center text-sm ">
+                Sign in to continue to{" "}
+                <span className="font-semibold">DLTechBlog</span>
+              </p>
+            </div>
+
+            {msg && <Alert1 alertMsg={alert1} />}
+
+            <form onSubmit={handleSubmit} className="mt-8 space-y-6">
+              <div className="space-y-4 rounded-md shadow-sm">
+                <div>
+                  <label htmlFor="email" className="sr-only">
+                    Email address
+                  </label>
+                  <input
+                    type="email"
+                    name="email"
+                    id="email"
+                    autoComplete="email"
+                    required
+                    placeholder="Email address"
+                    onChange={getData}
+                    value={email}
+                    className="form-input relative block w-full appearance-none rounded-md border border-gray-300 bg-white px-3 py-3 text-gray-900 placeholder-gray-500 focus:z-10 focus:border-sky-500 focus:outline-none focus:ring-sky-500 sm:text-sm"
+                  />
                 </div>
-            </section>
-        )}
-    </>
-    
+                <div>
+                  <label htmlFor="password" className="sr-only">
+                    Password
+                  </label>
+                  <input
+                    type="password"
+                    name="password"
+                    id="password"
+                    autoComplete="current-password"
+                    required
+                    placeholder="Password"
+                    onChange={getData}
+                    value={password}
+                    className="form-input relative block w-full appearance-none rounded-md border border-gray-300 bg-white px-3 py-3 text-gray-900 placeholder-gray-500 focus:z-10 focus:border-sky-500 focus:outline-none focus:ring-sky-500 sm:text-sm"
+                  />
+                </div>
+              </div>
+
+              <div className="flex items-center justify-end">
+                <Link
+                  to={"/forget-password"}
+                  className="font-medium text-sky-500 hover:text-blue-600 text-sm"
+                >
+                  Forgot your password?
+                </Link>
+              </div>
+
+              <div>
+                <button
+                  type="submit"
+                  className="group relative flex w-full justify-center rounded-md border border-transparent bg-sky-500 px-4 py-3 text-sm font-semibold text-white hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-sky-500 focus:ring-offset-2"
+                >
+                  Log in
+                </button>
+              </div>
+            </form>
+
+            <p className="mt-8 text-center text-sm ">
+              Don’t have an account?{" "}
+              <Link
+                to={"/register"}
+                className="font-medium text-sky-500 hover:text-blue-600"
+              >
+                Sign up
+              </Link>
+            </p>
+          </div>
+        </div>
+      </section>
+    )}
+  </>
   )
 }
 
