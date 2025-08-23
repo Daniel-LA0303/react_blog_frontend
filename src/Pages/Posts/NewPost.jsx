@@ -10,7 +10,7 @@ import EditorToolBar, { modules, formats } from '../../components/EditorToolBar/
 
 import Select from 'react-select'
 
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 
 import Spinner from '../../components/Spinner/Spinner';
 import Swal from 'sweetalert2';
@@ -18,6 +18,7 @@ import axios from 'axios';
 import usePages from '../../context/hooks/usePages';
 import Error from '../../components/Error/Error';
 import clientAuthAxios from '../../services/clientAuthAxios';
+import { newPostAction } from '../../StateRedux/actions/postsActions';
 
 const NewPost = () => {
 
@@ -50,6 +51,9 @@ const NewPost = () => {
     const theme = useSelector(state => state.posts.themeW);
     const link = useSelector(state => state.posts.linkBaseBackend);
     const token = useSelector(state => state.posts.token);
+
+    const dispatch = useDispatch();
+    const newPostRedux = (newPost) => dispatch(newPostAction(newPost));
 
     /**
      * useEffect
@@ -169,29 +173,7 @@ const NewPost = () => {
         }
 
         // 7. we create the post with the image link if it exists
-        try {
-            await clientAuthAxios.post(`/posts/`, newPost)
-                .then((response) => {
-                    Swal.fire(
-                        response.data.message,
-                        'success'
-                    )
-                    setTimeout(() => {
-                        route('/');
-                    }, 500);
-                })
-                .catch((error) => {
-                    console.log(error);
-                    Swal.fire({
-                        title: error.response.data.msg,
-                        text: "Status " + error.response.status,
-                        icon: 'error',
-                        confirmButtonText: 'OK'
-                    });
-                });
-        } catch (error) {
-            console.log(error);
-        }
+        dispatch(newPostRedux(newPost));
     }
 
     return (

@@ -286,3 +286,50 @@ h1{
   border-radius: 4px; 
 }
 
+/* sweet alert new classes */
+/* --- Success Styles --- */
+.swal-popup-success {
+  border-radius: 20px !important;
+  background: #f0fdf4 !important; 
+  padding: 25px !important;
+}
+
+.swal-title-success {
+  color: #16a34a !important; 
+  font-weight: 600 !important;
+  font-size: 20px !important;
+}
+
+.swal-btn-success {
+  background-color: #16a34a !important;
+  color: white !important;
+  border-radius: 12px !important;
+  padding: 8px 18px !important;
+  font-weight: 500 !important;
+  border: none !important;
+  cursor: pointer;
+}
+
+/* --- Error Styles --- */
+.swal-popup-error {
+  border-radius: 20px !important;
+  background: #fef2f2 !important; 
+  padding: 25px !important;
+}
+
+.swal-title-error {
+  color: #dc2626 !important;
+  font-weight: 600 !important;
+  font-size: 20px !important;
+}
+
+.swal-btn-error {
+  background-color: #dc2626 !important;
+  color: white !important;
+  border-radius: 12px !important;
+  padding: 8px 18px !important;
+  font-weight: 500 !important;
+  border: none !important;
+  cursor: pointer;
+}
+

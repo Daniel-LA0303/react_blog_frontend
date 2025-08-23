@@ -46,3 +46,14 @@ export const ALERT_ON = 'ALERT_ON';
 export const ALERT_OFF = 'ALERT_OFF';
 
 export const CHANGE_THEME = 'CHANGE_THEME';
+
+
+
+
+// **************************
+// NEW ACTIONS
+
+// POST ACTIONS
+export const NEW_POST = 'NEW_POST';
+export const NEW_POST_SUCCESS = 'NEW_POST_SUCCESS';
+export const NEW_POST_ERROR = 'NEW_POST_ERROR';
