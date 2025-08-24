@@ -53,7 +53,7 @@ const NewPost = () => {
     const token = useSelector(state => state.posts.token);
 
     const dispatch = useDispatch();
-    const newPostRedux = (newPost) => dispatch(newPostAction(newPost));
+    const newPostRedux = (newPost, route) => dispatch(newPostAction(newPost, route));
 
     /**
      * useEffect
@@ -173,7 +173,10 @@ const NewPost = () => {
         }
 
         // 7. we create the post with the image link if it exists
-        dispatch(newPostRedux(newPost));
+        dispatch(newPostRedux(newPost, route));
+        // setTimeout(() => {
+        //     route('/');
+        // }, 500);
     }
 
     return (

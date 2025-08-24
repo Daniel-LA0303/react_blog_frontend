@@ -6,7 +6,7 @@ import { Link, useParams, useNavigate } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faHeart, faBookmark, faTrash, faPen, faL, faComment } from '@fortawesome/free-solid-svg-icons'
 import { useDispatch, useSelector } from 'react-redux';
-import { deletePostAction, getCommentsAction, getOnePostAction, getUserAction } from '../../StateRedux/actions/postAction';
+import { getCommentsAction, getOnePostAction, getUserAction } from '../../StateRedux/actions/postAction';
 
 import Spinner from '../../components/Spinner/Spinner';
 import axios from 'axios';
@@ -18,6 +18,10 @@ import { HeartBrokenOutlined } from '@mui/icons-material';
 import PostRecom from '../../components/Post/PostRecom';
 import ActionsPost from '../../components/Post/ActionsPost';
 import UserCard from '../../components/UserCard/UserCard';
+import { deletePostAction } from '../../StateRedux/actions/postsActions';
+import { useSwal } from '../../hooks/useSwal';
+
+
 
 const notify = () => toast(
   'Post saved.',
@@ -64,9 +68,14 @@ const ViewPost = () => {
   const theme = useSelector(state => state.posts.themeW);
   const comments = useSelector(state => state.posts.comments);
   const link = useSelector(state => state.posts.linkBaseBackend);
-  const deletePostRedux = (id) => dispatch(deletePostAction(id));
+  const deletePostRedux = (postId, userId) => dispatch(deletePostAction(postId, userId));
   const getUserRedux = token => dispatch(getUserAction(token));
   const getCommentsRedux = (comments) => dispatch(getCommentsAction(comments));
+
+  /**
+   * hooks
+   */
+  const { showAutoSwal } = useSwal();
 
   /**
    * useEffect
@@ -146,37 +155,46 @@ const ViewPost = () => {
    * functions
    */
   const deletePostComponent = async (id) => {
-    Swal.fire({
+
+    // 1. Show confirmation dialog
+    const result = await Swal.fire({
       title: 'Are you sure you want to remove this Post?',
       text: "Deleted post cannot be recovered",
       icon: 'warning',
       showCancelButton: true,
-      confirmButtonColor: '#3085d6',
-      cancelButtonColor: '#d33',
       confirmButtonText: 'Yes, Delete',
-      cancelButtonText: 'No, Cancel'
-    }).then(async (result) => { // Cambiar la función a async
-      if (result.value) {
-        try {
-          // Consulta a la API
-          const res = await axios.delete(`${import.meta.env.VITE_API_URL_BACKEND}/posts/${id}?user=${userP._id}`);
-          Swal.fire(
-            res.data.msg,
-            'success'
-          );
-          setTimeout(() => {
-            route('/');
-          }, 2000);
-        } catch (error) {
-          console.log(error);
-
-          Swal.fire({
-            title: 'Error deleting the post',
-            text: "Status " + error.response.status + " " + error.response.data.msg,
-          });
-        }
+      cancelButtonText: 'No, Cancel',
+      buttonsStyling: false,
+      customClass: {
+        popup: 'swal-popup-warning',
+        title: 'swal-title-warning',
+        confirmButton: 'swal-btn-warning',
+        cancelButton: 'swal-btn-error' 
       }
     });
+
+    // 2. If confirmed, delete post
+    if (result.isConfirmed) {
+      try {
+
+        await deletePostRedux(id, userP._id);
+        showAutoSwal({
+          message: 'Post deleted successfully',
+          status: "success",
+          timer: 2000
+        });
+
+        setTimeout(() => {
+          route('/');
+        }, 2000);
+      } catch (error) {
+        Swal.fire({
+          title: 'Error deleting the post',
+          text: `Status ${error.response?.status || ''} - ${error.response?.data?.msg || error.message}`,
+          icon: 'error'
+        });
+      }
+    }
   }
 
 
@@ -290,7 +308,7 @@ const ViewPost = () => {
               <div className=' flex justify-end'>
                 <FontAwesomeIcon
                   onClick={() => deletePostComponent(params.id)}
-                  className=' text-2xl text-red-500 p-2 cursor-pointer'
+                  className=' text-base text-red-500 p-2 cursor-pointer'
                   icon={faTrash}
                 />
                 <Link
@@ -298,7 +316,7 @@ const ViewPost = () => {
                 >
                   <FontAwesomeIcon
                     icon={faPen}
-                    className=' text-2xl text-sky-500 p-2 cursor-pointer'
+                    className=' text-base text-sky-500 p-2 cursor-pointer'
                   />
                 </Link>
               </div>
@@ -306,7 +324,7 @@ const ViewPost = () => {
             <div className=" mt-2 px-4 py-1 mb-5">
               <h2 className=' font-bold text-5xl mb-3'>{post.title}</h2>
               <p className="mb-3 font-normal ">Posted on {new Date(post.createdAt).toDateString()}</p>
-              <div className='flex justify-between'>
+              <div className='flex justify-between mb-5'>
                 <div className='flex'>
                   <div className='flex'>
                     <p className='mx-3'>{numberLike}</p>
@@ -399,6 +417,8 @@ const ViewPost = () => {
 
 
         </div>
+
+
         <div className='w-auto hidden md:block lg:w-3/12 ml-3 mt-7'>
           <UserCard user={post.user} />
         </div>

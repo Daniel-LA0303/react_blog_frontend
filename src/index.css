@@ -333,3 +333,26 @@ h1{
   cursor: pointer;
 }
 
+/* --- Warning Styles --- */
+.swal-popup-warning {
+  border-radius: 20px !important;
+  background: #fefce8 !important; 
+  padding: 25px !important;
+}
+
+.swal-title-warning {
+  color: #ca8a04 !important; 
+  font-weight: 600 !important;
+  font-size: 20px !important;
+}
+
+.swal-btn-warning {
+  background-color: #ca8a04 !important;
+  color: white !important;
+  border-radius: 12px !important;
+  padding: 8px 18px !important;
+  font-weight: 500 !important;
+  border: none !important;
+  cursor: pointer;
+}
+
