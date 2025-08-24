@@ -57,3 +57,7 @@ export const CHANGE_THEME = 'CHANGE_THEME';
 export const NEW_POST = 'NEW_POST';
 export const NEW_POST_SUCCESS = 'NEW_POST_SUCCESS';
 export const NEW_POST_ERROR = 'NEW_POST_ERROR';
+
+export const EDIT_USER = 'EDIT_USER';
+export const EDIT_USER_SUCCESS = 'EDIT_USER_SUCCESS';
+export const EDIT_USER_ERROR = 'EDIT_USER_ERROR';

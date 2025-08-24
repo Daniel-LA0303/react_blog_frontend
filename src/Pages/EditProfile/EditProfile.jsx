@@ -10,6 +10,8 @@ import { addNewFileUserAction } from '../../StateRedux/actions/postAction';
 
 import Spinner from '../../components/Spinner/Spinner';
 import Swal from 'sweetalert2';
+import clientAuthAxios from '../../services/clientAuthAxios';
+import { editUserAction } from '../../StateRedux/actions/usersActions';
 
 const EditProfile = () => {
 
@@ -36,7 +38,8 @@ const EditProfile = () => {
      */
     const dispatch = useDispatch();
     const user = useSelector(state => state.posts.user);
-    const addNewFileRedux = (dataFile) => dispatch(addNewFileUserAction(dataFile));
+    // const addNewFileRedux = (dataFile) => dispatch(addNewFileUserAction(dataFile));
+    const updateUserRedux = (userId, editUserData, route) => dispatch(editUserAction(userId, editUserData, route));
     const theme = useSelector(state => state.posts.themeW);
     const link = useSelector(state => state.posts.linkBaseBackend);
 
@@ -96,42 +99,50 @@ const EditProfile = () => {
 
     const handleSubmit = async(e) => {
         e.preventDefault();
+
+        // 1. validate info
         if([desc, work, education, skills].includes('')){
             alert('error');
             return;
         }
-    
+
+        // 2. assemble data
         const data = new FormData();
         data.append('desc', desc);
         data.append('work', work);
         data.append('education', education);
         data.append('skills', skills);
 
+        // 3. check if there is a new image
         if(newImage){ 
             data.append('previousName', image.public_id)
         }else{
             data.append('profilePicture', JSON.stringify(image))  //user not chose a new image
         }
 
+        // 4. check if there is a new file
         if(file){
             data.append("image", file);
         }
 
-        try {
-            const res = await axios.post(`${link}/users/new-info/${params.id}?user=${user._id}`, data);
-            Swal.fire(
-                res.data.msg,
-                'success'
-            )
-            route(`/profile/${params.id}`);
-        } catch (error) {
-            Swal.fire({
-                title: error.response.data.msg,
-                text: "Status " + error.response.status,
-                icon: 'error',
-                confirmButtonText: 'OK'
-            });
-        }
+        // 5. send data
+        // try {
+            // const res = await clientAuthAxios.post(`${link}/users/new-info/${params.id}`, data);
+            dispatch(updateUserRedux(params.id, data, route));
+
+            // Swal.fire(
+            //     res.data.msg,
+            //     'success'
+            // )
+            // route(`/profile/${params.id}`);
+        // } catch (error) {
+        //     Swal.fire({
+        //         title: error.response.data.msg,
+        //         text: "Status " + error.response.status,
+        //         icon: 'error',
+        //         confirmButtonText: 'OK'
+        //     });
+        // }
 
         
     }  

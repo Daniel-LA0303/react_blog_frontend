@@ -166,7 +166,10 @@ const Post = ({post}) => {
                 <Link
                   key={cat._id}
                   to={`/category/${cat.name}`}
-                  className="inline-block bg-gray-200 rounded-full px-2 py-1 text-xs font-semibold text-gray-700 mr-2 mb-2"
+                  className={`inline-block  rounded-full px-2 py-1 text-xs font-semibold  mr-2 mb-2
+                    ${theme ? "bgt-white text-black" : "bgt-black text-white"}
+                    `}
+                  // bgt-black
                 >
                   #{cat.name}
                 </Link>
