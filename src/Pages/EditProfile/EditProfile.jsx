@@ -1,5 +1,5 @@
 import axios from 'axios';
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 
 import Sidebar from '../../components/Sidebar/Sidebar'
 
@@ -9,6 +9,10 @@ import { useDispatch, useSelector } from 'react-redux';
 
 import Spinner from '../../components/Spinner/Spinner';
 import { editUserAction } from '../../StateRedux/actions/usersActions';
+
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faImage } from '@fortawesome/free-solid-svg-icons';
+import clientAuthAxios from '../../services/clientAuthAxios';
 
 const EditProfile = () => {
 
@@ -26,9 +30,11 @@ const EditProfile = () => {
   const [education, setEducation] = useState('');
   const [skills, setSkills] = useState('');
   const [image, setImage] = useState({}); //image
+  const [imageRes, setImageRes] = useState({});
   const [file, setFile] = useState(null); //get new image
   const [newImage, setNewImage] = useState(false); //new image validation
   const [loading, setLoading] = useState(false);
+  const inputRef = useRef(null);
 
   /**
    * states Redux
@@ -44,20 +50,25 @@ const EditProfile = () => {
    */
   useEffect(() => {
     setLoading(true);
-    axios.get(`${link}/pages/page-edit-profile/${params.id}?user=${user._id}`)
+    clientAuthAxios.get(`${link}/pages/page-edit-profile/${params.id}?user=${user._id}`)
       .then((response) => {
-        setDesc(response.data.user.info?.desc);
-        setWork(response.data.user.info?.work);
-        setEducation(response.data.user.info?.education);
-        setSkills(response.data.user.info?.skills);
-        setImage(response.data.user?.profilePicture);
-        console.log(response.data);
+
+        
+        setDesc(response.data.data.info?.desc);
+        setWork(response.data.data.info?.work);
+        setEducation(response.data.data.info?.education);
+        setSkills(response.data.data.info?.skills);
+        setImage(response.data.data?.profilePicture);
+        setImage(response.data.data?.profilePicture);
+
         setTimeout(() => {
           setLoading(false);
         }, 500);
       })
       .catch((error) => {
         console.log(error);
+        console.log(error);
+        
         if (error.code === 'ERR_NETWORK') {
           const data = {
             error: true,
@@ -73,9 +84,9 @@ const EditProfile = () => {
           const data = {
             error: true,
             message: {
-              status: error.response.status,
-              message: error.message,
-              desc: error.response.data.msg
+              // status: error.response.status,
+              // message: error.message,
+              // desc: error.response.data.msg
             }
           }
           setLoading(false);
@@ -111,7 +122,7 @@ const EditProfile = () => {
 
     // 3. check if there is a new image
     if (newImage) {
-      data.append('previousName', image.public_id)
+      data.append('previousName', imageRes.public_id)
     } else {
       data.append('profilePicture', JSON.stringify(image))  //user not chose a new image
     }
@@ -123,6 +134,17 @@ const EditProfile = () => {
 
     // 5. send data
     dispatch(updateUserRedux(params.id, data, route));
+
+  }
+
+  const quitImage = () => {
+    console.log("quit image");
+    
+    if (file || image) {
+      setFile(null);
+      setImage(null);
+    }
+      
 
   }
 
@@ -154,24 +176,46 @@ const EditProfile = () => {
                     </div>
                     <div className="md:col-span-2">
                       <div className="flex items-center gap-6">
-                        <div
-                          className="h-24 w-24 flex-shrink-0 rounded-full bg-cover bg-center bg-no-repeat"
-                          style={{ backgroundImage: `url(${newImage ? URL.createObjectURL(file) : image?.secure_url})` }}
-                        ></div>
+                        {
+                          file || (image !== null)  ?
+                            <div
+                              className="relative z-0 h-24 w-24 flex-shrink-0 rounded-full bg-cover bg-center bg-no-repeat"
+                              style={{ backgroundImage: `url(${newImage ? URL.createObjectURL(file) : image?.secure_url})` }}
+                            >
+
+                              <button
+                                onClick={quitImage}
+                                className="absolute top-1 right-1 bg-red-500 text-white rounded-full w-6 h- flex items-center justify-center hover:bg-red-600 transition-colors"
+                              >
+                                <p>X</p>
+                              </button>
+
+
+                            </div>
+                            :
+                            <div
+                              onClick={() => inputRef.current.click()}
+                              className="flex h-24 w-24 flex-col rounded-full items-center justify-center border-2 border-dashed border-gray-300  cursor-pointer p-6 hover:border-gray-500 transition-colors bg-gray-50"
+                            >
+                              {/* <Image className="text-gray-400 mb-2" style={{ fontSize: 48 }} />here */}
+                              <FontAwesomeIcon icon={faImage} size='2x' className=' text-gray-700' />
+                              <span className="text-gray-500 text-xs text-center">
+                                Image here
+                              </span>
+                              <input
+                                type="file"
+                                ref={inputRef}
+                                className="hidden"
+                                onChange={getFile}
+                              />
+                            </div>
+                        }
+
                         <div className="flex flex-col gap-2">
                           <label className="flex h-10 cursor-pointer items-center justify-center rounded-md  px-4 text-sm font-semibold  ring-1 ring-inset ring-gray-300 ">
                             <span>Change</span>
                             <input type="file" className="hidden" onChange={getFile} />
                           </label>
-                          {image && !newImage && (
-                            <button
-                              type="button"
-                              className="text-sm font-medium  hover:"
-                              onClick={() => { setImage(null); setFile(null); setNewImage(true); }}
-                            >
-                              Remove
-                            </button>
-                          )}
                         </div>
                       </div>
                     </div>

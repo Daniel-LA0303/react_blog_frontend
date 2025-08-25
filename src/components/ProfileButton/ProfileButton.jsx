@@ -47,16 +47,16 @@ const ProfileButton = () => {
 
 
   return (
-    <div className={`relative ${theme ? 'bgt-light text-black' : 'bgt-dark '} ml-2 border border-gray-300 dark:border-gray-600 rounded-full`}>
+    <div className={`relative ${theme ? 'bgt-light text-black' : 'bgt-dark '} ml-2 h-10 w-10 border border-gray-300 dark:border-gray-600 rounded-full`}>
       <div ref={menuRef}>
         {/* Botón de perfil */}
         <button
           type="button"
-          className="rounded-md py-2 px-2 border border-1 border-zinc-900 text-center text-sm text-white transition-all"
+          className="rounded-md border border-1 border-zinc-900 text-center text-sm text-white transition-all"
           onClick={() => setOpen(!open)}
         >
           <img
-            className="h-7 w-7 rounded-full"
+            className="h-10 w-10 rounded-full"
             src={user?.profilePicture?.secure_url || '/avatar.png'}
             alt="User"
           />
