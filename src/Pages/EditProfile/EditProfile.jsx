@@ -6,11 +6,8 @@ import Sidebar from '../../components/Sidebar/Sidebar'
 import { useParams, useNavigate } from 'react-router-dom';
 
 import { useDispatch, useSelector } from 'react-redux';
-import { addNewFileUserAction } from '../../StateRedux/actions/postAction';
 
 import Spinner from '../../components/Spinner/Spinner';
-import Swal from 'sweetalert2';
-import clientAuthAxios from '../../services/clientAuthAxios';
 import { editUserAction } from '../../StateRedux/actions/usersActions';
 
 const EditProfile = () => {
@@ -38,7 +35,6 @@ const EditProfile = () => {
    */
   const dispatch = useDispatch();
   const user = useSelector(state => state.posts.user);
-  // const addNewFileRedux = (dataFile) => dispatch(addNewFileUserAction(dataFile));
   const updateUserRedux = (userId, editUserData, route) => dispatch(editUserAction(userId, editUserData, route));
   const theme = useSelector(state => state.posts.themeW);
   const link = useSelector(state => state.posts.linkBaseBackend);

@@ -8,20 +8,30 @@ import Error from '../../components/Error/Error';
 import axios from 'axios';
 
 const Categories = () => {
+
+  /**
+   * error page
+   */
   const { errorPage, setErrorPage } = usePages();
   const { error, message } = errorPage;
 
+  /**
+   * redux state
+   */
   const userP = useSelector((state) => state.posts.user);
   const theme = useSelector((state) => state.posts.themeW);
   const link = useSelector((state) => state.posts.linkBaseBackend);
 
+  /**
+   * use state
+   */
   const [categories, setCategories] = useState([]);
   const [page, setPage] = useState(0); // Primera página
   const [loading, setLoading] = useState(false);
   const [hasMore, setHasMore] = useState(true);
   const limit = 20;
 
-  // Fetch paginado
+  // paginated fetch
   const fetchCategories = async (pageToFetch = page) => {
     if (loading || !hasMore) return;
     setLoading(true);
@@ -31,7 +41,7 @@ const Categories = () => {
         params: { page: pageToFetch, limit },
       });
 
-      const { data, meta } = response.data.data; // tu backend devuelve data + meta
+      const { data, meta } = response.data.data;
       if (data && data.length > 0) {
         setCategories((prev) => [...prev, ...data]);
         setPage(pageToFetch + 1);
@@ -54,12 +64,12 @@ const Categories = () => {
     }
   };
 
-  // Fetch inicial
+  // init fetch
   useEffect(() => {
-    fetchCategories(1); // siempre inicia en la página 1
+    fetchCategories(1); // start page 1
   }, [link]);
 
-  // Scroll infinito
+  // infite scroll
   useEffect(() => {
     const handleScroll = () => {
       if (
@@ -68,7 +78,7 @@ const Categories = () => {
         window.innerHeight + document.documentElement.scrollTop + 50 >=
           document.documentElement.scrollHeight
       ) {
-        fetchCategories(); // usa la página actual
+        fetchCategories(); 
       }
     };
 

@@ -149,7 +149,7 @@ const Profile = () => {
                     src={user?.profilePicture?.secure_url ? user.profilePicture.secure_url : '/avatar.png'} 
                     className=" shadow-xl image_profile  h-auto align-middle border-none  -m-16  lg:-ml-16 max-w-150-px" />  
                 </div>
-                <div className='w-full flex justify-end'>
+                <div className='w-full flex justify-end mt-2'>
                   {
                     !userP._id ? null :
                       userP._id === user._id ? null : (                    
@@ -233,7 +233,11 @@ const Profile = () => {
                 <div className={`${theme ? 'bgt-light ' : 'bgt-dark text-white'} flex flex-col min-w-0 break-word w-full mb-6 shadow-xl rounded-lg text-center `}>
                   <div className=" py-4 lg:pt-4 ">
                     <div className="flex items-center p-3 text-center">
-                      <InsertDriveFileIcon />
+                      <InsertDriveFileIcon 
+                        style={{
+                          fontSize: 18
+                        }}
+                      />
                       <span className="text-sm font-bold block uppercase tracking-wide text-blueGray-600 mx-1">
                         {user?.posts?.length} {''}
                       </span>
@@ -243,7 +247,11 @@ const Profile = () => {
                     </div>
 
                     <div className="flex items-center p-3 text-center">
-                      <FavoriteIcon />
+                      <FavoriteIcon 
+                        style={{
+                          fontSize: 18
+                        }}
+                      />
                       <span className="text-sm font-bold block uppercase tracking-wide text-blueGray-600 mx-1">
                         {user?.likePost?.posts?.length}
                       </span>
@@ -252,7 +260,11 @@ const Profile = () => {
                       </span>
                     </div>
                     <div className="flex items-center p-3 text-center">
-                      <PersonIcon />
+                      <PersonIcon 
+                        style={{
+                          fontSize: 18
+                        }}
+                      />
                       <span className="text-sm font-bold block uppercase tracking-wide text-blueGray-600 mx-1">
                         {user?.followersUsers?.followers?.length}
                       </span>
