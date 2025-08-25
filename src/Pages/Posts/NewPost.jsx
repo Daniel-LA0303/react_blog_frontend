@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import Sidebar from '../../components/Sidebar/Sidebar';
 
 import { Link, useNavigate } from 'react-router-dom';
@@ -10,6 +10,10 @@ import EditorToolBar, { modules, formats } from '../../components/EditorToolBar/
 
 import Select from 'react-select'
 
+// import { Image } from '@mui/icons-material';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+
+
 import { useDispatch, useSelector } from 'react-redux';
 
 import Spinner from '../../components/Spinner/Spinner';
@@ -19,6 +23,9 @@ import usePages from '../../context/hooks/usePages';
 import Error from '../../components/Error/Error';
 import clientAuthAxios from '../../services/clientAuthAxios';
 import { newPostAction } from '../../StateRedux/actions/postsActions';
+import { useSwal } from '../../hooks/useSwal.js';
+import { faImage } from '@fortawesome/free-solid-svg-icons';
+
 
 const NewPost = () => {
 
@@ -27,6 +34,11 @@ const NewPost = () => {
      */
     const { errorPage, setErrorPage } = usePages();
     const { error, message } = errorPage;
+
+    /**
+     * hooks
+     */
+    const { showAutoSwal, showConfirmSwal } = useSwal();
 
     /**
      * router
@@ -43,6 +55,8 @@ const NewPost = () => {
     const [categoriesPost, setCategoriesPost] = useState([]); //cat that user chose
     const [loading, setLoading] = useState(false);
     const [categories, setCategories] = useState([]);
+
+    const inputRef = useRef(null);
 
     /**
      * states Redux
@@ -111,7 +125,9 @@ const NewPost = () => {
     }
 
     const getFile = e => {
-        setFile(e.target.files[0]);
+        if (e.target.files && e.target.files[0]) {
+            setFile(e.target.files[0]);
+        }
     }
 
     const newPost = async e => {
@@ -119,9 +135,20 @@ const NewPost = () => {
 
         // 1. validate data
         if ([title, desc, content, categoriesPost].includes('')) {
-            Swal.fire(
-                "All fields are required",
-            )
+            showConfirmSwal({
+                message: "All fields are required",
+                status: "warning",
+                confirmButton: true
+            })
+            return;
+        }
+
+        if (categoriesPost.length > 4) {
+            showConfirmSwal({
+                message: "Please choose between 1 - 4 categories",
+                status: "warning",
+                confirmButton: true
+            })
             return;
         }
 
@@ -177,6 +204,10 @@ const NewPost = () => {
         // setTimeout(() => {
         //     route('/');
         // }, 500);
+    }
+
+    const quitImage = () => {
+        if (file) setFile(null);
     }
 
     return (
@@ -236,7 +267,7 @@ const NewPost = () => {
                                                 </div>
                                             </div>
                                             <div>
-                                                <label className="block text-sm font-medium " htmlFor="category">Category</label>
+                                                <label className="block text-sm font-medium " htmlFor="category">Category (Max 4 Categories)</label>
                                                 <div className="mt-1 text-black">
                                                     <Select
                                                         onChange={handleChangeS}
@@ -248,70 +279,88 @@ const NewPost = () => {
                                         </div>
 
                                         <div className="space-y-6">
-                                            <div>
-                                                <label className="block text-sm font-medium " htmlFor="file_input">
-                                                    Featured Image
-                                                </label>
-                                                <input
-                                                    className="block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 focus:outline-none"
-                                                    id="file_input"
-                                                    type="file"
-                                                    onChange={getFile}
-                                                />
-                                                <div className="my-2">
-                                                    {file && (
+                                            <label className="block text-sm font-medium" htmlFor="file_input">
+                                                Featured Image
+                                            </label>
+                                            {
+                                                file ?
+                                                    <div className="my-2 relative w-max mx-auto">
                                                         <img
                                                             src={URL.createObjectURL(file)}
                                                             alt="Preview"
                                                             className="mx-auto max-h-48 rounded"
                                                         />
-                                                    )}
-                                                </div>
-                                            </div>
+                                                        <button
+                                                            onClick={quitImage}
+                                                            className="absolute top-1 right-1 bg-red-500 text-white rounded-full w-6 h- flex items-center justify-center hover:bg-red-600 transition-colors"
+                                                        >
+                                                            <p>X</p>
+                                                        </button>
+                                                    </div>
+                                        :
+                                        <div
+                                            onClick={() => inputRef.current.click()}
+                                            className="flex flex-col items-center justify-center border-2 border-dashed border-gray-300 rounded-lg cursor-pointer p-6 hover:border-gray-500 transition-colors bg-gray-50"
+                                        >
+                                            {/* <Image className="text-gray-400 mb-2" style={{ fontSize: 48 }} />here */}
+                                            <FontAwesomeIcon icon={faImage} size='8x' className=' text-gray-700'/>
+                                            <span className="text-gray-500 text-sm">
+                                                Click to upload your image
+                                            </span>
+                                            <input
+                                                type="file"
+                                                ref={inputRef}
+                                                className="hidden"
+                                                onChange={getFile}
+                                            />
                                         </div>
+                                            }
 
-                                        {/* Content area */}
-                                        <div className="md:col-span-2 mt-6">
-                                            <label className="block text-sm font-medium " htmlFor="content">Content</label>
-                                            <div className="mt-1 bg-white  text-black rounded">
-                                                <EditorToolBar toolbarId="t1" />
-                                                <ReactQuill
-                                                    theme="snow"
-                                                    value={content}
-                                                    onChange={onContent}
-                                                    placeholder="Write something awesome..."
-                                                    modules={modules("t1")}
-                                                    formats={formats}
-                                                    style={{ minHeight: '400px' }}
-                                                />
-                                            </div>
-                                        </div>
 
                                     </div>
 
-                                    {/* Submit button */}
-                                    <div className="flex justify-between pt-8 gap-4">
-                                        <button
-                                            type="button"
-                                            className="text-black flex h-10 min-w-[84px] cursor-pointer items-center justify-center rounded-md bg-white px-4 text-sm font-semibold hover:bg-gray-400"
-                                            onClick={() => route(-1)}
-                                        >
-                                            <span className="truncate">Cancel</span>
-                                        </button>
-                                        <button
-                                            type="submit"
-                                            className="bg-blue-600 hover:bg-blue-700 flex h-10 min-w-[84px] cursor-pointer items-center justify-center rounded-md px-4 text-sm font-semibold text-white shadow-sm"
-                                        >
-                                            <span className="truncate">Save</span>
-                                        </button>
+                                    {/* Content area */}
+                                    <div className="md:col-span-2 mt-6">
+                                        <label className="block text-sm font-medium " htmlFor="content">Content</label>
+                                        <div className="mt-1 bg-white  text-black rounded">
+                                            <EditorToolBar toolbarId="t1" />
+                                            <ReactQuill
+                                                theme="snow"
+                                                value={content}
+                                                onChange={onContent}
+                                                placeholder="Write something awesome..."
+                                                modules={modules("t1")}
+                                                formats={formats}
+                                                style={{ minHeight: '400px' }}
+                                            />
+                                        </div>
                                     </div>
 
-                                </form>
                             </div>
-                        </main>
+
+                            {/* Submit button */}
+                            <div className="flex justify-between pt-8 gap-4">
+                                <button
+                                    type="button"
+                                    className="text-black flex h-10 min-w-[84px] cursor-pointer items-center justify-center rounded-md bg-white px-4 text-sm font-semibold hover:bg-gray-400"
+                                    onClick={() => route(-1)}
+                                >
+                                    <span className="truncate">Cancel</span>
+                                </button>
+                                <button
+                                    type="submit"
+                                    className="btn-theme-light-op1 hover:bg-blue-700 flex h-10 min-w-[84px] cursor-pointer items-center justify-center rounded-md px-4 text-sm font-semibold text-white shadow-sm"
+                                >
+                                    <span className="truncate">Save</span>
+                                </button>
+                            </div>
+
+                        </form>
+                    </div>
+        </main>
                     </>
                 )}
-        </div>
+        </div >
     )
 }
 
