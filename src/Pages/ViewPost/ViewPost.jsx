@@ -20,6 +20,8 @@ import ActionsPost from '../../components/Post/ActionsPost';
 import UserCard from '../../components/UserCard/UserCard';
 import { deletePostAction } from '../../StateRedux/actions/postsActions';
 import { useSwal } from '../../hooks/useSwal';
+import clientAuthAxios from '../../services/clientAuthAxios';
+import userUserAuthContext from '../../context/hooks/useUserAuthContext';
 
 
 
@@ -42,6 +44,13 @@ const notify2 = () => toast(
 const ViewPost = () => {
 
   const dispatch = useDispatch();
+
+
+  /**
+   * hooks
+   */
+  const { userAuth } = userUserAuthContext();
+  const { showConfirmSwal, showAutoSwal } = useSwal();
 
   /**
    * route
@@ -72,10 +81,6 @@ const ViewPost = () => {
   const getUserRedux = token => dispatch(getUserAction(token));
   const getCommentsRedux = (comments) => dispatch(getCommentsAction(comments));
 
-  /**
-   * hooks
-   */
-  const { showAutoSwal } = useSwal();
 
   /**
    * useEffect
@@ -85,6 +90,8 @@ const ViewPost = () => {
     setLoading(true);
     axios.get(`${link}/pages/page-view-post/${params.id}`)
       .then((response) => {
+        console.log("*******************");
+
         console.log(response);
 
         setNumberComments(response.data.data.comments.length);
@@ -169,7 +176,7 @@ const ViewPost = () => {
         popup: 'swal-popup-warning',
         title: 'swal-title-warning',
         confirmButton: 'swal-btn-warning',
-        cancelButton: 'swal-btn-error' 
+        cancelButton: 'swal-btn-error'
       }
     });
 
@@ -201,14 +208,15 @@ const ViewPost = () => {
   const handleDislike = async (id) => {
 
     try {
-      await axios.post(`${link}/posts/dislike-post/${id}`, userP);
+      await clientAuthAxios.post(`/posts/dislike-post/${id}?userId=${userAuth.userId}`,);
       setLike(false);
       setNumberLike(numberLike - 1);
     } catch (error) {
       console.log(error);
-      Swal.fire({
-        title: 'Error deleting the post',
-        text: "Status " + error.response.status + " " + error.response.data.msg,
+      showConfirmSwal({
+        message: error.response.data.message,
+        status: "error",
+        confirmButton: true
       });
     }
   }
@@ -216,15 +224,16 @@ const ViewPost = () => {
   const handleLike = async (id) => {
 
     try {
-      const res = await axios.post(`${link}/posts/like-post/${id}`, userP);
+      const res = await clientAuthAxios.post(`/posts/like-post/${id}?userId=${userAuth.userId}`);
       setLike(true);
       setNumberLike(numberLike + 1);
       console.log(res);
     } catch (error) {
       console.log(error);
-      Swal.fire({
-        title: 'Error deleting the post',
-        text: "Status " + error.response.status + " " + error.response.data.msg,
+      showConfirmSwal({
+        message: error.response.data.message,
+        status: "error",
+        confirmButton: true
       });
     }
   }
@@ -232,15 +241,15 @@ const ViewPost = () => {
   const handleSave = async (id) => {
 
     try {
-      await axios.post(`${link}/posts/save-post/${id}`, userP);
+      await clientAuthAxios.post(`/posts/save-post/${id}?userId=${userAuth.userId}`);
       setSave(true);
-      setNumberSave(numberSave + 1)
-      notify()
+      notify();
     } catch (error) {
       console.log(error);
-      Swal.fire({
-        title: 'Error deleting the post',
-        text: "Status " + error.response.status + " " + error.response.data.msg,
+      showConfirmSwal({
+        message: error.response.data.message,
+        status: "error",
+        confirmButton: true
       });
     }
   }
@@ -248,15 +257,15 @@ const ViewPost = () => {
   const handleUnsave = async (id) => {
 
     try {
-      await axios.post(`${link}/posts/unsave-post/${id}`, userP);
-      setSave(false);
-      setNumberSave(numberSave - 1);
+      await clientAuthAxios.post(`/posts/unsave-post/${id}?userId=${userAuth.userId}`);
       notify2()
+      setSave(false);
     } catch (error) {
       console.log(error);
-      Swal.fire({
-        title: 'Error deleting the post',
-        text: "Status " + error.response.status + " " + error.response.data.msg,
+      showConfirmSwal({
+        message: error.response.data.message,
+        status: "error",
+        confirmButton: true
       });
     }
   }
@@ -269,7 +278,7 @@ const ViewPost = () => {
         position="bottom-right"
         reverseOrder={false}
       />
-      <div className='flex mx-auto px-4 sm:px-6 lg:px-8 max-w-screen-xl'>
+      <div className='flex mx-auto max-w-screen-xl px-4'>
         <div className='flex-col hidden sm:block text-white sticky top-10 h-[90%] p-4 mt-30'>
           {
             Object.keys(userP).length != 0 && (
@@ -291,7 +300,7 @@ const ViewPost = () => {
           }
 
         </div>
-        <div className='w-full md:w-4/6 lg:w-9/12'>
+        <div className='w-full lg:w-4/6 px-4 sm:px-0 mb-32 sm:mb-0'>
           <div className={`${theme ? ' bgt-light text-black' : 'bgt-dark text-white'} rounded-lg`}>
             <div className='flex justify-center items-center'>
               <div className="overflow-hidden h-40 sm:h-72 w-full">
@@ -304,27 +313,62 @@ const ViewPost = () => {
                 )}
               </div>
             </div>
-            {userP._id === post.user._id ? (
-              <div className=' flex justify-end'>
-                <FontAwesomeIcon
-                  onClick={() => deletePostComponent(params.id)}
-                  className=' text-base text-red-500 p-2 cursor-pointer'
-                  icon={faTrash}
-                />
-                <Link
-                  to={`/edit-post/${params.id}`}
-                >
-                  <FontAwesomeIcon
-                    icon={faPen}
-                    className=' text-base text-sky-500 p-2 cursor-pointer'
-                  />
-                </Link>
+
+            <div className="mb-2 flex flex-col w-full mt-5 px-4 pb-3">
+              <div className="flex items-start justify-between">
+                {/* Avatar + nombre */}
+                <div className="flex items-center">
+                  <div
+                    className="h-14 w-14 rounded-full bg-cover bg-center bg-no-repeat mr-3"
+                    style={{
+                      backgroundImage: `url("${post.user.profilePicture.secure_url
+                        ? post.user.profilePicture.secure_url
+                        : "/avatar.png"
+                        }")`,
+                    }}
+                  ></div>
+
+                  <div className="flex flex-col">
+                    <p className="text-base font-semibold">
+                      {post.user.name}
+                    </p>
+                    <p className="text-sm">
+                      Published on {new Date(post.createdAt).toDateString()}
+                    </p>
+                  </div>
+                </div>
+
+                {/* Botones de acción */}
+                {userP._id === post.user._id && (
+                  <div className="flex items-center space-x-2">
+                    <FontAwesomeIcon
+                      onClick={() => deletePostComponent(params.id)}
+                      className={`
+                        ${theme ? "btn-theme-light-delete" : "btn-theme-dark-delete"}
+                        text-base p-2 cursor-pointer hover:opacity-80 rounded-lg
+                      `}
+                      icon={faTrash}
+                    />
+                    <Link to={`/edit-post/${params.id}`}>
+                      <FontAwesomeIcon
+                        icon={faPen}
+                        className={`
+                          ${theme ? "btn-theme-light-edit" : "btn-theme-dark-edit"}
+                          text-base p-2 cursor-pointer hover:opacity-80 rounded-lg
+                        `}
+                      />
+                    </Link>
+                  </div>
+                )}
               </div>
-            ) : null}
+            </div>
+
+
             <div className=" mt-2 px-4 py-1 mb-5">
-              <h2 className=' font-bold text-5xl mb-3'>{post.title}</h2>
-              <p className="mb-3 font-normal ">Posted on {new Date(post.createdAt).toDateString()}</p>
-              <div className='flex justify-between mb-5'>
+              <h2 className=' font-bold text-2xl lg:text-3xl mb-3'>{post.title}</h2>
+
+              {/* likes - comments - saved */}
+              {/* <div className='flex justify-between mb-5'>
                 <div className='flex'>
                   <div className='flex'>
                     <p className='mx-3'>{numberLike}</p>
@@ -375,12 +419,14 @@ const ViewPost = () => {
                   )}
                 </div>
 
-              </div>
+              </div> */}
+
+
               {post.categories.map(cat => (
                 <Link
                   key={cat._id}
                   to={`/category/${cat.name}`}
-                  className="inline-block hover:bg-gray-700 hover:text-mode-white transition bg-gray-200 rounded-full px-3 py-1 text-sm font-semibold text-gray-700 mr-2 mb-2">#{cat.name}</Link>
+                  className="inline-block hover:bg-gray-700 hover:text-white transition bg-gray-300 rounded-full px-3 py-1 text-sm font-semibold text-gray-500 mr-2 mb-2">#{cat.name}</Link>
               ))}
               <div
                 className="ql-editor post bg-content"
@@ -388,12 +434,16 @@ const ViewPost = () => {
               />
             </div>
           </div>
-          <div className='w-auto block sm:hidden mb-20'>
+
+
+          <div className='w-full block sm:hidden mb-20'>   
             <UserCard user={post.user} />
           </div>
 
+
+          {/* Comments section */}
           <div className=''>
-            <p className={`${theme ? 'text-black' : ' text-white'} text-5xl my-3`}>Comments:</p>
+            <p className={`${theme ? 'text-black' : ' text-white'} text-lg lg:text-3xl my-3`}>Comments</p>
             {
               Object.keys(userP).length != 0 && (
                 <NewComment
@@ -413,13 +463,11 @@ const ViewPost = () => {
             ))}
 
           </div>
-
-
-
         </div>
 
 
-        <div className='w-auto hidden md:block lg:w-3/12 ml-3 mt-7'>
+        <div className='w-full hidden lg:block lg:w-3/12 ml-3 mt-7'>
+          <p className={`${theme ? 'text-black' : ' text-white'} text-base lg:text-xl mb-4 font-bold`}>About the author</p> 
           <UserCard user={post.user} />
         </div>
 

@@ -2,27 +2,32 @@ import axios from 'axios';
 import React, { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux';
 import { newCommentAction } from '../../StateRedux/actions/postAction';
-import { io } from 'socket.io-client';
 import Swal from 'sweetalert2';
+import userUserAuthContext from '../../context/hooks/useUserAuthContext';
+import { Link } from 'react-router-dom';
 
-let socket;
 
 const NewComment = ({ user, idPost, comments, userPost }) => {
 
+    /**
+     * hooks
+     */
+    const { userAuth } = userUserAuthContext();
+
+
     const [comment, setComment] = useState('');
+
+
     const theme = useSelector(state => state.posts.themeW);
+    const link = useSelector(state => state.posts.linkBaseBackend);
     const dispatch = useDispatch();
     const newCommentRedux = (comment) => dispatch(newCommentAction(comment));
-    const link = useSelector(state => state.posts.linkBaseBackend);
 
-    // useEffect(() => {
-    //     socket = io('http://localhost:4000')
-    //   }, []);
 
     //new comment
     const newComment = async (id) => {
 
-        if(comment.trim() === ''){
+        if (comment.trim() === '') {
             Swal.fire({
                 title: 'Error',
                 text: 'The comment is empty',
@@ -42,10 +47,8 @@ const NewComment = ({ user, idPost, comments, userPost }) => {
             replies: []
         });
         try {
-            // await axios.post(`${link}/posts/save-comment/${id}`, {data, userPost});
             await axios.post(`${link}/comments/new-comment/${id}`, data);
             console.log('emit');
-            // socket.emit('newComment' ,data);
         } catch (error) {
             console.log(error);
             Swal.fire({
@@ -57,30 +60,49 @@ const NewComment = ({ user, idPost, comments, userPost }) => {
 
     return (
         <section className={`${theme ? ' bgt-light text-black' : 'bgt-dark hover:bg-zinc-900 text-white'} rounded-lg py-2`}>
-            <div className="max-w-2xl mx-auto px-4">
+            <div className="mx-auto px-4">
                 <div className="flex justify-between items-center mb-6">
-                    <h2 className="text-lg lg:text-2xl font-bold ">Discussion ({comments.length})</h2>
+                    <h2 className="text-sm lg:text-base font-bold ">Discussion ({comments.length})</h2>
                 </div>
-                <form className="mb-6">
-                    <div className="py-2 px-4 mb-4 bg-white rounded-lg rounded-t-lg border border-gray-200 dark:bg-gray-700 dark:border-gray-700">
-                        <label for="comment" className="sr-only">Your comment</label>
-                        <textarea 
-                            id="comment" 
-                            rows="6"
-                            className="px-0 w-full text-sm text-gray-900 border-0 focus:ring-0 focus:outline-none dark:text-white dark:placeholder-gray-400 dark:bg-gray-700"
-                            name="body" 
-                            placeholder='Type Your Comment' 
-                            required
-                            onChange={(e) => setComment(e.target.value)}
-                            value={comment}
+
+                <div className='flex'>
+                    <Link 
+                        to={`/profile/${userAuth.userId}`}
+                        class="h-12 w-12 flex-shrink-0 rounded-full bg-cover bg-center bg-no-repeat mr-2"
+                        style={{
+                            backgroundImage: `url("${userAuth.profileImage}")`,
+                            backgroundSize: "cover",
+                            backgroundPosition: "center"
+                        }}
+                    ></Link>
+                    <form className="mb-6 w-full">
+                        <div className={` ${theme ? "bg-white" : "bg-gray-700"}
+                            py-2 px-4 mb-4 rounded-lg rounded-t-lg`}>
+                            <textarea
+                                id="comment"
+                                rows="6"
+                                  className={`
+                                    ${theme ? "" : "bg-gray-700 text-white placeholder-gray-400 "}
+                                    px-0 w-full text-sm  border-0 focus:ring-0 
+                                    focus:outline-none  
+                                     resize-y max-h-40 min-h-24
+                                     rounded-lg
+                                    `}
+                                name="body"
+                                placeholder='Type Your Comment'
+                                required
+                                onChange={(e) => setComment(e.target.value)}
+                                value={comment}
                             ></textarea>
-                    </div>
-                        <button 
+                        </div>
+                        <button
                             onClick={() => newComment(idPost)}
-                            className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800" 
-                             placeholder='Type your Comment'
+                            className="btn-theme-light-op1 hover:bg-blue-700 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2"
+                            placeholder='Type your Comment'
                         >Comment</button>
-                </form>
+                    </form>
+                </div>
+
             </div>
         </section>
     )

@@ -2,7 +2,6 @@ import axios from 'axios';
 import React, { useEffect, useState } from 'react'
 import { useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
-import Swal from 'sweetalert2';
 import userUserAuthContext from '../../context/hooks/useUserAuthContext';
 import { useSwal } from '../../hooks/useSwal';
 
@@ -71,56 +70,66 @@ const UserCard = ({ user }) => {
   }
 
   return (
-    <div
-      className={`${theme
-          ? " bgt-light text-black"
-          : "bgt-dark hover:bg-zinc-700 text-white"
-        }   rounded-lg w-full sm:w-auto`}
-    >
-      <div className=" py-5 px-8 shadow-md">
-        <div className="flex flex-col items-center ">
+    <div className={`
+          ${theme
+        ? " bgt-light text-black"
+        : "bgt-dark hover:bg-zinc-700 text-white"
+      }
+          w-full overflow-hidden rounded-xl shadow-lg`}>
+      <div className="p-6">
+        <Link 
+          to={`/profile/${user._id}`}
+          className="flex flex-col items-center space-y-4 text-center">
           <img
-            className="w-24 h-24 mb-3 rounded-full shadow-lg"
+            alt="User profile photo"
+            className="h-24 w-24 rounded-full object-cover"
             src={
               user?.profilePicture.secure_url != ""
                 ? user.profilePicture.secure_url
                 : "/avatar.png"
             }
-            alt="Bonnie image"
           />
-          <h5 className="mb-1 text-xl font-medium ">{user.name}</h5>
-          <span className="text-sm text-gray-500 dark:text-gray-400">
-            {user.email}
-          </span>
-          <div className="flex justify-center items-center flex-col sm:flex-row mt-4 md:mt-6">
-            <Link
-              to={`/profile/${user._id}`}
-              className=" text-xs text-sm:nomral my-5 inline-flex items-center px-4 py-2 font-medium text-center text-white bg-blue-700 rounded-lg hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
-            >
-              View Profile
-            </Link>
-            {user._id === userAuth.userId || Object.keys(userAuth) == "" ? null : (
-              <>
-                {isFollow ? (
-                  <button
-                    type="button"
-                    onClick={() => handleClickUnFollow()}
-                    className={`text-xs text-sm:nomral mx-1 bg-orange-500 hover:bg-orange-800  focus:outline-none text-white  focus:ring-4 focus:ring-purple-300 font-medium rounded-lg px-5 py-2`}
-                  >
-                    Following
-                  </button>
-                ) : (
-                  <button
-                    type="button"
-                    onClick={() => handleClickFollow()}
-                    className={`text-xs text-sm:nomral mx-1 bg-purple-800 hover:bg-purple-900  focus:outline-none text-white  focus:ring-4 focus:ring-purple-300 font-medium rounded-lg px-5 py-2 `}
-                  >
-                    Follow
-                  </button>
-                )}
-              </>
-            )}
+          <div>
+            <h2 className="text-base lg:text-xl font-bold">{user.name}</h2>
+            <p className="text-xs lg:text-sm">{user.email}</p>
           </div>
+        </Link>
+        <div className="mt-6 flex justify-around border-t border-b border-gray-200 py-4">
+          <div className="text-center mb-3">
+            <p className="text-base lg:text-lg font-bold">{user.followersUsers.conutFollowers || 0}</p>
+            <p className="text-xs lg:text-sm">Followers</p>
+          </div>
+          <div className="text-center mb-3">
+            <p className="text-base lg:text-lg font-bold">{user.followedUsers.conutFollowed || 0}</p>
+            <p className="text-xs lg:text-sm">Following</p>
+          </div>
+          <div className="text-center mb-3">
+            <p className="text-base lg:text-lg font-bold">87</p>
+            <p className="text-xs lg:text-sm">Posts</p>
+          </div>
+        </div>
+        <div className="mt-6">
+          {user._id === userAuth.userId || Object.keys(userAuth) == "" ? null : (
+            <>
+              {isFollow ? (
+                <button
+                  type="button"
+                  onClick={() => handleClickUnFollow()}
+                  className={`${theme ? 'btn-theme-light-op2' : 'btn-theme-dark-op2'} hover:bg-gray-500 w-full text-xs text-sm:nomral mx-1 font-medium rounded-lg px-5 py-2`}
+                >
+                  Following
+                </button>
+              ) : (
+                <button
+                  type="button"
+                  onClick={() => handleClickFollow()}
+                  className={`${theme ? 'btn-theme-light-op1' : 'btn-theme-dark-op1'} hover:bg-blue-500 w-full text-xs text-sm:nomral mx-1 font-medium rounded-lg px-5 py-2 `}
+                >
+                  Follow
+                </button>
+              )}
+            </>
+          )}
         </div>
       </div>
     </div>

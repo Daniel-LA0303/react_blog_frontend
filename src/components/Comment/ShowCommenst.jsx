@@ -54,7 +54,7 @@ const ShowCommenst = ({ comment, idPost }) => {
 
         try {
 
-            const res = await axios.put(`${link}/comments/edit-comment/${comment._id}?user=${userP._id}`, {                
+            const res = await axios.put(`${link}/comments/edit-comment/${comment._id}?user=${userP._id}`, {
                 comment: newComment,
             });
             editCommentRedux({
@@ -69,7 +69,7 @@ const ShowCommenst = ({ comment, idPost }) => {
             Swal.fire({
                 title: 'Error editing the comment',
                 text: "Status " + error.response.status + " " + error.response.data.msg,
-              });
+            });
         }
     }
 
@@ -86,7 +86,7 @@ const ShowCommenst = ({ comment, idPost }) => {
             cancelButtonText: 'No, Cancel'
         }).then(async (result) => {
             if (result.value) {
-                
+
                 try {
                     const res = await axios.delete(`${link}/comments/delete-comment/${comment._id}?user=${userP._id}`)
                     deleteCommentRedux(date);
@@ -138,7 +138,7 @@ const ShowCommenst = ({ comment, idPost }) => {
             }
         })
 
-        
+
     }
 
     const handleEditReply = async (newReply, reply) => {
@@ -175,53 +175,79 @@ const ShowCommenst = ({ comment, idPost }) => {
     return (
 
         <div>
-            <article className={`${theme ? ' bgt-light text-black' : 'bgt-dark text-white'} p-6 mb-6 text-base rounded-lg my-2`}>
-                <footer className="flex justify-between items-center mb-2">
-                    <div className="flex items-center">
-                        <p className="inline-flex items-center mr-3 text-sm">
-                            <img
-                                className="mr-2 w-6 h-6 rounded-full"
-                                src={comment.userID.profilePicture.secure_url ? comment.userID.profilePicture.secure_url : '/avatar.png'}
-                                alt="Michael Gough"
-                            />
-                            <Link to={`/profile/${comment.userID._id}`} className="  text-sm whitespace-nowrap truncate overflow-hidden">{comment.userID.name}</Link>
-                        </p>
-                        <p className="text-sm text-gray-600 dark:text-gray-400">{new Date(comment.dateComment).toDateString()}</p>
+            <article className={`${theme ? ' bgt-light text-black' : 'bgt-dark text-white'} p-4 mb-6 text-base rounded-lg my-2`}>
+                <footer className=" mb-2">
+                    <div className="flex flex-col w-full border-b border-gray-200 dark:border-gray-700 pb-3 mb-3">
+                        <div className="flex items-start justify-between">
+                            <div className="flex items-center">
+                                <Link
+                                    to={`/profile/${comment.userID._id}`}
+                                    className="h-10 w-10 rounded-full bg-cover bg-center bg-no-repeat mr-3"
+                                    style={{
+                                        backgroundImage: `url("${comment.userID.profilePicture.secure_url
+                                            ? comment.userID.profilePicture.secure_url
+                                            : "/avatar.png"
+                                            }")`,
+                                    }}
+                                ></Link>
 
-                    </div>
-                    {
-                        userP._id === comment.userID._id ? (
-                            <div className=' flex justify-end'>
-                                <FontAwesomeIcon
-                                    className=' text-base text-red-500 p-2 cursor-pointer'
-                                    icon={faTrash}
-                                    onClick={() => handleDeleteComment(comment._id, comment.dateComment)}
-                                />
-                                {editActive ? null : (
-                                    <FontAwesomeIcon
-                                        icon={faPen}
-                                        className='text-base text-sky-500 p-2 cursor-pointer'
-                                        onClick={() => setEditActive(!editActive)}
-                                    />
-                                )}
-
+                                <div className="flex flex-col">
+                                    <Link
+                                        to={`/profile/${comment.userID._id}`}
+                                        className="text-sm font-medium whitespace-nowrap truncate"
+                                    >
+                                        {comment.userID.name}
+                                    </Link>
+                                    <p className="text-xs">
+                                        {new Date(comment.dateComment).toDateString()}
+                                    </p>
+                                </div>
                             </div>
-                        ) : (null)
-                    }
+
+                            {userP._id === comment.userID._id && (
+                                <div className="flex items-center space-x-2">
+                                    <FontAwesomeIcon
+                                        className={`
+                                            ${theme ? "btn-theme-light-delete" : "btn-theme-dark-delete"}
+                                                text-xs p-2 cursor-pointer`}
+                                        icon={faTrash}
+                                        onClick={() => handleDeleteComment(comment._id, comment.dateComment)}
+                                    />
+                                    {!editActive && (
+                                        <FontAwesomeIcon
+                                            icon={faPen}
+                                            className={`
+                                                ${theme ? "btn-theme-light-edit" : "btn-theme-dark-edit"}
+                                                    text-xs p-2 cursor-pointer`}
+                                            onClick={() => setEditActive(!editActive)}
+                                        />
+                                    )}
+                                </div>
+                            )}
+                        </div>
+
+                        {/* --- Contenido del comentario --- */}
+                        <div className="mt-2 pl-13">
+                            {editActive ? (
+                                <EditComment
+                                    setEditActive={setEditActive}
+                                    editActive={editActive}
+                                    newComment={newComment}
+                                    setNewComment={setNewComment}
+                                    handleEditComment={handleEditComment}
+                                    idComment={comment._id}
+                                />
+                            ) : (
+                                <p className="">{comment.comment}</p>
+                            )}
+                        </div>
+                    </div>
+
+
+
 
                 </footer>
-                {editActive ? (
-                    <EditComment
-                        setEditActive={setEditActive}
-                        editActive={editActive}
-                        newComment={newComment}
-                        setNewComment={setNewComment}
-                        handleEditComment={handleEditComment}
-                        idComment={comment._id}
-                    />
-                ) : (
-                    <p className="text-gray-500 dark:text-gray-400">{comment.comment}</p>
-                )}
+
                 <div className="flex items-center mt-4 space-x-4">
                     {
                         Object.keys(userP).length != 0 &&
@@ -251,13 +277,13 @@ const ShowCommenst = ({ comment, idPost }) => {
                     <>
                         {
                             comment.replies.map(reply => (
-                                <ShowReplies 
-                                    reply={reply}  
+                                <ShowReplies
+                                    reply={reply}
                                     key={reply._id}
                                     userP={userP}
                                     handleDeleteReply={handleDeleteReply}
                                     handleEditReply={handleEditReply}
-                                    // commentId={comment._id}
+                                // commentId={comment._id}
                                 />
                             ))
                         }
