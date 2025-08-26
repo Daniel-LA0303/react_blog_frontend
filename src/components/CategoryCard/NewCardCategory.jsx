@@ -4,6 +4,7 @@ import { useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
 import clientAuthAxios from '../../services/clientAuthAxios';
 import Swal from 'sweetalert2';
+import userUserAuthContext from '../../context/hooks/useUserAuthContext';
 
 
 const NewCardCategory = ({ category, userP }) => {
@@ -23,7 +24,7 @@ const NewCardCategory = ({ category, userP }) => {
    * useEffect
    */
   useEffect(() => {
-    const userInCat = category.follows.users.includes(userP._id);
+    const userInCat = category.follows.users.includes(userP.userId);
     if (userInCat) {
       setIsFollow(true);
     }
@@ -36,7 +37,7 @@ const NewCardCategory = ({ category, userP }) => {
   // when user follow a tag
   const handleFollowTag = async () => {
 
-    await clientAuthAxios.post(`/users/follow-tag/${userP._id}?categoryId=${category._id}`)
+    await clientAuthAxios.post(`/users/follow-tag/${userP.userId}?categoryId=${category._id}`)
       .then(() => {
         setIsFollow(!isFollow);
       })
@@ -52,7 +53,7 @@ const NewCardCategory = ({ category, userP }) => {
 
   // when user unfollow a tag
   const handleUnFollowTag = async () => {
-    await clientAuthAxios.post(`${link}/users/unfollow-tag/${userP._id}?categoryId=${category._id}`)
+    await clientAuthAxios.post(`${link}/users/unfollow-tag/${userP.userId}?categoryId=${category._id}`)
       .then(() => {
         setIsFollow(false);
       })

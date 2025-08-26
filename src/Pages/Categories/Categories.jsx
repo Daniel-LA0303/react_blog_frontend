@@ -6,6 +6,7 @@ import LoadingCategory from '../../components/Spinner/LoadingCategory';
 import usePages from '../../context/hooks/usePages';
 import Error from '../../components/Error/Error';
 import axios from 'axios';
+import userUserAuthContext from '../../context/hooks/useUserAuthContext';
 
 const Categories = () => {
 
@@ -16,9 +17,14 @@ const Categories = () => {
   const { error, message } = errorPage;
 
   /**
+   * hooks
+   */
+  const { userAuth } = userUserAuthContext();
+
+  /**
    * redux state
    */
-  const userP = useSelector((state) => state.posts.user);
+  // const userP = useSelector((state) => state.posts.user);
   const theme = useSelector((state) => state.posts.themeW);
   const link = useSelector((state) => state.posts.linkBaseBackend);
 
@@ -76,9 +82,9 @@ const Categories = () => {
         !loading &&
         hasMore &&
         window.innerHeight + document.documentElement.scrollTop + 50 >=
-          document.documentElement.scrollHeight
+        document.documentElement.scrollHeight
       ) {
-        fetchCategories(); 
+        fetchCategories();
       }
     };
 
@@ -99,7 +105,7 @@ const Categories = () => {
             </p>
             <div className="grid gap-2 md:grid-cols-2 lg:grid-cols-3 w-full mx-auto mb-5">
               {categories.map((cat) => (
-                <NewCardCategory key={cat._id} category={cat} userP={userP} />
+                <NewCardCategory key={cat._id} category={cat} userP={userAuth} />
               ))}
             </div>
             {loading && <LoadingCategory />}

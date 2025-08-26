@@ -3,6 +3,7 @@ import React, { useEffect, useState } from 'react'
 import { useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
 import Swal from 'sweetalert2';
+import userUserAuthContext from '../../context/hooks/useUserAuthContext';
 
 const UserCard = ({user}) => {
 
@@ -10,6 +11,11 @@ const UserCard = ({user}) => {
      * states
      */
     const [isFollow, setIsFollow] = useState(false);
+
+    /**
+     * hooks
+     */
+    const { userAuth } = userUserAuthContext();
 
     /**
      * states Redux
@@ -22,7 +28,7 @@ const UserCard = ({user}) => {
      * useEffect
      */
     useEffect(() => {
-        const userProfileFound = user.followersUsers.followers.includes(userP._id);
+        const userProfileFound = user.followersUsers.followers.includes(userAuth.userId);
         if(userProfileFound){
           setIsFollow(true);
         }
@@ -35,7 +41,7 @@ const UserCard = ({user}) => {
     const handleClickUnFollow = async() => {
       
       try {
-        await axios.post(`${link}/users/user-unfollow/${user._id}`, userP);
+        await axios.post(`${link}/users/user-unfollow/${userAuth.userId}`, userP);
         setIsFollow(false);
       } catch (error) {
         console.log(error);
@@ -49,7 +55,7 @@ const UserCard = ({user}) => {
     const handleClickFollow = async() => {
       
       try {
-        await axios.post(`${link}/users/user-follow/${user._id}`, userP);
+        await axios.post(`${link}/users/user-follow/${userAuth.userId}`, userP);
         setIsFollow(true);
       } catch (error) {
           console.log(error);
@@ -90,7 +96,7 @@ const UserCard = ({user}) => {
             >
               View Profile
             </Link>
-            {user._id === userP._id || Object.keys(userP) == "" ? null : (
+            {user._id === userAuth.userId || Object.keys(userAuth) == "" ? null : (
               <>
                 {isFollow ? (
                   <button

@@ -276,8 +276,8 @@ const Profile = () => {
                 </div>
               </div>
             </div>
-            <div className='w-full sm:w-9/12'>
-              <div className='w-full flex flex-col items-center'>
+            <div className='w-full sm:w-9/12 sm:mx-0 flex flex-col items-center'>
+              {/* <div className='w-full '> */}
                 {Object.keys(user) === '' ? (
                   <>
                     <LoadingPosts />
@@ -297,7 +297,7 @@ const Profile = () => {
       
                 </>}
 
-              </div>
+              {/* </div> */}
             </div>
         </div>
         
