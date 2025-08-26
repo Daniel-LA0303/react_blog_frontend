@@ -86,7 +86,6 @@ const Login = () => {
         profileImage: res.data.data.profileImage,
         email: res.data.data.email,
         userId: res.data.data._id,
-
       });
 
       showAutoSwal({
@@ -130,8 +129,6 @@ const Login = () => {
                 </p>
               </div>
 
-              {msg && <Alert1 alertMsg={alert1} />}
-
               <form onSubmit={handleSubmit} className="mt-8 space-y-6">
                 <div className="space-y-4 rounded-md shadow-sm">
                   <div>
@@ -169,7 +166,7 @@ const Login = () => {
                 <div className="flex items-center justify-end">
                   <Link
                     to={"/forget-password"}
-                    className="font-medium text-sky-500 hover:text-blue-600 text-sm"
+                    className="font-medium hover:text-blue-600 text-sm"
                   >
                     Forgot your password?
                   </Link>
