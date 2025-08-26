@@ -4,75 +4,78 @@ import { useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
 import Swal from 'sweetalert2';
 import userUserAuthContext from '../../context/hooks/useUserAuthContext';
+import { useSwal } from '../../hooks/useSwal';
 
-const UserCard = ({user}) => {
+const UserCard = ({ user }) => {
 
-    /**
-     * states
-     */
-    const [isFollow, setIsFollow] = useState(false);
+  /**
+   * states
+   */
+  const [isFollow, setIsFollow] = useState(false);
 
-    /**
-     * hooks
-     */
-    const { userAuth } = userUserAuthContext();
+  /**
+   * hooks
+   */
+  const { userAuth } = userUserAuthContext();
+  const { showAutoSwal, showConfirmSwal } = useSwal();
 
-    /**
-     * states Redux
-     */
-    const userP = useSelector(state => state.posts.user);
-    const theme = useSelector(state => state.posts.themeW);
-    const link = useSelector(state => state.posts.linkBaseBackend);
+  /**
+   * states Redux
+   */
+  const userP = useSelector(state => state.posts.user);
+  const theme = useSelector(state => state.posts.themeW);
+  const link = useSelector(state => state.posts.linkBaseBackend);
 
-    /**
-     * useEffect
-     */
-    useEffect(() => {
-        const userProfileFound = user.followersUsers.followers.includes(userAuth.userId);
-        if(userProfileFound){
-          setIsFollow(true);
-        }
-    }, []);
-
-
-    /**
-     * functions
-     */
-    const handleClickUnFollow = async() => {
-      
-      try {
-        await axios.post(`${link}/users/user-unfollow/${userAuth.userId}`, userP);
-        setIsFollow(false);
-      } catch (error) {
-        console.log(error);
-        Swal.fire({
-          title: 'Error deleting the post',
-          text: "Status " + error.response.status + " " + error.response.data.msg,
-        });
-      }
+  /**
+   * useEffect
+   */
+  useEffect(() => {
+    const userProfileFound = user.followersUsers.followers.includes(userAuth.userId);
+    if (userProfileFound) {
+      setIsFollow(true);
     }
+  }, []);
 
-    const handleClickFollow = async() => {
-      
-      try {
-        await axios.post(`${link}/users/user-follow/${userAuth.userId}`, userP);
-        setIsFollow(true);
-      } catch (error) {
-          console.log(error);
-          Swal.fire({
-            title: 'Error deleting the post',
-            text: "Status " + error.response.status + " " + error.response.data.msg,
-          });
-        }
+
+  /**
+   * functions
+   */
+  const handleClickUnFollow = async () => {
+
+    try {
+      await axios.post(`${link}/users/user-unfollow/${userAuth.userId}?userUnfollow=${user._id}`);
+      setIsFollow(false);
+    } catch (error) {
+      console.log(error);
+      showConfirmSwal({
+        message: error.response.data.message,
+        status: "error",
+        confirmButton: true
+      });
     }
-    
+  }
+
+  const handleClickFollow = async () => {
+
+    try {
+      await axios.post(`${link}/users/user-follow/${userAuth.userId}?userFollow=${user._id}`);
+      setIsFollow(true);
+    } catch (error) {
+      console.log(error);
+      showConfirmSwal({
+        message: error.response.data.message,
+        status: "error",
+        confirmButton: true
+      });
+    }
+  }
+
   return (
     <div
-      className={`${
-        theme
+      className={`${theme
           ? " bgt-light text-black"
           : "bgt-dark hover:bg-zinc-700 text-white"
-      }   rounded-lg w-full sm:w-auto`}
+        }   rounded-lg w-full sm:w-auto`}
     >
       <div className=" py-5 px-8 shadow-md">
         <div className="flex flex-col items-center ">
