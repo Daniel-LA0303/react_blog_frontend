@@ -5,6 +5,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faUser, faGear, faTableColumns, faSun, faMoon, faPlusSquare } from '@fortawesome/free-solid-svg-icons'
 import { changeThemeAction } from '../../StateRedux/actions/postAction';
+import userUserAuthContext from '../../context/hooks/useUserAuthContext';
 
 const ProfileButton = () => {
 
@@ -16,6 +17,11 @@ const ProfileButton = () => {
 
   const [open, setOpen] = useState(false);
   let menuRef = useRef();
+
+  /**
+   * hooks
+   */
+  const { userAuth } = userUserAuthContext();
 
   useEffect(() => {
 
@@ -35,6 +41,12 @@ const ProfileButton = () => {
 
   const handleLogOut = () => {
     localStorage.removeItem('token');
+    localStorage.removeItem("tokenAuthUser");
+    localStorage.removeItem("email");
+    localStorage.removeItem("username");
+    localStorage.removeItem("userId");
+    localStorage.removeItem("profileImage");
+
     document.location.reload(true);
     document.location = '/'
   }
@@ -57,7 +69,7 @@ const ProfileButton = () => {
         >
           <img
             className="h-10 w-10 rounded-full"
-            src={user?.profilePicture?.secure_url || '/avatar.png'}
+            src={userAuth?.profileImage || '/avatar.png'}
             alt="User"
           />
         </button>
@@ -73,20 +85,20 @@ const ProfileButton = () => {
               ${theme ? 'bgt-light border-gray-300' : 'bgt-dark text-white border-gray-500'}
             `}
           >
-            <li className="text-center p-2 text-lg font-semibold">{user.name}</li>
-            <li className="text-center p-1 text-xs">{user.email}</li>
+            <li className="text-center p-2 text-lg font-semibold">{userAuth.username}</li>
+            <li className="text-center p-1 text-xs">{userAuth.email}</li>
 
             <li className="cursor-pointer flex items-center rounded-md p-2 transition-all hover:bg-gray-500">
               <FontAwesomeIcon icon={faUser} className="mr-2" />
-              <Link to={`/profile/${user._id}`}>My Profile</Link>
+              <Link to={`/profile/${userAuth.userId}`}>My Profile</Link>
             </li>
             <li className="cursor-pointer flex items-center rounded-md p-2 transition-all hover:bg-gray-500">
               <FontAwesomeIcon icon={faGear} className="mr-2" />
-              <Link to={`/edit-profile/${user._id}`}>Settings</Link>
+              <Link to={`/edit-profile/${userAuth.userId}`}>Settings</Link>
             </li>
             <li className="cursor-pointer flex items-center rounded-md p-2 transition-all hover:bg-gray-500">
               <FontAwesomeIcon icon={faTableColumns} className="mr-2" />
-              <Link to={`/dashboard/${user._id}`}>Dashboard</Link>
+              <Link to={`/dashboard/${userAuth.userId}`}>Dashboard</Link>
             </li>
             <li className="cursor-pointer flex items-center rounded-md p-2 transition-all hover:bg-gray-500">
               <FontAwesomeIcon icon={faPlusSquare} className="mr-2" />

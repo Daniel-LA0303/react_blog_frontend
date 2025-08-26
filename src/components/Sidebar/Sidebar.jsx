@@ -16,8 +16,14 @@ import NotificationsNoneIcon from '@mui/icons-material/NotificationsNone';
 import { Badge, IconButton } from '@mui/material'
 import { Notifications } from '@mui/icons-material'
 import AsideMenu from '../Aside/AsideMenu'
+import userUserAuthContext from '../../context/hooks/useUserAuthContext'
 
 const Sidebar = () => {
+
+  /**
+   * hooks
+   */
+  const { userAuth } = userUserAuthContext();
 
   /**
    * states
@@ -34,21 +40,7 @@ const Sidebar = () => {
   const link = useSelector(state => state.posts.linkBaseBackend);
   const dispatch = useDispatch();
 
-  /**
-   * useEffect
-   */
-  // useEffect(() => {
-  //   const token = localStorage.getItem('token');
-  //   if (token) {
-  //     dispatch(getUserAction(JSON.parse(token)));
-  //   }
-  // }, []);
-
-  // useEffect(() => {
-  //   setNotifications(user.notifications)
-  // }, [user]);
-
-  const homePath = "/"; 
+  const homePath = "/";
   const isHome = location.pathname === homePath;
 
   return (
@@ -71,15 +63,15 @@ const Sidebar = () => {
             </div>
 
             <div className='w-full flex items-center justify-end'>
-              {user._id ? (
+              {userAuth.userId  ? (
                 <div className='flex  items-center '>
                   <Link
                     to="/new-post"
                     className={`hidden md:block px-2 py-2 border-2 rounded 
                       transition-colors duration-200 font-medium
-                      ${theme 
-                        ? 'border-black text-black hover:bg-black hover:text-white'  
-                        : 'text-white hover:bg-white hover:text-black border-white' 
+                      ${theme
+                        ? 'border-black text-black hover:bg-black hover:text-white'
+                        : 'text-white hover:bg-white hover:text-black border-white'
                       }`}
                   >
                     New Post

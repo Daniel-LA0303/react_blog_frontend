@@ -177,7 +177,7 @@ const EditProfile = () => {
                     <div className="md:col-span-2">
                       <div className="flex items-center gap-6">
                         {
-                          file || (image !== null)  ?
+                          file || (image?.secure_url !== "")  ?
                             <div
                               className="relative z-0 h-24 w-24 flex-shrink-0 rounded-full bg-cover bg-center bg-no-repeat"
                               style={{ backgroundImage: `url(${newImage ? URL.createObjectURL(file) : image?.secure_url})` }}
