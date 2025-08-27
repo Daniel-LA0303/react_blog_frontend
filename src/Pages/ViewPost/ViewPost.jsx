@@ -74,7 +74,6 @@ const ViewPost = () => {
 
   const dispatch = useDispatch();
 
-
   /**
    * hooks
    */
@@ -95,17 +94,13 @@ const ViewPost = () => {
     numberSaves: 0,
     numberComments: 0
   });
+
   // to paint icon
   const [like, setLike] = useState(false);
   const [save, setSave] = useState(false);
   const [post, setPost] = useState({});
   const [commentsState, setCommentsState] = useState([]);
   const [loading, setLoading] = useState(false);
-
-
-  // const [numberLike, setNumberLike] = useState(0);
-  // const [numberSave, setNumberSave] = useState(0);
-  // const [numberComments, setNumberComments] = useState(0);
 
 
   /**
@@ -115,9 +110,6 @@ const ViewPost = () => {
   const theme = useSelector(state => state.posts.themeW);
   const link = useSelector(state => state.posts.linkBaseBackend);
   const deletePostRedux = (postId, userId) => dispatch(deletePostAction(postId, userId));
-  // const comments = useSelector(state => state.posts.comments);
-  // const getUserRedux = token => dispatch(getUserAction(token));
-  // const getCommentsRedux = (comments) => dispatch(getCommentsAction(comments));
 
 
   /**
@@ -129,8 +121,6 @@ const ViewPost = () => {
     setLoading(true);
     axios.get(`${link}/pages/page-view-post/${params.id}`)
       .then((response) => {
-        console.log("********GET POST***********");
-        console.log(response);
 
         setPost(response.data.data.post);
         const newEngagement = {
@@ -141,14 +131,6 @@ const ViewPost = () => {
 
         setEngagementPost(newEngagement);
         setCommentsState(response.data.data.comments);
-        // getCommentsRedux(response.data.data.comments);
-
-        // set info
-        // setNumberComments(response.data.data.comments.length);
-
-
-        // setNumberLike(response.data.data.post.likePost.users.length);
-        // setNumberSave(response.data.data.post.usersSavedPost.users.length);
       })
       .catch((error) => {
         console.log(error);

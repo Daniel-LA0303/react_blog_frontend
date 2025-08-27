@@ -69,8 +69,6 @@ const ShowCommenst = ({
         return () => clearTimeout(timer);
     }, [comment.comment]);
 
-
-
     /**
      * functions
      */
@@ -290,7 +288,6 @@ const ShowCommenst = ({
                             )}
                         </div>
 
-                        {/* --- Contenido del comentario --- */}
                         <div className="mt-2 pl-13">
                             {editActive ? (
                                 <EditComment
@@ -306,12 +303,7 @@ const ShowCommenst = ({
                             )}
                         </div>
                     </div>
-
-
-
-
                 </footer>
-
                 <div className="flex items-center mt-4 space-x-4">
                     {
                         Object.keys(userAuth).length != 0 &&
