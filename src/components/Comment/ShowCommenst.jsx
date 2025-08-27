@@ -3,14 +3,16 @@ import { faPen, faTrash } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import axios from 'axios';
 import { toast, Toaster } from 'react-hot-toast';
-import { useDispatch, useSelector } from 'react-redux';
+import { useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
 import Swal from 'sweetalert2';
 
-import { deleteCommentAction, editCommentAction } from '../../StateRedux/actions/postAction';
 import EditComment from './EditComment';
 import ReplyComment from './ReplyComment';
 import ShowReplies from './ShowReplies';
+import userUserAuthContext from '../../context/hooks/useUserAuthContext';
+import { useSwal } from '../../hooks/useSwal';
+import clientAuthAxios from '../../services/clientAuthAxios';
 
 const notify = () => toast(
     'Comment saved.',
@@ -20,86 +22,139 @@ const notify = () => toast(
     }
 );
 
-const ShowCommenst = ({ comment, idPost }) => {
+const ShowCommenst = ({
+    comment,
+    idPost,
+    setCommentsState,
+    setEngagementPost
+}) => {
+
+    /**
+     * hooks
+     */
+    const { userAuth } = userUserAuthContext();
+    const { showConfirmSwal, showAutoSwal } = useSwal();
 
     /**
      * states
      */
-    const [editActive, setEditActive] = useState(false);
-    const [newComment, setNewComment] = useState('');
+    const [editActive, setEditActive] = useState(false); // show a form to update 
+    const [newComment, setNewComment] = useState('');    // new comment update
+    const [highlight, setHighlight] = useState(true);    // state to show animation in new comment
+
+
     const [replyActive, setReplyActive] = useState(false);
     const [commentId, setCommentId] = useState('');
+
 
     /**
      * states Redux
      */
-    const userP = useSelector(state => state.posts.user);
     const theme = useSelector(state => state.posts.themeW);
     const link = useSelector(state => state.posts.linkBaseBackend);
-    const dispatch = useDispatch();
-    const editCommentRedux = (comment) => dispatch(editCommentAction(comment));
-    const deleteCommentRedux = (date) => dispatch(deleteCommentAction(date));
 
+    /**
+     * useEffect
+     */
 
-
-
+    // effect to get comment to edit
     useEffect(() => {
         setNewComment(comment.comment);
     }, [])
 
+    // animation to show new comment
+    useEffect(() => {
+        setHighlight(true);
+        const timer = setTimeout(() => setHighlight(false), 400);
+        return () => clearTimeout(timer);
+    }, [comment.comment]);
+
+
+
+    /**
+     * functions
+     */
+
+    // to edit a comment
     const handleEditComment = async (id) => {
 
-        notify();
         setEditActive(!editActive);
 
         try {
 
-            const res = await axios.put(`${link}/comments/edit-comment/${comment._id}?user=${userP._id}`, {
+            // send info to backend
+            await clientAuthAxios.put(`/comments/edit-comment/${comment._id}?user=${userAuth.userId}`, {
                 comment: newComment,
+                postId: idPost
             });
-            editCommentRedux({
-                userID: comment.userID,
-                comment: newComment,
-                dateComment: comment.dateComment,
-                _id: comment._id,
-                replies: comment.replies
-            })
+
+
+            // update ui
+            setCommentsState(prevComments =>
+                prevComments.map(c =>
+                    c._id === comment._id
+                        ? { ...c, comment: newComment }
+                        : c
+                )
+            );
+            notify();
         } catch (error) {
             console.log(error);
-            Swal.fire({
-                title: 'Error editing the comment',
-                text: "Status " + error.response.status + " " + error.response.data.msg,
+            // show error
+            showConfirmSwal({
+                message: error.response.data.message,
+                status: "error",
+                confirmButton: true
             });
         }
     }
 
-    // -- Actions comments start
-    const handleDeleteComment = async (id, date) => {
+    // to delete a comment
+    const handleDeleteComment = async (idComment) => {
         Swal.fire({
-            title: 'Are you sure you want to remove this Comment?',
+            title: 'Are you sure you want to remove this comment?',
             text: "Deleted comment cannot be recovered",
             icon: 'warning',
             showCancelButton: true,
-            confirmButtonColor: '#3085d6',
-            cancelButtonColor: '#d33',
             confirmButtonText: 'Yes, Delete',
-            cancelButtonText: 'No, Cancel'
+            cancelButtonText: 'No, Cancel',
+            customClass: {
+                popup: 'swal-popup-warning',
+                title: 'swal-title-warning',
+                confirmButton: 'swal-btn-warning',
+                cancelButton: 'swal-btn-error'
+            },
+            buttonsStyling: false,
         }).then(async (result) => {
-            if (result.value) {
-
+            if (result.isConfirmed) {
                 try {
-                    const res = await axios.delete(`${link}/comments/delete-comment/${comment._id}?user=${userP._id}`)
-                    deleteCommentRedux(date);
+                    const res = await clientAuthAxios.delete(
+                        `/comments/delete-comment/${idComment}?user=${userAuth.userId}&post=${idPost}`
+                    );
+
+                    // update state
+                    setCommentsState(prev =>
+                        prev.filter(c => c._id !== idComment)
+                    );
+
+                    setEngagementPost(prev => ({
+                        ...prev,
+                        numberComments: prev.numberComments -1
+                    }));
+
+
                 } catch (error) {
-                    console.log(error);
-                    Swal.fire({
-                        title: 'Error deleting the post',
-                        text: "Status " + error.response.status + " " + error.response.data.msg,
+                    console.error(error);
+                    // show error
+                    showConfirmSwal({
+                        message: error.response.data.message,
+                        status: "error",
+                        confirmButton: true
                     });
                 }
             }
-        })
-    }
+        });
+    };
 
     // -- Actions comments end
 
@@ -118,7 +173,7 @@ const ShowCommenst = ({ comment, idPost }) => {
         }).then(async (result) => {
             if (result.value) {
                 try {
-                    const res = await axios.post(`${link}/replies/delete-reply/${idReply}?user=${userP._id}`, {
+                    const res = await axios.post(`${link}/replies/delete-reply/${idReply}?user=${userAuth.userId}`, {
                         commentID: comment._id
                     });
                     editCommentRedux({
@@ -145,7 +200,7 @@ const ShowCommenst = ({ comment, idPost }) => {
         console.log(newReply, reply);
 
         try {
-            const res = await axios.put(`${link}/replies/edit-reply/${reply._id}?user=${userP._id}`, {
+            const res = await axios.put(`${link}/replies/edit-reply/${reply._id}?user=${userAuth.userId}`, {
                 reply: newReply,
                 commentID: comment._id
             })
@@ -175,7 +230,16 @@ const ShowCommenst = ({ comment, idPost }) => {
     return (
 
         <div>
-            <article className={`${theme ? ' bgt-light text-black' : 'bgt-dark text-white'} p-4 mb-6 text-base rounded-lg my-2`}>
+            <article
+                className={`
+                    p-4 mb-6 text-base rounded-lg my-2 transition-colors duration-700
+                    ${highlight
+                        ? 'bg-yellow-200 dark:bg-yellow-300'
+                        : theme
+                            ? 'bgt-light text-black'
+                            : 'bgt-dark text-white'}
+                    `}
+            >
                 <footer className=" mb-2">
                     <div className="flex flex-col w-full border-b border-gray-200 dark:border-gray-700 pb-3 mb-3">
                         <div className="flex items-start justify-between">
@@ -204,7 +268,7 @@ const ShowCommenst = ({ comment, idPost }) => {
                                 </div>
                             </div>
 
-                            {userP._id === comment.userID._id && (
+                            {userAuth.userId === comment.userID._id && (
                                 <div className="flex items-center space-x-2">
                                     <FontAwesomeIcon
                                         className={`
@@ -250,7 +314,7 @@ const ShowCommenst = ({ comment, idPost }) => {
 
                 <div className="flex items-center mt-4 space-x-4">
                     {
-                        Object.keys(userP).length != 0 &&
+                        Object.keys(userAuth).length != 0 &&
                         <button
                             type="button"
                             onClick={() => handleReplyComment(comment._id)}
@@ -266,7 +330,7 @@ const ShowCommenst = ({ comment, idPost }) => {
                     <ReplyComment
                         setReplyActive={setReplyActive}
                         replyActive={replyActive}
-                        userID={userP._id}
+                        userID={userAuth.userId}
                         comment={comment}
                         idPost={idPost}
                     />
@@ -280,7 +344,7 @@ const ShowCommenst = ({ comment, idPost }) => {
                                 <ShowReplies
                                     reply={reply}
                                     key={reply._id}
-                                    userP={userP}
+                                    userP={userAuth}
                                     handleDeleteReply={handleDeleteReply}
                                     handleEditReply={handleEditReply}
                                 // commentId={comment._id}

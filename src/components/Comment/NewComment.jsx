@@ -5,28 +5,40 @@ import { newCommentAction } from '../../StateRedux/actions/postAction';
 import Swal from 'sweetalert2';
 import userUserAuthContext from '../../context/hooks/useUserAuthContext';
 import { Link } from 'react-router-dom';
+import { useSwal } from '../../hooks/useSwal';
+import clientAuthAxios from '../../services/clientAuthAxios';
 
 
-const NewComment = ({ user, idPost, comments, userPost }) => {
+const NewComment = ({
+    user,
+    idPost,
+    comments,
+    setCommentsState,
+    setEngagementPost
+}) => {
 
     /**
      * hooks
      */
     const { userAuth } = userUserAuthContext();
+    const { showConfirmSwal, showAutoSwal } = useSwal();
 
-
+    /**
+     * state
+     */
     const [comment, setComment] = useState('');
 
-
+    /**
+     * redux
+     */
     const theme = useSelector(state => state.posts.themeW);
-    const link = useSelector(state => state.posts.linkBaseBackend);
-    const dispatch = useDispatch();
-    const newCommentRedux = (comment) => dispatch(newCommentAction(comment));
-
 
     //new comment
-    const newComment = async (id) => {
+    const newComment = async (id, e) => {
 
+        e.preventDefault();
+
+        // 1. valid data
         if (comment.trim() === '') {
             Swal.fire({
                 title: 'Error',
@@ -34,26 +46,33 @@ const NewComment = ({ user, idPost, comments, userPost }) => {
                 icon: 'error',
             });
         }
-        setComment('');
+
+        // 2. build data
         const data = {
-            userID: user._id,
+            userID: user.userId,
             comment: comment,
-            // dateComment: new Date(),
         }
-        newCommentRedux({
-            userID: user,
-            comment: comment,
-            dateComment: new Date(),
-            replies: []
-        });
+
         try {
-            await axios.post(`${link}/comments/new-comment/${id}`, data);
-            console.log('emit');
+
+            // 3. request to backend
+            const response = await clientAuthAxios.post(`/comments/new-comment/${id}`, data);
+            setComment('');
+            
+            // update comments
+            setCommentsState(prev => [response.data.data, ...prev]);
+            setEngagementPost(prev => ({
+                ...prev,
+                numberComments: prev.numberComments + 1
+            }));
         } catch (error) {
             console.log(error);
-            Swal.fire({
-                title: 'Error deleting the post',
-                text: "Status " + error.response.status + " " + error.response.data.msg,
+
+            // show error
+            showConfirmSwal({
+                message: error.response.data.message,
+                status: "error",
+                confirmButton: true
             });
         }
     }
@@ -66,7 +85,7 @@ const NewComment = ({ user, idPost, comments, userPost }) => {
                 </div>
 
                 <div className='flex'>
-                    <Link 
+                    <Link
                         to={`/profile/${userAuth.userId}`}
                         class="h-12 w-12 flex-shrink-0 rounded-full bg-cover bg-center bg-no-repeat mr-2"
                         style={{
@@ -75,13 +94,15 @@ const NewComment = ({ user, idPost, comments, userPost }) => {
                             backgroundPosition: "center"
                         }}
                     ></Link>
-                    <form className="mb-6 w-full">
+                    <form
+                        onSubmit={(e) => newComment(idPost, e)}
+                        className="mb-6 w-full">
                         <div className={` ${theme ? "bg-white" : "bg-gray-700"}
                             py-2 px-4 mb-4 rounded-lg rounded-t-lg`}>
                             <textarea
                                 id="comment"
                                 rows="6"
-                                  className={`
+                                className={`
                                     ${theme ? "" : "bg-gray-700 text-white placeholder-gray-400 "}
                                     px-0 w-full text-sm  border-0 focus:ring-0 
                                     focus:outline-none  
@@ -96,10 +117,10 @@ const NewComment = ({ user, idPost, comments, userPost }) => {
                             ></textarea>
                         </div>
                         <button
-                            onClick={() => newComment(idPost)}
+                            type='submit'
                             className="btn-theme-light-op1 hover:bg-blue-700 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2"
                             placeholder='Type your Comment'
-                        >Comment</button>
+                        >Comment hhh</button>
                     </form>
                 </div>
 

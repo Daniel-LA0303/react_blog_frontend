@@ -1,26 +1,55 @@
 import React, { useEffect, useState } from 'react'
 import Sidebar from '../../components/Sidebar/Sidebar'
 
+/**
+ * router
+ */
 import { Link, useParams, useNavigate } from 'react-router-dom';
 
+/**
+ * icons
+ */
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faHeart, faBookmark, faTrash, faPen, faL, faComment } from '@fortawesome/free-solid-svg-icons'
+
+
+/**
+ * redux
+ */
 import { useDispatch, useSelector } from 'react-redux';
 import { getCommentsAction, getOnePostAction, getUserAction } from '../../StateRedux/actions/postAction';
+import { deletePostAction } from '../../StateRedux/actions/postsActions';
 
-import Spinner from '../../components/Spinner/Spinner';
+/**
+ * axios
+ */
 import axios from 'axios';
-import NewComment from '../../components/Comment/NewComment';
-import ShowCommenst from '../../components/Comment/ShowCommenst';
+import clientAuthAxios from '../../services/clientAuthAxios';
+
+/**
+ * libraries
+ */
 import Swal from 'sweetalert2';
 import { toast, Toaster } from 'react-hot-toast';
-import { HeartBrokenOutlined } from '@mui/icons-material';
-import PostRecom from '../../components/Post/PostRecom';
+import { motion, AnimatePresence } from "framer-motion";
+
+/**
+ * components
+ */
+import Spinner from '../../components/Spinner/Spinner';
+import NewComment from '../../components/Comment/NewComment';
+import ShowCommenst from '../../components/Comment/ShowCommenst';
 import ActionsPost from '../../components/Post/ActionsPost';
 import UserCard from '../../components/UserCard/UserCard';
-import { deletePostAction } from '../../StateRedux/actions/postsActions';
+
+/**
+ * hooks
+ */
 import { useSwal } from '../../hooks/useSwal';
-import clientAuthAxios from '../../services/clientAuthAxios';
+
+/**
+ * contetx
+ */
 import userUserAuthContext from '../../context/hooks/useUserAuthContext';
 
 
@@ -61,48 +90,65 @@ const ViewPost = () => {
   /**
    * states
    */
+  const [engagementPost, setEngagementPost] = useState({
+    numberLikes: 0,
+    numberSaves: 0,
+    numberComments: 0
+  });
+  // to paint icon
   const [like, setLike] = useState(false);
-  const [numberLike, setNumberLike] = useState(0);
   const [save, setSave] = useState(false);
-  const [numberSave, setNumberSave] = useState(0);
-  const [numberComments, setNumberComments] = useState(0);
   const [post, setPost] = useState({});
+  const [commentsState, setCommentsState] = useState([]);
   const [loading, setLoading] = useState(false);
-  // const[comments, setComments] = useState([]);
+
+
+  // const [numberLike, setNumberLike] = useState(0);
+  // const [numberSave, setNumberSave] = useState(0);
+  // const [numberComments, setNumberComments] = useState(0);
+
 
   /**
    * states redux
    */
   const userP = useSelector(state => state.posts.user);
   const theme = useSelector(state => state.posts.themeW);
-  const comments = useSelector(state => state.posts.comments);
   const link = useSelector(state => state.posts.linkBaseBackend);
   const deletePostRedux = (postId, userId) => dispatch(deletePostAction(postId, userId));
-  const getUserRedux = token => dispatch(getUserAction(token));
-  const getCommentsRedux = (comments) => dispatch(getCommentsAction(comments));
+  // const comments = useSelector(state => state.posts.comments);
+  // const getUserRedux = token => dispatch(getUserAction(token));
+  // const getCommentsRedux = (comments) => dispatch(getCommentsAction(comments));
 
 
   /**
    * useEffect
    */
 
+  // useeffect to get one post or blog
   useEffect(() => {
     setLoading(true);
     axios.get(`${link}/pages/page-view-post/${params.id}`)
       .then((response) => {
-        console.log("*******************");
-
+        console.log("********GET POST***********");
         console.log(response);
 
-        setNumberComments(response.data.data.comments.length);
-        getCommentsRedux(response.data.data.comments);
         setPost(response.data.data.post);
-        setNumberLike(response.data.data.post.likePost.users.length);
-        setNumberSave(response.data.data.post.usersSavedPost.users.length);
-        console.log(response.data);
-        setTimeout(() => {
-          setLoading(false);
-        }, 500);
+        const newEngagement = {
+          numberLikes: response.data.data.post.likePost.users.length,
+          numberSaves: response.data.data.post.usersSavedPost.users.length,
+          numberComments: response.data.data.comments.length
+        };
+
+        setEngagementPost(newEngagement);
+        setCommentsState(response.data.data.comments);
+        // getCommentsRedux(response.data.data.comments);
+
+        // set info
+        // setNumberComments(response.data.data.comments.length);
+
+
+        // setNumberLike(response.data.data.post.likePost.users.length);
+        // setNumberSave(response.data.data.post.usersSavedPost.users.length);
       })
       .catch((error) => {
         console.log(error);
@@ -138,6 +184,8 @@ const ViewPost = () => {
       })
   }, [params.id]);
 
+  // check this
+  // useeffect to paint like
   useEffect(() => {
     if (Object.keys(userP) != '') {
       const userPost = userP.likePost.posts.includes(params.id);
@@ -147,13 +195,13 @@ const ViewPost = () => {
     }
   }, [userP, params.id]);
 
+  // useeffect to paint save
   useEffect(() => {
     if (Object.keys(userP) != '') {
       const userPost = userP.postsSaved.posts.includes(params.id);
       if (userPost) {
         setSave(true);
       }
-      // console.log('in');
     }
   }, [userP, params.id]);
 
@@ -184,7 +232,7 @@ const ViewPost = () => {
     if (result.isConfirmed) {
       try {
 
-        await deletePostRedux(id, userP._id);
+        await deletePostRedux(id, userAuth.userId);
         showAutoSwal({
           message: 'Post deleted successfully',
           status: "success",
@@ -210,7 +258,10 @@ const ViewPost = () => {
     try {
       await clientAuthAxios.post(`/posts/dislike-post/${id}?userId=${userAuth.userId}`,);
       setLike(false);
-      setNumberLike(numberLike - 1);
+      setEngagementPost(prev => ({
+        ...prev,
+        numberLikes: prev.numberLikes - 1
+      }));
     } catch (error) {
       console.log(error);
       showConfirmSwal({
@@ -226,7 +277,10 @@ const ViewPost = () => {
     try {
       const res = await clientAuthAxios.post(`/posts/like-post/${id}?userId=${userAuth.userId}`);
       setLike(true);
-      setNumberLike(numberLike + 1);
+      setEngagementPost(prev => ({
+        ...prev,
+        numberLikes: prev.numberLikes + 1
+      }));
       console.log(res);
     } catch (error) {
       console.log(error);
@@ -243,6 +297,10 @@ const ViewPost = () => {
     try {
       await clientAuthAxios.post(`/posts/save-post/${id}?userId=${userAuth.userId}`);
       setSave(true);
+      setEngagementPost(prev => ({
+        ...prev,
+        numberSaves: prev.numberSaves + 1
+      }));
       notify();
     } catch (error) {
       console.log(error);
@@ -258,8 +316,15 @@ const ViewPost = () => {
 
     try {
       await clientAuthAxios.post(`/posts/unsave-post/${id}?userId=${userAuth.userId}`);
-      notify2()
+
       setSave(false);
+      setEngagementPost(prev => ({
+        ...prev,
+        numberSaves: prev.numberSaves - 1
+      }));
+
+      notify2()
+
     } catch (error) {
       console.log(error);
       showConfirmSwal({
@@ -278,23 +343,24 @@ const ViewPost = () => {
         position="bottom-right"
         reverseOrder={false}
       />
-      <div className='flex mx-auto max-w-screen-xl px-4'>
+      <div className='flex mx-auto max-w-screen-xl px-0 sm:px-4'>
         <div className='flex-col hidden sm:block text-white sticky top-10 h-[90%] p-4 mt-30'>
           {
-            Object.keys(userP).length != 0 && (
+            Object.keys(userAuth).length != 0 && (
               <ActionsPost
-                user={userP}
-                like={like}
-                id={params.id}
-                numberLike={numberLike}
-                numberSave={numberSave}
-                numberComments={numberComments}
-                save={save}
+                user={userAuth}  // user to disable buttons
+                id={params.id} // post id
+                // number ui
+                numberLike={engagementPost.numberLikes} // only show number
+                numberSave={engagementPost.numberSaves} // only show number
+                numberComments={engagementPost.numberComments} // only show number
+                save={save} // to paint ui
+                like={like} // to paint ui
+                // functions / actions
                 handleLike={handleLike}
                 handleDislike={handleDislike}
                 handleSave={handleSave}
                 handleUnsave={handleUnsave}
-                post={post}
               />
             )
           }
@@ -338,8 +404,8 @@ const ViewPost = () => {
                   </div>
                 </div>
 
-                {/* Botones de acción */}
-                {userP._id === post.user._id && (
+                {/* delete or edit actions */}
+                {userAuth.userId === post.user._id && (
                   <div className="flex items-center space-x-2">
                     <FontAwesomeIcon
                       onClick={() => deletePostComponent(params.id)}
@@ -436,7 +502,7 @@ const ViewPost = () => {
           </div>
 
 
-          <div className='w-full block sm:hidden mb-20'>   
+          <div className='w-full block sm:hidden mb-20'>
             <UserCard user={post.user} />
           </div>
 
@@ -445,29 +511,43 @@ const ViewPost = () => {
           <div className=''>
             <p className={`${theme ? 'text-black' : ' text-white'} text-lg lg:text-3xl my-3`}>Comments</p>
             {
-              Object.keys(userP).length != 0 && (
+              Object.keys(userAuth).length != 0 && (
                 <NewComment
-                  user={userP}
+                  user={userAuth}
                   idPost={params.id}
-                  comments={comments}
+                  comments={commentsState}
+                  setCommentsState={setCommentsState}
+                  setEngagementPost={setEngagementPost}
                   userPost={post.user}
                 />
               )
             }
-            {comments.map(comment => (
-              <ShowCommenst
-                key={comment.dateComment}
-                comment={comment}
-                idPost={params.id}
-              />
-            ))}
+            <AnimatePresence mode="popLayout">
+              {commentsState.map(comment => (
+                <motion.div
+                  key={comment._id}
+                  layout
+                  initial={{ opacity: 0, y: -20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -20 }}
+                  transition={{ duration: 0.3 }}
+                >
+                  <ShowCommenst
+                    comment={comment}
+                    setCommentsState={setCommentsState}
+                    setEngagementPost={setEngagementPost}
+                    idPost={params.id}
+                  />
+                </motion.div>
+              ))}
+            </AnimatePresence>
 
           </div>
         </div>
 
 
         <div className='w-full hidden lg:block lg:w-3/12 ml-3 mt-7'>
-          <p className={`${theme ? 'text-black' : ' text-white'} text-base lg:text-xl mb-4 font-bold`}>About the author</p> 
+          <p className={`${theme ? 'text-black' : ' text-white'} text-base lg:text-xl mb-4 font-bold`}>About the author</p>
           <UserCard user={post.user} />
         </div>
 
@@ -477,20 +557,21 @@ const ViewPost = () => {
         <div className={`${theme ? ' bgt-light text-black' : 'bgt-dark'} text-white fixed z-1 bottom-0 w-full p-1 block sm:hidden`}>
           <div className='flex justify-center '>
             {
-              Object.keys(userP).length != 0 && (
+              Object.keys(userAuth).length != 0 && (
                 <ActionsPost
-                  user={userP}
-                  like={like}
-                  id={params.id}
-                  numberLike={numberLike}
-                  numberSave={numberSave}
-                  numberComments={numberComments}
-                  save={save}
+                  user={userAuth}  // user to disable buttons
+                  id={params.id} // post id
+                  // number ui
+                  numberLike={engagementPost.numberLikes} // only show number
+                  numberSave={engagementPost.numberSaves} // only show number
+                  numberComments={engagementPost.numberComments} // only show number
+                  save={save} // to paint ui
+                  like={like} // to paint ui
+                  // functions / actions
                   handleLike={handleLike}
                   handleDislike={handleDislike}
                   handleSave={handleSave}
                   handleUnsave={handleUnsave}
-                  post={post}
                 />
               )
             }

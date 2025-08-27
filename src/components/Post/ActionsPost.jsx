@@ -5,17 +5,17 @@ import ChatBubbleOutlineIcon from '@mui/icons-material/ChatBubbleOutline';
 import { useSelector } from 'react-redux';
 
 const ActionsPost = ({
+  user,
+  id,
+  numberLike,
+  numberSave,
+  numberComments,
+  like,
+  save,
   handleLike,
   handleDislike,
   handleSave,
   handleUnsave,
-  like,
-  save,
-  numberLike,
-  numberSave,
-  id,
-  numberComments,
-  user
 }) => {
 
   const theme = useSelector(state => state.posts.themeW);
