@@ -13,6 +13,7 @@ import { editUserAction } from '../../StateRedux/actions/usersActions';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faImage } from '@fortawesome/free-solid-svg-icons';
 import clientAuthAxios from '../../services/clientAuthAxios';
+import { useSwal } from '../../hooks/useSwal';
 
 const EditProfile = () => {
 
@@ -23,12 +24,18 @@ const EditProfile = () => {
   const route = useNavigate();
 
   /**
+  * hooks
+  */
+  const { showAutoSwal, showConfirmSwal } = useSwal();
+
+  /**
    * states
    */
   const [desc, setDesc] = useState('');
   const [work, setWork] = useState('');
   const [education, setEducation] = useState('');
-  const [skills, setSkills] = useState('');
+  const [skills, setSkills] = useState([]);
+  const [inputSkill, setInputSkill] = useState("");
   const [image, setImage] = useState({}); //image
   const [imageRes, setImageRes] = useState({});
   const [file, setFile] = useState(null); //get new image
@@ -53,7 +60,7 @@ const EditProfile = () => {
     clientAuthAxios.get(`${link}/pages/page-edit-profile/${params.id}?user=${user._id}`)
       .then((response) => {
 
-        
+
         setDesc(response.data.data.info?.desc);
         setWork(response.data.data.info?.work);
         setEducation(response.data.data.info?.education);
@@ -68,7 +75,7 @@ const EditProfile = () => {
       .catch((error) => {
         console.log(error);
         console.log(error);
-        
+
         if (error.code === 'ERR_NETWORK') {
           const data = {
             error: true,
@@ -104,12 +111,42 @@ const EditProfile = () => {
     setNewImage(true) //user chose new image
   }
 
+  const handleAddSkill = (e) => {
+    if (e.key === "Enter" && inputSkill.trim() !== "") {
+      e.preventDefault();
+      // evitar duplicados
+      if (!skills.includes(inputSkill.trim())) {
+        setSkills([...skills, inputSkill.trim()]);
+      }
+      setInputSkill(""); // limpiar input
+    }
+  };
+
+  const handleRemoveSkill = (skillToRemove) => {
+    setSkills(skills.filter(s => s !== skillToRemove));
+  };
+
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     // 1. validate info
     if ([desc, work, education, skills].includes('')) {
-      alert('error');
+      showConfirmSwal({
+        message: "All fields are required",
+        status: "warning",
+        confirmButton: true
+      })
+      return;
+    }
+
+    if (skills.length > 10) {
+      showConfirmSwal({
+        message: "Please insert between 1 - 10 skills",
+        status: "warning",
+        confirmButton: true
+      })
+
       return;
     }
 
@@ -118,7 +155,9 @@ const EditProfile = () => {
     data.append('desc', desc);
     data.append('work', work);
     data.append('education', education);
-    data.append('skills', skills);
+    const skillsArray = skills.map(s => s.trim()); 
+    data.append('skills', JSON.stringify(skillsArray));
+    // data.append('skills', skills);
 
     // 3. check if there is a new image
     if (newImage) {
@@ -139,12 +178,12 @@ const EditProfile = () => {
 
   const quitImage = () => {
     console.log("quit image");
-    
+
     if (file || image) {
       setFile(null);
       setImage(null);
     }
-      
+
 
   }
 
@@ -177,7 +216,7 @@ const EditProfile = () => {
                     <div className="md:col-span-2">
                       <div className="flex items-center gap-6">
                         {
-                          file || (image?.secure_url !== "")  ?
+                          file || (image?.secure_url !== "") ?
                             <div
                               className="relative z-0 h-24 w-24 flex-shrink-0 rounded-full bg-cover bg-center bg-no-repeat"
                               style={{ backgroundImage: `url(${newImage ? URL.createObjectURL(file) : image?.secure_url})` }}
@@ -264,16 +303,28 @@ const EditProfile = () => {
                         />
                       </div>
                       <div>
-                        <label className="block text-sm font-medium " htmlFor="skills">Skills</label>
-                        <input
-                          className="text-black p-2 form-input mt-1 block w-full rounded-md border-gray-300  shadow-sm  sm:text-sm"
-                          id="skills"
-                          type="text"
-                          placeholder="HTML, CSS, JavaScript, React, Tailwind CSS"
-                          value={skills}
-                          onChange={(e) => setSkills(e.target.value)}
-                        />
+                        <label className="block text-sm font-medium mb-1" htmlFor="skills">Skills Press Enter to Add (max 0 - 10)</label>
+
+                        <div className="flex flex-wrap gap-2 rounded">
+                          {skills.map((skill, idx) => (
+                            <span key={idx} className="bg-blue-200 text-blue-800 px-2 py-1 rounded flex items-center gap-1">
+                              {skill}
+                              <button type="button" onClick={() => handleRemoveSkill(skill)} className="font-bold">×</button>
+                            </span>
+                          ))}
+
+                          <input
+                            id="skills"
+                            type="text"
+                            placeholder="Type and press Enter"
+                            className="flex-1 border-none outline-none p-2 rounded-md text-black"
+                            value={inputSkill}
+                            onChange={(e) => setInputSkill(e.target.value)}
+                            onKeyDown={handleAddSkill}
+                          />
+                        </div>
                       </div>
+
                     </div>
                   </div>
 

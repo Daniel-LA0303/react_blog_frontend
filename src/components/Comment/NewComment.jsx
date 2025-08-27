@@ -58,7 +58,7 @@ const NewComment = ({
             // 3. request to backend
             const response = await clientAuthAxios.post(`/comments/new-comment/${id}`, data);
             setComment('');
-            
+
             // update comments
             setCommentsState(prev => [response.data.data, ...prev]);
             setEngagementPost(prev => ({
@@ -87,7 +87,7 @@ const NewComment = ({
                 <div className='flex'>
                     <Link
                         to={`/profile/${userAuth.userId}`}
-                        class="h-12 w-12 flex-shrink-0 rounded-full bg-cover bg-center bg-no-repeat mr-2"
+                        className="h-12 w-12 flex-shrink-0 rounded-full bg-cover bg-center bg-no-repeat mr-2"
                         style={{
                             backgroundImage: `url("${userAuth.profileImage}")`,
                             backgroundSize: "cover",

@@ -317,7 +317,7 @@ const ShowCommenst = ({
                     }
                 </div>
             </article>
-            {
+            {/* {
                 replyActive ? (
                     <ReplyComment
                         setReplyActive={setReplyActive}
@@ -345,7 +345,7 @@ const ShowCommenst = ({
                         }
                     </>
                 ) : (null)
-            }
+            } */}
 
         </div>
 
