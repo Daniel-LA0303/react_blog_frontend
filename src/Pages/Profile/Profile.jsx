@@ -1,6 +1,6 @@
-import React, {useEffect, useState} from 'react'
+import React, { useEffect, useState } from 'react'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faUser, faHeart, faFile } from '@fortawesome/free-solid-svg-icons';
+import { faUser, faHeart, faFile, faCake } from '@fortawesome/free-solid-svg-icons';
 
 import CakeIcon from '@mui/icons-material/Cake';
 import FavoriteIcon from '@mui/icons-material/Favorite';
@@ -11,7 +11,7 @@ import { useSelector } from 'react-redux';
 
 import Sidebar from '../../components/Sidebar/Sidebar';
 
-import { useParams } from 'react-router-dom';
+import { Link, useNavigate, useParams } from 'react-router-dom';
 
 import Spinner from '../../components/Spinner/Spinner';
 import axios from 'axios';
@@ -20,34 +20,49 @@ import Post from '../../components/Post/Post';
 import usePages from '../../context/hooks/usePages';
 import Error from '../../components/Error/Error';
 import Swal from 'sweetalert2';
+import userUserAuthContext from '../../context/hooks/useUserAuthContext';
+import { useSwal } from '../../hooks/useSwal';
+import clientAuthAxios from '../../services/clientAuthAxios';
+
+import EmailOutlinedIcon from '@mui/icons-material/EmailOutlined';
 
 
 const Profile = () => {
 
-    /**
-   * context
+  /**
+ * context
+ */
+  const { errorPage, setErrorPage } = usePages();
+  const { error, message } = errorPage;
+
+  /**
+   * hooks
    */
-  const {errorPage, setErrorPage} = usePages();
-  const {error, message} = errorPage;
-  
+  const { userAuth } = userUserAuthContext();
+  const { showConfirmSwal } = useSwal();
 
   /**
    * router
    */
   const params = useParams();
+  const route = useNavigate();
+
 
   /**
    * States
    */
-  const[isFollow, setIsFollow] = useState(null);
-  const[posts, setPosts] = useState([]);
-  const[user, setUser] = useState({}); //-> user view
-  const[loading, setLoading] = useState(false);
+  const [isFollow, setIsFollow] = useState(null); // -> to paint follow
+  const [posts, setPosts] = useState([]); // -> user's posts
+  const [user, setUser] = useState({}); //-> user view
+  const [loading, setLoading] = useState(false); // -> loading
+  const [page, setPage] = useState(0); // page 1
+  const [hasMore, setHasMore] = useState(true); // check more blogs
+  const limit = 5;
+
 
   /**
    * States Redux
    */
-  const userP = useSelector(state => state.posts.user);
   const theme = useSelector(state => state.posts.themeW);
   const link = useSelector(state => state.posts.linkBaseBackend);
 
@@ -58,267 +73,323 @@ const Profile = () => {
     setErrorPage({
       error: false,
       message: {}
-  });
-  }, []);
+    });
+  }, []);  
 
+  // useeffect to get info profile
   useEffect(() => {
     setLoading(true);
     axios.get(`${link}/pages/page-profile-user/${params.id}`)
       .then((pageProfile) => {
-        console.log(pageProfile);
-        if(pageProfile.data.user.followersUsers.followers.includes(userP._id)){
+
+        console.log(pageProfile.data.data);
+        
+
+        setUser(pageProfile.data.data);
+        // paint buttons
+        if (pageProfile.data.data.followersUsers.followers.includes(userAuth.userId)) {
           setIsFollow(true);
-        }else{
+        } else {
           setIsFollow(false);
         }
-        setPosts(pageProfile.data.posts);
-        setUser(pageProfile.data.user);
+        
         setLoading(false);
       }).catch((error) => {
         console.log(error);
-        if(error.code === 'ERR_NETWORK'){
+        if (error.code === 'ERR_NETWORK') {
           setErrorPage({
-              error: true,
-              message: {
-                status: null,
-                message: 'Network Error',
-                desc: null
-              }
+            error: true,
+            message: {
+              status: null,
+              message: 'Network Error',
+              desc: null
+            }
           });
           setLoading(false);
-        }else{
-          setErrorPage({
-              error: true,
-              message: {
-                status: error.response.status,
-                message: error.response.data.message,
-                desc: error.response.data.message
-              }
+        } else {
+          setLoading(false);
+          showConfirmSwal({
+            message: error.response.data.message,
+            status: "error",
+            confirmButton: true
           });
+          route("/");
           
-          setLoading(false);
         }
-      });  
+      });
   }, [params.id]);
+
+  /**
+  * init posts charge the first page
+  */
+  useEffect(() => {
+    setPosts([]); // clean post profile in case to change profile
+    setPage(1);
+    setHasMore(true);
+    fetchPosts(1);
+  }, [params.id]);
+
+  /**
+   * infinite scroll
+   */
+  useEffect(() => {
+    const handleScroll = () => {
+      if (
+        !loading &&
+        hasMore &&
+        window.innerHeight + document.documentElement.scrollTop + 50 >=
+        document.documentElement.scrollHeight
+      ) {
+        fetchPosts();
+      }
+    };
+
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, [loading, hasMore, page]);
 
   /**
    * Functions
    */
-  const handleUnFollowUser = async() => {
-    
+  // follow user
+  const handleUnFollowUser = async () => {
     try {
-      await axios.post(`${link}/users/user-unfollow/${user._id}`, userP);
+      await clientAuthAxios.post(`/users/user-unfollow/${userAuth.userId}?userUnfollow=${params.id}`);
       setIsFollow(false);
     } catch (error) {
       console.log(error);
-      Swal.fire({
-        title: 'Error deleting the post',
-        text: "Status " + error.response.status + " " + error.response.data.msg,
-      });
-    }
-  } 
-
-  const handleFollowUser = async() => {
-    
-    try {
-      await axios.post(`${link}/users/user-follow/${user._id}`, userP);
-      setIsFollow(true);
-    } catch (error) {
-      console.log(error);
-      Swal.fire({
-        title: 'Error deleting the post',
-        text: "Status " + error.response.status + " " + error.response.data.msg,
+      showConfirmSwal({
+        message: error.response.data.message,
+        status: "error",
+        confirmButton: true
       });
     }
   }
 
-  // if(Object.keys(user) == '') return <Spinner />
+    /**
+   * fetch posts with pagination (infinite scroll)
+   */
+  const fetchPosts = async (pageToFetch = page) => {
+    if (loading || !hasMore) return;
+    setLoading(true);
+
+    try {
+      const response = await axios.get(
+        `${link}/users/posts-by-user/${params.id}?page=${pageToFetch}&limit=${limit}`
+      );      
+
+      const { data, meta } = response.data.data;
+      if (data && data.length > 0) {
+        setPosts((prev) => [...prev, ...data]);
+        setPage(pageToFetch + 1);
+        setHasMore(pageToFetch < meta.totalPages);
+      } else {
+        setHasMore(false);
+      }
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // unfollow user
+  const handleFollowUser = async () => {
+    try {
+      await clientAuthAxios.post(`/users/user-follow/${userAuth.userId}?userFollow=${params.id}`);
+      setIsFollow(true);
+    } catch (error) {
+      console.log(error);
+      showConfirmSwal({
+        message: error.response.data.message,
+        status: "error",
+        confirmButton: true
+      });
+    }
+  }
+
   return (
     <div className=''>
       <Sidebar />
       {
-        error ? <Error message={message}/>:
-        loading && !error ? <Spinner/> :
-        <section className="pt-8 sm:pt-8 ">
-        <div className="flex mx-auto px-4 sm:px-6 lg:px-8 max-w-screen-xl">
-          <div className={`${theme ? 'bgt-light ' : 'bgt-dark text-white'} flex flex-col min-w-0 break-word w-full mb-6 shadow-xl rounded-lg mt-16`}>
-            <div className="px-2 sm:px-6 ">
-              <div className="flex flex-wrap justify-center">
-                <div className="w-full ml-10 md:ml-0 px-4 flex justify-start sm:justify-center">
-                  <img alt="..." 
-                    src={user?.profilePicture?.secure_url ? user.profilePicture.secure_url : '/avatar.png'} 
-                    className=" shadow-xl image_profile  h-auto align-middle border-none  -m-16  lg:-ml-16 max-w-150-px" />  
+
+        <main className="flex-1 px-4 py-8 sm:px-6 lg:px-8 max-w-screen-xl mx-auto">
+          <div className="mx-auto grid grid-cols-1 gap-8 lg:grid-cols-3">
+            <div className="lg:col-span-2">
+
+              {/* header user card */}
+              <div className={`overflow-hidden rounded-lg shadow ${theme ? 'bgt-light' : 'bgt-dark text-white'}`}>
+                <div className="bg-gradient-to-br from-[var(--primary-100)] to-white p-6">
+                  <div className="flex flex-col items-center gap-6 text-center sm:flex-row sm:text-left">
+                    <div className="relative">
+
+                      <div
+                        className="flex flex-col items-center space-y-4 text-center">
+                        <img
+                          alt="User profile photo"
+                          className="h-24 w-24 rounded-full object-cover"
+                          src={
+                            user?.profilePicture?.secure_url
+                              ? user.profilePicture.secure_url
+                              : "/avatar.png"
+                          }
+                        />
+                      </div>
+                    </div>
+                    <div className="flex-1">
+                      <h1 className="text-lg font-bold sm:text-xl">{user?.name}</h1>
+                      <p className="mt-1 text-lg font-light">{user?.info?.work}</p>
+                      <p className="mt-1 text-sm font-light">{user?.info?.education}</p>
+                      <div className='flex justify-start items-center mt-2'>
+                        <FontAwesomeIcon icon={faCake} />
+                        <p className="mt-1 text-xm font-light ml-2">Joined in <span className='font-bold'>{new Date(user.createdAt).toDateString()}</span></p>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="w-full flex justify-end mt-2">
+                    {user._id === userAuth.userId || Object.keys(userAuth) == "" ? null : (
+                      <>
+                        {isFollow ? (
+                          <button
+                            type="button"
+                            onClick={() => handleUnFollowUser()}
+                            className={`${theme ? 'btn-theme-light-op2' : 'btn-theme-dark-op2'} hover:bg-gray-500 w-28 text-xs text-sm:nomral mx-1 font-medium rounded-lg px-5 py-2`}
+                          >
+                            Following
+                          </button>
+                        ) : (
+                          <button
+                            type="button"
+                            onClick={() => handleFollowUser()}
+                            className={`${theme ? 'btn-theme-light-op1' : 'btn-theme-dark-op1'} hover:bg-blue-500 w-28 text-xs text-sm:nomral mx-1 font-medium rounded-lg px-5 py-2 `}
+                          >
+                            Follow
+                          </button>
+                        )}
+                      </>
+                    )}
+                  </div>
                 </div>
-                <div className='w-full flex justify-end mt-2'>
-                  {
-                    !userP._id ? null :
-                      userP._id === user._id ? null : (                    
-                        <>
-                          {isFollow ? (
-                            <button
-                              type="button"
-                              onClick={() => handleUnFollowUser()}
-                              className={`mx-1 bg-orange-500 hover:bg-orange-800  focus:outline-none text-white  focus:ring-4 focus:ring-purple-300 font-medium rounded-lg text-sm px-5 py-2`}
-                            >
-                              Following
-                            </button>
-                          ) : (
-                            <button
-                              type="button"
-                              onClick={() => handleFollowUser()}
-                              className={`mx-1 bg-purple-800 hover:bg-purple-900  focus:outline-none text-white  focus:ring-4 focus:ring-purple-300 font-medium rounded-lg text-sm px-5 py-2 `}
-                            >
-                              Follow
-                            </button>
-                          )}
-                        </>
-                      )
-                    }
-                </div>            
               </div>
-              <div className=" ">
-                <h3 className={`${theme ? 'bgt-light ' : 'bgt-dark text-white'} text-left md:text-center text-xl mt-5 md:mt-10 font-bold leading-normal mb-2`}>
-                  {user.name}
+
+              {/* aside mobile */}
+              <aside className="space-y-8 block lg:hidden mt-8">
+                
+                {/* contact */}
+                <div className={`overflow-hidden rounded-lg shadow ${theme ? 'bgt-light' : 'bgt-dark text-white'}`}>
+                  <div className="p-6">
+                    <h3 className={`text-left text-lg md:text-xl font-semibold py-0 mb-3 ${theme ? '' : 'text-white'}`}>Contact</h3>
+                    <div className='flex justify-start items-center'>
+                      <p><EmailOutlinedIcon fontSize='small'/></p>
+                      <p className='text-xl ml-2'>{user?.email}</p>
+                    </div>
+                  </div>
+                </div>
+                {/* Skills */}
+                <div className={`overflow-hidden rounded-lg shadow ${theme ? 'bgt-light' : 'bgt-dark text-white'}`}>
+                  <div className="p-6">
+                    <h3 className={`text-left text-lg md:text-xl font-semibold py-0 ${theme ? '' : 'text-white'}`}>Skills</h3>
+                    <div className="mt-4 flex flex-wrap gap-2">
+                      {user?.info?.skills?.map((skill, i) => (
+                        <span
+                          key={i}
+                          className="rounded-full px-4 py-2 mb-3 text-sm font-medium bg-blue-300 text-blue-800"
+                        >
+                          {skill}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+
+                {/* Activity */}
+                <div className={`overflow-hidden rounded-lg shadow ${theme ? 'bgt-light' : 'bgt-dark text-white'}`}>
+                  <div className="p-6">
+                    <h3 className={`text-left text-lg md:text-xl font-semibold py-0 mb-3 ${theme ? '' : 'text-white'}`}>Activity</h3>
+                    <ul className="mt-1 space-y-4">
+                      <li className="flex justify-between border-t border-gray-200 pt-4">
+                        <span className="text-sm font-medium">Blogs Published</span>
+                        <span className="text-sm font-semibold">{user?.numberPost || 0}</span>
+                      </li>
+                      <li className="flex justify-between border-t border-gray-200 pt-4">
+                        <span className="text-sm font-medium">Likes Given</span>
+                        <span className="text-sm font-semibold">{user?.likePost?.posts?.length || 0} </span>
+                      </li>
+                      <li className="flex justify-between border-t border-gray-200 pt-4">
+                        <span className="text-sm font-medium">Followers</span>
+                        <span className="text-sm font-semibold">{user?.followersUsers?.followers?.length || 0}</span>
+                      </li>
+                    </ul>
+                  </div>
+                </div>
+              </aside>
+
+              {/* show posts by user whit infite scroll*/}
+              <div className="mt-8">
+                <h3
+                  className={`text-left text-xl md:text-3xl font-semibold pb-0 ${theme ? "" : "text-white"
+                    }`}
+                >
+                  Published Blogs
                 </h3>
-                {user.info == null ? null: (
-                  <>
-
-                    <div className="flex flex-wrap justify-center">
-                      <div className="w-full lg:w-9/12">
-                        <p className=" text-left md:text-center text-sm mb-4 leading-relaxed text-blueGray-700">
-                          {user.info.desc}
-                        </p>
-                      </div>
-                    </div>
-                    <div className="flex flex-wrap justify-center">
-                      <div className="w-full lg:w-9/12">
-                        <p className=" text-left md:text-center text-sm mb-4 leading-relaxed text-blueGray-700">
-                          <CakeIcon /> {''}
-                          Joined on {''}
-                          {new Date(user.createdAt).toDateString()}
-                        </p>
-                      </div>
-                    </div>
-                    <div className=" my-2 border-t border-0.5 text-center"></div>
-                    <div className='mx-auto block sm:flex'>
-                      <div className="my-3 text-left sm:text-center  w-full sm:w-2/4">
-                        <h2 className=' text-sm sm:text-xs font-bold'>Work: </h2>   
-                        <p className=' text-lg'>{user.info.work}</p>       
-                      </div>
-                      <div className="my-3 text-left sm:text-center w-full sm:w-2/4">
-                        <h2 className=' text-sm sm:text-xs font-bold'>Education: </h2>   
-                        <p className='text-lg'>{user.info.education}</p>
-                      </div>
-                    </div>
-                  </>
+                <div className="mt-4 space-y-6">
+                  {posts.map((post) => (
+                    <Post key={post._id} post={post} />
+                  ))}
+                </div>
+                {loading && <Spinner />} 
+                {!hasMore && (
+                  <p className="text-center mt-4 text-gray-500 text-sm">
+                    No more posts
+                  </p>
                 )}
-
               </div>
-            </div>
-          </div>
-        </div>
-        {/* Content here */}
-        <div className='block sm:flex mx-auto px-4 sm:px-6 lg:px-8 max-w-screen-xl'> 
-            <div className='w-full sm:w-3/12 mr-0 sm:mr-2'>
-              {user.info == null ? null: (
-                <div className={`${theme ? 'bgt-light ' : 'bgt-dark text-white'} flex flex-col min-w-0 break-word w-full my-1 shadow-xl rounded-lg mt-4`}>
-                  <div className=" px-2 mb-2 mt-4 text-left block sm:text-center  sm:justify-center">
-                    <h2 className=' text-sm sm:text-xs font-bold'>Skills:</h2>
-                    <div className=" my-2 border-t border-0.5 text-center"></div>
-                    <p>{user.info.skills}</p>
-                  </div>
-                </div>
-              )}
-              <div>
-                <div className={`${theme ? 'bgt-light ' : 'bgt-dark text-white'} flex flex-col min-w-0 break-word w-full mb-6 shadow-xl rounded-lg text-center `}>
-                  <div className=" py-4 lg:pt-4 ">
-                    <div className="flex items-center p-3 text-center">
-                      <InsertDriveFileIcon 
-                        style={{
-                          fontSize: 18
-                        }}
-                      />
-                      <span className="text-sm font-bold block uppercase tracking-wide text-blueGray-600 mx-1">
-                        {user?.posts?.length} {''}
-                      </span>
-                      <span className="text-sm text-blueGray-400">           
-                        Posts published
-                      </span>
-                    </div>
 
-                    <div className="flex items-center p-3 text-center">
-                      <FavoriteIcon 
-                        style={{
-                          fontSize: 18
-                        }}
-                      />
-                      <span className="text-sm font-bold block uppercase tracking-wide text-blueGray-600 mx-1">
-                        {user?.likePost?.posts?.length}
-                      </span>
-                      <span className="text-sm text-blueGray-400">
-                        Likes on posts
-                      </span>
-                    </div>
-                    <div className="flex items-center p-3 text-center">
-                      <PersonIcon 
-                        style={{
-                          fontSize: 18
-                        }}
-                      />
-                      <span className="text-sm font-bold block uppercase tracking-wide text-blueGray-600 mx-1">
-                        {user?.followersUsers?.followers?.length}
-                      </span>
-                      <span className="text-sm text-blueGray-400">
-                        Followers
-                      </span>
-                    </div>
-                  </div>
-                </div>
-              </div>
             </div>
-            <div className='w-full sm:w-9/12 sm:mx-0 flex flex-col items-center'>
-              {/* <div className='w-full '> */}
-                {Object.keys(user) === '' ? (
-                  <>
-                    <LoadingPosts />
-                  </>
-                ): 
-                <>
-                  {posts.length === 0 ? (
-                    <p className=' text-center'>There is nothing around here yet</p>
-                  ) : (<>
-                    {[...posts].reverse().map(post => (
-                      <Post
-                          key={post._id}
-                          post={post}
-                      />
+
+            {/* aside desktop */}
+            <aside className="space-y-8 hidden lg:block">
+              {/* Skills */}
+              <div className={`overflow-hidden rounded-lg shadow ${theme ? 'bgt-light' : 'bgt-dark text-white'}`}>
+                <div className="p-6">
+                  <h3 className={`text-left text-lg md:text-xl font-semibold py-0 ${theme ? '' : 'text-white'}`}>Skills</h3>
+                  <div className="mt-4 flex flex-wrap gap-2">
+                    {user?.info?.skills?.map((skill, i) => (
+                      <span
+                        key={i}
+                        className="rounded-full px-4 py-2 mb-3 text-sm font-medium bg-blue-300 text-blue-800"
+                      >
+                        {skill}
+                      </span>
                     ))}
-                  </>)}
-      
-                </>}
-
-              {/* </div> */}
-            </div>
-        </div>
-        
-        <div className='flex flex-row mt-0 md:mt-10 mx-auto w-full md:w-10/12 lg:w-8/12'>
-
-        </div>
-        
-        <footer className="relative  pt-8 pb-6 mt-8">
-          <div className="container mx-auto px-4">
-            <div className="flex flex-wrap items-center md:justify-between justify-center">
-              <div className="w-full md:w-6/12 px-4 mx-auto text-center">
-                <div className="text-sm text-blueGray-500 font-semibold py-1">
-                  Made with MERN Stack by Daniel.
+                  </div>
                 </div>
               </div>
-            </div>
-          </div>
-        </footer>
-      </section>
-      }
 
+              {/* Activity */}
+              <div className={`overflow-hidden rounded-lg shadow ${theme ? 'bgt-light' : 'bgt-dark text-white'}`}>
+                <div className="p-6">
+                  <h3 className={`text-left text-lg md:text-xl font-semibold py-0 mb-3 ${theme ? '' : 'text-white'}`}>Activity</h3>
+                  <ul className="mt-1 space-y-4">
+                    <li className="flex justify-between border-t border-gray-200 pt-4">
+                      <span className="text-sm font-medium">Blogs Published</span>
+                      <span className="text-sm font-semibold">{user?.numberPost || 0}</span>
+                    </li>
+                    <li className="flex justify-between border-t border-gray-200 pt-4">
+                      <span className="text-sm font-medium">Likes Given</span>
+                      <span className="text-sm font-semibold">{user?.likePost?.posts?.length || 0}</span>
+                    </li>
+                    <li className="flex justify-between border-t border-gray-200 pt-4">
+                      <span className="text-sm font-medium">Followers</span>
+                      <span className="text-sm font-semibold">{user?.followersUsers?.followers?.length || 0}</span>
+                    </li>
+                  </ul>
+                </div>
+              </div>
+            </aside>
+          </div>
+        </main>
+      }
     </div>
   )
 }

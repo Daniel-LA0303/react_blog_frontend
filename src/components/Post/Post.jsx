@@ -168,7 +168,7 @@ const Post = ({ post }) => {
         <div className=" w-full md:w-4/12">
           <img
             className="object-cover w-full h-20   md:h-60 md:rounded-none md:rounded-l-lg block"
-            src={linkImage.secure_url}
+            src={linkImage?.secure_url}
             alt=""
           />
         </div>
@@ -202,7 +202,7 @@ const Post = ({ post }) => {
                         className="object-cover block border h-12 w-12 rounded-full"
                         src={
                           imageProfile != ""
-                            ? imageProfile.secure_url
+                            ? imageProfile?.secure_url
                             : "/avatar.png"
                         }
                       />

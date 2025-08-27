@@ -4,6 +4,7 @@ import { useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
 import userUserAuthContext from '../../context/hooks/useUserAuthContext';
 import { useSwal } from '../../hooks/useSwal';
+import clientAuthAxios from '../../services/clientAuthAxios';
 
 const UserCard = ({ user }) => {
 
@@ -42,7 +43,7 @@ const UserCard = ({ user }) => {
   const handleClickUnFollow = async () => {
 
     try {
-      await axios.post(`${link}/users/user-unfollow/${userAuth.userId}?userUnfollow=${user._id}`);
+      await clientAuthAxios.post(`/users/user-unfollow/${userAuth.userId}?userUnfollow=${user._id}`);
       setIsFollow(false);
     } catch (error) {
       console.log(error);
@@ -57,7 +58,7 @@ const UserCard = ({ user }) => {
   const handleClickFollow = async () => {
 
     try {
-      await axios.post(`${link}/users/user-follow/${userAuth.userId}?userFollow=${user._id}`);
+      await clientAuthAxios.post(`/users/user-follow/${userAuth.userId}?userFollow=${user._id}`);
       setIsFollow(true);
     } catch (error) {
       console.log(error);
