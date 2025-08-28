@@ -27,6 +27,7 @@ import clientAuthAxios from '../../services/clientAuthAxios';
 import EmailOutlinedIcon from '@mui/icons-material/EmailOutlined';
 
 
+
 const Profile = () => {
 
   /**
@@ -74,7 +75,7 @@ const Profile = () => {
       error: false,
       message: {}
     });
-  }, []);  
+  }, []);
 
   // useeffect to get info profile
   useEffect(() => {
@@ -83,7 +84,7 @@ const Profile = () => {
       .then((pageProfile) => {
 
         console.log(pageProfile.data.data);
-        
+
 
         setUser(pageProfile.data.data);
         // paint buttons
@@ -92,7 +93,7 @@ const Profile = () => {
         } else {
           setIsFollow(false);
         }
-        
+
         setLoading(false);
       }).catch((error) => {
         console.log(error);
@@ -114,7 +115,7 @@ const Profile = () => {
             confirmButton: true
           });
           route("/");
-          
+
         }
       });
   }, [params.id]);
@@ -166,9 +167,9 @@ const Profile = () => {
     }
   }
 
-    /**
-   * fetch posts with pagination (infinite scroll)
-   */
+  /**
+ * fetch posts with pagination (infinite scroll)
+ */
   const fetchPosts = async (pageToFetch = page) => {
     if (loading || !hasMore) return;
     setLoading(true);
@@ -176,7 +177,7 @@ const Profile = () => {
     try {
       const response = await axios.get(
         `${link}/users/posts-by-user/${params.id}?page=${pageToFetch}&limit=${limit}`
-      );      
+      );
 
       const { data, meta } = response.data.data;
       if (data && data.length > 0) {
@@ -274,14 +275,51 @@ const Profile = () => {
 
               {/* aside mobile */}
               <aside className="space-y-8 block lg:hidden mt-8">
-                
+
                 {/* contact */}
                 <div className={`overflow-hidden rounded-lg shadow ${theme ? 'bgt-light' : 'bgt-dark text-white'}`}>
                   <div className="p-6">
                     <h3 className={`text-left text-lg md:text-xl font-semibold py-0 mb-3 ${theme ? '' : 'text-white'}`}>Contact</h3>
-                    <div className='flex justify-start items-center'>
-                      <p><EmailOutlinedIcon fontSize='small'/></p>
-                      <p className='text-xl ml-2'>{user?.email}</p>
+                    <div className="flex flex-col gap-2">
+                      <div className="flex items-center">
+                        <i className="fa-solid fa-envelope text-xl w-6 text-center"></i>
+                        <p className="text-xl ml-2">{user?.email}</p>
+                      </div>
+
+                      {user?.info?.social?.facebook && (
+                        <div className="flex items-center">
+                          <i className="fa-brands fa-facebook text-xl w-6 text-center"></i>
+                          <p className="text-xl ml-2">{user.info.social.facebook}</p>
+                        </div>
+                      )}
+
+                      {user?.info?.social?.instagram && (
+                        <div className="flex items-center">
+                          <i className="fa-brands fa-instagram text-xl w-6 text-center"></i>
+                          <p className="text-xl ml-2">{user.info.social.instagram}</p>
+                        </div>
+                      )}
+
+                      {user?.info?.social?.twitter && (
+                        <div className="flex items-center">
+                          <i className="fa-brands fa-twitter text-xl w-6 text-center"></i>
+                          <p className="text-xl ml-2">{user.info.social.twitter}</p>
+                        </div>
+                      )}
+
+                      {user?.info?.social?.youtube && (
+                        <div className="flex items-center">
+                          <i className="fa-brands fa-youtube text-xl w-6 text-center"></i>
+                          <p className="text-xl ml-2">{user.info.social.youtube}</p>
+                        </div>
+                      )}
+
+                      {user?.info?.social?.linkedin && (
+                        <div className="flex items-center">
+                          <i className="fa-brands fa-linkedin text-xl w-6 text-center"></i>
+                          <p className="text-xl ml-2">{user.info.social.linkedin}</p>
+                        </div>
+                      )}
                     </div>
                   </div>
                 </div>
@@ -337,7 +375,7 @@ const Profile = () => {
                     <Post key={post._id} post={post} />
                   ))}
                 </div>
-                {loading && <Spinner />} 
+                {loading && <Spinner />}
                 {!hasMore && (
                   <p className="text-center mt-4 text-gray-500 text-sm">
                     No more posts
@@ -349,6 +387,53 @@ const Profile = () => {
 
             {/* aside desktop */}
             <aside className="space-y-8 hidden lg:block">
+              {/* contact */}
+              <div className={`overflow-hidden rounded-lg shadow ${theme ? 'bgt-light' : 'bgt-dark text-white'}`}>
+                <div className="p-6">
+                  <h3 className={`text-left text-lg md:text-xl font-semibold py-0 mb-3 ${theme ? '' : 'text-white'}`}>Contact</h3>
+                  <div className="flex flex-col gap-2">
+                    <div className="flex items-center">
+                      <i className="fa-solid fa-envelope text-xl w-6 text-center"></i>
+                      <p className="text-xl ml-2">{user?.email}</p>
+                    </div>
+
+                    {user?.info?.social?.facebook && (
+                      <div className="flex items-center">
+                        <i className="fa-brands fa-facebook text-xl w-6 text-center"></i>
+                        <p className="text-xl ml-2">{user.info.social.facebook}</p>
+                      </div>
+                    )}
+
+                    {user?.info?.social?.instagram && (
+                      <div className="flex items-center">
+                        <i className="fa-brands fa-instagram text-xl w-6 text-center"></i>
+                        <p className="text-xl ml-2">{user.info.social.instagram}</p>
+                      </div>
+                    )}
+
+                    {user?.info?.social?.twitter && (
+                      <div className="flex items-center">
+                        <i className="fa-brands fa-twitter text-xl w-6 text-center"></i>
+                        <p className="text-xl ml-2">{user.info.social.twitter}</p>
+                      </div>
+                    )}
+
+                    {user?.info?.social?.youtube && (
+                      <div className="flex items-center">
+                        <i className="fa-brands fa-youtube text-xl w-6 text-center"></i>
+                        <p className="text-xl ml-2">{user.info.social.youtube}</p>
+                      </div>
+                    )}
+
+                    {user?.info?.social?.linkedin && (
+                      <div className="flex items-center">
+                        <i className="fa-brands fa-linkedin text-xl w-6 text-center"></i>
+                        <p className="text-xl ml-2">{user.info.social.linkedin}</p>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </div>
               {/* Skills */}
               <div className={`overflow-hidden rounded-lg shadow ${theme ? 'bgt-light' : 'bgt-dark text-white'}`}>
                 <div className="p-6">

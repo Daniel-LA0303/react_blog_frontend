@@ -42,6 +42,13 @@ const EditProfile = () => {
   const [newImage, setNewImage] = useState(false); //new image validation
   const [loading, setLoading] = useState(false);
   const inputRef = useRef(null);
+  const [socialMedia, setSocialMedia] = useState({
+    facebook: '',
+    youtube: '',
+    twitter: '',
+    instagram: '',
+    linkedin: ''
+  });
 
   /**
    * states Redux
@@ -126,6 +133,12 @@ const EditProfile = () => {
     setSkills(skills.filter(s => s !== skillToRemove));
   };
 
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setSocialMedia(prev => ({ ...prev, [name]: value }));
+  };
+
+
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -155,8 +168,11 @@ const EditProfile = () => {
     data.append('desc', desc);
     data.append('work', work);
     data.append('education', education);
-    const skillsArray = skills.map(s => s.trim()); 
+    const skillsArray = skills.map(s => s.trim());
     data.append('skills', JSON.stringify(skillsArray));
+    data.append('social', JSON.stringify(socialMedia));
+    console.log(socialMedia);
+
     // data.append('skills', skills);
 
     // 3. check if there is a new image
@@ -270,7 +286,7 @@ const EditProfile = () => {
                     </div>
                     <div className="space-y-6 md:col-span-2">
                       <div>
-                        <label className="block text-sm font-medium " htmlFor="description">Description</label>
+                        <label className="block text-sm font-medium " htmlFor="description">Description *</label>
                         <textarea
                           className="text-black p-2 form-textarea mt-1 block w-full resize-y rounded-md border-gray-300  shadow-sm  sm:text-sm"
                           id="description"
@@ -281,9 +297,9 @@ const EditProfile = () => {
                         ></textarea>
                       </div>
                       <div>
-                        <label className="block text-sm font-medium " htmlFor="work">Work</label>
+                        <label className="block text-sm font-medium " htmlFor="work">Work *</label>
                         <input
-                          className="text-black p-2 form-input mt-1 block w-full rounded-md border-gray-300  shadow-sm  sm:text-sm"
+                          className="text-black p-2 form-input mt-1 block w-full rounded-md border-gray-300 shadow-sm sm:text-sm"
                           id="work"
                           type="text"
                           placeholder="Frontend Developer at Stitch"
@@ -292,7 +308,7 @@ const EditProfile = () => {
                         />
                       </div>
                       <div>
-                        <label className="block text-sm font-medium " htmlFor="education">Education</label>
+                        <label className="block text-sm font-medium " htmlFor="education">Education *</label>
                         <input
                           className="text-black p-2 form-input mt-1 block w-full rounded-md border-gray-300  shadow-sm  sm:text-sm"
                           id="education"
@@ -303,7 +319,7 @@ const EditProfile = () => {
                         />
                       </div>
                       <div>
-                        <label className="block text-sm font-medium mb-1" htmlFor="skills">Skills Press Enter to Add (max 0 - 10)</label>
+                        <label className="block text-sm font-medium mb-1" htmlFor="skills">Skills Press Enter to Add (max 0 - 10) *</label>
 
                         <div className="flex flex-wrap gap-2 rounded">
                           {skills.map((skill, idx) => (
@@ -325,6 +341,56 @@ const EditProfile = () => {
                         </div>
                       </div>
 
+                      <div className="" >
+                        <label className="block text-sm font-medium mb-1">Social Media</label>
+                        <div className={``}>
+                          <label className="block text-xs font-medium mb-1">Facebook</label>
+                          <input
+                            type="text"
+                            name="facebook"
+                            placeholder="Facebook"
+                            value={socialMedia.facebook}
+                            onChange={handleChange}
+                            className="p-2 rounded-md shadow-sm w-full mb-2 text-black"
+                          />
+                          <label className="block text-xs font-medium mb-1">YouTube</label>
+                          <input
+                            type="text"
+                            name="youtube"
+                            placeholder="YouTube"
+                            value={socialMedia.youtube}
+                            onChange={handleChange}
+                            className="p-2 rounded-md shadow-sm w-full mb-2 text-black"
+                          />
+                          <label className="block text-xs font-medium mb-1">Twitter</label>
+                          <input
+                            type="text"
+                            name="twitter"
+                            placeholder="Twitter"
+                            value={socialMedia.twitter}
+                            onChange={handleChange}
+                            className="p-2 rounded-md shadow-sm w-full mb-2 text-black"
+                          />
+                          <label className="block text-xs font-medium mb-1">Instagram</label>
+                          <input
+                            type="text"
+                            name="instagram"
+                            placeholder="Instagram"
+                            value={socialMedia.instagram}
+                            onChange={handleChange}
+                            className="p-2 rounded-md shadow-sm w-full mb-2 text-black"
+                          />
+                          <label className="block text-xs font-medium mb-1">LinkedIn</label>
+                          <input
+                            type="text"
+                            name="linkedin"
+                            placeholder="LinkedIn"
+                            value={socialMedia.linkedin}
+                            onChange={handleChange}
+                            className="p-2 rounded-md shadow-sm w-full mb-2 text-black"
+                          />
+                        </div>
+                      </div>
                     </div>
                   </div>
 
