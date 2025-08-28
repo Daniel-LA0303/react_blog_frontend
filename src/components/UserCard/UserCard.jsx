@@ -1,4 +1,3 @@
-import axios from 'axios';
 import React, { useEffect, useState } from 'react'
 import { useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
@@ -17,14 +16,12 @@ const UserCard = ({ user }) => {
    * hooks
    */
   const { userAuth } = userUserAuthContext();
-  const { showAutoSwal, showConfirmSwal } = useSwal();
+  const { showConfirmSwal } = useSwal();
 
   /**
    * states Redux
    */
-  const userP = useSelector(state => state.posts.user);
   const theme = useSelector(state => state.posts.themeW);
-  const link = useSelector(state => state.posts.linkBaseBackend);
 
   /**
    * useEffect
@@ -78,7 +75,7 @@ const UserCard = ({ user }) => {
       }
           w-full overflow-hidden rounded-xl shadow-lg`}>
       <div className="p-6">
-        <Link 
+        <Link
           to={`/profile/${user._id}`}
           className="flex flex-col items-center space-y-4 text-center">
           <img
@@ -110,27 +107,28 @@ const UserCard = ({ user }) => {
           </div>
         </div>
         <div className="mt-6">
-          {user._id === userAuth.userId || Object.keys(userAuth) == "" ? null : (
+          {userAuth?.userId && user._id !== userAuth.userId && (
             <>
               {isFollow ? (
                 <button
                   type="button"
-                  onClick={() => handleClickUnFollow()}
-                  className={`${theme ? 'btn-theme-light-op2' : 'btn-theme-dark-op2'} hover:bg-gray-500 w-full text-xs text-sm:nomral mx-1 font-medium rounded-lg px-5 py-2`}
+                  onClick={handleClickUnFollow}
+                  className={`${theme ? 'btn-theme-light-op2' : 'btn-theme-dark-op2'} hover:bg-gray-500 w-full text-xs text-sm:normal mx-1 font-medium rounded-lg px-5 py-2`}
                 >
                   Following
                 </button>
               ) : (
                 <button
                   type="button"
-                  onClick={() => handleClickFollow()}
-                  className={`${theme ? 'btn-theme-light-op1' : 'btn-theme-dark-op1'} hover:bg-blue-500 w-full text-xs text-sm:nomral mx-1 font-medium rounded-lg px-5 py-2 `}
+                  onClick={handleClickFollow}
+                  className={`${theme ? 'btn-theme-light-op1' : 'btn-theme-dark-op1'} hover:bg-blue-500 w-full text-xs text-sm:normal mx-1 font-medium rounded-lg px-5 py-2`}
                 >
                   Follow
                 </button>
               )}
             </>
           )}
+
         </div>
       </div>
     </div>

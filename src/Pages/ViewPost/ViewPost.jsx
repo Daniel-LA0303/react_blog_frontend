@@ -10,14 +10,13 @@ import { Link, useParams, useNavigate } from 'react-router-dom';
  * icons
  */
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faHeart, faBookmark, faTrash, faPen, faL, faComment } from '@fortawesome/free-solid-svg-icons'
+import { faTrash, faPen } from '@fortawesome/free-solid-svg-icons'
 
 
 /**
  * redux
  */
 import { useDispatch, useSelector } from 'react-redux';
-import { getCommentsAction, getOnePostAction, getUserAction } from '../../StateRedux/actions/postAction';
 import { deletePostAction } from '../../StateRedux/actions/postsActions';
 
 /**
@@ -77,7 +76,11 @@ const ViewPost = () => {
   /**
    * hooks
    */
-  const { userAuth } = userUserAuthContext();
+  const {
+    userAuth,
+    addPostToSaved,
+    removePostFromSaved, 
+  } = userUserAuthContext();
   const { showConfirmSwal, showAutoSwal } = useSwal();
 
   /**
@@ -100,13 +103,10 @@ const ViewPost = () => {
   const [save, setSave] = useState(false);
   const [post, setPost] = useState({});
   const [commentsState, setCommentsState] = useState([]);
-  const [loading, setLoading] = useState(false);
-
 
   /**
    * states redux
    */
-  const userP = useSelector(state => state.posts.user);
   const theme = useSelector(state => state.posts.themeW);
   const link = useSelector(state => state.posts.linkBaseBackend);
   const deletePostRedux = (postId, userId) => dispatch(deletePostAction(postId, userId));
@@ -118,18 +118,25 @@ const ViewPost = () => {
 
   // useeffect to get one post or blog
   useEffect(() => {
-    setLoading(true);
     axios.get(`${link}/pages/page-view-post/${params.id}`)
       .then((response) => {
-
+        
+        // post insfi
         setPost(response.data.data.post);
         const newEngagement = {
           numberLikes: response.data.data.post.likePost.users.length,
           numberSaves: response.data.data.post.usersSavedPost.users.length,
           numberComments: response.data.data.comments.length
         };
+        // paint like
+        setLike(response.data.data.post.likePost.users.includes(userAuth.userId));
+        // pain save
+        setSave(response.data.data.post.usersSavedPost.users.includes(userAuth.userId));
 
+        // engagement post
         setEngagementPost(newEngagement);
+
+        // comments
         setCommentsState(response.data.data.comments);
       })
       .catch((error) => {
@@ -166,26 +173,21 @@ const ViewPost = () => {
       })
   }, [params.id]);
 
+  // dont delete this, if fail paint btns retake this
   // check this
   // useeffect to paint like
-  useEffect(() => {
-    if (Object.keys(userP) != '') {
-      const userPost = userP.likePost.posts.includes(params.id);
-      if (userPost) {
-        setLike(true);
-      }
-    }
-  }, [userP, params.id]);
+  // 
+  // useEffect(() => {
+  //   const likedPosts = userAuth?.likePost?.posts || [];
+  //   setLike(likedPosts.includes(params.id));
+  // }, [userAuth?.likePost?.posts, params.id]);
 
-  // useeffect to paint save
-  useEffect(() => {
-    if (Object.keys(userP) != '') {
-      const userPost = userP.postsSaved.posts.includes(params.id);
-      if (userPost) {
-        setSave(true);
-      }
-    }
-  }, [userP, params.id]);
+  // 
+  // useEffect(() => {
+  //   const savedPosts = userAuth?.postsSaved?.posts || [];
+  //   setSave(savedPosts.includes(params.id));
+  // }, [userAuth?.postsSaved?.posts, params.id]);
+
 
 
   /**
@@ -244,6 +246,8 @@ const ViewPost = () => {
         ...prev,
         numberLikes: prev.numberLikes - 1
       }));
+      // dont delete this, if fail paint btns retake this
+      // removePostFromLikes(id);
     } catch (error) {
       console.log(error);
       showConfirmSwal({
@@ -263,6 +267,8 @@ const ViewPost = () => {
         ...prev,
         numberLikes: prev.numberLikes + 1
       }));
+      // dont delete this, if fail paint btns retake this
+      // addPostToLikes(id);
       console.log(res);
     } catch (error) {
       console.log(error);
@@ -283,6 +289,7 @@ const ViewPost = () => {
         ...prev,
         numberSaves: prev.numberSaves + 1
       }));
+      addPostToSaved(id);
       notify();
     } catch (error) {
       console.log(error);
@@ -304,7 +311,7 @@ const ViewPost = () => {
         ...prev,
         numberSaves: prev.numberSaves - 1
       }));
-
+      removePostFromSaved(id);
       notify2()
 
     } catch (error) {

@@ -105,7 +105,11 @@ const Categories = () => {
             </p>
             <div className="grid gap-2 md:grid-cols-2 lg:grid-cols-3 w-full mx-auto mb-5">
               {categories.map((cat) => (
-                <NewCardCategory key={cat._id} category={cat} userP={userAuth} />
+                <NewCardCategory 
+                  key={cat._id} 
+                  category={cat} 
+                  userAuth={userAuth} 
+                />
               ))}
             </div>
             {loading && <LoadingCategory />}

@@ -80,12 +80,24 @@ const Login = () => {
       localStorage.setItem("userId", res.data.data._id);
       localStorage.setItem("profileImage", res.data.data.profileImage);
 
+      localStorage.setItem("likePost", JSON.stringify(res.data.data.likePost));
+      localStorage.setItem("postsSaved", JSON.stringify(res.data.data.postsSaved));
+      localStorage.setItem("followsTags", JSON.stringify(res.data.data.followsTags));
+      localStorage.setItem("followersUsers", JSON.stringify(res.data.data.followersUsers));
+      localStorage.setItem("followedUsers", JSON.stringify(res.data.data.followedUsers));
+
       setUserAuth({
         userAuthToken: res.data.data.token,
         username: res.data.data.name,
         profileImage: res.data.data.profileImage,
         email: res.data.data.email,
         userId: res.data.data._id,
+        likePost: res.data.data.likePost || { reactions: 0, posts: [] },
+        postsSaved: res.data.data.postsSaved || { saved: 0, posts: [] },
+        followsTags: res.data.data.followsTags || { countTags: 0, tags: [] },
+        followersUsers: res.data.data.followersUsers || { countFollowers: 0, followers: [] },
+        followedUsers: res.data.data.followedUsers || { countFollowed: 0, followed: [] },
+        themeGlobal: null
       });
 
       showAutoSwal({

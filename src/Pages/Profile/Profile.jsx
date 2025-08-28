@@ -1,31 +1,16 @@
 import React, { useEffect, useState } from 'react'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faUser, faHeart, faFile, faCake } from '@fortawesome/free-solid-svg-icons';
-
-import CakeIcon from '@mui/icons-material/Cake';
-import FavoriteIcon from '@mui/icons-material/Favorite';
-import InsertDriveFileIcon from '@mui/icons-material/InsertDriveFile';
-import PersonIcon from '@mui/icons-material/Person';
-
+import { faCake } from '@fortawesome/free-solid-svg-icons';
 import { useSelector } from 'react-redux';
-
 import Sidebar from '../../components/Sidebar/Sidebar';
-
-import { Link, useNavigate, useParams } from 'react-router-dom';
-
+import { useNavigate, useParams } from 'react-router-dom';
 import Spinner from '../../components/Spinner/Spinner';
 import axios from 'axios';
-import LoadingPosts from '../../components/Spinner/LoadingPosts';
 import Post from '../../components/Post/Post';
 import usePages from '../../context/hooks/usePages';
-import Error from '../../components/Error/Error';
-import Swal from 'sweetalert2';
 import userUserAuthContext from '../../context/hooks/useUserAuthContext';
 import { useSwal } from '../../hooks/useSwal';
 import clientAuthAxios from '../../services/clientAuthAxios';
-
-import EmailOutlinedIcon from '@mui/icons-material/EmailOutlined';
-
 
 
 const Profile = () => {

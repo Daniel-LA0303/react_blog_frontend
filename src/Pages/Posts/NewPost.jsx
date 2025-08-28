@@ -154,9 +154,11 @@ const NewPost = () => {
 
         // 2. validate img
         if (file === null) {
-            Swal.fire(
-                "All fields are required",
-            )
+            showConfirmSwal({
+                message: "Image are requiered",
+                status: "warning",
+                confirmButton: true
+            })
             return;
         }
 
