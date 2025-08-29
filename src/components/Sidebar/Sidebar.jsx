@@ -48,22 +48,25 @@ const Sidebar = () => {
       {loading ? (
         null
       ) : (
-        <header className={`${theme ? 'bgt-light' : 'bgt-dark'} ${isHome ? '' : ' sticky'} py-1 h-16 top-0 left-0 right-0 shadow-2xl z-0`}>
-          <div className={`flex justify-center items-center mx-auto px-4 sm:px-6 lg:px-8 max-w-screen-xl`}>
+        <header className={`${theme ? 'bgt-light' : 'bgt-dark'} ${isHome ? '' : ' sticky'} py-1 h-16 top-0 left-0 right-0 shadow-2xl z-50`}>
+          <div className={`flex justify-center items-center mx-auto px-4 sm:px-6 lg:px-8 max-w-screen-xl h-full`}>
             <div className='flex items-center justify-start  '>
-              {/* {user._id ?  */}
-              {/* // <> */}
+
+              {/* btn its show in mobile version */}
               <button className=' md:ml-0 block md:hidden text-xs' onClick={() => setOpen(true)}>
                 <FontAwesomeIcon icon={faBars} className={`text-2xl ${theme ? 'text-black' : 'text-white'}`} />
               </button>
-              {/* </> : null} */}
+
 
               <Logo />
               <SearchBar />
             </div>
 
+
             <div className='w-full flex items-center justify-end'>
-              {userAuth.userId  ? (
+              {userAuth.userId ? (
+
+                // show new post btn
                 <div className='flex  items-center '>
                   <Link
                     to="/new-post"
@@ -75,14 +78,16 @@ const Sidebar = () => {
                       }`}
                   >
                     New Post
-                  </Link>
-                  <div className=''>
-                    <ProfileButton />
-                  </div>
+                  </Link>          
+                  
+                  {/* btn user */}
+                  <ProfileButton />
                 </div>
               ) : (
                 <>
                   <div className=' block sm:hidden mx-1'>
+
+                    {/* config btn to users not login */}
                     <ConfigButton />
                   </div>
                   <div className='hidden sm:flex '>
@@ -101,6 +106,7 @@ const Sidebar = () => {
           </div>
           <div className={`${!open && "hidden"}  min-h-screen w-full fixed top-0 left-0 right-0 backdrop-blur-sm z-20`} onClick={() => setOpen(false)}></div>
 
+          {/* menu mobile version */}
           <div className={`${open ? " w-80" : "w-0"} ${theme ? ' bgt-light text-black' : 'bgt-dark text-white'} min-h-screen fixed top-0 left-0 transition-all duration-300 z-30`}>
             <div className={`${!open && "hidden"} pt-3`}>
               <button className='ml-4 mb-14' onClick={() => setOpen(false)}>
