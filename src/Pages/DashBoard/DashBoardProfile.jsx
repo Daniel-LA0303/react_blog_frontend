@@ -2,11 +2,11 @@ import React, { useEffect, useState } from 'react'
 import Sidebar from '../../components/Sidebar/Sidebar'
 import DashBoard from '../../components/DashBoard/DashBoard'
 import { useSelector } from 'react-redux';
-import { Router, useNavigate, useParams } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import Spinner from '../../components/Spinner/Spinner';
-import axios from 'axios';
 import Error from '../../components/Error/Error';
 import usePages from '../../context/hooks/usePages';
+import clientAuthAxios from '../../services/clientAuthAxios';
 
 const DashBoardProfile = () => {
 
@@ -30,18 +30,16 @@ const DashBoardProfile = () => {
   /**
    * states Redux
    */
-  const userP = useSelector(state => state.posts.user);
   const theme = useSelector(state => state.posts.themeW);
-  const link = useSelector(state => state.posts.linkBaseBackend);
 
   /**
    * useEffect
    */
   useEffect(() => {
     setLoading(true);
-    axios.get(`${link}/pages/page-dashboard/${params.id}?user=${userP._id}`)
-      .then((response) => {
-        setPageDashboard(response.data.userInfo);
+    clientAuthAxios.get(`/pages/page-dashboard/${params.id}`)
+      .then((response) => {        
+        setPageDashboard(response.data.data);
         setTimeout(() => {
           setLoading(false);
         }, 200);

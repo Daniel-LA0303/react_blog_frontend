@@ -48,7 +48,7 @@ const Sidebar = () => {
       {loading ? (
         null
       ) : (
-        <header className={`${theme ? 'bgt-light' : 'bgt-dark'} ${isHome ? '' : ' sticky'} py-1  top-0 left-0 right-0 shadow-2xl `}>
+        <header className={`${theme ? 'bgt-light' : 'bgt-dark'} ${isHome ? '' : ' sticky'} py-1 h-16 top-0 left-0 right-0 shadow-2xl z-0`}>
           <div className={`flex justify-center items-center mx-auto px-4 sm:px-6 lg:px-8 max-w-screen-xl`}>
             <div className='flex items-center justify-start  '>
               {/* {user._id ?  */}
