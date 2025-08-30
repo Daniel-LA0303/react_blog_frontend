@@ -27,6 +27,8 @@ const UserCard = ({ user }) => {
    * useEffect
    */
   useEffect(() => {
+    console.log(user);
+    
     const userProfileFound = user.followersUsers.followers.includes(userAuth.userId);
     if (userProfileFound) {
       setIsFollow(true);
@@ -102,7 +104,7 @@ const UserCard = ({ user }) => {
             <p className="text-xs lg:text-sm">Following</p>
           </div>
           <div className="text-center mb-3">
-            <p className="text-base lg:text-lg font-bold">87</p>
+            <p className="text-base lg:text-lg font-bold">{user.posts.length || 0}</p>
             <p className="text-xs lg:text-sm">Posts</p>
           </div>
         </div>

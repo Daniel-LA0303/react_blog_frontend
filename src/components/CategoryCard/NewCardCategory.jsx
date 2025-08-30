@@ -27,7 +27,7 @@ const NewCardCategory = ({ category, userAuth }) => {
    * useEffect
    */
   useEffect(() => {
-    const userInCat = category.follows.users.includes(userAuth.userId);
+    const userInCat = category.follows.users.includes(userAuth?.userId);
     if (userInCat) {
       setIsFollow(true);
     }

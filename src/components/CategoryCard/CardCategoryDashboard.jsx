@@ -25,6 +25,10 @@ const CardCategoryDashboard = ({ category, userAuth }) => {
    * useEffect
    */
   useEffect(() => {
+
+    console.log(category);
+
+
     const userInCat = category.follows.users.includes(userAuth.userId);
     if (userInCat) setIsFollow(true);
   }, [userAuth, category]);
@@ -67,9 +71,8 @@ const CardCategoryDashboard = ({ category, userAuth }) => {
    */
   return (
     <div
-      className={`group w-full max-w-4xl mb-5 mx-auto rounded-2xl overflow-hidden shadow-sm flex ${
-        theme ? "bg-white" : "bgt-dark text-white"
-      }`}
+      className={`group w-full mb-5 mx-auto rounded-2xl overflow-hidden shadow-sm flex ${theme ? "bg-white" : "bgt-dark text-white"
+        }`}
     >
       {/* Color side */}
       <div
@@ -83,9 +86,8 @@ const CardCategoryDashboard = ({ category, userAuth }) => {
         <div className="flex flex-col gap-4">
           <Link
             to={`/category/${category.name}`}
-            className={`text-2xl font-bold ${
-              theme ? "text-gray-800" : "text-white"
-            }`}
+            className={`text-2xl font-bold ${theme ? "text-gray-800" : "text-white"
+              }`}
           >
             {category.name}
           </Link>
@@ -93,16 +95,20 @@ const CardCategoryDashboard = ({ category, userAuth }) => {
             {category.desc}
           </p>
 
+          <p className={`max-w-md ${theme ? "text-gray-500" : "text-gray-300"} text-sm`}>
+            Followers {''}
+            {category.follows.countFollows}
+          </p>
+
           {userAuth?.userId && (
             <button
               onClick={isFollow ? handleUnFollowTag : handleFollowTag}
-              className={`flex items-center justify-center w-fit px-5 py-2.5 text-sm font-medium rounded-lg transition-colors duration-300 ${
-                isFollow
+              className={`flex items-center justify-center w-fit px-5 py-2.5 text-sm font-medium rounded-lg transition-colors duration-300 ${isFollow
                   ? theme
                     ? "bg-gray-200 text-black hover:bg-gray-300"
                     : "bg-gray-700 text-white hover:bg-gray-600"
                   : `bg-[${category.color}] text-white hover:bg-blue-600`
-              }`}
+                }`}
             >
               {isFollow ? "Following" : "Follow"}
             </button>

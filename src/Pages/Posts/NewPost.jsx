@@ -153,14 +153,14 @@ const NewPost = () => {
         }
 
         // 2. validate img
-        if (file === null) {
-            showConfirmSwal({
-                message: "Image are requiered",
-                status: "warning",
-                confirmButton: true
-            })
-            return;
-        }
+        // if (file === null) {
+        //     showConfirmSwal({
+        //         message: "Image are requiered",
+        //         status: "warning",
+        //         confirmButton: true
+        //     })
+        //     return;
+        // }
 
         // 3. preparate data
         let resImage = {}

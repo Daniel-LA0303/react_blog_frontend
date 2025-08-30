@@ -25,7 +25,7 @@ const UserCardLong = ({ user }) => {
     /**
      * useEffect
      */
-    useEffect(() => {
+    useEffect(() => {        
         const userProfileFound = user.followersUsers.followers.includes(
             userAuth.userId
         );
@@ -116,7 +116,7 @@ className={`
                             <div className="h-4 border-l border-slate-200 dark:border-gray-500"></div>
                             <div>
                                 <span className="font-semibold text-slate-700 dark:text-white">
-                                    200
+                                    {user.posts.length || 0}
                                 </span>{" "}
                                 Posts
                             </div>
