@@ -34,6 +34,7 @@ import Notifications from "./Pages/Notifications/Notifications";
 import { PagesProvider } from "./context/PagesProfile";
 import ErrorPage from "./Pages/Error/ErrorPage";
 import { UserAuthProvider } from "./context/UserAuthContex";
+import WrappedCategoryPost from "./Pages/CategoryPost/WrappedCategoryPost";
 
 function App() {
 
@@ -84,7 +85,8 @@ function App() {
               <Route path="/new-post" element={user._id ? <NewPost /> :<Login />} />
               <Route path="/edit-post/:id" element={user._id ? <EditPost /> :<Login /> } />
               <Route path="/view-post/:id" element={<ViewPost /> } />
-              <Route path="/category/:id" element={<CategoryPost /> } />
+              <Route path="/category/:id" element={<WrappedCategoryPost />} />
+
               <Route path="/categories/" element={<Categories /> } />
               {/* <Route path="/dashboard/:id" element={<DashBoardProfile />} /> */}
               
