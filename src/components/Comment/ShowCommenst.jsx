@@ -33,7 +33,7 @@ const ShowCommenst = ({
      * hooks
      */
     const { userAuth } = userUserAuthContext();
-    const { showConfirmSwal, showAutoSwal } = useSwal();
+    const { showConfirmSwal } = useSwal();
 
     /**
      * states
@@ -42,16 +42,12 @@ const ShowCommenst = ({
     const [newComment, setNewComment] = useState('');    // new comment update
     const [highlight, setHighlight] = useState(true);    // state to show animation in new comment
 
-
     const [replyActive, setReplyActive] = useState(false);
-    const [commentId, setCommentId] = useState('');
-
 
     /**
      * states Redux
      */
     const theme = useSelector(state => state.posts.themeW);
-    const link = useSelector(state => state.posts.linkBaseBackend);
 
     /**
      * useEffect
@@ -77,7 +73,6 @@ const ShowCommenst = ({
     const handleEditComment = async (id) => {
 
         setEditActive(!editActive);
-
         try {
 
             // send info to backend
@@ -155,72 +150,9 @@ const ShowCommenst = ({
     };
 
     // -- Actions comments end
-
-    //-- actions replies start
-    const handleDeleteReply = async (idReply) => {
-
-        Swal.fire({
-            title: 'Are you sure you want to remove this Reply?',
-            text: "Deleted Reply cannot be recovered",
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonColor: '#3085d6',
-            cancelButtonColor: '#d33',
-            confirmButtonText: 'Yes, Delete',
-            cancelButtonText: 'No, Cancel'
-        }).then(async (result) => {
-            if (result.value) {
-                try {
-                    const res = await axios.post(`${link}/replies/delete-reply/${idReply}?user=${userAuth.userId}`, {
-                        commentID: comment._id
-                    });
-                    editCommentRedux({
-                        userID: comment.userID,
-                        comment: comment.comment,
-                        dateComment: comment.dateComment,
-                        _id: comment._id,
-                        replies: res.data.replies
-                    })
-                } catch (error) {
-                    console.log(error);
-                    Swal.fire({
-                        title: 'Error deleting the post',
-                        text: "Status " + error.response.status + " " + error.response.data.msg,
-                    });
-                }
-            }
-        })
-
-
-    }
-
-    const handleEditReply = async (newReply, reply) => {
-        console.log(newReply, reply);
-
-        try {
-            const res = await axios.put(`${link}/replies/edit-reply/${reply._id}?user=${userAuth.userId}`, {
-                reply: newReply,
-                commentID: comment._id
-            })
-            editCommentRedux({
-                userID: comment.userID,
-                comment: comment.comment,
-                dateComment: comment.dateComment,
-                _id: comment._id,
-                replies: res.data.replies
-            })
-        } catch (error) {
-            console.log(error);
-            Swal.fire({
-                title: 'Error deleting the post',
-                text: "Status " + error.response.status + " " + error.response.data.msg,
-            });
-        }
-    }
-
     const handleReplyComment = async (commentId) => {
         setReplyActive(!replyActive)
-        setCommentId(commentId);
+        // setCommentId(commentId);
     }
 
     // -- actions replies end
@@ -317,7 +249,7 @@ const ShowCommenst = ({
                     }
                 </div>
             </article>
-            {/* {
+            {
                 replyActive ? (
                     <ReplyComment
                         setReplyActive={setReplyActive}
@@ -337,15 +269,15 @@ const ShowCommenst = ({
                                     reply={reply}
                                     key={reply._id}
                                     userP={userAuth}
-                                    handleDeleteReply={handleDeleteReply}
-                                    handleEditReply={handleEditReply}
+                                    // handleDeleteReply={handleDeleteReply}
+                                    // handleEditReply={handleEditReply}
                                 // commentId={comment._id}
                                 />
                             ))
                         }
                     </>
                 ) : (null)
-            } */}
+            }
 
         </div>
 

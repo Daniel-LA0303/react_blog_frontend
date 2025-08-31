@@ -1,21 +1,11 @@
 import { faPen, faTrash } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import React, { useState } from 'react'
-import EditReply from './EditReply';
 import { useSelector } from 'react-redux';
 
-const ShowReplies = ({reply, userP, handleDeleteReply, handleEditReply}) => {
+const ShowReplies = ({reply, userP}) => {
 
     const theme = useSelector(state => state.posts.themeW);
 
-    const [editReplyActive, setEditReplyActive] = useState(false);
-    const [editReply, setEditReply] = useState('');
-
-    // edit reply
-    const handleEditReplyActive = () => {
-        setEditReplyActive(!editReplyActive);
-        setEditReply(reply.reply);
-    }
     return (
         <article className={`${theme ? ' bgt-light text-black' : 'bgt-dark text-white'} p-6 mb-6 ml-6 lg:ml-12 text-base rounded-lg`}>
             <footer className="flex justify-between items-center mb-2">
@@ -53,20 +43,10 @@ const ShowReplies = ({reply, userP, handleDeleteReply, handleEditReply}) => {
                     ) : (null)
                 }
             </footer>
-            {editReplyActive ? null : 
+
                 <p className="text-gray-500 dark:text-gray-400">{reply.reply}</p>
-            }
             
-            {editReplyActive && (
-                <EditReply 
-                    setEditReplyActive={setEditReplyActive}
-                    editReplyActive={editReplyActive}
-                    editReply={editReply}
-                    setEditReply={setEditReply}
-                    handleEditReply={handleEditReply}
-                    reply={reply}
-                />
-            )}
+            
         </article>
     )
 }

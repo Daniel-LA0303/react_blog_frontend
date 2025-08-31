@@ -50,6 +50,7 @@ import { useSwal } from '../../hooks/useSwal';
  * contetx
  */
 import userUserAuthContext from '../../context/hooks/useUserAuthContext';
+import LoadMoreCommentsButton from '../../components/Comment/LoadMoreCommentButton';
 
 
 
@@ -79,7 +80,7 @@ const ViewPost = () => {
   const {
     userAuth,
     addPostToSaved,
-    removePostFromSaved, 
+    removePostFromSaved,
   } = userUserAuthContext();
   const { showConfirmSwal, showAutoSwal } = useSwal();
 
@@ -97,6 +98,17 @@ const ViewPost = () => {
     numberSaves: 0,
     numberComments: 0
   });
+
+  /**
+   * to get more comments paginated
+   */
+  const [currentCommentsPage, setCurrentCommentsPage] = useState(1);
+  const [commentsMeta, setCommentsMeta] = useState({
+    total: 0,
+    totalPages: 1,
+    hasMore: false
+  });
+  const [loadingMoreComments, setLoadingMoreComments] = useState(false);
 
   // to paint icon
   const [like, setLike] = useState(false);
@@ -120,7 +132,9 @@ const ViewPost = () => {
   useEffect(() => {
     axios.get(`${link}/pages/page-view-post/${params.id}`)
       .then((response) => {
-        
+
+        console.log(response);
+
         // post insfi
         setPost(response.data.data.post);
         const newEngagement = {
@@ -138,6 +152,12 @@ const ViewPost = () => {
 
         // comments
         setCommentsState(response.data.data.comments);
+        // const totalComments = response.data.data.post.numberComments || 0;
+        setCommentsMeta({
+          total: response.data.data.totalComments,
+          totalPages: Math.ceil(response.data.data.totalComments / 5),
+          hasMore: response.data.data.totalComments > 5
+        });
       })
       .catch((error) => {
         console.log(error);
@@ -324,6 +344,38 @@ const ViewPost = () => {
     }
   }
 
+  const loadMoreComments = async () => {
+    if (loadingMoreComments || currentCommentsPage >= commentsMeta.totalPages) return;
+
+    setLoadingMoreComments(true);
+    const nextPage = currentCommentsPage + 1;
+
+    try {
+      const response = await axios.get(
+        `${link}/comments/get-comments-paginated-by-blog/${params.id}?page=${nextPage}&limit=5`
+      );
+
+      const newComments = response.data.data.data;
+
+      // Agregar nuevos comentarios al estado existente
+      setCommentsState(prev => [...prev, ...newComments]);
+
+      // Actualizar metadata con la información fresca del backend
+      setCommentsMeta(prev => ({
+        total: response.data.data.meta.total,
+        totalPages: response.data.data.meta.totalPages,
+        hasMore: nextPage < response.data.data.meta.totalPages
+      }));
+
+      setCurrentCommentsPage(nextPage);
+
+    } catch (error) {
+      console.error('Error loading more comments:', error);
+    } finally {
+      setLoadingMoreComments(false);
+    }
+  };
+
   if (Object.keys(post) == '') return <Spinner />
   return (
     <div>
@@ -500,7 +552,7 @@ const ViewPost = () => {
           <div className=''>
             <p className={`${theme ? 'text-black' : ' text-white'} text-lg lg:text-3xl my-3`}>Comments</p>
             {
-              Object.keys(userAuth).length != 0 && (
+              Object.keys(userAuth).length !== 0 && (
                 <NewComment
                   user={userAuth}
                   idPost={params.id}
@@ -514,7 +566,7 @@ const ViewPost = () => {
             <AnimatePresence mode="popLayout">
               {commentsState.map(comment => (
                 <motion.div
-                  key={comment._id}
+                  key={`${comment._id}-${comment.replies.length}`}
                   layout
                   initial={{ opacity: 0, y: -20 }}
                   animate={{ opacity: 1, y: 0 }}
@@ -526,12 +578,19 @@ const ViewPost = () => {
                     setCommentsState={setCommentsState}
                     setEngagementPost={setEngagementPost}
                     idPost={params.id}
+                    key={comment._id}
                   />
                 </motion.div>
               ))}
             </AnimatePresence>
 
           </div>
+          <LoadMoreCommentsButton
+            hasMore={commentsMeta.hasMore}
+            loading={loadingMoreComments}
+            onClick={loadMoreComments}
+            theme={theme}
+          />
         </div>
 
 

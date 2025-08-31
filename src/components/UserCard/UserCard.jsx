@@ -26,9 +26,7 @@ const UserCard = ({ user }) => {
   /**
    * useEffect
    */
-  useEffect(() => {
-    console.log(user);
-    
+  useEffect(() => {    
     const userProfileFound = user.followersUsers.followers.includes(userAuth.userId);
     if (userProfileFound) {
       setIsFollow(true);
