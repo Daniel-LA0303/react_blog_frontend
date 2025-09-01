@@ -409,17 +409,19 @@ const ViewPost = () => {
         </div>
         <div className='w-full lg:w-4/6 px-4 sm:px-0 mb-32 sm:mb-0'>
           <div className={`${theme ? ' bgt-light text-black' : 'bgt-dark text-white'} rounded-lg`}>
-            <div className='flex justify-center items-center'>
-              <div className="overflow-hidden h-40 sm:h-72 w-full">
-                {post.linkImage && (
-                  <img
-                    className="object-cover object-center w-full h-full"
-                    src={post.linkImage.secure_url}
-                    alt="post image"
-                  />
-                )}
-              </div>
-            </div>
+<div className='flex justify-center items-center'>
+  <div className={`overflow-hidden  w-full ${ post?.linkImage?.secure_url ? "h-40 sm:h-72" : "h-0"}`}>
+    {post?.linkImage?.secure_url ? (
+      <img
+        className="object-cover object-center w-full h-full"
+        src={post.linkImage.secure_url}
+        alt="post image"
+      />
+    ) : (
+      null
+    )}
+  </div>
+</div>
 
             <div className="mb-2 flex flex-col w-full mt-5 px-4 pb-3">
               <div className="flex items-start justify-between">

@@ -9,48 +9,52 @@ const ReplyComment = ({
     replyActive,
     userID,
     comment,
-    idPost
+    idPost,
+
+    onNewReply
 }) => {
 
-    const dispatch = useDispatch();
-    const editCommentRedux = (comment) => dispatch(editCommentAction(comment));
     const theme = useSelector(state => state.posts.themeW);
     const link = useSelector(state => state.posts.linkBaseBackend);
 
     const [replyComment, setReplyComment] = useState('');
-    //we need userId, reply, date and idComment
+    const [submitting, setSubmitting] = useState(false);
 
-
-    //new reply
     const replyCommentFunc = async () => {
-        try {
+        if (!replyComment.trim() || submitting) return;
 
+        setSubmitting(true);
+
+        try {
             const res = await axios.post(`${link}/replies/new-reply/${comment._id}`, {
                 reply: replyComment,
                 userID,
                 postID: idPost
-            })
+            });
 
-            editCommentRedux({
-                userID: comment.userID,
-                comment: comment.comment,
-                dateComment: comment.dateComment,
-                _id: comment._id,
-                replies: res.data.replies
-            })
+            console.log(res);
+
+
+            // Llamar a la función callback para agregar la nueva reply
+            if (onNewReply) {
+                onNewReply(res.data.data); // Ahora recibe solo la reply, no todo el comment
+            }
+
         } catch (error) {
             console.log(error);
             Swal.fire({
-                title: 'Error deleting the post',
+                title: 'Error adding reply',
                 text: "Status " + error.response.status + " " + error.response.data.msg,
             });
+        } finally {
+            setSubmitting(false);
+            setReplyActive(false);
+            setReplyComment('');
         }
-
-        setReplyActive(!replyActive);
     }
 
     const cancelReply = () => {
-        setReplyActive(!replyActive);
+        setReplyActive(false);
         setReplyComment('');
     }
 
@@ -60,32 +64,36 @@ const ReplyComment = ({
                 <div className="flex flex-wrap -mx-3 mb-2">
                     <div className="w-full md:w-full px-3 mb-2 mt-2">
                         <textarea
-                            className=" rounded text-black leading-normal resize-none w-full h-20 py-2 px-3 font-medium  "
-                            placeholder='Type Your Comment'
+                            className="rounded text-black leading-normal resize-none w-full h-20 py-2 px-3 font-medium"
+                            placeholder='Type Your Reply'
                             required
                             onChange={(e) => setReplyComment(e.target.value)}
                             value={replyComment}
+                            disabled={submitting}
                         ></textarea>
                     </div>
                     <div className="w-full md:w-full flex justify-end items-start px-3">
                         <div className="-mr-1">
                             <button
-                                onClick={() => cancelReply()}
-                                className="text-white focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 bg-red-500 hover:bg-red-700"
-                                placeholder='Type your Comment'
-                            >Cancel</button>
+                                onClick={cancelReply}
+                                disabled={submitting}
+                                className="text-white focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 bg-red-500 hover:bg-red-700 disabled:opacity-50"
+                            >
+                                Cancel
+                            </button>
                             <button
-                                type='submit'
-                                onClick={() => replyCommentFunc()}
-                                className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800"
-                                placeholder='Type your Comment'
-                            >Save</button>
+                                onClick={replyCommentFunc}
+                                disabled={submitting || !replyComment.trim()}
+                                className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800 disabled:opacity-50"
+                            >
+                                {submitting ? 'Posting...' : 'Post Reply'}
+                            </button>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-    )
-}
+    );
+};
 
 export default ReplyComment

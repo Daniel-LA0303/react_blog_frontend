@@ -13,6 +13,7 @@ import ShowReplies from './ShowReplies';
 import userUserAuthContext from '../../context/hooks/useUserAuthContext';
 import { useSwal } from '../../hooks/useSwal';
 import clientAuthAxios from '../../services/clientAuthAxios';
+import LoadMoreRepliesButton from './LoadMoreRepliesButton';
 
 const notify = () => toast(
     'Comment saved.',
@@ -44,10 +45,23 @@ const ShowCommenst = ({
 
     const [replyActive, setReplyActive] = useState(false);
 
+    const [repliesState, setRepliesState] = useState([]);
+    const [repliesMeta, setRepliesMeta] = useState({
+        total: 0,
+        totalPages: 1,
+        hasMore: false
+    });
+    const [currentRepliesPage, setCurrentRepliesPage] = useState(0); // Empezar en 0
+    const [loadingMoreReplies, setLoadingMoreReplies] = useState(false);
+    const [initialLoadDone, setInitialLoadDone] = useState(false); // Para controlar la carga inicial
+
+
     /**
      * states Redux
      */
     const theme = useSelector(state => state.posts.themeW);
+
+    const link = useSelector(state => state.posts.linkBaseBackend);
 
     /**
      * useEffect
@@ -64,6 +78,128 @@ const ShowCommenst = ({
         const timer = setTimeout(() => setHighlight(false), 400);
         return () => clearTimeout(timer);
     }, [comment.comment]);
+
+
+
+
+
+
+    useEffect(() => {
+        if (!initialLoadDone && comment._id) {
+            loadInitialReplies();
+        }
+    }, [comment._id, initialLoadDone]);
+
+
+const loadInitialReplies = async () => {
+        try {
+            setLoadingMoreReplies(true);
+            
+            // Primero obtener el conteo total
+            const countResponse = await axios.get(
+                `${link}/replies/count-replies-by-comment/${comment._id}`
+            );
+            
+            const totalReplies = countResponse.data.data.total;
+            
+            // Si hay replies, cargar las primeras 3
+            if (totalReplies > 0) {
+                const repliesResponse = await axios.get(
+                    `${link}/replies/get-replies-paginated-by-comment/${comment._id}?page=1&limit=3`
+                );
+                setRepliesState(repliesResponse.data.data.data);
+                setCurrentRepliesPage(1);
+            }
+            
+            setRepliesMeta({
+                total: totalReplies,
+                totalPages: Math.ceil(totalReplies / 3),
+                hasMore: totalReplies > 3
+            });
+            
+            setInitialLoadDone(true);
+        } catch (error) {
+            console.error('Error loading initial replies:', error);
+        } finally {
+            setLoadingMoreReplies(false);
+        }
+    };
+
+    const loadMoreReplies = async () => {
+        if (loadingMoreReplies || currentRepliesPage >= repliesMeta.totalPages) return;
+
+        setLoadingMoreReplies(true);
+        const nextPage = currentRepliesPage + 1;
+
+        try {
+            const response = await axios.get(
+                `${link}/replies/get-replies-paginated-by-comment/${comment._id}?page=${nextPage}&limit=3`
+            );
+
+            const newReplies = response.data.data.data;
+            
+            // Usar Set para evitar duplicados
+            setRepliesState(prev => {
+                const existingIds = new Set(prev.map(r => r._id));
+                const filteredNewReplies = newReplies.filter(reply => !existingIds.has(reply._id));
+                return [...prev, ...filteredNewReplies];
+            });
+            
+            setRepliesMeta(prev => ({
+                ...prev,
+                total: response.data.data.meta.total,
+                totalPages: response.data.data.meta.totalPages,
+                hasMore: nextPage < response.data.data.meta.totalPages
+            }));
+
+            setCurrentRepliesPage(nextPage);
+
+        } catch (error) {
+            console.error('Error loading more replies:', error);
+        } finally {
+            setLoadingMoreReplies(false);
+        }
+    };
+
+    const handleNewReply = (newReply) => {
+        // Evitar duplicados
+        setRepliesState(prev => {
+            const existingIds = new Set(prev.map(r => r._id));
+            if (!existingIds.has(newReply._id)) {
+                return [newReply, ...prev];
+            }
+            return prev;
+        });
+        
+        // Actualizar el contador
+        setRepliesMeta(prev => ({
+            ...prev,
+            total: prev.total + 1,
+            totalPages: Math.ceil((prev.total + 1) / 3),
+            hasMore: (prev.total + 1) > 3
+        }));
+    };
+
+
+
+    const handleUpdateReply = (updatedReply) => {
+    setRepliesState(prev => 
+        prev.map(r => r._id === updatedReply._id ? updatedReply : r)
+    );
+};
+
+const handleDeleteReply = (deletedReplyId) => {
+    setRepliesState(prev => prev.filter(r => r._id !== deletedReplyId));
+    setRepliesMeta(prev => ({
+        ...prev,
+        total: prev.total - 1,
+        totalPages: Math.ceil((prev.total - 1) / 3),
+        hasMore: (prev.total - 1) > 3
+    }));
+};
+
+
+
 
     /**
      * functions
@@ -132,7 +268,7 @@ const ShowCommenst = ({
 
                     setEngagementPost(prev => ({
                         ...prev,
-                        numberComments: prev.numberComments -1
+                        numberComments: prev.numberComments - 1
                     }));
 
 
@@ -247,37 +383,49 @@ const ShowCommenst = ({
                             Reply
                         </button>
                     }
+
+{repliesMeta.total > 0 && (
+                        <span className="text-sm text-gray-500 dark:text-gray-400">
+                            {repliesMeta.total} {repliesMeta.total === 1 ? 'reply' : 'replies'}
+                        </span>
+                    )}
                 </div>
             </article>
-            {
-                replyActive ? (
-                    <ReplyComment
-                        setReplyActive={setReplyActive}
-                        replyActive={replyActive}
-                        userID={userAuth.userId}
-                        comment={comment}
-                        idPost={idPost}
-                    />
-                ) : (null)
-            }
-            {
-                comment.replies.length > 0 ? (
-                    <>
-                        {
-                            comment.replies.map(reply => (
-                                <ShowReplies
-                                    reply={reply}
-                                    key={reply._id}
-                                    userP={userAuth}
-                                    // handleDeleteReply={handleDeleteReply}
-                                    // handleEditReply={handleEditReply}
-                                // commentId={comment._id}
-                                />
-                            ))
-                        }
-                    </>
-                ) : (null)
-            }
+           {replyActive && (
+                <ReplyComment
+                    setReplyActive={setReplyActive}
+                    replyActive={replyActive}
+                    userID={userAuth.userId}
+                    comment={comment}
+                    idPost={idPost}
+                    onNewReply={handleNewReply}
+                />
+            )}
+            
+            {/* Lista de replies */}
+            {repliesState.length > 0 && (
+                <div className="ml-6 lg:ml-12 mt-2">
+                    {repliesState.map(reply => (
+                        <ShowReplies
+key={reply._id}
+        reply={reply}
+        userP={userAuth}
+        onUpdateReply={handleUpdateReply}
+        onDeleteReply={handleDeleteReply}
+                        />
+                    ))}
+                    
+                    {/* Botón para cargar más replies si aún hay */}
+                    {repliesMeta.hasMore && (
+                        <LoadMoreRepliesButton
+                            loading={loadingMoreReplies}
+                            onClick={loadMoreReplies}
+                            theme={theme}
+                            hasMore={repliesMeta.hasMore}
+                        />
+                    )}
+                </div>
+            )}
 
         </div>
 
