@@ -1,4 +1,4 @@
-import React from 'react'
+
 
 const RepliesCounter = ({ count, theme }) => {
     return (

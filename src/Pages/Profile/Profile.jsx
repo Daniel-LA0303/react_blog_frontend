@@ -1,16 +1,38 @@
 import React, { useEffect, useState } from 'react'
+
+/**
+ * icons
+ */
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCake } from '@fortawesome/free-solid-svg-icons';
-import { useSelector } from 'react-redux';
+
+/**
+ * components
+ */
 import Sidebar from '../../components/Sidebar/Sidebar';
-import { useNavigate, useParams } from 'react-router-dom';
 import Spinner from '../../components/Spinner/Spinner';
-import axios from 'axios';
 import Post from '../../components/Post/Post';
+
+/**
+ * route
+ */
+import { useNavigate, useParams } from 'react-router-dom';
+
+import axios from 'axios';
+
+/**
+ * hooks
+ */
 import usePages from '../../context/hooks/usePages';
 import userUserAuthContext from '../../context/hooks/useUserAuthContext';
 import { useSwal } from '../../hooks/useSwal';
+import useGlobalDataContext from '../../context/hooks/useGlobalDataContext';
+
+/**
+ * services
+ */
 import clientAuthAxios from '../../services/clientAuthAxios';
+
 
 
 const Profile = () => {
@@ -26,6 +48,7 @@ const Profile = () => {
    */
   const { userAuth } = userUserAuthContext();
   const { showConfirmSwal } = useSwal();
+  const { globalData } = useGlobalDataContext();
 
   /**
    * router
@@ -45,13 +68,6 @@ const Profile = () => {
   const [hasMore, setHasMore] = useState(true); // check more blogs
   const limit = 5;
 
-
-  /**
-   * States Redux
-   */
-  const theme = useSelector(state => state.posts.themeW);
-  const link = useSelector(state => state.posts.linkBaseBackend);
-
   /**
    * useEffect
    */
@@ -65,11 +81,8 @@ const Profile = () => {
   // useeffect to get info profile
   useEffect(() => {
     setLoading(true);
-    axios.get(`${link}/pages/page-profile-user/${params.id}`)
+    axios.get(`${globalData.link}/pages/page-profile-user/${params.id}`)
       .then((pageProfile) => {
-
-        console.log(pageProfile.data.data);
-
 
         setUser(pageProfile.data.data);
         // paint buttons
@@ -161,7 +174,7 @@ const Profile = () => {
 
     try {
       const response = await axios.get(
-        `${link}/users/posts-by-user/${params.id}?page=${pageToFetch}&limit=${limit}`
+        `${globalData.link}/users/posts-by-user/${params.id}?page=${pageToFetch}&limit=${limit}`
       );
 
       const { data, meta } = response.data.data;
@@ -204,7 +217,7 @@ const Profile = () => {
             <div className="lg:col-span-2">
 
               {/* header user card */}
-              <div className={`overflow-hidden rounded-lg shadow ${theme ? 'bgt-light' : 'bgt-dark text-white'}`}>
+              <div className={`overflow-hidden rounded-lg shadow ${globalData.themeGlobal ? 'bgt-light' : 'bgt-dark text-white'}`}>
                 <div className="bg-gradient-to-br from-[var(--primary-100)] to-white p-6">
                   <div className="flex flex-col items-center gap-6 text-center sm:flex-row sm:text-left">
                     <div className="relative">
@@ -239,7 +252,7 @@ const Profile = () => {
                           <button
                             type="button"
                             onClick={() => handleUnFollowUser()}
-                            className={`${theme ? 'btn-theme-light-op2' : 'btn-theme-dark-op2'} hover:bg-gray-500 w-28 text-xs text-sm:nomral mx-1 font-medium rounded-lg px-5 py-2`}
+                            className={`${globalData.themeGlobal ? 'btn-theme-light-op2' : 'btn-theme-dark-op2'} hover:bg-gray-500 w-28 text-xs text-sm:nomral mx-1 font-medium rounded-lg px-5 py-2`}
                           >
                             Following
                           </button>
@@ -247,7 +260,7 @@ const Profile = () => {
                           <button
                             type="button"
                             onClick={() => handleFollowUser()}
-                            className={`${theme ? 'btn-theme-light-op1' : 'btn-theme-dark-op1'} hover:bg-blue-500 w-28 text-xs text-sm:nomral mx-1 font-medium rounded-lg px-5 py-2 `}
+                            className={`${globalData.themeGlobal ? 'btn-theme-light-op1' : 'btn-theme-dark-op1'} hover:bg-blue-500 w-28 text-xs text-sm:nomral mx-1 font-medium rounded-lg px-5 py-2 `}
                           >
                             Follow
                           </button>
@@ -262,9 +275,9 @@ const Profile = () => {
               <aside className="space-y-8 block lg:hidden mt-8">
 
                 {/* contact */}
-                <div className={`overflow-hidden rounded-lg shadow ${theme ? 'bgt-light' : 'bgt-dark text-white'}`}>
+                <div className={`overflow-hidden rounded-lg shadow ${globalData.themeGlobal ? 'bgt-light' : 'bgt-dark text-white'}`}>
                   <div className="p-6">
-                    <h3 className={`text-left text-lg md:text-xl font-semibold py-0 mb-3 ${theme ? '' : 'text-white'}`}>Contact</h3>
+                    <h3 className={`text-left text-lg md:text-xl font-semibold py-0 mb-3 ${globalData.themeGlobal ? '' : 'text-white'}`}>Contact</h3>
                     <div className="flex flex-col gap-2">
                       <div className="flex items-center">
                         <i className="fa-solid fa-envelope text-xl w-6 text-center"></i>
@@ -309,9 +322,9 @@ const Profile = () => {
                   </div>
                 </div>
                 {/* Skills */}
-                <div className={`overflow-hidden rounded-lg shadow ${theme ? 'bgt-light' : 'bgt-dark text-white'}`}>
+                <div className={`overflow-hidden rounded-lg shadow ${globalData.themeGlobal ? 'bgt-light' : 'bgt-dark text-white'}`}>
                   <div className="p-6">
-                    <h3 className={`text-left text-lg md:text-xl font-semibold py-0 ${theme ? '' : 'text-white'}`}>Skills</h3>
+                    <h3 className={`text-left text-lg md:text-xl font-semibold py-0 ${globalData.themeGlobal ? '' : 'text-white'}`}>Skills</h3>
                     <div className="mt-4 flex flex-wrap gap-2">
                       {user?.info?.skills?.map((skill, i) => (
                         <span
@@ -326,9 +339,9 @@ const Profile = () => {
                 </div>
 
                 {/* Activity */}
-                <div className={`overflow-hidden rounded-lg shadow ${theme ? 'bgt-light' : 'bgt-dark text-white'}`}>
+                <div className={`overflow-hidden rounded-lg shadow ${globalData.themeGlobal ? 'bgt-light' : 'bgt-dark text-white'}`}>
                   <div className="p-6">
-                    <h3 className={`text-left text-lg md:text-xl font-semibold py-0 mb-3 ${theme ? '' : 'text-white'}`}>Activity</h3>
+                    <h3 className={`text-left text-lg md:text-xl font-semibold py-0 mb-3 ${globalData.themeGlobal ? '' : 'text-white'}`}>Activity</h3>
                     <ul className="mt-1 space-y-4">
                       <li className="flex justify-between border-t border-gray-200 pt-4">
                         <span className="text-sm font-medium">Blogs Published</span>
@@ -350,7 +363,7 @@ const Profile = () => {
               {/* show posts by user whit infite scroll*/}
               <div className="mt-8">
                 <h3
-                  className={`text-left text-xl md:text-3xl font-semibold pb-0 ${theme ? "" : "text-white"
+                  className={`text-left text-xl md:text-3xl font-semibold pb-0 ${globalData.themeGlobal ? "" : "text-white"
                     }`}
                 >
                   Published Blogs
@@ -373,9 +386,9 @@ const Profile = () => {
             {/* aside desktop */}
             <aside className="space-y-8 hidden lg:block">
               {/* contact */}
-              <div className={`overflow-hidden rounded-lg shadow ${theme ? 'bgt-light' : 'bgt-dark text-white'}`}>
+              <div className={`overflow-hidden rounded-lg shadow ${globalData.themeGlobal ? 'bgt-light' : 'bgt-dark text-white'}`}>
                 <div className="p-6">
-                  <h3 className={`text-left text-lg md:text-xl font-semibold py-0 mb-3 ${theme ? '' : 'text-white'}`}>Contact</h3>
+                  <h3 className={`text-left text-lg md:text-xl font-semibold py-0 mb-3 ${globalData.themeGlobal ? '' : 'text-white'}`}>Contact</h3>
                   <div className="flex flex-col gap-2">
                     <div className="flex items-center">
                       <i className="fa-solid fa-envelope text-xl w-6 text-center"></i>
@@ -420,9 +433,9 @@ const Profile = () => {
                 </div>
               </div>
               {/* Skills */}
-              <div className={`overflow-hidden rounded-lg shadow ${theme ? 'bgt-light' : 'bgt-dark text-white'}`}>
+              <div className={`overflow-hidden rounded-lg shadow ${globalData.themeGlobal ? 'bgt-light' : 'bgt-dark text-white'}`}>
                 <div className="p-6">
-                  <h3 className={`text-left text-lg md:text-xl font-semibold py-0 ${theme ? '' : 'text-white'}`}>Skills</h3>
+                  <h3 className={`text-left text-lg md:text-xl font-semibold py-0 ${globalData.themeGlobal ? '' : 'text-white'}`}>Skills</h3>
                   <div className="mt-4 flex flex-wrap gap-2">
                     {user?.info?.skills?.map((skill, i) => (
                       <span
@@ -437,9 +450,9 @@ const Profile = () => {
               </div>
 
               {/* Activity */}
-              <div className={`overflow-hidden rounded-lg shadow ${theme ? 'bgt-light' : 'bgt-dark text-white'}`}>
+              <div className={`overflow-hidden rounded-lg shadow ${globalData.themeGlobal ? 'bgt-light' : 'bgt-dark text-white'}`}>
                 <div className="p-6">
-                  <h3 className={`text-left text-lg md:text-xl font-semibold py-0 mb-3 ${theme ? '' : 'text-white'}`}>Activity</h3>
+                  <h3 className={`text-left text-lg md:text-xl font-semibold py-0 mb-3 ${globalData.themeGlobal ? '' : 'text-white'}`}>Activity</h3>
                   <ul className="mt-1 space-y-4">
                     <li className="flex justify-between border-t border-gray-200 pt-4">
                       <span className="text-sm font-medium">Blogs Published</span>

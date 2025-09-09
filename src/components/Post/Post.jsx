@@ -1,15 +1,33 @@
-import React, { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
+
+/**
+ * router
+ */
 import { Link } from 'react-router-dom'
 
-import { useSelector } from 'react-redux'
-
+/**
+ * libraries
+ */
 import { toast } from 'react-hot-toast'
-import userUserAuthContext from '../../context/hooks/useUserAuthContext'
-import { useSwal } from '../../hooks/useSwal'
+
+/**
+ * services
+ */
 import clientAuthAxios from '../../services/clientAuthAxios'
+
+/**
+ * icons
+ */
 import BookmarkBorderIcon from '@mui/icons-material/BookmarkBorder';
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
 import ModeCommentOutlinedIcon from '@mui/icons-material/ModeCommentOutlined';
+
+/**
+ * hooks
+ */
+import useGlobalDataContext from '../../context/hooks/useGlobalDataContext'
+import userUserAuthContext from '../../context/hooks/useUserAuthContext'
+import { useSwal } from '../../hooks/useSwal'
 
 const notify = () => toast(
   'Post saved.',
@@ -53,11 +71,8 @@ const Post = ({ post }) => {
    */
   const { userAuth } = userUserAuthContext();
   const { showConfirmSwal } = useSwal();
+  const { globalData } = useGlobalDataContext();
 
-  /**
-   * states Redux
-   */
-  const theme = useSelector(state => state.posts.themeW);
 
   /**
    * useEffect
@@ -112,7 +127,6 @@ const Post = ({ post }) => {
       const res = await clientAuthAxios.post(`/posts/like-post/${id}?userId=${userAuth.userId}`);
       setLike(true);
       setNumberLike(numberLike + 1);
-      console.log(res);
     } catch (error) {
       console.log(error);
       showConfirmSwal({
@@ -157,7 +171,7 @@ const Post = ({ post }) => {
 
   return (
     <div className="block w-full h-auto md:h-64 mb-10 relative">
-      <div className={`${theme ? "bgt-light text-black" : "bgt-dark  text-white"} w-full flex flex-col md:flex-row h-full my-4 rounded-2xl`}>
+      <div className={`${globalData.themeGlobal ? "bgt-light text-black" : "bgt-dark  text-white"} w-full flex flex-col md:flex-row h-full my-4 rounded-2xl`}>
 
         {/* Imagen */}
         {linkImage?.secure_url && (
@@ -187,7 +201,7 @@ const Post = ({ post }) => {
                 <Link
                   key={cat._id}
                   to={`/category/${cat.name}`}
-                  className={`${theme ? "bgt-white text-black" : "bgt-black text-white"} inline-block rounded-full px-2 py-1 text-xs font-semibold`}
+                  className={`${globalData.themeGlobal ? "bgt-white text-black" : "bgt-black text-white"} inline-block rounded-full px-2 py-1 text-xs font-semibold`}
                 >
                   #{cat.name}
                 </Link>

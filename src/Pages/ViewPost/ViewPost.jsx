@@ -51,6 +51,7 @@ import { useSwal } from '../../hooks/useSwal';
  */
 import userUserAuthContext from '../../context/hooks/useUserAuthContext';
 import LoadMoreCommentsButton from '../../components/Comment/LoadMoreCommentButton';
+import useGlobalDataContext from '../../context/hooks/useGlobalDataContext';
 
 
 
@@ -79,10 +80,9 @@ const ViewPost = () => {
    */
   const {
     userAuth,
-    addPostToSaved,
-    removePostFromSaved,
   } = userUserAuthContext();
   const { showConfirmSwal, showAutoSwal } = useSwal();
+  const { globalData } = useGlobalDataContext();
 
   /**
    * route
@@ -119,8 +119,6 @@ const ViewPost = () => {
   /**
    * states redux
    */
-  const theme = useSelector(state => state.posts.themeW);
-  const link = useSelector(state => state.posts.linkBaseBackend);
   const deletePostRedux = (postId, userId) => dispatch(deletePostAction(postId, userId));
 
 
@@ -130,7 +128,7 @@ const ViewPost = () => {
 
   // useeffect to get one post or blog
   useEffect(() => {
-    axios.get(`${link}/pages/page-view-post/${params.id}`)
+    axios.get(`${globalData.link}/pages/page-view-post/${params.id}`)
       .then((response) => {
 
         console.log(response);
@@ -352,7 +350,7 @@ const ViewPost = () => {
 
     try {
       const response = await axios.get(
-        `${link}/comments/get-comments-paginated-by-blog/${params.id}?page=${nextPage}&limit=5`
+        `${globalData.link}/comments/get-comments-paginated-by-blog/${params.id}?page=${nextPage}&limit=5`
       );
 
       const newComments = response.data.data.data;
@@ -408,20 +406,20 @@ const ViewPost = () => {
 
         </div>
         <div className='w-full lg:w-4/6 px-4 sm:px-0 mb-32 sm:mb-0'>
-          <div className={`${theme ? ' bgt-light text-black' : 'bgt-dark text-white'} rounded-lg`}>
-<div className='flex justify-center items-center'>
-  <div className={`overflow-hidden  w-full ${ post?.linkImage?.secure_url ? "h-40 sm:h-72" : "h-0"}`}>
-    {post?.linkImage?.secure_url ? (
-      <img
-        className="object-cover object-center w-full h-full"
-        src={post.linkImage.secure_url}
-        alt="post image"
-      />
-    ) : (
-      null
-    )}
-  </div>
-</div>
+          <div className={`${globalData.themeGlobal ? ' bgt-light text-black' : 'bgt-dark text-white'} rounded-lg`}>
+            <div className='flex justify-center items-center'>
+              <div className={`overflow-hidden  w-full ${post?.linkImage?.secure_url ? "h-40 sm:h-72" : "h-0"}`}>
+                {post?.linkImage?.secure_url ? (
+                  <img
+                    className="object-cover object-center w-full h-full"
+                    src={post.linkImage.secure_url}
+                    alt="post image"
+                  />
+                ) : (
+                  null
+                )}
+              </div>
+            </div>
 
             <div className="mb-2 flex flex-col w-full mt-5 px-4 pb-3">
               <div className="flex items-start justify-between">
@@ -453,7 +451,7 @@ const ViewPost = () => {
                     <FontAwesomeIcon
                       onClick={() => deletePostComponent(params.id)}
                       className={`
-                        ${theme ? "btn-theme-light-delete" : "btn-theme-dark-delete"}
+                        ${globalData.themeGlobal ? "btn-theme-light-delete" : "btn-theme-dark-delete"}
                         text-base p-2 cursor-pointer hover:opacity-80 rounded-lg
                       `}
                       icon={faTrash}
@@ -462,7 +460,7 @@ const ViewPost = () => {
                       <FontAwesomeIcon
                         icon={faPen}
                         className={`
-                          ${theme ? "btn-theme-light-edit" : "btn-theme-dark-edit"}
+                          ${globalData.themeGlobal ? "btn-theme-light-edit" : "btn-theme-dark-edit"}
                           text-base p-2 cursor-pointer hover:opacity-80 rounded-lg
                         `}
                       />
@@ -475,61 +473,6 @@ const ViewPost = () => {
 
             <div className=" mt-2 px-4 py-1 mb-5">
               <h2 className=' font-bold text-2xl lg:text-3xl mb-3'>{post.title}</h2>
-
-              {/* likes - comments - saved */}
-              {/* <div className='flex justify-between mb-5'>
-                <div className='flex'>
-                  <div className='flex'>
-                    <p className='mx-3'>{numberLike}</p>
-                    {
-                      Object.keys(userP).length != 0 && like ? (
-                        <button onClick={() => handleDislike(params.id)} disabled={Object.keys(userP) != '' ? false : true}>
-                          <FontAwesomeIcon
-                            icon={faHeart}
-                            className={` text-red-400  mx-auto  rounded`}
-                          />
-                        </button>
-                      ) : (
-                        <button onClick={() => handleLike(params.id)} disabled={Object.keys(userP) != '' ? false : true}>
-                          <FontAwesomeIcon
-                            icon={faHeart}
-                            className={`text-stone-500 mx-auto  rounded`}
-                          />
-                        </button>
-                      )
-                    }
-                  </div>
-                  <div className='flex'>
-                    <div className='flex items-center'>
-                      <p className='mx-3'>{comments.length}</p>
-                      <FontAwesomeIcon
-                        icon={faComment}
-                        className={`text-white  mx-auto  rounded`}
-                      />
-                    </div>
-                  </div>
-                </div>
-                <div className='flex'>
-                  <p className='  mx-3'>{numberSave}</p>
-                  {save ? (
-                    <button onClick={() => handleUnsave(params.id)} disabled={Object.keys(userP) != '' ? false : true}>
-                      <FontAwesomeIcon
-                        icon={faBookmark}
-                        className={` text-blue-500  mx-auto  rounded`}
-                      />
-                    </button>
-                  ) : (
-                    <button onClick={() => handleSave(params.id)} disabled={Object.keys(userP) != '' ? false : true}>
-                      <FontAwesomeIcon
-                        icon={faBookmark}
-                        className={`text-stone-500 mx-auto  rounded`}
-                      />
-                    </button>
-                  )}
-                </div>
-
-              </div> */}
-
 
               {post.categories.map(cat => (
                 <Link
@@ -552,7 +495,7 @@ const ViewPost = () => {
 
           {/* Comments section */}
           <div className=''>
-            <p className={`${theme ? 'text-black' : ' text-white'} text-lg lg:text-3xl my-3`}>Comments</p>
+            <p className={`${globalData.themeGlobal ? 'text-black' : ' text-white'} text-lg lg:text-3xl my-3`}>Comments</p>
             {
               Object.keys(userAuth).length !== 0 && (
                 <NewComment
@@ -591,20 +534,17 @@ const ViewPost = () => {
             hasMore={commentsMeta.hasMore}
             loading={loadingMoreComments}
             onClick={loadMoreComments}
-            theme={theme}
+            theme={globalData.themeGlobal}
           />
         </div>
 
 
         <div className='w-full hidden lg:block lg:w-3/12 ml-3 mt-7'>
-          <p className={`${theme ? 'text-black' : ' text-white'} text-base lg:text-xl mb-4 font-bold`}>About the author</p>
+          <p className={`${globalData.themeGlobal ? 'text-black' : ' text-white'} text-base lg:text-xl mb-4 font-bold`}>About the author</p>
           <UserCard user={post.user} />
         </div>
 
-
-
-
-        <div className={`${theme ? ' bgt-light text-black' : 'bgt-dark'} text-white fixed z-1 bottom-0 w-full p-1 block sm:hidden`}>
+        <div className={`${globalData.themeGlobal ? ' bgt-light text-black' : 'bgt-dark'} text-white fixed z-1 bottom-0 w-full p-1 block sm:hidden`}>
           <div className='flex justify-center '>
             {
               Object.keys(userAuth).length != 0 && (

@@ -1,47 +1,31 @@
-import React, { useEffect, useState } from 'react'
+/** 
+ * router
+ */
 import { Link } from 'react-router-dom'
-import SocialMedia from '../SocialMedia/SocialMedia'
+
+/**
+ * icons
+ */
 import BookmarkBorderOutlinedIcon from '@mui/icons-material/BookmarkBorderOutlined'; // save
 import HomeOutlinedIcon from '@mui/icons-material/HomeOutlined';
 import LocalOfferOutlinedIcon from '@mui/icons-material/LocalOfferOutlined'; // tag
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
 import AddCircleOutlineOutlinedIcon from '@mui/icons-material/AddCircleOutlineOutlined';
 
-import { useSelector } from 'react-redux'
+/**
+ * context
+ */
+import useGlobalDataContext from '../../context/hooks/useGlobalDataContext';
 
-const AsideMenu = ({ userAuth }) => {
+const AsideMenu = ({ user }) => {
 
-    /**
-     * States
-     */
-    const [categoriesUser, setCategoriesUser] = useState([]);
-
-    /**
-     * States Redux
-     */
-    const theme = useSelector(state => state.posts.themeW);
-    const link = useSelector(state => state.posts.linkBaseBackend);
-
-    /**
-     * useEffect
-     */
-    // useEffect(() => {
-    //     if(user){
-    //       try {
-    //         fetch(`${link}/pages/page-dashboard-tag-use/${user._id}`)
-    //             .then((response) => response.json())
-    //             .then((tags) => {
-    //                 setCategoriesUser(tags.categories);
-    //                 console.log(tags.categories);
-    //             })
-    //       } catch (error) {
-    //           console.error(error.message);
-    //       }
-    //     }      
-    //   }, [user]);
+   /**
+   * hooks
+   */
+  const { globalData } = useGlobalDataContext();
 
     return (
-        <div className={`${theme ? 'bgt-light ' : 'bgt-dark text-white'}  rounded-lg`}>
+        <div className={`${globalData.themeGlobal ? 'bgt-light ' : 'bgt-dark text-white'}  rounded-lg`}>
             <div className='px-5 text-sm hover:bg-zinc-700 hover:text-white cursor-pointer py-3 mb-2 transition'>
                 <HomeOutlinedIcon />
                 <Link
@@ -50,7 +34,7 @@ const AsideMenu = ({ userAuth }) => {
                 >Home</Link>
             </div>
 
-            {!userAuth?.userId ? null : (
+            {!user?.userId ? null : (
                 <>
                     <div className='px-5 text-sm hover:bg-zinc-700 hover:text-white cursor-pointer py-3 mb-2 transition'>
                         <AddCircleOutlineOutlinedIcon />
@@ -63,7 +47,7 @@ const AsideMenu = ({ userAuth }) => {
                         <BookmarkBorderOutlinedIcon />
                         <Link 
                             className='ml-3'
-                            to={`/save-posts/${userAuth.userId}`}
+                            to={`/save-posts/${user.userId}`}
                         >Saved</Link>
                     </div>
                 </>
@@ -82,27 +66,6 @@ const AsideMenu = ({ userAuth }) => {
                     className='ml-3'
                     to={'/about'}>About</Link>
             </div>
-            {/* <div className='mb-3 md:mb-3'>
-              <SocialMedia />
-          </div> */}
-
-            {/* {
-                !user._id ? null : (
-                    <div className='my-2'>
-                        <p className=' text-center'>My Tags</p>
-                        <div className='mx-2 scroll-box'>   
-                            {categoriesUser === undefined ? null : 
-                                categoriesUser.map(cat => (
-                                    <Aside
-                                        key={cat._id}
-                                        cats={cat}
-                                    />
-                                ))
-                            }
-                            </div>
-                    </div>
-                )
-            } */}
         </div>
     )
 }

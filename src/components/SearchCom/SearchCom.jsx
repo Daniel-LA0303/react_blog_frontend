@@ -1,27 +1,53 @@
-import { faFile, faTags, faUser } from '@fortawesome/free-solid-svg-icons';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import React, { useEffect, useState } from 'react'
-import { useSelector } from 'react-redux';
-import NewCardCategory from '../CategoryCard/NewCardCategory';
-import UserCard from '../UserCard/UserCard';
-import './SearchCom.css'
-import Post from '../Post/Post';
+import { useEffect, useState } from 'react'
 
+/**
+ * icons
+ */
 import TaskOutlinedIcon from '@mui/icons-material/TaskOutlined';
 import AccountCircleOutlinedIcon from '@mui/icons-material/AccountCircleOutlined';
 import LocalOfferOutlinedIcon from '@mui/icons-material/LocalOfferOutlined';
+
+/**
+ * libraries
+ */
 import axios from 'axios';
+
+/**
+ * componets
+ */
 import UserCardLong from '../UserCard/UseCardLong';
-import userUserAuthContext from '../../context/hooks/useUserAuthContext';
 import CardCategoryDashboard from '../CategoryCard/CardCategoryDashboard';
+import './SearchCom.css'
+import Post from '../Post/Post';
 
-const SearchCom = ({ cats, posts, users, searchTerm, initialPostsMeta, initialUsersMeta, initialCatsMeta }) => {
-
-  /**
+/**
  * hooks
  */
-  const { userAuth } = userUserAuthContext();
+import userUserAuthContext from '../../context/hooks/useUserAuthContext';
+import useGlobalDataContext from '../../context/hooks/useGlobalDataContext';
 
+
+const SearchCom = ({
+  cats,
+  posts,
+  users,
+  searchTerm,
+  initialPostsMeta,
+  initialUsersMeta,
+  initialCatsMeta
+}) => {
+
+
+
+  /**
+   * hooks
+   */
+  const { userAuth } = userUserAuthContext();
+  const { globalData } = useGlobalDataContext();
+
+  /**
+   * states
+   */
   const [toggleState, setToggleState] = useState(1);
   const [currentPostsPage, setCurrentPostsPage] = useState(1);
   const [currentUsersPage, setCurrentUsersPage] = useState(1);
@@ -34,10 +60,6 @@ const SearchCom = ({ cats, posts, users, searchTerm, initialPostsMeta, initialUs
   const [catsMeta, setCatsMeta] = useState(initialCatsMeta);
   const [loading, setLoading] = useState(false);
 
-  const userP = useSelector(state => state.posts.user);
-  const theme = useSelector(state => state.posts.themeW);
-  const link = useSelector(state => state.posts.linkBaseBackend);
-
   const toggleTab = (index) => {
     setToggleState(index);
   };
@@ -46,7 +68,7 @@ const SearchCom = ({ cats, posts, users, searchTerm, initialPostsMeta, initialUs
   const loadMorePosts = async (page) => {
     setLoading(true);
     try {
-      const response = await axios.get(`${link}/pages/posts/${searchTerm}?page=${page}&limit=5`);
+      const response = await axios.get(`${globalData.link}/pages/posts/${searchTerm}?page=${page}&limit=5`);
       setPostsData(response.data.data);
       setPostsMeta(response.data.meta);
       setCurrentPostsPage(page);
@@ -60,7 +82,7 @@ const SearchCom = ({ cats, posts, users, searchTerm, initialPostsMeta, initialUs
   const loadMoreUsers = async (page) => {
     setLoading(true);
     try {
-      const response = await axios.get(`${link}/pages/users/${searchTerm}?page=${page}&limit=5`);
+      const response = await axios.get(`${globalData.link}/pages/users/${searchTerm}?page=${page}&limit=5`);
       setUsersData(response.data.data);
       setUsersMeta(response.data.meta);
       setCurrentUsersPage(page);
@@ -74,7 +96,7 @@ const SearchCom = ({ cats, posts, users, searchTerm, initialPostsMeta, initialUs
   const loadMoreCats = async (page) => {
     setLoading(true);
     try {
-      const response = await axios.get(`${link}/pages/categories/${searchTerm}?page=${page}&limit=5`);
+      const response = await axios.get(`${globalData.link}/pages/categories/${searchTerm}?page=${page}&limit=5`);
       setCatsData(response.data.data);
       setCatsMeta(response.data.meta);
       setCurrentCatsPage(page);
@@ -104,10 +126,10 @@ const SearchCom = ({ cats, posts, users, searchTerm, initialPostsMeta, initialUs
           key={i}
           onClick={() => onPageChange(i)}
           className={`px-3 py-1 mx-1 rounded ${currentPage === i
-              ? 'bg-blue-500 text-white'
-              : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+            ? 'bg-blue-500 text-white'
+            : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
             }
-            ${theme ? "bgt-light text-black" : "bgt-dark  text-white"}
+            ${globalData.themeGlobal ? "bgt-light text-black" : "bgt-dark  text-white"}
           `}
         >
           {i}
@@ -122,7 +144,7 @@ const SearchCom = ({ cats, posts, users, searchTerm, initialPostsMeta, initialUs
           onClick={() => onPageChange(currentPage - 1)}
           disabled={currentPage === 1}
 
-          className={`px-3 py-1 mx-1 rounded bg-gray-200 disabled:opacity-50  ${theme ? "bgt-light text-black" : "bgt-dark  text-white"}`}
+          className={`px-3 py-1 mx-1 rounded bg-gray-200 disabled:opacity-50  ${globalData.themeGlobal ? "bgt-light text-black" : "bgt-dark  text-white"}`}
         >
           Previous
         </button>
@@ -132,7 +154,7 @@ const SearchCom = ({ cats, posts, users, searchTerm, initialPostsMeta, initialUs
         <button
           onClick={() => onPageChange(currentPage + 1)}
           disabled={currentPage === totalPages}
-          className={`px-3 py-1 mx-1 rounded bg-gray-200 disabled:opacity-50  ${theme ? "bgt-light text-black" : "bgt-dark  text-white"}`}
+          className={`px-3 py-1 mx-1 rounded bg-gray-200 disabled:opacity-50  ${globalData.themeGlobal ? "bgt-light text-black" : "bgt-dark  text-white"}`}
         >
           Next
         </button>
@@ -157,7 +179,7 @@ const SearchCom = ({ cats, posts, users, searchTerm, initialPostsMeta, initialUs
     <>
       <div className="container-search my-10 mx-auto ">
 
-        <div className={`bloc-tabs  ${theme ? "bgt-light text-black" : "bgt-dark  text-white"} `}>
+        <div className={`bloc-tabs  ${globalData.themeGlobal ? "bgt-light text-black" : "bgt-dark  text-white"} `}>
           <button
             className={`${toggleState === 1 ? "tabs active-tabs text-black" : "tabs"} `}
             onClick={() => toggleTab(1)}
@@ -187,7 +209,7 @@ const SearchCom = ({ cats, posts, users, searchTerm, initialPostsMeta, initialUs
             {loading ? (
               <div className="text-center">Loading...</div>
             ) : postsData.length === 0 ? (
-              <p className={`${theme ? 'text-black' : 'text-white'} text-center text-2xl my-10`}>
+              <p className={`${globalData.themeGlobal ? 'text-black' : 'text-white'} text-center text-2xl my-10`}>
                 There were no results
               </p>
             ) : (
@@ -214,12 +236,12 @@ const SearchCom = ({ cats, posts, users, searchTerm, initialPostsMeta, initialUs
             {loading ? (
               <div className="text-center">Loading...</div>
             ) : usersData.length === 0 ? (
-              <p className={`${theme ? 'text-black' : 'text-white'} text-center text-2xl my-10`}>
+              <p className={`${globalData.themeGlobal ? 'text-black' : 'text-white'} text-center text-2xl my-10`}>
                 There were no results
               </p>
             ) : (
               <>
-                              <Pagination
+                <Pagination
                   currentPage={currentUsersPage}
                   totalPages={usersMeta?.totalPages || 1}
                   onPageChange={loadMoreUsers}
@@ -243,12 +265,12 @@ const SearchCom = ({ cats, posts, users, searchTerm, initialPostsMeta, initialUs
             {loading ? (
               <div className="text-center">Cargando...</div>
             ) : catsData.length === 0 ? (
-              <p className={`${theme ? 'text-black' : 'text-white'} text-center text-2xl my-10`}>
+              <p className={`${globalData.themeGlobal ? 'text-black' : 'text-white'} text-center text-2xl my-10`}>
                 There were no results
               </p>
             ) : (
               <>
-                              <Pagination
+                <Pagination
                   currentPage={currentCatsPage}
                   totalPages={catsMeta?.totalPages || 1}
                   onPageChange={loadMoreCats}

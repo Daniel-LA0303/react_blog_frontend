@@ -1,6 +1,13 @@
-import React from 'react'
-import { useSelector } from 'react-redux'
+
+/**
+ * hooks
+ */
 import userUserAuthContext from '../../context/hooks/useUserAuthContext';
+import useGlobalDataContext from '../../context/hooks/useGlobalDataContext';
+
+/**
+ * icons
+ */
 import BookmarkBorderOutlinedIcon from '@mui/icons-material/BookmarkBorderOutlined'; // save
 import GroupAddOutlinedIcon from '@mui/icons-material/GroupAddOutlined'; // followers
 import GroupOutlinedIcon from '@mui/icons-material/GroupOutlined'; //following
@@ -9,14 +16,15 @@ import LocalOfferOutlinedIcon from '@mui/icons-material/LocalOfferOutlined'; // 
 import FeedOutlinedIcon from '@mui/icons-material/FeedOutlined'; // blogs
 import { NavLink } from 'react-router-dom';
 
+
 const AsideDashboard = () => {
 
     /**
      * hooks
      */
     const { userAuth } = userUserAuthContext();
+    const { globalData } = useGlobalDataContext();
 
-    const theme = useSelector(state => state.posts.themeW);
 
     return (
         <aside
@@ -25,7 +33,7 @@ const AsideDashboard = () => {
                 fixed bottom-0 left-0 right-0 z-40 
                 lg:static lg:w-80 lg:h-[calc(100vh-4rem)] 
                 flex lg:flex-col items-center lg:items-start gap-2 p-2 lg:p-6
-                ${theme ? "bgt-light text-black" : "bgt-dark text-white"} 
+                ${globalData.themeGlobal ? "bgt-light text-black" : "bgt-dark text-white"} 
                 lg:sticky lg:top-16
             `}
         >
@@ -52,7 +60,7 @@ const AsideDashboard = () => {
                         className={({ isActive }) =>
                             `flex items-center justify-center lg:justify-start gap-2 rounded-md px-2 py-2 w-full lg:w-auto ${isActive
                                 ? "bg-blue-500 text-white"
-                                : theme
+                                : globalData.themeGlobal
                                     ? "text-gray-700 hover:bg-gray-300"
                                     : "text-gray-300 hover:bg-gray-500"
                             }`

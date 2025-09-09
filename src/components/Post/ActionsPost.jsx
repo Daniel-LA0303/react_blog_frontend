@@ -1,8 +1,15 @@
-import React, { useEffect } from 'react'
+
+/**
+ * icons
+ */
 import BookmarkBorderIcon from '@mui/icons-material/BookmarkBorder';
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
 import ChatBubbleOutlineIcon from '@mui/icons-material/ChatBubbleOutline';
-import { useSelector } from 'react-redux';
+
+/**
+ * hooks
+ */
+import useGlobalDataContext from '../../context/hooks/useGlobalDataContext';
 
 const ActionsPost = ({
   user,
@@ -18,24 +25,24 @@ const ActionsPost = ({
   handleUnsave,
 }) => {
 
-  const theme = useSelector(state => state.posts.themeW);
+  const { globalData } = useGlobalDataContext();
 
   return (
     <div
-      className={`${theme ? ' text-black' : ' text-white'} my-3 text-2xl mx-10 sm:mx-0 flex flex-row sm:flex-col justify-center items-center`}
+      className={`${globalData.themeGlobal ? ' text-black' : ' text-white'} my-3 text-2xl mx-10 sm:mx-0 flex flex-row sm:flex-col justify-center items-center`}
     >
       <div className='my-3 text-2xl mx-10 sm:mx-0 flex flex-row sm:flex-col justify-center items-center'>
         {like ? (
           <button
             onClick={() => handleDislike(id)}
-            className={`${!theme && "neon-red"} text-red-400 cursor-pointer animate-like-pop `}
+            className={`${!globalData.themeGlobal && "neon-red"} text-red-400 cursor-pointer animate-like-pop`}
           >
             <FavoriteBorderIcon fontSize="default" />
           </button>
         ) : (
           <button
             onClick={() => handleLike(id)}
-            className="text-white cursor-pointer"
+            className=" cursor-pointer"
           >
             <FavoriteBorderIcon fontSize="default" />
           </button>
@@ -44,7 +51,7 @@ const ActionsPost = ({
       </div>
       <div className={`
           my-3 text-2xl mx-10 sm:mx-0 flex flex-row sm:flex-col justify-center items-center cursor-pointer
-          ${theme ? "hover:text-orange-300" : "neon-orange-hover"}
+          ${globalData.themeGlobal ? "hover:text-orange-300" : "neon-orange-hover"}
         `}>
         <p>
           <ChatBubbleOutlineIcon fontSize="default" />
@@ -58,7 +65,7 @@ const ActionsPost = ({
           <button
             onClick={() => handleUnsave(id)}
             disabled={Object.keys(user) != "" ? false : true}
-            className={`${!theme && "neon-blue"} text-blue-500 cursor-pointer animate-like-pop`}
+            className={`${!globalData.themeGlobal && "neon-blue"} text-blue-500 cursor-pointer animate-like-pop`}
           >
             <BookmarkBorderIcon fontSize="default" />
           </button>

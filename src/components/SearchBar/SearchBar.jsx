@@ -12,21 +12,17 @@ const SearchBar = () => {
    */
   const route = useNavigate();
 
-    /**
+  /**
    * states
    */
-    const [isOpen, setIsOpen] = useState("");
-    const [search, setSearch] = useState("");
+  const [isOpen, setIsOpen] = useState("");
+  const [search, setSearch] = useState("");
 
-  /**
-   * states Redux
-   */
-  const theme = useSelector(state => state.posts.themeW);
 
   /**
    * useRef
    */
-  const inputRef = useRef(null);  
+  const inputRef = useRef(null);
 
   /**
    * functions
@@ -61,33 +57,33 @@ const SearchBar = () => {
   return (
 
     <>
-    <div>
-      <button className="nav-button uil uil-estate"></button>
-      <div className="wrapper">
-        <div className={`bg-zinc-700 search ${isOpen}`}>
-          <input
-            ref={inputRef}
-            onChange={handleChange}
-            placeholder="Search"
-            type="text"
-            className=' bg-zinc-700 text-white'
-            value={search}
-            onKeyDown={handleKeyDown}
-          />
-
-          <button
-            onClick={() => handleClick()}
-            className={`nav-button uil uil-${isOpen ? "multiply" : "search"}`}
-          >
-            <FontAwesomeIcon
-              icon={faSearch}
-              className=' text-sm text-white'
+      <div>
+        <button className="nav-button uil uil-estate"></button>
+        <div className="wrapper">
+          <div className={`bg-zinc-700 search ${isOpen}`}>
+            <input
+              ref={inputRef}
+              onChange={handleChange}
+              placeholder="Search"
+              type="text"
+              className=' bg-zinc-700 text-white'
+              value={search}
+              onKeyDown={handleKeyDown}
             />
-          </button>
+
+            <button
+              onClick={() => handleClick()}
+              className={`nav-button uil uil-${isOpen ? "multiply" : "search"}`}
+            >
+              <FontAwesomeIcon
+                icon={faSearch}
+                className=' text-sm text-white'
+              />
+            </button>
+          </div>
         </div>
       </div>
-    </div>
-      
+
     </>
   )
 }

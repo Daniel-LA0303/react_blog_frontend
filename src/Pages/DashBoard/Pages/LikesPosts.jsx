@@ -1,13 +1,21 @@
-import React, { useEffect, useState } from 'react'
-import { useSelector } from 'react-redux'
-import Sidebar from '../../../components/Sidebar/Sidebar'
-import LoadingPosts from '../../../components/Spinner/LoadingPosts'
-import Post from '../../../components/Post/Post'
-import { useNavigate, useParams } from 'react-router-dom'
+import { useEffect, useState } from 'react'
+
+/**
+ * route
+ */
+import { useParams } from 'react-router-dom'
 import axios from 'axios'
+
+/**
+ * components
+ */
 import AsideDashboard from '../../../components/Aside/AsideDashboard'
 import Spinner from '../../../components/Spinner/Spinner'
-import userUserAuthContext from '../../../context/hooks/useUserAuthContext'
+import Post from '../../../components/Post/Post'
+import Sidebar from '../../../components/Sidebar/Sidebar'
+import useGlobalDataContext from '../../../context/hooks/useGlobalDataContext'
+import clientAuthAxios from '../../../services/clientAuthAxios'
+
 
 const LikesPosts = () => {
 
@@ -15,7 +23,11 @@ const LikesPosts = () => {
    * route
    */
   const params = useParams();
-  const navigate = useNavigate();
+
+  /**
+   * hooks
+   */
+  const { globalData } = useGlobalDataContext();
 
 
   /**
@@ -29,16 +41,8 @@ const LikesPosts = () => {
   const limit = 5;
 
   /**
-   * states Redux
-   */
-  const theme = useSelector(state => state.posts.themeW);
-  const link = useSelector(state => state.posts.linkBaseBackend);
-  const userP = useSelector(state => state.posts.user);
-
-  /**
    * useEffect
    */
-
   /**
     * init posts charge the first page
     */
@@ -77,12 +81,9 @@ const LikesPosts = () => {
     setLoading(true);
 
     try {
-      const response = await axios.get(
-        `${link}/pages/page-dashboard-liked-post-user/${params.id}?page=${pageToFetch}&limit=${limit}`
+      const response = await clientAuthAxios.get(
+        `/pages/page-dashboard-liked-post-user/${params.id}?page=${pageToFetch}&limit=${limit}`
       );
-
-
-      console.log(response);
       
       const { data, meta } = response.data.data;
       if (data && data.length > 0) {
@@ -101,7 +102,7 @@ const LikesPosts = () => {
 
 
   return (
-    <div className={`${theme ? 'text-black' : 'text-white'}`}>
+    <div className={`${globalData.themeGlobal ? 'text-black' : 'text-white'}`}>
       <Sidebar />
       <div className="flex flex-col lg:flex-row mx-auto w-full">
         {/* STATIC ASIDE */}
@@ -114,7 +115,7 @@ const LikesPosts = () => {
         <div className="flex flex-col items-center w-full lg:w-6/12 px-4 lg:mx-auto">
           <div className="mt-8 w-full">
             <h3
-              className={`text-left text-xl md:text-3xl font-semibold pb-0 ${theme ? '' : 'text-white'
+              className={`text-left text-xl md:text-3xl font-semibold pb-0 ${globalData.themeGlobal ? '' : 'text-white'
                 }`}
             >
               Published Blogs

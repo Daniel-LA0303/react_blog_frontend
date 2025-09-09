@@ -55,7 +55,7 @@ export function newPostAction(newPostData, route) {
         } catch (error) {
 
             // 5. get error message
-            const msg = error.response?.data?.message || "Error inesperado";
+            const msg = error.response?.data?.message || "There is a error";
 
             // 6. Dispatch error action
             dispatch(newPostError(msg));

@@ -1,12 +1,21 @@
-import axios from 'axios';
-import React, { useEffect, useState } from 'react'
-import { useDispatch, useSelector } from 'react-redux';
-import { newCommentAction } from '../../StateRedux/actions/postAction';
-import Swal from 'sweetalert2';
+import { useState } from 'react'
+
+/**
+ * hooks
+ */
 import userUserAuthContext from '../../context/hooks/useUserAuthContext';
-import { Link } from 'react-router-dom';
 import { useSwal } from '../../hooks/useSwal';
+
+/**
+ * router
+ */
+import { Link } from 'react-router-dom';
+
+/**
+ * service
+ */
 import clientAuthAxios from '../../services/clientAuthAxios';
+import useGlobalDataContext from '../../context/hooks/useGlobalDataContext';
 
 
 const NewComment = ({
@@ -21,17 +30,13 @@ const NewComment = ({
      * hooks
      */
     const { userAuth } = userUserAuthContext();
-    const { showConfirmSwal, showAutoSwal } = useSwal();
+    const { showConfirmSwal } = useSwal();
+    const { globalData } = useGlobalDataContext();
 
     /**
      * state
      */
     const [comment, setComment] = useState('');
-
-    /**
-     * redux
-     */
-    const theme = useSelector(state => state.posts.themeW);
 
     //new comment
     const newComment = async (id, e) => {
@@ -40,11 +45,12 @@ const NewComment = ({
 
         // 1. valid data
         if (comment.trim() === '') {
-            Swal.fire({
-                title: 'Error',
-                text: 'The comment is empty',
-                icon: 'error',
+            showConfirmSwal({
+                message: "Comment is empty",
+                status: "warning",
+                confirmButton: true
             });
+            return;
         }
 
         // 2. build data
@@ -78,7 +84,7 @@ const NewComment = ({
     }
 
     return (
-        <section className={`${theme ? ' bgt-light text-black' : 'bgt-dark hover:bg-zinc-900 text-white'} rounded-lg py-2`}>
+        <section className={`${globalData.themeGlobal ? ' bgt-light text-black' : 'bgt-dark hover:bg-zinc-900 text-white'} rounded-lg py-2`}>
             <div className="mx-auto px-4">
                 <div className="flex justify-between items-center mb-6">
                     <h2 className="text-sm lg:text-base font-bold ">Discussion ({comments.length})</h2>
@@ -97,13 +103,13 @@ const NewComment = ({
                     <form
                         onSubmit={(e) => newComment(idPost, e)}
                         className="mb-6 w-full">
-                        <div className={` ${theme ? "bg-white" : "bg-gray-700"}
+                        <div className={` ${globalData.themeGlobal ? "bg-white" : "bg-gray-700"}
                             py-2 px-4 mb-4 rounded-lg rounded-t-lg`}>
                             <textarea
                                 id="comment"
                                 rows="6"
                                 className={`
-                                    ${theme ? "" : "bg-gray-700 text-white placeholder-gray-400 "}
+                                    ${globalData.themeGlobal ? "bg-white" : "bg-gray-700 text-white placeholder-gray-400 "}
                                     px-0 w-full text-sm  border-0 focus:ring-0 
                                     focus:outline-none  
                                      resize-y max-h-40 min-h-24
@@ -111,7 +117,6 @@ const NewComment = ({
                                     `}
                                 name="body"
                                 placeholder='Type Your Comment'
-                                required
                                 onChange={(e) => setComment(e.target.value)}
                                 value={comment}
                             ></textarea>
@@ -120,7 +125,7 @@ const NewComment = ({
                             type='submit'
                             className="btn-theme-light-op1 hover:bg-blue-700 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2"
                             placeholder='Type your Comment'
-                        >Comment hhh</button>
+                        >Comment</button>
                     </form>
                 </div>
 

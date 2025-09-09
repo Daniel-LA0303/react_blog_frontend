@@ -1,14 +1,24 @@
-import React, { useEffect, useState } from 'react'
-import Sidebar from '../../../components/Sidebar/Sidebar'
-import LoadingCategory from '../../../components/Spinner/LoadingCategory'
+import { useEffect, useState } from 'react'
+
 import { useNavigate, useParams } from 'react-router-dom'
-import NewCardCategory from '../../../components/CategoryCard/NewCardCategory'
 import { useSelector } from 'react-redux'
 import axios from 'axios'
+
+/**
+ * hooks context
+ */
 import userUserAuthContext from '../../../context/hooks/useUserAuthContext'
-import CardCategoryDashboard from '../../../components/CategoryCard/CardCategoryDashboard'
+import useGlobalDataContext from '../../../context/hooks/useGlobalDataContext'
+
+/**
+ * components
+ */
 import Spinner from '../../../components/Spinner/Spinner'
 import AsideDashboard from '../../../components/Aside/AsideDashboard'
+import CardCategoryDashboard from '../../../components/CategoryCard/CardCategoryDashboard'
+import Sidebar from '../../../components/Sidebar/Sidebar'
+import clientAuthAxios from '../../../services/clientAuthAxios'
+
 
 const UserTags = () => {
 
@@ -16,25 +26,28 @@ const UserTags = () => {
    * route
    */
   const params = useParams();
-  const navigate = useNavigate();
 
+  /**
+   * hooks
+   */
   const { userAuth } = userUserAuthContext();
+  const { globalData } = useGlobalDataContext();
 
   /**
    * states
    */
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [page, setPage] = useState(0); // page 1
+  const [hasMore, setHasMore] = useState(true); // check more blogs
+  const limit = 5;
 
   /**
    * states Redux
    */
-  const userP = useSelector(state => state.posts.user);
-  const theme = useSelector(state => state.posts.themeW);
+
   const link = useSelector(state => state.posts.linkBaseBackend);
-  const [page, setPage] = useState(0); // page 1
-  const [hasMore, setHasMore] = useState(true); // check more blogs
-  const limit = 5;
+
 
   /**
    * useEffect
@@ -71,17 +84,17 @@ const UserTags = () => {
 
 
   /**
-* fetch posts with pagination (infinite scroll)
-*/
+  * fetch posts with pagination (infinite scroll)
+  */
   const fetchPosts = async (pageToFetch = page) => {
     if (loading || !hasMore) return;
     setLoading(true);
 
     try {
-      const response = await axios.get(
-        `${link}/pages/page-dashboard-tag-user/${params.id}?page=${pageToFetch}&limit=${limit}`
+      const response = await clientAuthAxios.get(
+        `/pages/page-dashboard-tag-user/${params.id}?page=${pageToFetch}&limit=${limit}`
       );
-
+      
       const { data, meta } = response.data.data;
       if (data && data.length > 0) {
         setCategories((prev) => [...prev, ...data])
@@ -99,7 +112,7 @@ const UserTags = () => {
   };
 
   return (
-    <div className={`${theme ? 'text-black' : 'text-white'}`}>
+    <div className={`${globalData.themeGlobal ? 'text-black' : 'text-white'}`}>
       <Sidebar />
 
       <div className="flex flex-col lg:flex-row mx-auto w-full">
@@ -112,20 +125,20 @@ const UserTags = () => {
         <div className="flex flex-col items-center w-full lg:w-6/12 px-4 lg:mx-auto">
           <div className="mt-8 w-full">
             <h3
-              className={`text-left text-xl md:text-3xl font-semibold pb-0 ${theme ? '' : 'text-white'
+              className={`text-left text-xl md:text-3xl font-semibold pb-0 ${globalData.themeGlobal ? '' : 'text-white'
                 }`}
             >
               Tags followed
             </h3>
 
             <div className="mt-4 space-y-6">
-             {categories.map(cat => (
-              <CardCategoryDashboard
-                key={cat._id}
-                category={cat}
-                userAuth={userAuth}
-              />
-            ))}
+              {categories.map(cat => (
+                <CardCategoryDashboard
+                  key={cat._id}
+                  category={cat}
+                  userAuth={userAuth}
+                />
+              ))}
             </div>
 
             {loading && <Spinner />}

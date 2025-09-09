@@ -1,9 +1,21 @@
-import React, { useEffect, useState } from 'react'
-import { useSelector } from 'react-redux';
+import { useEffect, useState } from 'react'
+
+/**
+ * router
+ */
 import { Link } from 'react-router-dom';
+/**
+ * hooks
+ */
 import userUserAuthContext from '../../context/hooks/useUserAuthContext';
 import { useSwal } from '../../hooks/useSwal';
+import useGlobalDataContext from '../../context/hooks/useGlobalDataContext';
+
+/**
+ * services
+ */
 import clientAuthAxios from '../../services/clientAuthAxios';
+
 
 const UserCard = ({ user }) => {
 
@@ -17,11 +29,7 @@ const UserCard = ({ user }) => {
    */
   const { userAuth } = userUserAuthContext();
   const { showConfirmSwal } = useSwal();
-
-  /**
-   * states Redux
-   */
-  const theme = useSelector(state => state.posts.themeW);
+  const { globalData } = useGlobalDataContext();
 
   /**
    * useEffect
@@ -69,7 +77,7 @@ const UserCard = ({ user }) => {
 
   return (
     <div className={`
-          ${theme
+          ${globalData.themeGlobal
         ? " bgt-light text-black"
         : "bgt-dark hover:bg-zinc-700 text-white"
       }
@@ -113,7 +121,7 @@ const UserCard = ({ user }) => {
                 <button
                   type="button"
                   onClick={handleClickUnFollow}
-                  className={`${theme ? 'btn-theme-light-op2' : 'btn-theme-dark-op2'} hover:bg-gray-500 w-full text-xs text-sm:normal mx-1 font-medium rounded-lg px-5 py-2`}
+                  className={`${globalData.themeGlobal ? 'btn-theme-light-op2' : 'btn-theme-dark-op2'} hover:bg-gray-500 w-full text-xs text-sm:normal mx-1 font-medium rounded-lg px-5 py-2`}
                 >
                   Following
                 </button>
@@ -121,7 +129,7 @@ const UserCard = ({ user }) => {
                 <button
                   type="button"
                   onClick={handleClickFollow}
-                  className={`${theme ? 'btn-theme-light-op1' : 'btn-theme-dark-op1'} hover:bg-blue-500 w-full text-xs text-sm:normal mx-1 font-medium rounded-lg px-5 py-2`}
+                  className={`${globalData.themeGlobal ? 'btn-theme-light-op1' : 'btn-theme-dark-op1'} hover:bg-blue-500 w-full text-xs text-sm:normal mx-1 font-medium rounded-lg px-5 py-2`}
                 >
                   Follow
                 </button>

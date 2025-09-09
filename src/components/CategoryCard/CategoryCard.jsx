@@ -1,19 +1,28 @@
 import React, { useEffect, useState } from 'react'
-import { useSelector } from 'react-redux';
-import axios from 'axios';
-import userUserAuthContext from '../../context/hooks/useUserAuthContext';
+
+/**
+ * services
+ */
 import clientAuthAxios from '../../services/clientAuthAxios';
 
+/**
+ * icons
+ */
 import AccountCircleOutlinedIcon from '@mui/icons-material/AccountCircleOutlined';
+
+/**
+ * context
+ */
+import useGlobalDataContext from '../../context/hooks/useGlobalDataContext';
+import userUserAuthContext from '../../context/hooks/useUserAuthContext';
 
 const CategoryCard = ({ category }) => {
   /**
    * hooks
    */
   const { userAuth } = userUserAuthContext();
+  const { globalData } = useGlobalDataContext();
 
-  const theme = useSelector(state => state.posts.themeW);
-  const link = useSelector(state => state.posts.linkBaseBackend);
   const [isFollow, setIsFollow] = useState(false);
 
   useEffect(() => {
@@ -39,7 +48,7 @@ const CategoryCard = ({ category }) => {
 
   // when user unfollow a tag
   const handleUnFollowTag = async () => {
-    await clientAuthAxios.post(`${link}/users/unfollow-tag/${userAuth.userId}?categoryId=${category._id}`)
+    await clientAuthAxios.post(`/users/unfollow-tag/${userAuth.userId}?categoryId=${category._id}`)
       .then(() => {
         setIsFollow(false);
       })
@@ -56,7 +65,7 @@ const CategoryCard = ({ category }) => {
   return (
     <div
       style={{ borderBottom: `solid 10px ${category.color}` }}
-      className={` ${theme ? ' bgt-light text-black' : 'bgt-dark hover:bg-zinc-700 text-white'} w-full mt-5 px-3 py-4 rounded-lg shadow-md`}>
+      className={` ${globalData.themeGlobal ? ' bgt-light text-black' : 'bgt-dark hover:bg-zinc-700 text-white'} w-full mt-5 px-3 py-4 rounded-lg shadow-md`}>
       <div className='flex items-center justify-between'>
         <h5 className="mb-2 text-2xl font-bold tracking-tight">{category.name}</h5>
         {Object.keys(userAuth) == '' ? null : (
@@ -65,7 +74,7 @@ const CategoryCard = ({ category }) => {
               <button
                 type="button"
                 onClick={handleUnFollowTag}
-                className={`${theme ? 'btn-theme-light-op2' : 'btn-theme-dark-op2'} hover:bg-gray-500 font-medium rounded-lg text-sm px-5 py-1.5 mb-2`}
+                className={`${globalData.themeGloball ? 'btn-theme-light-op2' : 'btn-theme-dark-op2'} hover:bg-gray-500 font-medium rounded-lg text-sm px-5 py-1.5 mb-2`}
               >
                 Following
               </button>
@@ -73,7 +82,7 @@ const CategoryCard = ({ category }) => {
               <button
                 type="button"
                 onClick={handleFollowTag}
-                className={`${theme ? 'btn-theme-light-op1' : 'btn-theme-dark-op1'} hover:bg-blue-500 font-medium rounded-lg text-sm px-5 py-1.5 mb-2`}
+                className={`${globalData.themeGlobal ? 'btn-theme-light-op1' : 'btn-theme-dark-op1'} hover:bg-blue-500 font-medium rounded-lg text-sm px-5 py-1.5 mb-2`}
               >
                 Follow
               </button>
@@ -83,15 +92,12 @@ const CategoryCard = ({ category }) => {
       </div>
       <p className="font-normal">{category.desc}</p>
 
-<div className='flex justify-start items-center gap-1 mt-3'>
-  <AccountCircleOutlinedIcon fontSize='small' />
-  <p className="text-sm font-bold">
-    {category.follows.countFollows} followers
-  </p>
-</div>
-
-
-
+      <div className='flex justify-start items-center gap-1 mt-3'>
+        <AccountCircleOutlinedIcon fontSize='small' />
+        <p className="text-sm font-bold">
+          {category.follows.countFollows} followers
+        </p>
+      </div>
     </div>
   )
 }

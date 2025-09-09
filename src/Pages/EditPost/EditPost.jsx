@@ -1,23 +1,40 @@
-import React, { useEffect, useRef, useState } from 'react'
-import { Link, useNavigate, useParams } from 'react-router-dom';
-import Sidebar from '../../components/Sidebar/Sidebar'
+import { useEffect, useRef, useState } from 'react'
+/**
+ * router
+ */
+import { useNavigate, useParams } from 'react-router-dom';
 
-import { useSelector } from 'react-redux';
-
+/**
+ * editor
+ */
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
 import "../../components/EditorToolBar/EditorToolBar.css"
 import EditorToolBar, { modules, formats } from '../../components/EditorToolBar/EditorToolBar';
 
+/**
+ * libraries
+ */
 import Select from 'react-select'
-import axios from 'axios';
 
+/**
+ * components
+ */
 import Spinner from '../../components/Spinner/Spinner';
-import Swal from 'sweetalert2';
+import Sidebar from '../../components/Sidebar/Sidebar'
+
+/**
+ * icons
+ */
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faImage } from '@fortawesome/free-solid-svg-icons';
 import { useSwal } from '../../hooks/useSwal';
+
+/**
+ * services
+ */
 import clientAuthAxios from '../../services/clientAuthAxios';
+import useGlobalDataContext from '../../context/hooks/useGlobalDataContext';
 
 
 const EditPost = () => {
@@ -26,7 +43,7 @@ const EditPost = () => {
      * hooks
      */
     const { showAutoSwal, showConfirmSwal } = useSwal();
-
+    const { globalData } = useGlobalDataContext();
 
     /**
      * route
@@ -50,16 +67,7 @@ const EditPost = () => {
     const [prevImagePublicId, setPrevImagePublicId] = useState(null); // guarda el public_id de la imagen anterior
     const [removeImage, setRemoveImage] = useState(false); // marca que el usuario quiso quitar la imagen
 
-
-
     const inputRef = useRef(null);
-
-    /**
-     * states Redux
-     */
-    const theme = useSelector(state => state.posts.themeW);
-    const link = useSelector(state => state.posts.linkBaseBackend);
-    const userP = useSelector(state => state.posts.user);
 
     /**
      * useEffect
@@ -67,7 +75,7 @@ const EditPost = () => {
     useEffect(() => {
 
         setLoading(true);
-        clientAuthAxios.get(`${link}/pages/page-edit-post/${params.id}`)
+        clientAuthAxios.get(`/pages/page-edit-post/${params.id}`)
             .then((response) => {
                 console.log(response);
 
@@ -191,7 +199,7 @@ const EditPost = () => {
             if (file) {
                 const formData = new FormData();
                 formData.append('image', file);
-                const res = await clientAuthAxios.post(`${link}/posts/image-post`, formData);
+                const res = await clientAuthAxios.post(`/posts/image-post`, formData);
                 postUpdate.linkImage = res.data; // assuming res.data contains { public_id, secure_url }
             }
         }
@@ -210,7 +218,7 @@ const EditPost = () => {
             const formData = new FormData();
             formData.append('image', file);
             try {
-                const res = await clientAuthAxios.post(`${link}/posts/image-post`, formData); // insert new inmage in service cloudinary
+                const res = await clientAuthAxios.post(`/posts/image-post`, formData); // insert new inmage in service cloudinary
                 resImage = res.data
                 console.log(resImage);
             } catch (error) {
@@ -225,7 +233,7 @@ const EditPost = () => {
         try {
 
             // 8. finally we update new info in backend
-            const response = await clientAuthAxios.put(`${link}/posts/${params.id}`, postUpdate);
+            const response = await clientAuthAxios.put(`/posts/${params.id}`, postUpdate);
 
             showAutoSwal({
                 message: response.data.message,
@@ -277,16 +285,16 @@ const EditPost = () => {
                         <main className="mx-auto w-full max-w-screen-xl px-4 py-12 sm:px-6 lg:px-8">
                             <div className="space-y-8">
                                 <div
-                                    className={`${theme ? 'text-black' : 'text-white'}`}
+                                    className={`${globalData.themeGlobal ? 'text-black' : 'text-white'}`}
                                 >
                                     <h2 className="text-3xl font-extrabold tracking-tight ">Edit your post</h2>
-                                    <p className="mt-2 text-lg text-[var(--secondary-text-color)]">
+                                    <p className="mt-2 text-lg ">
                                         Fill out the form below to publish a new masterpiece.
                                     </p>
                                 </div>
 
                                 <form
-                                    className={`${theme ? 'bgt-light text-black' : 'bgt-dark text-white'} rounded-lg p-6 shadow-sm sm:p-8`}
+                                    className={`${globalData.themeGlobal ? 'bgt-light text-black' : 'bgt-dark text-white'} rounded-lg p-6 shadow-sm sm:p-8`}
                                     onSubmit={newPost}
                                 >
                                     <div className="grid grid-cols-1 gap-x-8 gap-y-6 md:grid-cols-2">

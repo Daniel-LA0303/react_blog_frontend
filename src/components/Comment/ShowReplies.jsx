@@ -1,96 +1,122 @@
+import { useState } from 'react';
+
+/**
+ * icons
+ */
 import { faPen, faTrash } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { useSelector } from 'react-redux';
+
+/**
+ * hooks
+ */
 import userUserAuthContext from '../../context/hooks/useUserAuthContext';
 import { useSwal } from '../../hooks/useSwal';
-import { useState } from 'react';
-import axios from 'axios';
+import useGlobalDataContext from '../../context/hooks/useGlobalDataContext';
+
+
+/**
+ * libraries
+ */
 import Swal from 'sweetalert2';
 
-const ShowReplies = ({reply, userP, onUpdateReply, onDeleteReply}) => {
+/**
+ * services
+ */
+import clientAuthAxios from '../../services/clientAuthAxios';
 
-    const theme = useSelector(state => state.posts.themeW);
+
+const ShowReplies = ({ reply, userP, onUpdateReply, onDeleteReply }) => {
+
+    /**
+     * hooks
+     */
+    const { globalData } = useGlobalDataContext();
+    const { showConfirmSwal, showAutoSwal } = useSwal();
     const { userAuth } = userUserAuthContext();
-    const { showConfirmSwal } = useSwal();
-    const link = useSelector(state => state.posts.linkBaseBackend);
 
-    // Estados para edición
+    // states
     const [isEditing, setIsEditing] = useState(false);
     const [editText, setEditText] = useState(reply.reply);
     const [submitting, setSubmitting] = useState(false);
 
     // Función para eliminar reply
-const handleDeleteReply = async (replyId) => {
-    // Usar SweetAlert directamente para la confirmación
-    Swal.fire({
-        title: '¿Eliminar respuesta?',
-        text: "Esta acción no se puede deshacer",
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonText: 'Sí, eliminar',
-        cancelButtonText: 'Cancelar',
-        confirmButtonColor: '#d33',
-        cancelButtonColor: '#3085d6',
-        customClass: {
-            popup: 'swal-popup-warning',
-            title: 'swal-title-warning',
-            confirmButton: 'swal-btn-warning',
-            cancelButton: 'swal-btn-cancel'
-        }
-    }).then(async (result) => {
-        if (result.isConfirmed) {
-            try {
-                const res = await axios.post(`${link}/replies/delete-reply/${replyId}?user=${userAuth.userId}`, {
-                    commentID: reply.commentID
-                });
-
-                console.log('Delete response:', res);
-
-                if (onDeleteReply) {
-                    onDeleteReply(replyId);
-                }
-
-                // Mostrar mensaje de éxito
-                Swal.fire({
-                    title: '¡Eliminada!',
-                    text: 'La respuesta ha sido eliminada',
-                    icon: 'success',
-                    timer: 2000,
-                    showConfirmButton: false
-                });
-
-            } catch (error) {
-                console.error('Error deleting reply:', error);
-                
-                Swal.fire({
-                    title: 'Error',
-                    text: error.response?.data?.message || 'Error al eliminar la respuesta',
-                    icon: 'error',
-                    confirmButtonText: 'Entendido'
-                });
+    const handleDeleteReply = async (replyId) => {
+        // Use SweetAlert directly for confirmation
+        Swal.fire({
+            title: 'Delete reply?',
+            text: "This action cannot be undone",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: 'Yes, delete',
+            cancelButtonText: 'Cancel',
+            confirmButtonColor: '#d33',
+            cancelButtonColor: '#3085d6',
+            customClass: {
+                popup: 'swal-popup-warning',
+                title: 'swal-title-warning',
+                confirmButton: 'swal-btn-warning',
+                cancelButton: 'swal-btn-cancel'
             }
-        }
-    });
-};
+        }).then(async (result) => {
+            if (result.isConfirmed) {
+                try {
+                    const res = await clientAuthAxios.post(`/replies/delete-reply/${replyId}?user=${userAuth.userId}`, {
+                        commentID: reply.commentID
+                    });
+
+                    if (onDeleteReply) {
+                        onDeleteReply(replyId);
+                    }
+
+                    // Show success message
+                    showAutoSwal({
+                        message: res.data.message,
+                        status: "success",
+                        timer: 1500
+                    });
+
+                } catch (error) {
+                    console.error('Error deleting reply:', error);
+                    showConfirmSwal({
+                        message: error.response?.data?.message || 'Error deleting the reply',
+                        status: "error",
+                        confirmButton: true
+                    });
+
+                }
+            }
+        });
+    };
 
     // Función para editar reply
     const handleEditReply = async () => {
-        if (!editText.trim() || submitting) return;
+
+        //1. check if reply is empty
+        if (!editText.trim() || submitting) {
+            showConfirmSwal({
+                message: "Reply is empty",
+                status: "warning",
+                confirmButton: true
+            });
+            return
+        };
 
         setSubmitting(true);
+
+        // 2. post new rpely
         try {
-            const res = await axios.put(`${link}/replies/edit-reply/${reply._id}?user=${userAuth.userId}`, {
+            const res = await clientAuthAxios.put(`/replies/edit-reply/${reply._id}?user=${userAuth.userId}`, {
                 reply: editText,
                 commentID: reply.commentID
             });
 
             if (onUpdateReply) {
-                onUpdateReply(res.data.data); // La reply actualizada
+                onUpdateReply(res.data.data); // The updated reply
             }
 
             setIsEditing(false);
             showConfirmSwal({
-                message: 'Respuesta actualizada',
+                message: 'Reply updated',
                 status: "success",
                 confirmButton: false,
                 timer: 2000
@@ -99,7 +125,7 @@ const handleDeleteReply = async (replyId) => {
         } catch (error) {
             console.error('Error editing reply:', error);
             showConfirmSwal({
-                message: error.response?.data?.message || 'Error al editar',
+                message: error.response?.data?.message || 'Error editing',
                 status: "error",
                 confirmButton: true
             });
@@ -107,7 +133,6 @@ const handleDeleteReply = async (replyId) => {
             setSubmitting(false);
         }
     };
-
     // Cancelar edición
     const cancelEdit = () => {
         setEditText(reply.reply);
@@ -115,7 +140,7 @@ const handleDeleteReply = async (replyId) => {
     };
 
     return (
-        <article className={`${theme ? ' bgt-light text-black' : 'bgt-dark text-white'} p-6 mb-6 text-base rounded-lg`}>
+        <article className={`${globalData.themeGlobal ? ' bgt-light text-black' : 'bgt-dark text-white'} p-6 mb-6 text-base rounded-lg`}>
             <footer className="flex justify-between items-center mb-2">
                 <div className="flex items-center">
                     <img
@@ -123,7 +148,7 @@ const handleDeleteReply = async (replyId) => {
                         src={reply.userID.profilePicture?.secure_url || '/avatar.png'}
                         alt={reply.userID.name}
                     />
-                    <p className={`${theme ? 'text-black' : 'text-white'} text-sm font-medium`}>
+                    <p className={`${globalData.themeGlobal ? 'text-black' : 'text-white'} text-sm font-medium`}>
                         {reply.userID.name}
                     </p>
                     <p className="text-sm text-gray-600 dark:text-gray-400 ml-3">
@@ -152,29 +177,32 @@ const handleDeleteReply = async (replyId) => {
                     <textarea
                         value={editText}
                         onChange={(e) => setEditText(e.target.value)}
-                        className="w-full p-2 border rounded text-black"
+                        className={`
+                            ${globalData.themeGlobal ? "" : "bg-gray-700 text-white placeholder-gray-400 "}
+                                p-2 w-full text-sm  border-0 focus:ring-0 
+                                focus:outline-none  
+                                resize-y max-h-40 min-h-24
+                                rounded-lg 
+                            `}
                         rows="3"
-                        disabled={submitting}
                     />
                     <div className="flex justify-end space-x-2 mt-2">
                         <button
                             onClick={cancelEdit}
-                            disabled={submitting}
                             className="px-3 py-1 bg-gray-500 text-white rounded hover:bg-gray-600 disabled:opacity-50"
                         >
-                            Cancelar
+                            Cancel
                         </button>
                         <button
                             onClick={handleEditReply}
-                            disabled={submitting || !editText.trim()}
-                            className="px-3 py-1 bg-blue-500 text-white rounded hover:bg-blue-600 disabled:opacity-50"
+                            className="px-3 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 disabled:opacity-50"
                         >
-                            {submitting ? 'Guardando...' : 'Guardar'}
+                            {submitting ? 'Updating...' : 'Update'}
                         </button>
                     </div>
                 </div>
             ) : (
-                <p className="text-gray-500 dark:text-gray-400">{reply.reply}</p>
+                <p className="">{reply.reply}</p>
             )}
         </article>
     );

@@ -1,32 +1,39 @@
-import React, { useEffect, useRef, useState } from 'react'
-import { useSelector } from 'react-redux';
+import { useEffect, useState } from 'react'
+
+/**
+ * hooks
+ */
+import usePages from '../../context/hooks/usePages';
+
+/**
+ * libraries
+ */
+import axios from 'axios';
+
+/**
+ * components
+ */
+import Error from '../../components/Error/Error';
 import Sidebar from '../../components/Sidebar/Sidebar'
 import NewCardCategory from '../../components/CategoryCard/NewCardCategory';;
 import LoadingCategory from '../../components/Spinner/LoadingCategory';
-import usePages from '../../context/hooks/usePages';
-import Error from '../../components/Error/Error';
-import axios from 'axios';
+
+
+/**
+ * context
+ */
 import userUserAuthContext from '../../context/hooks/useUserAuthContext';
+import useGlobalDataContext from '../../context/hooks/useGlobalDataContext';
 
 const Categories = () => {
-
-  /**
-   * error page
-   */
-  const { errorPage, setErrorPage } = usePages();
-  const { error, message } = errorPage;
 
   /**
    * hooks
    */
   const { userAuth } = userUserAuthContext();
-
-  /**
-   * redux state
-   */
-  // const userP = useSelector((state) => state.posts.user);
-  const theme = useSelector((state) => state.posts.themeW);
-  const link = useSelector((state) => state.posts.linkBaseBackend);
+  const { globalData } = useGlobalDataContext();
+  const { errorPage, setErrorPage } = usePages();
+  const { error, message } = errorPage;
 
   /**
    * use state
@@ -43,7 +50,7 @@ const Categories = () => {
     setLoading(true);
 
     try {
-      const response = await axios.get(`${link}/pages/page-categories`, {
+      const response = await axios.get(`${globalData.link}/pages/page-categories`, {
         params: { page: pageToFetch, limit },
       });
 
@@ -73,7 +80,7 @@ const Categories = () => {
   // init fetch
   useEffect(() => {
     fetchCategories(1); // start page 1
-  }, [link]);
+  }, [globalData.link]);
 
   // infite scroll
   useEffect(() => {
@@ -100,15 +107,15 @@ const Categories = () => {
           <Error message={message} />
         ) : (
           <>
-            <p className={`${theme ? 'text-black' : 'text-white'} text-left mt-5 text-3xl`}>
+            <p className={`${globalData.themeGlobal ? 'text-black' : 'text-white'} text-left mt-5 text-3xl`}>
               Categories
             </p>
             <div className="grid gap-2 md:grid-cols-2 lg:grid-cols-3 w-full mx-auto mb-5">
               {categories.map((cat) => (
-                <NewCardCategory 
-                  key={cat._id} 
-                  category={cat} 
-                  userAuth={userAuth} 
+                <NewCardCategory
+                  key={cat._id}
+                  category={cat}
+                  userAuth={userAuth}
                 />
               ))}
             </div>

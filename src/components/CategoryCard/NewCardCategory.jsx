@@ -1,7 +1,19 @@
 import React, { useEffect, useState } from 'react'
-import { useSelector } from 'react-redux';
+
+/**
+ * router
+ */
+
 import { Link } from 'react-router-dom';
+/**
+ * service
+ */
 import clientAuthAxios from '../../services/clientAuthAxios';
+
+/**
+ * context hooks
+ */
+import useGlobalDataContext from '../../context/hooks/useGlobalDataContext';
 import { useSwal } from '../../hooks/useSwal';
 
 
@@ -16,12 +28,7 @@ const NewCardCategory = ({ category, userAuth }) => {
    * hooks
    */
   const { showConfirmSwal } = useSwal();
-
-  /**
-   * states Redux
-   */
-  const theme = useSelector(state => state.posts.themeW);
-  const link = useSelector(state => state.posts.linkBaseBackend);
+  const { globalData } = useGlobalDataContext();
 
   /**
    * useEffect
@@ -55,7 +62,7 @@ const NewCardCategory = ({ category, userAuth }) => {
 
   // when user unfollow a tag
   const handleUnFollowTag = async () => {
-    await clientAuthAxios.post(`${link}/users/unfollow-tag/${userAuth.userId}?categoryId=${category._id}`)
+    await clientAuthAxios.post(`/users/unfollow-tag/${userAuth.userId}?categoryId=${category._id}`)
       .then(() => {
         setIsFollow(false);
       })
@@ -71,7 +78,7 @@ const NewCardCategory = ({ category, userAuth }) => {
   return (
     <div
       style={{ borderBottom: `solid 10px ${category.color}` }}
-      className={` ${theme ? ' bgt-light text-black' : 'bgt-dark hover:bg-zinc-700 text-white'} w-full mt-5 px-3 py-4 rounded-lg shadow-md `}>
+      className={` ${globalData.themeGlobal ? ' bgt-light text-black' : 'bgt-dark hover:bg-zinc-700 text-white'} w-full mt-5 px-3 py-4 rounded-lg shadow-md `}>
       <div className='flex items-center justify-between'>
         <Link to={`/category/${category.name}`} className="mb-2 text-2xl font-bold tracking-tight ">{category.name}</Link>
         {userAuth?.userId ? (
@@ -80,7 +87,7 @@ const NewCardCategory = ({ category, userAuth }) => {
               <button
                 type="button"
                 onClick={handleUnFollowTag}
-                className={`${theme ? 'btn-theme-light-op2' : 'btn-theme-dark-op2'} hover:bg-gray-500 font-medium rounded-lg text-sm px-5 py-1.5 mb-2`}
+                className={`${globalData.themeGlobal ? 'btn-theme-light-op2' : 'btn-theme-dark-op2'} hover:bg-gray-500 font-medium rounded-lg text-sm px-5 py-1.5 mb-2`}
               >
                 Following
               </button>
@@ -88,7 +95,7 @@ const NewCardCategory = ({ category, userAuth }) => {
               <button
                 type="button"
                 onClick={handleFollowTag}
-                className={`${theme ? 'btn-theme-light-op1' : 'btn-theme-dark-op1'} hover:bg-blue-500 font-medium rounded-lg text-sm px-5 py-1.5 mb-2`}
+                className={`${globalData.themeGlobal ? 'btn-theme-light-op1' : 'btn-theme-dark-op1'} hover:bg-blue-500 font-medium rounded-lg text-sm px-5 py-1.5 mb-2`}
               >
                 Follow
               </button>

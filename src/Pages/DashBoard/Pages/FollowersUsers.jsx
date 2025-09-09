@@ -1,21 +1,32 @@
-import axios from 'axios';
-import React, { useEffect, useState } from 'react'
-import { useSelector } from 'react-redux';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useEffect, useState } from 'react'
+
+/**
+ * route
+ */
+import { useParams } from 'react-router-dom';
+
+/**
+ * components
+ */
 import Sidebar from '../../../components/Sidebar/Sidebar'
-import LoadingUser from '../../../components/Spinner/LoadingUser';
-import UserCard from '../../../components/UserCard/UserCard';
 import UserCardLong from '../../../components/UserCard/UseCardLong';
 import AsideDashboard from '../../../components/Aside/AsideDashboard';
 import Spinner from '../../../components/Spinner/Spinner';
+import useGlobalDataContext from '../../../context/hooks/useGlobalDataContext';
+import clientAuthAxios from '../../../services/clientAuthAxios';
 
 
 const FollowersUsers = () => {
+
+  /**
+   * hooks
+   */
+  const { globalData } = useGlobalDataContext();
+
     /**
    * route
    */
   const params = useParams();
-  const navigate = useNavigate();
 
   /**
    * states
@@ -25,22 +36,14 @@ const FollowersUsers = () => {
 
   const [page, setPage] = useState(0); // page 1
   const [hasMore, setHasMore] = useState(true); // check more blogs
-  const limit = 5;
-
-  /**
-   * states Redux
-   */
-  const theme = useSelector(state => state.posts.themeW);
-  const link = useSelector(state => state.posts.linkBaseBackend);
-  const userP = useSelector(state => state.posts.user);
+  const limit = 10;
 
   /**
    * useEffect
    */
-
   /**
-* init posts charge the first page
-*/
+    * init posts charge the first page
+    */
   useEffect(() => {
     setUsers([]); // clean post profile in case to change profile
     setPage(1);
@@ -76,10 +79,10 @@ const FollowersUsers = () => {
     setLoading(true);
 
     try {
-      const response = await axios.get(
-        `${link}/pages/page-dashboard-followers-user/${params.id}?page=${pageToFetch}&limit=${limit}`
+      const response = await clientAuthAxios.get(
+        `/pages/page-dashboard-followers-user/${params.id}?page=${pageToFetch}&limit=${limit}`
       );
-
+      
       const { data, meta } = response.data.data;
       if (data && data.length > 0) {
         setUsers((prev) => [...prev, ...data]);
@@ -97,7 +100,7 @@ const FollowersUsers = () => {
 
 
   return (
-    <div className={`${theme ? 'text-black' : 'text-white'}`}>
+    <div className={`${globalData.themeGlobal ? 'text-black' : 'text-white'}`}>
       <Sidebar />
       <div className="flex flex-col lg:flex-row mx-auto w-full">
         <div className=''>
@@ -108,7 +111,7 @@ const FollowersUsers = () => {
         <div className="flex flex-col items-center w-full lg:w-6/12 px-4 lg:mx-auto">
           <div className="mt-8 w-full">
             <h3
-              className={`text-left text-xl md:text-3xl font-semibold pb-0 ${theme ? '' : 'text-white'
+              className={`text-left text-xl md:text-3xl font-semibold pb-0 ${globalData.themeGlobal ? '' : 'text-white'
                 }`}
             >
               Followers

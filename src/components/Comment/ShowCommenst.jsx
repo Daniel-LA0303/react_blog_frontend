@@ -1,19 +1,44 @@
-import React, { useEffect, useRef, useState } from 'react'
+import { useEffect, useState } from 'react'
+
+/**
+ * icons
+ */
 import { faPen, faTrash } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+
+/**
+ * libraries
+ */
 import axios from 'axios';
-import { toast, Toaster } from 'react-hot-toast';
-import { useSelector } from 'react-redux';
+import { toast } from 'react-hot-toast';
+
+/**
+ * router
+*/
 import { Link } from 'react-router-dom';
 import Swal from 'sweetalert2';
 
+/**
+ * components
+ */
 import EditComment from './EditComment';
 import ReplyComment from './ReplyComment';
 import ShowReplies from './ShowReplies';
+import LoadMoreRepliesButton from './LoadMoreRepliesButton';
+
+/**
+ * hooks
+ */
 import userUserAuthContext from '../../context/hooks/useUserAuthContext';
 import { useSwal } from '../../hooks/useSwal';
+import useGlobalDataContext from '../../context/hooks/useGlobalDataContext';
+
+/**
+ * services
+ */
 import clientAuthAxios from '../../services/clientAuthAxios';
-import LoadMoreRepliesButton from './LoadMoreRepliesButton';
+
+
 
 const notify = () => toast(
     'Comment saved.',
@@ -35,6 +60,7 @@ const ShowCommenst = ({
      */
     const { userAuth } = userUserAuthContext();
     const { showConfirmSwal } = useSwal();
+    const { globalData } = useGlobalDataContext();
 
     /**
      * states
@@ -55,14 +81,6 @@ const ShowCommenst = ({
     const [loadingMoreReplies, setLoadingMoreReplies] = useState(false);
     const [initialLoadDone, setInitialLoadDone] = useState(false); // Para controlar la carga inicial
 
-
-    /**
-     * states Redux
-     */
-    const theme = useSelector(state => state.posts.themeW);
-
-    const link = useSelector(state => state.posts.linkBaseBackend);
-
     /**
      * useEffect
      */
@@ -79,11 +97,6 @@ const ShowCommenst = ({
         return () => clearTimeout(timer);
     }, [comment.comment]);
 
-
-
-
-
-
     useEffect(() => {
         if (!initialLoadDone && comment._id) {
             loadInitialReplies();
@@ -91,32 +104,32 @@ const ShowCommenst = ({
     }, [comment._id, initialLoadDone]);
 
 
-const loadInitialReplies = async () => {
+    const loadInitialReplies = async () => {
         try {
             setLoadingMoreReplies(true);
-            
+
             // Primero obtener el conteo total
             const countResponse = await axios.get(
-                `${link}/replies/count-replies-by-comment/${comment._id}`
+                `${globalData.link}/replies/count-replies-by-comment/${comment._id}`
             );
-            
+
             const totalReplies = countResponse.data.data.total;
-            
+
             // Si hay replies, cargar las primeras 3
             if (totalReplies > 0) {
                 const repliesResponse = await axios.get(
-                    `${link}/replies/get-replies-paginated-by-comment/${comment._id}?page=1&limit=3`
+                    `${globalData.link}/replies/get-replies-paginated-by-comment/${comment._id}?page=1&limit=3`
                 );
                 setRepliesState(repliesResponse.data.data.data);
                 setCurrentRepliesPage(1);
             }
-            
+
             setRepliesMeta({
                 total: totalReplies,
                 totalPages: Math.ceil(totalReplies / 3),
                 hasMore: totalReplies > 3
             });
-            
+
             setInitialLoadDone(true);
         } catch (error) {
             console.error('Error loading initial replies:', error);
@@ -133,18 +146,18 @@ const loadInitialReplies = async () => {
 
         try {
             const response = await axios.get(
-                `${link}/replies/get-replies-paginated-by-comment/${comment._id}?page=${nextPage}&limit=3`
+                `${globalData.link}/replies/get-replies-paginated-by-comment/${comment._id}?page=${nextPage}&limit=3`
             );
 
             const newReplies = response.data.data.data;
-            
+
             // Usar Set para evitar duplicados
             setRepliesState(prev => {
                 const existingIds = new Set(prev.map(r => r._id));
                 const filteredNewReplies = newReplies.filter(reply => !existingIds.has(reply._id));
                 return [...prev, ...filteredNewReplies];
             });
-            
+
             setRepliesMeta(prev => ({
                 ...prev,
                 total: response.data.data.meta.total,
@@ -170,7 +183,7 @@ const loadInitialReplies = async () => {
             }
             return prev;
         });
-        
+
         // Actualizar el contador
         setRepliesMeta(prev => ({
             ...prev,
@@ -183,22 +196,20 @@ const loadInitialReplies = async () => {
 
 
     const handleUpdateReply = (updatedReply) => {
-    setRepliesState(prev => 
-        prev.map(r => r._id === updatedReply._id ? updatedReply : r)
-    );
-};
+        setRepliesState(prev =>
+            prev.map(r => r._id === updatedReply._id ? updatedReply : r)
+        );
+    };
 
-const handleDeleteReply = (deletedReplyId) => {
-    setRepliesState(prev => prev.filter(r => r._id !== deletedReplyId));
-    setRepliesMeta(prev => ({
-        ...prev,
-        total: prev.total - 1,
-        totalPages: Math.ceil((prev.total - 1) / 3),
-        hasMore: (prev.total - 1) > 3
-    }));
-};
-
-
+    const handleDeleteReply = (deletedReplyId) => {
+        setRepliesState(prev => prev.filter(r => r._id !== deletedReplyId));
+        setRepliesMeta(prev => ({
+            ...prev,
+            total: prev.total - 1,
+            totalPages: Math.ceil((prev.total - 1) / 3),
+            hasMore: (prev.total - 1) > 3
+        }));
+    };
 
 
     /**
@@ -271,7 +282,6 @@ const handleDeleteReply = (deletedReplyId) => {
                         numberComments: prev.numberComments - 1
                     }));
 
-
                 } catch (error) {
                     console.error(error);
                     // show error
@@ -301,7 +311,7 @@ const handleDeleteReply = (deletedReplyId) => {
                     p-4 mb-6 text-base rounded-lg my-2 transition-colors duration-700
                     ${highlight
                         ? 'bg-yellow-200 dark:bg-yellow-300'
-                        : theme
+                        : globalData.themeGlobal
                             ? 'bgt-light text-black'
                             : 'bgt-dark text-white'}
                     `}
@@ -338,7 +348,7 @@ const handleDeleteReply = (deletedReplyId) => {
                                 <div className="flex items-center space-x-2">
                                     <FontAwesomeIcon
                                         className={`
-                                            ${theme ? "btn-theme-light-delete" : "btn-theme-dark-delete"}
+                                            ${globalData.themeGlobal ? "btn-theme-light-delete" : "btn-theme-dark-delete"}
                                                 text-xs p-2 cursor-pointer`}
                                         icon={faTrash}
                                         onClick={() => handleDeleteComment(comment._id, comment.dateComment)}
@@ -347,7 +357,7 @@ const handleDeleteReply = (deletedReplyId) => {
                                         <FontAwesomeIcon
                                             icon={faPen}
                                             className={`
-                                                ${theme ? "btn-theme-light-edit" : "btn-theme-dark-edit"}
+                                                ${globalData.themeGlobal ? "btn-theme-light-edit" : "btn-theme-dark-edit"}
                                                     text-xs p-2 cursor-pointer`}
                                             onClick={() => setEditActive(!editActive)}
                                         />
@@ -384,14 +394,14 @@ const handleDeleteReply = (deletedReplyId) => {
                         </button>
                     }
 
-{repliesMeta.total > 0 && (
+                    {repliesMeta.total > 0 && (
                         <span className="text-sm text-gray-500 dark:text-gray-400">
                             {repliesMeta.total} {repliesMeta.total === 1 ? 'reply' : 'replies'}
                         </span>
                     )}
                 </div>
             </article>
-           {replyActive && (
+            {replyActive && (
                 <ReplyComment
                     setReplyActive={setReplyActive}
                     replyActive={replyActive}
@@ -401,26 +411,26 @@ const handleDeleteReply = (deletedReplyId) => {
                     onNewReply={handleNewReply}
                 />
             )}
-            
+
             {/* Lista de replies */}
             {repliesState.length > 0 && (
                 <div className="ml-6 lg:ml-12 mt-2">
                     {repliesState.map(reply => (
                         <ShowReplies
-key={reply._id}
-        reply={reply}
-        userP={userAuth}
-        onUpdateReply={handleUpdateReply}
-        onDeleteReply={handleDeleteReply}
+                            key={reply._id}
+                            reply={reply}
+                            userP={userAuth}
+                            onUpdateReply={handleUpdateReply}
+                            onDeleteReply={handleDeleteReply}
                         />
                     ))}
-                    
+
                     {/* Botón para cargar más replies si aún hay */}
                     {repliesMeta.hasMore && (
                         <LoadMoreRepliesButton
                             loading={loadingMoreReplies}
                             onClick={loadMoreReplies}
-                            theme={theme}
+                            theme={globalData.themeGlobal}
                             hasMore={repliesMeta.hasMore}
                         />
                     )}

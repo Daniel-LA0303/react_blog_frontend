@@ -1,11 +1,21 @@
 import { useEffect, useState } from "react";
+
+/**
+ * route
+ */
+import { Link } from "react-router-dom";
+
+/**
+ * hooks
+ */
+import useGlobalDataContext from "../../context/hooks/useGlobalDataContext";
 import userUserAuthContext from "../../context/hooks/useUserAuthContext";
 import { useSwal } from "../../hooks/useSwal";
-import { useSelector } from "react-redux";
-import { Link } from "react-router-dom";
+import clientAuthAxios from "../../services/clientAuthAxios";
 
 
 const UserCardLong = ({ user }) => {
+
     /**
      * states
      */
@@ -16,16 +26,12 @@ const UserCardLong = ({ user }) => {
      */
     const { userAuth } = userUserAuthContext();
     const { showConfirmSwal } = useSwal();
-
-    /**
-     * states Redux
-     */
-    const theme = useSelector((state) => state.posts.themeW);
+    const { globalData } = useGlobalDataContext();
 
     /**
      * useEffect
      */
-    useEffect(() => {        
+    useEffect(() => {
         const userProfileFound = user.followersUsers.followers.includes(
             userAuth.userId
         );
@@ -46,7 +52,7 @@ const UserCardLong = ({ user }) => {
         } catch (error) {
             console.log(error);
             showConfirmSwal({
-                message: error.response.data.message,
+                message: error?.response?.data?.message || "Error in unfollow User",
                 status: "error",
                 confirmButton: true,
             });
@@ -62,7 +68,7 @@ const UserCardLong = ({ user }) => {
         } catch (error) {
             console.log(error);
             showConfirmSwal({
-                message: error.response.data.message,
+                message: error?.response?.data?.message || "Error in follow User",
                 status: "error",
                 confirmButton: true,
             });
@@ -71,12 +77,12 @@ const UserCardLong = ({ user }) => {
 
     return (
         <div
-className={`
-          ${theme
-        ? " bgt-light text-black"
-        : "bgt-dark hover:bg-zinc-700 text-white"
-      }
-          w-full overflow-hidden rounded-xl shadow-lg`}
+            className={`
+          ${globalData.themeGlobal
+                    ? " bgt-light text-black hover:bg-zinc-500 hover:text-white"
+                    : "bgt-dark hover:bg-zinc-700 text-white"
+                }
+          w-full overflow-hidden rounded-xl shadow-lg hover:cursor-pointer`}
         >
             <div className="flex gap-6 p-8 flex-row flex-wrap justify-between items-center">
                 <div className="flex items-center gap-6">
@@ -89,33 +95,33 @@ className={`
                         }}
                     ></Link>
                     <div className="flex flex-col justify-center">
-                        <Link 
+                        <Link
                             to={`/profile/${user._id}`}
-                            className="text-slate-900 dark:text-white text-2xl font-bold leading-tight tracking-[-0.015em]">
+                            className=" text-2xl font-bold leading-tight tracking-[-0.015em]">
                             {user.name}
                         </Link>
                         <Link
                             to={`/profile/${user._id}`}
-                            className="text-slate-500 dark:text-gray-300 text-base font-normal mt-1">
+                            className="text-base font-normal mt-1">
                             {user.email}
                         </Link>
-                        <div className="flex items-center gap-4 mt-3 text-slate-500 dark:text-gray-300 text-sm">
+                        <div className="flex items-center gap-4 mt-3  text-sm">
                             <div>
-                                <span className="font-semibold text-slate-700 dark:text-white">
+                                <span className="font-semibold">
                                     {user.followersUsers.conutFollowers || 0}
                                 </span>{" "}
                                 Followers
                             </div>
-                            <div className="h-4 border-l border-slate-200 dark:border-gray-500"></div>
+                            <div className="h-4 border-l border-slate-500 "></div>
                             <div>
-                                <span className="font-semibold text-slate-700 dark:text-white">
+                                <span className="font-semibold">
                                     {user.followedUsers.conutFollowed || 0}
                                 </span>{" "}
                                 Following
                             </div>
-                            <div className="h-4 border-l border-slate-200 dark:border-gray-500"></div>
+                            <div className="h-4 border-l border-slate-500 "></div>
                             <div>
-                                <span className="font-semibold text-slate-700 dark:text-white">
+                                <span className="font-semibold">
                                     {user.posts.length || 0}
                                 </span>{" "}
                                 Posts
@@ -127,13 +133,13 @@ className={`
                     <button
                         type="button"
                         onClick={isFollow ? handleClickUnFollow : handleClickFollow}
-                        className={`flex  cursor-pointer items-center justify-center overflow-hidden rounded-md h-10 px-5 text-sm font-bold transition-colors w-32 @[480px]:w-auto ${theme
-                                ? isFollow
-                                    ? "bg-gray-200 text-black hover:bg-gray-300"
-                                    : "bg-blue-600 text-white hover:bg-blue-700"
-                                : isFollow
-                                    ? "bg-gray-700 text-white hover:bg-gray-600"
-                                    : "bg-blue-600 text-white hover:bg-blue-700"
+                        className={`flex  cursor-pointer items-center justify-center overflow-hidden rounded-md h-10 px-5 text-sm font-bold transition-colors w-32 @[480px]:w-auto ${globalData.themeGlobal
+                            ? isFollow
+                                ? "bg-gray-200 text-black hover:bg-gray-300"
+                                : "bg-blue-600 text-white hover:bg-blue-700"
+                            : isFollow
+                                ? "bg-gray-700 text-white hover:bg-gray-600"
+                                : "bg-blue-600 text-white hover:bg-blue-700"
                             }`}
                     >
                         <span className="truncate">{isFollow ? "Following" : "Follow"}</span>

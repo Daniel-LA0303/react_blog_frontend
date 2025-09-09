@@ -1,10 +1,28 @@
 import { useEffect, useState } from "react";
+
+/**
+ * hooks
+ */
 import { useSwal } from "../../hooks/useSwal";
-import { useSelector } from "react-redux";
-import clientAuthAxios from "../../services/clientAuthAxios";
+
+/**
+ * route 
+ */
 import { Link } from "react-router-dom";
 
+/**
+ * services
+ */
+import clientAuthAxios from "../../services/clientAuthAxios";
+import useGlobalDataContext from "../../context/hooks/useGlobalDataContext";
+
 const CardCategoryDashboard = ({ category, userAuth }) => {
+
+  /**
+   * hooks
+   */
+  const { globalData } = useGlobalDataContext();
+
   /**
    * states
    */
@@ -16,18 +34,9 @@ const CardCategoryDashboard = ({ category, userAuth }) => {
   const { showConfirmSwal } = useSwal();
 
   /**
-   * states Redux
-   */
-  const theme = useSelector((state) => state.posts.themeW);
-  const link = useSelector((state) => state.posts.linkBaseBackend);
-
-  /**
    * useEffect
    */
   useEffect(() => {
-
-    console.log(category);
-
 
     const userInCat = category.follows.users.includes(userAuth.userId);
     if (userInCat) setIsFollow(true);
@@ -54,7 +63,7 @@ const CardCategoryDashboard = ({ category, userAuth }) => {
   const handleUnFollowTag = async () => {
     try {
       await clientAuthAxios.post(
-        `${link}/users/unfollow-tag/${userAuth.userId}?categoryId=${category._id}`
+        `/users/unfollow-tag/${userAuth.userId}?categoryId=${category._id}`
       );
       setIsFollow(false);
     } catch (error) {
@@ -71,7 +80,7 @@ const CardCategoryDashboard = ({ category, userAuth }) => {
    */
   return (
     <div
-      className={`group w-full mb-5 mx-auto rounded-2xl overflow-hidden shadow-sm flex ${theme ? "bg-white" : "bgt-dark text-white"
+      className={`group w-full mb-5 mx-auto rounded-2xl overflow-hidden shadow-sm flex ${globalData.themeGlobal ? "bg-white" : "bgt-dark text-white"
         }`}
     >
       {/* Color side */}
@@ -86,16 +95,16 @@ const CardCategoryDashboard = ({ category, userAuth }) => {
         <div className="flex flex-col gap-4">
           <Link
             to={`/category/${category.name}`}
-            className={`text-2xl font-bold ${theme ? "text-gray-800" : "text-white"
+            className={`text-2xl font-bold ${globalData.themeGlobal ? "text-gray-800" : "text-white"
               }`}
           >
             {category.name}
           </Link>
-          <p className={`max-w-md ${theme ? "text-gray-500" : "text-gray-300"}`}>
+          <p className={`max-w-md ${globalData.themeGlobal ? "text-gray-500" : "text-gray-300"}`}>
             {category.desc}
           </p>
 
-          <p className={`max-w-md ${theme ? "text-gray-500" : "text-gray-300"} text-sm`}>
+          <p className={`max-w-md ${globalData.themeGlobal ? "text-gray-500" : "text-gray-300"} text-sm`}>
             Followers {''}
             {category.follows.countFollows}
           </p>
@@ -103,23 +112,18 @@ const CardCategoryDashboard = ({ category, userAuth }) => {
           {userAuth?.userId && (
             <button
               onClick={isFollow ? handleUnFollowTag : handleFollowTag}
-              className={`flex items-center justify-center w-fit px-5 py-2.5 text-sm font-medium rounded-lg transition-colors duration-300 ${isFollow
-                  ? theme
+              className={`flex items-center justify-center w-fit px-5 py-2.5 text-sm font-medium rounded-lg transition-colors duration-300 
+                ${isFollow
+                  ? globalData.themeGlobal
                     ? "bg-gray-200 text-black hover:bg-gray-300"
                     : "bg-gray-700 text-white hover:bg-gray-600"
-                  : `bg-[${category.color}] text-white hover:bg-blue-600`
+                  : `bg-gray-500 text-white hover:bg-blue-600`
                 }`}
             >
               {isFollow ? "Following" : "Follow"}
             </button>
           )}
         </div>
-
-        {/* Image */}
-        <div
-          className="w-64 h-40 bg-cover bg-center rounded-lg ml-8 flex-shrink-0"
-          style={{ backgroundImage: `url(${category.image || ""})` }}
-        ></div>
       </div>
     </div>
   );

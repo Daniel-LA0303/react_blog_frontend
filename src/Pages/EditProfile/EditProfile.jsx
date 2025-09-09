@@ -1,19 +1,37 @@
-import axios from 'axios';
-import React, { useEffect, useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 
-import Sidebar from '../../components/Sidebar/Sidebar'
-
+/**
+ * route
+ */
 import { useParams, useNavigate } from 'react-router-dom';
 
 import { useDispatch, useSelector } from 'react-redux';
 
+/**
+ * components
+ */
 import Spinner from '../../components/Spinner/Spinner';
+import Sidebar from '../../components/Sidebar/Sidebar';
+
 import { editUserAction } from '../../StateRedux/actions/usersActions';
 
+/**
+ * icons
+ */
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faImage } from '@fortawesome/free-solid-svg-icons';
+
+/**
+ * service
+ */
 import clientAuthAxios from '../../services/clientAuthAxios';
+
+/**
+ * hooks
+ */
 import { useSwal } from '../../hooks/useSwal';
+import useGlobalDataContext from '../../context/hooks/useGlobalDataContext';
+import userUserAuthContext from '../../context/hooks/useUserAuthContext';
 
 const EditProfile = () => {
 
@@ -26,7 +44,9 @@ const EditProfile = () => {
   /**
   * hooks
   */
-  const { showAutoSwal, showConfirmSwal } = useSwal();
+  const { showConfirmSwal } = useSwal();
+  const { globalData } = useGlobalDataContext();
+  const { userAuth } = userUserAuthContext();
 
   /**
    * states
@@ -54,17 +74,15 @@ const EditProfile = () => {
    * states Redux
    */
   const dispatch = useDispatch();
-  const user = useSelector(state => state.posts.user);
   const updateUserRedux = (userId, editUserData, route) => dispatch(editUserAction(userId, editUserData, route));
-  const theme = useSelector(state => state.posts.themeW);
-  const link = useSelector(state => state.posts.linkBaseBackend);
+
 
   /**
    * useEffect
    */
   useEffect(() => {
     setLoading(true);
-    clientAuthAxios.get(`${link}/pages/page-edit-profile/${params.id}?user=${user._id}`)
+    clientAuthAxios.get(`/pages/page-edit-profile/${params.id}?user=${userAuth.userId}`)
       .then((response) => {
 
 
@@ -139,7 +157,6 @@ const EditProfile = () => {
   };
 
 
-
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -203,15 +220,15 @@ const EditProfile = () => {
 
   }
 
-  if (Object.keys(user) === '') return <Spinner />
+  if (Object.keys(userAuth) === '') return <Spinner />
   return (
     <div>
       {loading ? <Spinner /> : (
         <>
           <Sidebar />
-          <main className="flex flex-1 justify-center py-10">
+          <main className="flex flex-1 justify-center py-10 max-w-screen-xl mx-auto">
             <div
-              className={`${theme ? 'text-black' : 'text-white'} w-full max-w-3xl`}
+              className={`${globalData.themeGlobal ? 'text-black' : 'text-white'} max-w-screen-xl `}
             >
               <div className="mb-8 text-center">
                 <h1 className="text-4xl font-bold tracking-tighter ">Edit Profile</h1>
@@ -219,7 +236,7 @@ const EditProfile = () => {
               </div>
 
               <div
-                className={`${theme ? 'bgt-light' : 'bgt-dark'} rounded-lg  shadow-sm`}
+                className={`${globalData.themeGlobal ? 'bgt-light' : 'bgt-dark'} rounded-lg  shadow-sm`}
               >
                 <div className="p-8">
 

@@ -1,20 +1,29 @@
-import React, { useEffect, useState } from 'react'
-import Sidebar from '../../components/Sidebar/Sidebar'
-import Post from '../../components/Post/Post'
-import { useNavigate, useParams } from 'react-router-dom'
-import axios from 'axios'
-import LoadingPosts from '../../components/Spinner/LoadingPosts'
-import { useSelector } from 'react-redux'
-import Spinner from '../../components/Spinner/Spinner'
-import AsideDashboard from '../../components/Aside/AsideDashboard'
+import { useEffect, useState } from 'react'
+
+import { useParams } from 'react-router-dom'
+
+/**
+ * components
+ */
+import Spinner from '../../../components/Spinner/Spinner'
+import AsideDashboard from '../../../components/Aside/AsideDashboard'
+import Sidebar from '../../../components/Sidebar/Sidebar'
+import Post from '../../../components/Post/Post'
+import useGlobalDataContext from '../../../context/hooks/useGlobalDataContext'
+import clientAuthAxios from '../../../services/clientAuthAxios'
 
 const SavePost = () => {
+
+  /**
+   * hooks
+   */
+  const { globalData } = useGlobalDataContext();
 
   /**
    * route
    */
   const params = useParams();
-  const navigate = useNavigate();
+
 
   /**
    * states
@@ -24,13 +33,6 @@ const SavePost = () => {
   const [page, setPage] = useState(0); // page 1
   const [hasMore, setHasMore] = useState(true); // check more blogs
   const limit = 5;
-
-
-  /**
-   * states Redux
-   */
-  const theme = useSelector(state => state.posts.themeW);
-  const link = useSelector(state => state.posts.linkBaseBackend);
 
   /**
  * useEffect
@@ -74,12 +76,9 @@ const SavePost = () => {
     setLoading(true);
 
     try {
-      const response = await axios.get(
-        `${link}/pages/page-dashboard-saved-post-user/${params.id}?page=${pageToFetch}&limit=${limit}`
-      );
-
-      console.log(response);
-      
+      const response = await clientAuthAxios.get(
+        `/pages/page-dashboard-saved-post-user/${params.id}?page=${pageToFetch}&limit=${limit}`
+      );      
 
       const { data, meta } = response.data.data;
       if (data && data.length > 0) {
@@ -97,7 +96,7 @@ const SavePost = () => {
   };
 
   return (
-    <div className={`${theme ? 'text-black' : 'text-white'}`}>
+    <div className={`${globalData.themeGlobal ? 'text-black' : 'text-white'}`}>
       <Sidebar />
       <div className="flex flex-col lg:flex-row mx-auto w-full">
         {/* STATIC ASIDE */}
@@ -109,7 +108,7 @@ const SavePost = () => {
         <div className="flex flex-col items-center w-full lg:w-6/12 px-4 lg:mx-auto">
           <div className="mt-8 w-full">
             <h3
-              className={`text-left text-xl md:text-3xl font-semibold pb-0 ${theme ? '' : 'text-white'
+              className={`text-left text-xl md:text-3xl font-semibold pb-0 ${globalData.themeGlobal ? '' : 'text-white'
                 }`}
             >
               Published Blogs

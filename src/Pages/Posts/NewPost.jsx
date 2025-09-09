@@ -1,30 +1,56 @@
-import React, { useEffect, useRef, useState } from 'react'
-import Sidebar from '../../components/Sidebar/Sidebar';
+import { useEffect, useRef, useState } from 'react'
 
-import { Link, useNavigate } from 'react-router-dom';
+/**
+ * router
+ */
+import { useNavigate } from 'react-router-dom';
 
+/**
+ * editor
+ */
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
 import "../../components/EditorToolBar/EditorToolBar.css"
 import EditorToolBar, { modules, formats } from '../../components/EditorToolBar/EditorToolBar';
 
+/**
+ * components
+ */
+import Spinner from '../../components/Spinner/Spinner';
+import Sidebar from '../../components/Sidebar/Sidebar';
+import Error from '../../components/Error/Error';
+
+
+import axios from 'axios';
+
+/**
+ * libraires
+ */
 import Select from 'react-select'
+/**
+ * hooks
+ */
+import usePages from '../../context/hooks/usePages';
+import { useSwal } from '../../hooks/useSwal.js';
 
-// import { Image } from '@mui/icons-material';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+/**
+ * services
+ */
+import clientAuthAxios from '../../services/clientAuthAxios';
 
-
+/**
+ * redux
+ */
+import { newPostAction } from '../../StateRedux/actions/postsActions';
 import { useDispatch, useSelector } from 'react-redux';
 
-import Spinner from '../../components/Spinner/Spinner';
-import Swal from 'sweetalert2';
-import axios from 'axios';
-import usePages from '../../context/hooks/usePages';
-import Error from '../../components/Error/Error';
-import clientAuthAxios from '../../services/clientAuthAxios';
-import { newPostAction } from '../../StateRedux/actions/postsActions';
-import { useSwal } from '../../hooks/useSwal.js';
+/**
+ * icons
+ */
 import { faImage } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import useGlobalDataContext from '../../context/hooks/useGlobalDataContext.js';
+import userUserAuthContext from '../../context/hooks/useUserAuthContext.js';
 
 
 const NewPost = () => {
@@ -38,7 +64,9 @@ const NewPost = () => {
     /**
      * hooks
      */
-    const { showAutoSwal, showConfirmSwal } = useSwal();
+    const { userAuth } = userUserAuthContext();
+    const { globalData } = useGlobalDataContext();
+    const { showConfirmSwal, showAutoSwal } = useSwal();
 
     /**
      * router
@@ -58,14 +86,6 @@ const NewPost = () => {
 
     const inputRef = useRef(null);
 
-    /**
-     * states Redux
-     */
-    const user = useSelector(state => state.posts.user);
-    const theme = useSelector(state => state.posts.themeW);
-    const link = useSelector(state => state.posts.linkBaseBackend);
-    const token = useSelector(state => state.posts.token);
-
     const dispatch = useDispatch();
     const newPostRedux = (newPost, route) => dispatch(newPostAction(newPost, route));
 
@@ -74,7 +94,7 @@ const NewPost = () => {
      */
     useEffect(() => {
         setLoading(true);
-        axios.get(`${link}/pages/page-new-post`)
+        axios.get(`${globalData.link}/pages/page-new-post`)
             .then((cats) => {
                 setCategories(cats.data.categories);
                 setLoading(false);
@@ -143,7 +163,7 @@ const NewPost = () => {
             return;
         }
 
-        if (categoriesPost.length > 4) {
+        if (categoriesPost.length > 4 || categoriesPost.length === 0) {
             showConfirmSwal({
                 message: "Please choose between 1 - 4 categories",
                 status: "warning",
@@ -151,16 +171,6 @@ const NewPost = () => {
             })
             return;
         }
-
-        // 2. validate img
-        // if (file === null) {
-        //     showConfirmSwal({
-        //         message: "Image are requiered",
-        //         status: "warning",
-        //         confirmButton: true
-        //     })
-        //     return;
-        // }
 
         // 3. preparate data
         let resImage = {}
@@ -176,7 +186,7 @@ const NewPost = () => {
         const newDate = Date.now()
         const newPost = {
             // user: user._id,
-            user: user._id,
+            user: userAuth.userId, 
             title: title,
             content: content,
             categories: catsIds,
@@ -203,9 +213,6 @@ const NewPost = () => {
 
         // 7. we create the post with the image link if it exists
         dispatch(newPostRedux(newPost, route));
-        // setTimeout(() => {
-        //     route('/');
-        // }, 500);
     }
 
     const quitImage = () => {
@@ -224,7 +231,7 @@ const NewPost = () => {
                         <main className="mx-auto w-full max-w-screen-xl px-4 py-12 sm:px-6 lg:px-8">
                             <div className="space-y-8">
                                 <div
-                                    className={`${theme ? 'text-black' : 'text-white'}`}
+                                    className={`${globalData.themeGlobal ? 'text-black' : 'text-white'}`}
                                 >
                                     <h2 className="text-3xl font-extrabold tracking-tight ">Create a new post</h2>
                                     <p className="mt-2 text-lg text-[var(--secondary-text-color)]">
@@ -233,7 +240,7 @@ const NewPost = () => {
                                 </div>
 
                                 <form
-                                    className={`${theme ? 'bgt-light text-black' : 'bgt-dark text-white'} rounded-lg p-6 shadow-sm sm:p-8`}
+                                    className={`${globalData.themeGlobal ? 'bgt-light text-black' : 'bgt-dark text-white'} rounded-lg p-6 shadow-sm sm:p-8`}
                                     onSubmit={newPost}
                                 >
                                     <div className="grid grid-cols-1 gap-x-8 gap-y-6 md:grid-cols-2">
