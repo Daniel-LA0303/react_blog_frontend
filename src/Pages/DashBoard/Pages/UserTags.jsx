@@ -46,7 +46,7 @@ const UserTags = () => {
    * states Redux
    */
 
-  const link = useSelector(state => state.posts.linkBaseBackend);
+  // const link = useSelector(state => state.posts.linkBaseBackend);
 
 
   /**

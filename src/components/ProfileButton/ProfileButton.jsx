@@ -8,6 +8,7 @@ import { Link } from 'react-router-dom';
  * hooks
  */
 import userUserAuthContext from '../../context/hooks/useUserAuthContext';
+import useGlobalDataContext from '../../context/hooks/useGlobalDataContext';
 
 /**
  * icons
@@ -16,7 +17,7 @@ import AccountCircleOutlinedIcon from '@mui/icons-material/AccountCircleOutlined
 import SettingsOutlinedIcon from '@mui/icons-material/SettingsOutlined';
 import DashboardOutlinedIcon from '@mui/icons-material/DashboardOutlined';
 import AddCircleOutlineOutlinedIcon from '@mui/icons-material/AddCircleOutlineOutlined';
-import useGlobalDataContext from '../../context/hooks/useGlobalDataContext';
+import ChatBubbleOutlineOutlinedIcon from '@mui/icons-material/ChatBubbleOutlineOutlined';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSun, faMoon } from '@fortawesome/free-solid-svg-icons'
 
@@ -107,6 +108,12 @@ const ProfileButton = () => {
                 className='ml-2'
                 to={`/profile/${userAuth.userId}`}
               >My Profile</Link>
+            </li>
+            <li className="cursor-pointer flex items-center rounded-md p-2 transition-all hover:bg-gray-500 mb-1">
+              <ChatBubbleOutlineOutlinedIcon />
+              <Link
+                className='ml-2'
+                to={`/chat/`}>My chats</Link>
             </li>
             <li className="cursor-pointer flex items-center rounded-md p-2 transition-all hover:bg-gray-500 mb-1">
               <SettingsOutlinedIcon />

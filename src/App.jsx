@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 
 //pages
 import Home from "./Pages/Home/Home";
@@ -33,6 +33,7 @@ import ErrorPage from "./Pages/Error/ErrorPage";
 import WrappedCategoryPost from "./Pages/CategoryPost/WrappedCategoryPost";
 import useGlobalDataContext from "./context/hooks/useGlobalDataContext";
 import userUserAuthContext from "./context/hooks/useUserAuthContext";
+import ChatLayout from "./components/Chat/ChatLayout";
 
 
 /**
@@ -92,6 +93,24 @@ function App() {
           <Route path="/edit-profile/:id" element={userAuth.userId ? <EditProfile /> : <Login />} />
           <Route path="/search/:id" element={<Search />} />
           <Route path="/notifications/:id" element={userAuth.userId ? <Notifications /> : <Login />} />
+
+
+          {/* MESSAGES */}
+ {/* <Route
+          path="/"
+          element={userAuth.userId ? <Navigate to="/chat" /> : <Navigate to="/login" />}
+        /> */}
+
+                <Route
+          path="/chat"
+          element={userAuth.userId ? <ChatLayout /> : <Navigate to="/login" />}
+        />
+
+        <Route
+          path="/chat/:id"
+          element={userAuth.userId ? <ChatLayout /> : <Navigate to="/login" />}
+        />
+
 
           <Route path="/error" element={<ErrorPage />} />
         </Routes>

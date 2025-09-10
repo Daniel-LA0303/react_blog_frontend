@@ -6,13 +6,16 @@ import { Provider } from "react-redux";
 import store from './store'
 import { UserAuthProvider } from './context/UserAuthContex';
 import { GlobalDataProvider } from './context/GlobalState';
+import { SocketProvider } from './context/SocketContext';
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   // <React.StrictMode>
   <Provider store={store}>
     <GlobalDataProvider>
       <UserAuthProvider>
-        <App />
+        <SocketProvider>
+          <App />
+        </SocketProvider>
       </UserAuthProvider>
     </GlobalDataProvider>
   </Provider>
