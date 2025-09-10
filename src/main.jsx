@@ -10,14 +10,14 @@ import { SocketProvider } from './context/SocketContext';
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   // <React.StrictMode>
-  <Provider store={store}>
-    <GlobalDataProvider>
-      <UserAuthProvider>
+  <UserAuthProvider>
+    <Provider store={store}>
+      <GlobalDataProvider>
         <SocketProvider>
           <App />
         </SocketProvider>
-      </UserAuthProvider>
-    </GlobalDataProvider>
-  </Provider>
+      </GlobalDataProvider>
+    </Provider>
+  </UserAuthProvider>
   //  </React.StrictMode>
 )

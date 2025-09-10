@@ -29,9 +29,9 @@ const ActionsPost = ({
 
   return (
     <div
-      className={`${globalData.themeGlobal ? ' text-black' : ' text-white'} my-3 text-2xl mx-10 sm:mx-0 flex flex-row sm:flex-col justify-center items-center`}
+      className={`${globalData.themeGlobal ? ' text-black' : ' text-white'} my-0 text-2xl mx-10 sm:mx-0 flex flex-row sm:flex-col justify-center items-center`}
     >
-      <div className='my-3 text-2xl mx-10 sm:mx-0 flex flex-row sm:flex-col justify-center items-center'>
+      <div className='my-1 text-2xl mx-10 sm:mx-0 flex flex-row sm:flex-col justify-center items-center'>
         {like ? (
           <button
             onClick={() => handleDislike(id)}
@@ -50,7 +50,7 @@ const ActionsPost = ({
         <p className='text-center ml-1 sm:ml-0 text-xl sm:text-2xl'>{numberLike}</p>
       </div>
       <div className={`
-          my-3 text-2xl mx-10 sm:mx-0 flex flex-row sm:flex-col justify-center items-center cursor-pointer
+          my-1 text-2xl mx-10 sm:mx-0 flex flex-row sm:flex-col justify-center items-center cursor-pointer
           ${globalData.themeGlobal ? "hover:text-orange-300" : "neon-orange-hover"}
         `}>
         <p>
@@ -60,7 +60,7 @@ const ActionsPost = ({
       </div>
 
 
-      <div className="my-3 text-2xl mx-10 sm:mx-0 flex flex-row sm:flex-col justify-center items-center">
+      <div className="my-1 text-2xl mx-10 sm:mx-0 flex flex-row sm:flex-col justify-center items-center">
         {save ? (
           <button
             onClick={() => handleUnsave(id)}

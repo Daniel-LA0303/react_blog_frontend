@@ -40,7 +40,7 @@ const UserTags = () => {
   const [loading, setLoading] = useState(false);
   const [page, setPage] = useState(0); // page 1
   const [hasMore, setHasMore] = useState(true); // check more blogs
-  const limit = 5;
+  const limit = 10;
 
   /**
    * states Redux
@@ -131,7 +131,7 @@ const UserTags = () => {
               Tags followed
             </h3>
 
-            <div className="mt-4 space-y-6">
+            <div className="mt-4 space-y-6 mb-10">
               {categories.map(cat => (
                 <CardCategoryDashboard
                   key={cat._id}

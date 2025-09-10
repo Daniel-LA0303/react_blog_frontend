@@ -32,6 +32,8 @@ import useGlobalDataContext from '../../context/hooks/useGlobalDataContext';
  * services
  */
 import clientAuthAxios from '../../services/clientAuthAxios';
+import useGetAllUsers from '../../context/hooks/useGetAllUsers';
+import useConversation from '../../context/hooks/useConversation';
 
 
 
@@ -49,6 +51,8 @@ const Profile = () => {
   const { userAuth } = userUserAuthContext();
   const { showConfirmSwal } = useSwal();
   const { globalData } = useGlobalDataContext();
+  const { selectedConversation, setSelectedConversation } = useConversation();
+  const [allUsers, addUser, prependUser] = useGetAllUsers();
 
   /**
    * router
@@ -207,6 +211,19 @@ const Profile = () => {
     }
   }
 
+  const handleClickChat = () => {
+    const userChat = {
+      _id: user._id,
+      name: user.name,
+      email: user.email,
+      profilePicture: user.profilePicture,
+    }
+    // console.log("Click en el botón de Chat", user);
+    setSelectedConversation(userChat);
+    prependUser(userChat);
+    route(`/chat/${user._id}`);
+  };
+
   return (
     <div className=''>
       <Sidebar />
@@ -245,14 +262,14 @@ const Profile = () => {
                       </div>
                     </div>
                   </div>
-                  <div className="w-full flex justify-end mt-2">
+                  <div className="w-full flex mt-2 justify-center sm:justify-end items-center">
                     {user._id === userAuth.userId || Object.keys(userAuth) == "" ? null : (
-                      <>
+                      <div className="flex justify-between gap-2">
                         {isFollow ? (
                           <button
                             type="button"
                             onClick={() => handleUnFollowUser()}
-                            className={`${globalData.themeGlobal ? 'btn-theme-light-op2' : 'btn-theme-dark-op2'} hover:bg-gray-500 w-28 text-xs text-sm:nomral mx-1 font-medium rounded-lg px-5 py-2`}
+                            className={`${globalData.themeGlobal ? 'btn-theme-light-op2' : 'btn-theme-dark-op2'} hover:bg-gray-500 w-28 text-xs sm:text-sm mx-1 rounded-lg px-5 py-1`}
                           >
                             Following
                           </button>
@@ -260,14 +277,27 @@ const Profile = () => {
                           <button
                             type="button"
                             onClick={() => handleFollowUser()}
-                            className={`${globalData.themeGlobal ? 'btn-theme-light-op1' : 'btn-theme-dark-op1'} hover:bg-blue-500 w-28 text-xs text-sm:nomral mx-1 font-medium rounded-lg px-5 py-2 `}
+                            className={`${globalData.themeGlobal ? 'btn-theme-light-op1' : 'btn-theme-dark-op1'} hover:bg-blue-500 w-28 text-xs sm:text-sm mx-1 rounded-lg px-5 py-1`}
                           >
                             Follow
                           </button>
                         )}
-                      </>
+
+                        {/* Botón extra */}
+                        <button
+                          type="button"
+                          onClick={handleClickChat}
+                          className={`flex items-center justify-center rounded-md h-8 md:h-10 px-5 text-sm transition-colors w-28 ${globalData.themeGlobal
+                            ? "bg-green-600 text-white hover:bg-green-700"
+                            : "bg-green-500 text-white hover:bg-green-600"
+                            }`}
+                        >
+                          Message
+                        </button>
+                      </div>
                     )}
                   </div>
+
                 </div>
               </div>
 
@@ -322,21 +352,26 @@ const Profile = () => {
                   </div>
                 </div>
                 {/* Skills */}
-                <div className={`overflow-hidden rounded-lg shadow ${globalData.themeGlobal ? 'bgt-light' : 'bgt-dark text-white'}`}>
-                  <div className="p-6">
-                    <h3 className={`text-left text-lg md:text-xl font-semibold py-0 ${globalData.themeGlobal ? '' : 'text-white'}`}>Skills</h3>
-                    <div className="mt-4 flex flex-wrap gap-2">
-                      {user?.info?.skills?.map((skill, i) => (
-                        <span
-                          key={i}
-                          className="rounded-full px-4 py-2 mb-3 text-sm font-medium bg-blue-300 text-blue-800"
-                        >
-                          {skill}
-                        </span>
-                      ))}
+
+                {
+                  user?.info?.skills?.length > 0 && (
+                    <div className={`overflow-hidden rounded-lg shadow ${globalData.themeGlobal ? 'bgt-light' : 'bgt-dark text-white'}`}>
+                      <div className="p-6">
+                        <h3 className={`text-left text-lg md:text-xl font-semibold py-0 ${globalData.themeGlobal ? '' : 'text-white'}`}>Skills</h3>
+                        <div className="mt-4 flex flex-wrap gap-2">
+                          {user?.info?.skills?.map((skill, i) => (
+                            <span
+                              key={i}
+                              className="rounded-full px-4 py-2 mb-3 text-sm font-medium bg-blue-300 text-blue-800"
+                            >
+                              {skill}
+                            </span>
+                          ))}
+                        </div>
+                      </div>
                     </div>
-                  </div>
-                </div>
+                  )
+                }
 
                 {/* Activity */}
                 <div className={`overflow-hidden rounded-lg shadow ${globalData.themeGlobal ? 'bgt-light' : 'bgt-dark text-white'}`}>
@@ -433,21 +468,25 @@ const Profile = () => {
                 </div>
               </div>
               {/* Skills */}
-              <div className={`overflow-hidden rounded-lg shadow ${globalData.themeGlobal ? 'bgt-light' : 'bgt-dark text-white'}`}>
-                <div className="p-6">
-                  <h3 className={`text-left text-lg md:text-xl font-semibold py-0 ${globalData.themeGlobal ? '' : 'text-white'}`}>Skills</h3>
-                  <div className="mt-4 flex flex-wrap gap-2">
-                    {user?.info?.skills?.map((skill, i) => (
-                      <span
-                        key={i}
-                        className="rounded-full px-4 py-2 mb-3 text-sm font-medium bg-blue-300 text-blue-800"
-                      >
-                        {skill}
-                      </span>
-                    ))}
+              {
+                user?.info?.skills?.length > 0 && (
+                  <div className={`overflow-hidden rounded-lg shadow ${globalData.themeGlobal ? 'bgt-light' : 'bgt-dark text-white'}`}>
+                    <div className="p-6">
+                      <h3 className={`text-left text-lg md:text-xl font-semibold py-0 ${globalData.themeGlobal ? '' : 'text-white'}`}>Skills</h3>
+                      <div className="mt-4 flex flex-wrap gap-2">
+                        {user?.info?.skills?.map((skill, i) => (
+                          <span
+                            key={i}
+                            className="rounded-full px-4 py-2 mb-3 text-sm font-medium bg-blue-300 text-blue-800"
+                          >
+                            {skill}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
                   </div>
-                </div>
-              </div>
+                )
+              }
 
               {/* Activity */}
               <div className={`overflow-hidden rounded-lg shadow ${globalData.themeGlobal ? 'bgt-light' : 'bgt-dark text-white'}`}>

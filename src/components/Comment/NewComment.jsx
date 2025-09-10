@@ -93,9 +93,9 @@ const NewComment = ({
                 <div className='flex'>
                     <Link
                         to={`/profile/${userAuth.userId}`}
-                        className="h-12 w-12 flex-shrink-0 rounded-full bg-cover bg-center bg-no-repeat mr-2"
+                        className="h-12 w-12 flex-shrink-0 rounded-full bg-cover bg-center bg-no-repeat mr-2 hidden sm:block"
                         style={{
-                            backgroundImage: `url("${userAuth.profileImage}")`,
+                            backgroundImage: `url("${userAuth.profileImage ? userAuth.profileImage : '/avatar.png'}")`,
                             backgroundSize: "cover",
                             backgroundPosition: "center"
                         }}

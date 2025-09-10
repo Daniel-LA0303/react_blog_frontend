@@ -54,7 +54,7 @@ function Search() {
     navigate(`/chat/${user._id}`); // navega al chat con el usuario seleccionado
   };
   return (
-    <div className="relative py-4">
+    <div className="relative py-2">
 
       <input
         type="text"

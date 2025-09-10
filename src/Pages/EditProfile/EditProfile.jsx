@@ -46,7 +46,7 @@ const EditProfile = () => {
   */
   const { showConfirmSwal } = useSwal();
   const { globalData } = useGlobalDataContext();
-  const { userAuth } = userUserAuthContext();
+  const { userAuth, setUserAuth } = userUserAuthContext();
 
   /**
    * states
@@ -74,6 +74,7 @@ const EditProfile = () => {
    * states Redux
    */
   const dispatch = useDispatch();
+  const store = useSelector(state => state.userResponse);
   const updateUserRedux = (userId, editUserData, route) => dispatch(editUserAction(userId, editUserData, route));
 
 
@@ -206,19 +207,15 @@ const EditProfile = () => {
 
     // 5. send data
     dispatch(updateUserRedux(params.id, data, route));
-
   }
 
   const quitImage = () => {
-    console.log("quit image");
+    setFile(null);
+    setNewImage(false);
+    setImage(null);
+    setImageRes({});
+  };
 
-    if (file || image) {
-      setFile(null);
-      setImage(null);
-    }
-
-
-  }
 
   if (Object.keys(userAuth) === '') return <Spinner />
   return (
@@ -249,31 +246,25 @@ const EditProfile = () => {
                     <div className="md:col-span-2">
                       <div className="flex items-center gap-6">
                         {
-                          file || (image?.secure_url !== "") ?
+                          (file || image?.secure_url) ? (
                             <div
                               className="relative z-0 h-24 w-24 flex-shrink-0 rounded-full bg-cover bg-center bg-no-repeat"
-                              style={{ backgroundImage: `url(${newImage ? URL.createObjectURL(file) : image?.secure_url})` }}
+                              style={{ backgroundImage: `url(${file ? URL.createObjectURL(file) : image?.secure_url})` }}
                             >
-
                               <button
                                 onClick={quitImage}
-                                className="absolute top-1 right-1 bg-red-500 text-white rounded-full w-6 h- flex items-center justify-center hover:bg-red-600 transition-colors"
+                                className="absolute top-1 right-1 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center hover:bg-red-600 transition-colors"
                               >
                                 <p>X</p>
                               </button>
-
-
                             </div>
-                            :
+                          ) : (
                             <div
                               onClick={() => inputRef.current.click()}
-                              className="flex h-24 w-24 flex-col rounded-full items-center justify-center border-2 border-dashed border-gray-300  cursor-pointer p-6 hover:border-gray-500 transition-colors bg-gray-50"
+                              className="flex h-24 w-24 flex-col rounded-full items-center justify-center border-2 border-dashed border-gray-300 cursor-pointer p-6 hover:border-gray-500 transition-colors bg-gray-50"
                             >
-                              {/* <Image className="text-gray-400 mb-2" style={{ fontSize: 48 }} />here */}
                               <FontAwesomeIcon icon={faImage} size='2x' className=' text-gray-700' />
-                              <span className="text-gray-500 text-xs text-center">
-                                Image here
-                              </span>
+                              <span className="text-gray-500 text-xs text-center">Image here</span>
                               <input
                                 type="file"
                                 ref={inputRef}
@@ -281,7 +272,9 @@ const EditProfile = () => {
                                 onChange={getFile}
                               />
                             </div>
+                          )
                         }
+
 
                         <div className="flex flex-col gap-2">
                           <label className="flex h-10 cursor-pointer items-center justify-center rounded-md  px-4 text-sm font-semibold  ring-1 ring-inset ring-gray-300 ">

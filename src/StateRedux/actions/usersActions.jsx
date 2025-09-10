@@ -1,5 +1,4 @@
 
-
 import { useSwal } from '../../hooks/useSwal.js';
 import clientAuthAxios from '../../services/clientAuthAxios.js';
 import { 
@@ -33,9 +32,13 @@ export function editUserAction(userId, editUserData, route){
             
             // 2. edit user 
             const response = await clientAuthAxios.post(`/users/new-info/${userId}`, editUserData);
-
+            
             dispatch(editUserSuccess(response.data.data || null, response.data.message));
+            
+            const updatedUser = response.data.data;
+            localStorage.setItem("profileImage", updatedUser?.profilePicture?.secure_url || "/avatar.png");
 
+            
             // 4. Show success message
             showAutoSwal({ 
                 message: response.data.message, 
@@ -44,8 +47,10 @@ export function editUserAction(userId, editUserData, route){
             });
 
             setTimeout(() => {
-                route(`/profile/${userId}`);
+                window.location.href = `/profile/${userId}`;
             }, 500);
+
+            return updatedUser;
 
         } catch (error) {
 

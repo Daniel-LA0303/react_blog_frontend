@@ -44,16 +44,15 @@ function ChatLayout() {
                     ${sidebarOpen ? "translate-x-0" : "-translate-x-full"}
                 `}
             >
-                <div className="flex justify-between items-start mb-4">
+                <div className="flex justify-between items-start mb-1">
                     <div>
-                        <h1 className="font-bold text-xl lg:text-2xl ">Chats</h1>
+                        <h1 className="font-bold text-lg lg:text-xl ">Chats</h1>
                         <h2 className="text-sm lg:text-base ">
-                            {/* Welcome <span className="font-bold">{userAuth.user.email}</span> */}
+                            <span className="font-semibold">{userAuth?.email}</span>
                         </h2>
                     </div>
 
                     <div
-
                         className={` ${globalData.themeGlobal ? 'hover:bg-gray-300 text-black' : 'hover:bg-gray-700 text-white'}
                             flex items-center hover:cursor-pointer  p-1 rounded
                         `}

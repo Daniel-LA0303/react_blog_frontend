@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 /**
  * route
  */
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 /**
  * hooks
@@ -12,9 +12,13 @@ import useGlobalDataContext from "../../context/hooks/useGlobalDataContext";
 import userUserAuthContext from "../../context/hooks/useUserAuthContext";
 import { useSwal } from "../../hooks/useSwal";
 import clientAuthAxios from "../../services/clientAuthAxios";
+import useConversation from "../../context/hooks/useConversation";
+import useGetAllUsers from "../../context/hooks/useGetAllUsers";
 
 
 const UserCardLong = ({ user }) => {
+
+    const navigate = useNavigate();
 
     /**
      * states
@@ -27,6 +31,8 @@ const UserCardLong = ({ user }) => {
     const { userAuth } = userUserAuthContext();
     const { showConfirmSwal } = useSwal();
     const { globalData } = useGlobalDataContext();
+    const { selectedConversation, setSelectedConversation } = useConversation();
+    const [allUsers, loading, addUser, prependUser] = useGetAllUsers();
 
     /**
      * useEffect
@@ -75,20 +81,33 @@ const UserCardLong = ({ user }) => {
         }
     };
 
+    const handleClickChat = () => {
+        const userChat = {
+            _id: user._id,
+            name: user.name,
+            email: user.email,
+            profilePicture: user.profilePicture,
+        }
+        // console.log("Click en el botón de Chat", user);
+        setSelectedConversation(userChat);
+        prependUser(userChat);
+        navigate(`/chat/${user._id}`);
+    };
+
     return (
         <div
             className={`
           ${globalData.themeGlobal
-                    ? " bgt-light text-black hover:bg-zinc-500 hover:text-white"
+                    ? " bgt-light text-black "
                     : "bgt-dark hover:bg-zinc-700 text-white"
                 }
           w-full overflow-hidden rounded-xl shadow-lg hover:cursor-pointer`}
         >
-            <div className="flex gap-6 p-8 flex-row flex-wrap justify-between items-center">
+            <div className="flex gap-6 p-4 md:p-8 flex-row flex-wrap justify-between items-center">
                 <div className="flex items-center gap-6">
                     <Link
                         to={`/profile/${user._id}`}
-                        className="bg-center bg-no-repeat aspect-square bg-cover rounded-full h-28 w-28 shrink-0"
+                        className="bg-center bg-no-repeat aspect-square bg-cover rounded-full h-16 w-16 sm:h-28 sm:w-28 shrink-0"
                         style={{
                             backgroundImage: `url("${user?.profilePicture.secure_url || "/avatar.png"
                                 }")`,
@@ -97,15 +116,15 @@ const UserCardLong = ({ user }) => {
                     <div className="flex flex-col justify-center">
                         <Link
                             to={`/profile/${user._id}`}
-                            className=" text-2xl font-bold leading-tight tracking-[-0.015em]">
+                            className=" text-base md:text-xl font-bold leading-tight tracking-[-0.015em]">
                             {user.name}
                         </Link>
                         <Link
                             to={`/profile/${user._id}`}
-                            className="text-base font-normal mt-1">
+                            className="text-sm md:text-base font-normal mt-1">
                             {user.email}
                         </Link>
-                        <div className="flex items-center gap-4 mt-3  text-sm">
+                        <div className="flex items-center gap-4 mt-3 text-xs md:text-sm">
                             <div>
                                 <span className="font-semibold">
                                     {user.followersUsers.conutFollowers || 0}
@@ -130,21 +149,39 @@ const UserCardLong = ({ user }) => {
                     </div>
                 </div>
                 {userAuth?.userId && user._id !== userAuth.userId && (
-                    <button
-                        type="button"
-                        onClick={isFollow ? handleClickUnFollow : handleClickFollow}
-                        className={`flex  cursor-pointer items-center justify-center overflow-hidden rounded-md h-10 px-5 text-sm font-bold transition-colors w-32 @[480px]:w-auto ${globalData.themeGlobal
-                            ? isFollow
-                                ? "bg-gray-200 text-black hover:bg-gray-300"
-                                : "bg-blue-600 text-white hover:bg-blue-700"
-                            : isFollow
-                                ? "bg-gray-700 text-white hover:bg-gray-600"
-                                : "bg-blue-600 text-white hover:bg-blue-700"
-                            }`}
-                    >
-                        <span className="truncate">{isFollow ? "Following" : "Follow"}</span>
-                    </button>
+                    <div className="flex justify-between w-full">
+                        {/* Botón de Follow / Unfollow */}
+                        <button
+                            type="button"
+                            onClick={isFollow ? handleClickUnFollow : handleClickFollow}
+                            className={`flex cursor-pointer items-center justify-center overflow-hidden rounded-md h-8 md:h-10 px-5 text-sm font-bold transition-colors w-32 @[480px]:w-auto ${globalData.themeGlobal
+                                    ? isFollow
+                                        ? "bg-gray-200 text-black hover:bg-gray-300"
+                                        : "bg-blue-600 text-white hover:bg-blue-700"
+                                    : isFollow
+                                        ? "bg-gray-700 text-white hover:bg-gray-600"
+                                        : "bg-blue-600 text-white hover:bg-blue-700"
+                                }`}
+                        >
+                            <span className="truncate">
+                                {isFollow ? "Following" : "Follow"}
+                            </span>
+                        </button>
+
+                        {/* Botón extra: Otro */}
+                        <button
+                            type="button"
+                            onClick={handleClickChat}
+                            className={`flex cursor-pointer items-center justify-center overflow-hidden rounded-md h-8 md:h-10 px-5 text-sm font-bold transition-colors w-32 @[480px]:w-auto ${globalData.themeGlobal
+                                    ? "bg-green-600 text-white hover:bg-green-700"
+                                    : "bg-green-500 text-white hover:bg-green-600"
+                                }`}
+                        >
+                            <span className="truncate">Message</span>
+                        </button>
+                    </div>
                 )}
+
             </div>
         </div>
     );

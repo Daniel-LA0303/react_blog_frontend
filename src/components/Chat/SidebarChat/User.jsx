@@ -37,6 +37,9 @@ function User({ user, onSelect }) {
 
 
     setSelectedConversation(user);
+
+    // console.log("Selected user:", user);
+    
     setNotifications((prev) => ({
       ...prev,
       [user._id]: 0,

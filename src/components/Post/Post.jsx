@@ -170,8 +170,8 @@ const Post = ({ post }) => {
   }
 
   return (
-    <div className="block w-full h-auto md:h-64 mb-10 relative">
-      <div className={`${globalData.themeGlobal ? "bgt-light text-black" : "bgt-dark  text-white"} w-full flex flex-col md:flex-row h-full my-4 rounded-2xl`}>
+    <div className="block w-full h-auto md:h-64 mb-5 md:mb-10 relative mt-5">
+      <div className={`${globalData.themeGlobal ? "bgt-light text-black" : "bgt-dark  text-white"} w-full flex flex-col md:flex-row h-full my-0 rounded-2xl`}>
 
         {/* Imagen */}
         {linkImage?.secure_url && (

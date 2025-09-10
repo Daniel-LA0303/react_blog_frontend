@@ -4,12 +4,16 @@ const GlobalDataContext = createContext();
 
 const GlobalDataProvider = ({ children }) => {
 
-    const [globalData, setGlobalData] = useState({
-        themeGlobal: localStorage.getItem("theme") ?? true,
-        link: import.meta.env.VITE_API_URL_BACKEND
+    const [globalData, setGlobalData] = useState(() => {
+        const storedTheme = localStorage.getItem("theme");
+        return {
+            themeGlobal: storedTheme ? JSON.parse(storedTheme) : true, // ahora sí boolean real
+            link: import.meta.env.VITE_API_URL_BACKEND
+        };
     });
 
-    return(
+
+    return (
         <GlobalDataContext.Provider value={{
             globalData,
             setGlobalData
@@ -19,5 +23,5 @@ const GlobalDataProvider = ({ children }) => {
     )
 }
 
-export {GlobalDataProvider};
+export { GlobalDataProvider };
 export default GlobalDataContext;

@@ -90,12 +90,13 @@ const CardCategoryDashboard = ({ category, userAuth }) => {
       ></div>
 
       {/* Content */}
-      <div className="flex-1 flex justify-between items-center p-6">
+      <div className="flex justify-between items-center p-3 md:p-6 flex-1 gap-4">
+
         {/* Textual content */}
-        <div className="flex flex-col gap-4">
+        <div className="flex flex-col ">
           <Link
             to={`/category/${category.name}`}
-            className={`text-2xl font-bold ${globalData.themeGlobal ? "text-gray-800" : "text-white"
+            className={`text-base md:text-xl font-bold ${globalData.themeGlobal ? "text-gray-800" : "text-white"
               }`}
           >
             {category.name}
@@ -112,7 +113,7 @@ const CardCategoryDashboard = ({ category, userAuth }) => {
           {userAuth?.userId && (
             <button
               onClick={isFollow ? handleUnFollowTag : handleFollowTag}
-              className={`flex items-center justify-center w-fit px-5 py-2.5 text-sm font-medium rounded-lg transition-colors duration-300 
+              className={`flex mt-2 items-center justify-center w-fit px-3 py-2 text-sm font-medium rounded-lg transition-colors duration-300 
                 ${isFollow
                   ? globalData.themeGlobal
                     ? "bg-gray-200 text-black hover:bg-gray-300"

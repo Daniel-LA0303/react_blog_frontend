@@ -26,7 +26,7 @@ const DashBoard = ({ counts }) => {
 
     if (Object.keys(userAuth) == '') return <Spinner />
     return (
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 mb-5">
             <div className={`rounded-2xl p-6 text-center shadow-sm ${globalData.themeGlobal
                     ? " bgt-light text-black"
                     : "bgt-dark hover:bg-zinc-700 text-white"

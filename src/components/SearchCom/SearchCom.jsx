@@ -144,7 +144,7 @@ const SearchCom = ({
           onClick={() => onPageChange(currentPage - 1)}
           disabled={currentPage === 1}
 
-          className={`px-3 py-1 mx-1 rounded bg-gray-200 disabled:opacity-50  ${globalData.themeGlobal ? "bgt-light text-black" : "bgt-dark  text-white"}`}
+          className={`px-3 py-1 mx-1 rounded text-xs md:text-base bg-gray-200 disabled:opacity-50  ${globalData.themeGlobal ? "bgt-light text-black" : "bgt-dark  text-white"}`}
         >
           Previous
         </button>
@@ -154,7 +154,7 @@ const SearchCom = ({
         <button
           onClick={() => onPageChange(currentPage + 1)}
           disabled={currentPage === totalPages}
-          className={`px-3 py-1 mx-1 rounded bg-gray-200 disabled:opacity-50  ${globalData.themeGlobal ? "bgt-light text-black" : "bgt-dark  text-white"}`}
+          className={`px-3 py-1 mx-1 rounded text-xs md:text-base bg-gray-200 disabled:opacity-50  ${globalData.themeGlobal ? "bgt-light text-black" : "bgt-dark  text-white"}`}
         >
           Next
         </button>
@@ -179,7 +179,7 @@ const SearchCom = ({
     <>
       <div className="container-search my-10 mx-auto ">
 
-        <div className={`bloc-tabs  ${globalData.themeGlobal ? "bgt-light text-black" : "bgt-dark  text-white"} `}>
+        <div className={`bloc-tabs text-xs md:text-base ${globalData.themeGlobal ? "bgt-light text-black" : "bgt-dark  text-white"} `}>
           <button
             className={`${toggleState === 1 ? "tabs active-tabs text-black" : "tabs"} `}
             onClick={() => toggleTab(1)}

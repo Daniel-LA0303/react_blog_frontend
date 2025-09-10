@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react'
 /**
  * router
  */
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 /**
  * hooks
  */
@@ -15,9 +15,16 @@ import useGlobalDataContext from '../../context/hooks/useGlobalDataContext';
  * services
  */
 import clientAuthAxios from '../../services/clientAuthAxios';
+import useConversation from '../../context/hooks/useConversation';
+import useGetAllUsers from '../../context/hooks/useGetAllUsers';
 
 
 const UserCard = ({ user }) => {
+
+  const navigate = useNavigate();
+
+  const { selectedConversation, setSelectedConversation } = useConversation();
+  const [allUsers, loading, addUser, prependUser] = useGetAllUsers();
 
   /**
    * states
@@ -34,7 +41,7 @@ const UserCard = ({ user }) => {
   /**
    * useEffect
    */
-  useEffect(() => {    
+  useEffect(() => {
     const userProfileFound = user.followersUsers.followers.includes(userAuth.userId);
     if (userProfileFound) {
       setIsFollow(true);
@@ -75,6 +82,19 @@ const UserCard = ({ user }) => {
     }
   }
 
+  const handleClickChat = () => {
+    const userChat = {
+      _id: user._id,
+      name: user.name,
+      email: user.email,
+      profilePicture: user.profilePicture,
+    }
+    console.log("Click en el botón de Chat", user);
+    setSelectedConversation(userChat);
+    prependUser(userChat);
+    navigate(`/chat/${user._id}`);
+  };
+
   return (
     <div className={`
           ${globalData.themeGlobal
@@ -114,30 +134,43 @@ const UserCard = ({ user }) => {
             <p className="text-xs lg:text-sm">Posts</p>
           </div>
         </div>
-        <div className="mt-6">
-          {userAuth?.userId && user._id !== userAuth.userId && (
-            <>
-              {isFollow ? (
-                <button
-                  type="button"
-                  onClick={handleClickUnFollow}
-                  className={`${globalData.themeGlobal ? 'btn-theme-light-op2' : 'btn-theme-dark-op2'} hover:bg-gray-500 w-full text-xs text-sm:normal mx-1 font-medium rounded-lg px-5 py-2`}
-                >
-                  Following
-                </button>
-              ) : (
-                <button
-                  type="button"
-                  onClick={handleClickFollow}
-                  className={`${globalData.themeGlobal ? 'btn-theme-light-op1' : 'btn-theme-dark-op1'} hover:bg-blue-500 w-full text-xs text-sm:normal mx-1 font-medium rounded-lg px-5 py-2`}
-                >
-                  Follow
-                </button>
-              )}
-            </>
-          )}
+       <div className="mt-6">
+  {userAuth?.userId && user._id !== userAuth.userId && (
+    <div className="flex flex-wrap justify-between gap-2">
+      {isFollow ? (
+        <button
+          type="button"
+          onClick={handleClickUnFollow}
+          className={`${globalData.themeGlobal ? 'btn-theme-light-op2' : 'btn-theme-dark-op2'} hover:bg-gray-500 text-xs sm:text-sm font-medium rounded-lg px-5 py-1`}
+        >
+          Following
+        </button>
+      ) : (
+        <button
+          type="button"
+          onClick={handleClickFollow}
+          className={`${globalData.themeGlobal ? 'btn-theme-light-op1' : 'btn-theme-dark-op1'} hover:bg-blue-500 text-xs sm:text-sm font-medium rounded-lg px-5 py-1`}
+        >
+          Follow
+        </button>
+      )}
 
-        </div>
+      {/* Botón adicional */}
+      <button
+        type="button"
+        onClick={handleClickChat}
+        className={`flex cursor-pointer items-center justify-center rounded-md h-8 md:h-10 px-5 text-sm transition-colors ${globalData.themeGlobal
+          ? "bg-green-600 text-white hover:bg-green-700"
+          : "bg-green-500 text-white hover:bg-green-600"
+          }`}
+      >
+        <span className="truncate">Message</span>
+      </button>
+    </div>
+  )}
+</div>
+
+
       </div>
     </div>
   );

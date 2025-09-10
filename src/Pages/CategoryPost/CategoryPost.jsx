@@ -160,7 +160,7 @@ const CategoryPost = () => {
             <div className='flex flex-col md:flex-row mt-0 md:mt-10 mx-auto w-full gap-6'>
 
               {/* Posts */}
-              <div className="flex-1 flex flex-col items-center">
+              <div className="flex-1 flex flex-col items-center order-last md:order-none">
                 {postsFilter.length === 0 && !loading ? (
                   <p className={`${globalData.themeGlobal ? "text-black" : "text-white"} text-center text-3xl`}>
                     There is nothing around here yet

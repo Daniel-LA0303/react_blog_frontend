@@ -470,7 +470,6 @@ const ViewPost = () => {
               </div>
             </div>
 
-
             <div className=" mt-2 px-4 py-1 mb-5">
               <h2 className=' font-bold text-2xl lg:text-3xl mb-3'>{post.title}</h2>
 
@@ -487,11 +486,9 @@ const ViewPost = () => {
             </div>
           </div>
 
-
           <div className='w-full block sm:hidden mb-20'>
             <UserCard user={post.user} />
           </div>
-
 
           {/* Comments section */}
           <div className=''>
@@ -568,8 +565,6 @@ const ViewPost = () => {
           </div>
         </div>
       </div>
-
-
     </div>
   )
 }
