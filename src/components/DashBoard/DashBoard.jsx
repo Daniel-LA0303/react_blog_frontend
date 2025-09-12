@@ -38,7 +38,7 @@ const DashBoard = ({ counts }) => {
                         <img
                             alt="User Avatar"
                             className="mb-4 h-32 w-32 rounded-full object-cover ring-4 ring-white"
-                            src={userAuth?.profilePicture?.secure_url ? userAuth.profilePicture.secure_url : '/avatar.png'} 
+                            src={userAuth?.profileImage ? userAuth.profileImage : '/avatar.png'} 
                         />
                     </Link>
                     <Link 
