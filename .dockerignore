@@ -1,0 +1,13 @@
+# Environment variables (keep them out of image)
+.env
+
+# Logs
+logs
+*.log
+
+# Node modules (dev dependencies, solo se instalan en builder)
+node_modules
+
+# Vite cache (opcional, no necesario en imagen final)
+.vite
+dist
