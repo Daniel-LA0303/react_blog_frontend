@@ -1,34 +1,21 @@
-# ------------------ Stage 1: Build ------------------
-# Use Node 18 Alpine for minimal build image
-FROM node:18-alpine AS builder
+# ------------------ Stage 1: Dev ------------------
+FROM node:18-alpine
 
 # Set working directory
 WORKDIR /app
 
-# Copy package.json and package-lock.json (or pnpm-lock.yaml / yarn.lock)
+# Copiamos package.json y package-lock.json
 COPY package*.json ./
 
-# Install all dependencies (dev included, needed for building)
+# Instalamos todas las dependencias (dev incluidas)
 RUN npm install
 
-# Copy the rest of the source code
+# Copiamos todo el código fuente
 COPY . .
 
-# Build the frontend (Vite will generate static files in /dist)
-RUN npm run build
-
-# ------------------ Stage 2: Serve ------------------
-# Use a minimal nginx image to serve static files
-FROM nginx:alpine
-
-# Copy the build output to nginx html folder
-COPY --from=builder /app/dist /usr/share/nginx/html
-
-# Copy custom nginx config if needed (optional)
-# COPY nginx.conf /etc/nginx/conf.d/default.conf
-
-# Expose port 80
+# Exponer puerto que usará Vite
 EXPOSE 5173
 
-# Run nginx in foreground
-CMD ["nginx", "-g", "daemon off;"]
+# Ejecutar Vite en modo dev, escuchando en todas las interfaces
+CMD ["npm", "run", "dev", "--", "--host", "0.0.0.0"]
+
