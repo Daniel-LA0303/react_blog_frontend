@@ -1,259 +1,418 @@
-import React, { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
+import { Link, useParams } from 'react-router-dom'
+import { motion, AnimatePresence, useInView } from 'framer-motion'
+import axios from 'axios'
 
-/**
- * router
- */
-import { Link, useNavigate, useParams } from 'react-router-dom';
-
-/**
- * components
- */
-import Post from '../../components/Post/Post';
-import CategoryCard from '../../components/CategoryCard/CategoryCard';
+import Post from '../../components/Post/Post'
+import CategoryCard from '../../components/CategoryCard/CategoryCard'
 import Sidebar from '../../components/Sidebar/Sidebar'
-import Spinner from '../../components/Spinner/Spinner';
-import Error from '../../components/Error/Error';
+import Error from '../../components/Error/Error'
+import userUserAuthContext from '../../context/hooks/useUserAuthContext'
+import useGlobalDataContext from '../../context/hooks/useGlobalDataContext'
+import usePages from '../../context/hooks/usePages'
+import Spinner from '../../components/Spinner/Spinner'
 
-/**
- * libraries
- */
-import axios from 'axios';
-import { Tooltip } from '@mui/material';
+const fadeUp = {
+  hidden: { opacity: 0, y: 18 },
+  visible: (i = 0) => ({
+    opacity: 1, y: 0,
+    transition: { duration: 0.42, delay: i * 0.06, ease: [0.25, 0.46, 0.45, 0.94] },
+  }),
+}
 
-/**
- * context hooks
- */
-import userUserAuthContext from '../../context/hooks/useUserAuthContext';
-import useGlobalDataContext from '../../context/hooks/useGlobalDataContext';
-import usePages from '../../context/hooks/usePages';
+const stagger = { hidden: {}, visible: { transition: { staggerChildren: 0.07 } } }
 
+const PostSkeleton = ({ dark }: { dark: boolean }) => (
+  <div className={`rounded-2xl border p-5 space-y-3 ${dark ? 'bg-[#141414] border-gray-800' : 'bg-white border-gray-100'}`}>
+    {[1, 0.75, 0.55].map((w, i) => (
+      <motion.div
+        key={i}
+        className={`h-3 rounded-md ${dark ? 'bg-gray-800' : 'bg-gray-100'}`}
+        style={{ width: `${w * 100}%` }}
+        animate={{ opacity: [0.4, 0.8, 0.4] }}
+        transition={{ duration: 1.6, repeat: Infinity, ease: 'easeInOut', delay: i * 0.1 }}
+      />
+    ))}
+    <div className="flex gap-3 pt-1">
+      {[40, 60].map((w, i) => (
+        <motion.div
+          key={i}
+          className={`h-2.5 rounded-md ${dark ? 'bg-gray-800' : 'bg-gray-100'}`}
+          style={{ width: w }}
+          animate={{ opacity: [0.4, 0.8, 0.4] }}
+          transition={{ duration: 1.6, repeat: Infinity, ease: 'easeInOut', delay: 0.2 + i * 0.1 }}
+        />
+      ))}
+    </div>
+  </div>
+)
 
+const AsideSkeleton = ({ dark }: { dark: boolean }) => (
+  <div className={`rounded-2xl border p-5 space-y-3 ${dark ? 'bg-[#141414] border-gray-800' : 'bg-white border-gray-100'}`}>
+    <motion.div className={`h-4 w-32 rounded-md ${dark ? 'bg-gray-800' : 'bg-gray-100'}`}
+      animate={{ opacity: [0.4, 0.8, 0.4] }} transition={{ duration: 1.6, repeat: Infinity, ease: 'easeInOut' }} />
+    {[1, 0.8, 0.6].map((w, i) => (
+      <motion.div key={i} className={`h-3 rounded-md ${dark ? 'bg-gray-800' : 'bg-gray-100'}`}
+        style={{ width: `${w * 100}%` }}
+        animate={{ opacity: [0.4, 0.8, 0.4] }}
+        transition={{ duration: 1.6, repeat: Infinity, ease: 'easeInOut', delay: i * 0.1 }} />
+    ))}
+  </div>
+)
+
+const AsideCard = ({ title, dark, delay, children }: {
+  title: string; dark: boolean; delay: number; children: React.ReactNode
+}) => (
+  <motion.div
+    variants={fadeUp}
+    custom={delay}
+    className={`rounded-2xl border p-5 mt-5 ${dark ? 'bg-[#141414] border-gray-800' : 'bg-white border-gray-100'}`}
+  >
+    <h2 className={`text-sm font-semibold uppercase tracking-widest mb-4 ${dark ? 'text-gray-400' : 'text-gray-400'}`}>
+      {title}
+    </h2>
+    {children}
+  </motion.div>
+)
+
+const AnimatedPost = ({ post, index }: { post: any; index: number }) => {
+  const ref = useRef(null)
+  const inView = useInView(ref, { once: true, margin: '-60px' })
+  return (
+    <motion.div
+      ref={ref}
+      initial="hidden"
+      animate={inView ? 'visible' : 'hidden'}
+      variants={fadeUp}
+      custom={index % 3}
+    >
+      <Post post={post} />
+    </motion.div>
+  )
+}
 
 const CategoryPost = () => {
+  const { globalData } = useGlobalDataContext()
+  const { userAuth } = userUserAuthContext()
+  const { errorPage, setErrorPage } = usePages()
+  const { error } = errorPage
+  const params = useParams()
+  const dark = !globalData.themeGlobal
 
-  /**
-   * hooks
-   */
-  const { globalData } = useGlobalDataContext();
-  const { userAuth } = userUserAuthContext();
-  const { errorPage, setErrorPage } = usePages();
-  const { error, message } = errorPage;
-
-  /**
-   * route
-   */
-  const params = useParams();
-
-  /**
-   * states
-   */
-  const [postsFilter, setPostsFilters] = useState<any>([]);
-  const [loading, setLoading] = useState(false);
-  const [categoryFullInfo, setCategoryFullInfo] = useState<any>({});
-  const [page, setPage] = useState(0); // page 1
-  const [hasMore, setHasMore] = useState(true); // check more blogs
-  const limit = 5;
-
-  /**
-   * useEffect
-   */
+  const [posts, setPosts] = useState<any[]>([])
+  const [categoryInfo, setCategoryInfo] = useState<any>(null)
+  const [categoryLoading, setCategoryLoading] = useState(true)
+  const [postsLoading, setPostsLoading] = useState(false)
+  const [page, setPage] = useState(1)
+  const [hasMore, setHasMore] = useState(true)
+  const limit = 5
 
   useEffect(() => {
-    setPostsFilters([]);
-    setPage(1);
-    setHasMore(true);
-    fetchCategoryInfo();
-    fetchPosts(1);
-  }, [params.id]);
+    setCategoryInfo(null)
+    setPosts([])
+    setPage(1)
+    setHasMore(true)
+    setErrorPage({ error: false, message: {} })
 
+    fetchCategoryInfo()
+    fetchPosts(1)
+  }, [params.id])
 
-  // get category info
   const fetchCategoryInfo = async () => {
+    setCategoryLoading(true)
     try {
-      setLoading(true);
-      const { data } = await axios.get(`${globalData.link}/pages/page-category-post/${params.id}?userId=${userAuth.userId}`);
-      setCategoryFullInfo(data.data.fullCategoryInfo);
-
-
-    } catch (error: any) {
-      console.log(error);
+      const { data } = await axios.get(
+        `${globalData.link}/pages/page-category-post/${params.id}?userId=${userAuth.userId}`
+      )
+      setCategoryInfo(data.data.fullCategoryInfo)
+    } catch (err: any) {
       setErrorPage({
         error: true,
         message: {
-          status: error.response?.status || 500,
-          message: error?.message || "ERROR NETWORK",
-          desc: error.response?.data?.msg || "ERROR",
+          status: err.response?.status || 500,
+          message: err?.message || 'Network error',
+          desc: err.response?.data?.msg || 'Error',
         },
-      });
-      // navigate("/error", { state: dataError });
+      })
     } finally {
-      setLoading(false);
+      setCategoryLoading(false)
     }
-  };
+  }
 
-  // get posts paginated
-  const fetchPosts = async (pageToFetch = page) => {
-    if (loading || !hasMore) return;
-    setLoading(true);
+  const fetchPosts = async (pageToFetch: number) => {
+    setPostsLoading(true)
     try {
       const { data } = await axios.get(
         `${globalData.link}/posts/get-posts-by-category-name/${params.id}?page=${pageToFetch}&limit=${limit}`
-      );
-      const { data: postsData, meta } = data.data;
-
-      if (postsData && postsData.length > 0) {
-        setPostsFilters((prev: any) =>
-          pageToFetch === 1 ? postsData : [...prev, ...postsData]
-        );
-        setPage(pageToFetch + 1);
-        setHasMore(pageToFetch < meta.totalPages);
+      )
+      const { data: postsData, meta } = data.data
+      if (postsData?.length > 0) {
+        setPosts(prev => pageToFetch === 1 ? postsData : [...prev, ...postsData])
+        setPage(pageToFetch + 1)
+        setHasMore(pageToFetch < meta.totalPages)
       } else {
-        setHasMore(false);
+        setHasMore(false)
       }
-    } catch (err: any) {
-      console.error(err);
-      /*setErrorPage({
-        error: true,
-        message: {
-          status: error?.response?.status || 500,
-          message: error?.message || "ERROR NETWORK",
-          desc: error.response?.data?.msg || "ERROR",
-        },
-      });*/
+    } catch (err) {
+      console.error(err)
     } finally {
-      setLoading(false);
+      setPostsLoading(false)
     }
-  };
+  }
 
-
-  // infinite scroll
   useEffect(() => {
     const handleScroll = () => {
-      if (
-        !loading &&
-        hasMore &&
-        window.innerHeight + document.documentElement.scrollTop + 50 >=
-        document.documentElement.scrollHeight
-      ) {
-        fetchPosts(page);
-      }
-    };
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, [loading, hasMore, page]);
+      if (!postsLoading && hasMore &&
+        window.innerHeight + document.documentElement.scrollTop + 50 >= document.documentElement.scrollHeight
+      ) fetchPosts(page)
+    }
+    window.addEventListener('scroll', handleScroll)
+    return () => window.removeEventListener('scroll', handleScroll)
+  }, [postsLoading, hasMore, page])
+
+  const cat = categoryInfo?.category
+
   return (
-    <div className=''>
+    <div className={`min-h-screen transition-colors duration-300 ${dark ? 'bg-[#0f0f0f]' : 'bg-[#fafafa]'}`}>
       <Sidebar />
 
-      {
-        error ? (
-          <Error message={errorPage.message} />
-        ) : (
-          <div className='flex-1 mx-auto px-4 sm:px-6 lg:px-8 max-w-screen-xl gap-4'>
+      {error ? (
+        <Error message={errorPage.message} />
+      ) : (
+        <div className="max-w-screen-xl mx-auto px-4 sm:px-6 lg:px-8 pb-16">
+          <AnimatePresence mode="wait">
+            {categoryLoading ? (
+              <motion.div
+                key="hero-skel"
+                initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+                className="pt-10 pb-2"
+              >
+                <div className={`rounded-2xl border overflow-hidden ${dark ? 'bg-[#141414] border-gray-800' : 'bg-white border-gray-100'}`}>
+                  <div className={`h-1 w-full ${dark ? 'bg-gray-800' : 'bg-gray-100'}`} />
+                  <div className="px-6 py-5 space-y-3">
+                    <div className="flex justify-between items-center">
+                      <motion.div className={`h-5 w-40 rounded-md ${dark ? 'bg-gray-800' : 'bg-gray-100'}`}
+                        animate={{ opacity: [0.4, 0.8, 0.4] }} transition={{ duration: 1.6, repeat: Infinity }} />
+                      <motion.div className={`h-7 w-20 rounded-full ${dark ? 'bg-gray-800' : 'bg-gray-100'}`}
+                        animate={{ opacity: [0.4, 0.8, 0.4] }} transition={{ duration: 1.6, repeat: Infinity, delay: 0.1 }} />
+                    </div>
+                    <motion.div className={`h-3 w-full rounded-md ${dark ? 'bg-gray-800' : 'bg-gray-100'}`}
+                      animate={{ opacity: [0.4, 0.8, 0.4] }} transition={{ duration: 1.6, repeat: Infinity, delay: 0.15 }} />
+                    <motion.div className={`h-3 w-3/4 rounded-md ${dark ? 'bg-gray-800' : 'bg-gray-100'}`}
+                      animate={{ opacity: [0.4, 0.8, 0.4] }} transition={{ duration: 1.6, repeat: Infinity, delay: 0.2 }} />
+                  </div>
+                </div>
+              </motion.div>
+            ) : cat ? (
+              <motion.div
+                key={`hero-${cat._id}`}
+                initial={{ opacity: 0, y: 12 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -8 }}
+                transition={{ duration: 0.4, ease: [0.25, 0.46, 0.45, 0.94] }}
+                className="pt-10 pb-2"
+              >
+                <CategoryCard category={cat} />
+              </motion.div>
+            ) : null}
+          </AnimatePresence>
+          <div className="flex flex-col md:flex-row gap-8">
 
-            {/* Category card */}
-            {categoryFullInfo?.category && (
-              <CategoryCard category={categoryFullInfo.category} />
-            )}
+            {/* Posts column */}
+            <div className="flex-1 min-w-0 space-y-4">
 
+              {/* Skeleton on first load */}
+              <AnimatePresence>
+                {posts.length === 0 && postsLoading && (
+                  <motion.div key="post-skels" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+                    className="space-y-4">
+                    {[0, 1, 2].map(i => <PostSkeleton key={i} dark={dark} />)}
+                  </motion.div>
+                )}
+              </AnimatePresence>
 
-            <div className='flex flex-col md:flex-row mt-0 md:mt-10 mx-auto w-full gap-6'>
+              {/* Empty state */}
+              <AnimatePresence>
+                {posts.length === 0 && !postsLoading && (
+                  <motion.div
+                    key="empty"
+                    initial={{ opacity: 0, y: 12 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0 }}
+                    transition={{ duration: 0.4 }}
+                    className={`rounded-2xl border p-12 text-center ${dark ? 'bg-[#141414] border-gray-800' : 'bg-white border-gray-100'}`}
+                  >
+                    <p className="text-3xl mb-3">✍️</p>
+                    <p className={`text-sm font-medium ${dark ? 'text-gray-400' : 'text-gray-500'}`}>
+                      No posts in this category yet
+                    </p>
+                    {userAuth.userId && (
+                      <Link
+                        to="/new-post"
+                        className="inline-flex items-center mt-4 rounded-full px-5 py-2 text-xs font-semibold text-white transition-colors"
+                        style={{ backgroundColor: '#2563EB' }}
+                      >
+                        Be the first — write a post
+                      </Link>
+                    )}
+                  </motion.div>
+                )}
+              </AnimatePresence>
 
               {/* Posts */}
-              <div className="flex-1 flex flex-col items-center order-last md:order-none">
-                {postsFilter.length === 0 && !loading ? (
-                  <p className={`${globalData.themeGlobal ? "text-black" : "text-white"} text-center text-3xl`}>
-                    There is nothing around here yet
-                  </p>
-                ) : (
-                  postsFilter.map((post: any) => <Post key={post._id} post={post} />)
+              <AnimatePresence>
+                {posts.map((post, index) => (
+                  <AnimatedPost key={post._id} post={post} index={index} />
+                ))}
+              </AnimatePresence>
+
+              {/* Pagination spinner */}
+              <AnimatePresence>
+                {postsLoading && posts.length > 0 && (
+                  <motion.div key="spin" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
+                    <Spinner />
+                  </motion.div>
                 )}
-                {loading && <Spinner />}
-                {!hasMore && <p className="text-center mt-4 text-gray-500 text-sm">No more posts</p>}
-              </div>
+              </AnimatePresence>
 
-              {/* Aside */}
-              <aside className='w-full md:w-80 flex-shrink-0 space-y-8 mt-4'>
-
-                {/* About Tech */}
-                <div className={`p-6 rounded-md  ${globalData.themeGlobal ? ' bgt-light text-black' : 'bgt-dark hover:bg-zinc-700 text-white'}`}>
-                  <h2 className='text-xl font-bold leading-tight'>About {categoryFullInfo?.category?.name}</h2>
-                  <p className='text-base font-normal leading-relaxed my-4'>
-                    {categoryFullInfo?.category?.longDesc}
-                  </p>
-
-                  {
-                    userAuth.userId &&
-                    <Link
-                      to={`/new-post`}
-                      className={`${globalData.themeGlobal ? 'btn-theme-light-op2' : 'btn-theme-dark-op2'} mt-5 hover:bg-gray-500 font-medium rounded-lg text-sm px-5 py-1.5 mb-2`}
-                    >Create Post</Link>
-                  }
-                </div>
-
-                {/* Followers */}
-                <div className={`p-6 rounded-md  ${globalData.themeGlobal ? ' bgt-light text-black' : 'bgt-dark hover:bg-zinc-700 text-white'}`}>
-                  <h2 className='text-xl font-bold leading-tight'>Followers</h2>
-                  <div className='flex mt-4'>
-                    {categoryFullInfo?.users?.map((user: any, i: any) => (
-                      <Tooltip key={i} title={user.name} arrow>
-                        <Link
-                          to={`/profile/${user._id}`}
-                          className={`w-12 h-12 rounded-full border-2 border-white bg-center bg-cover cursor-pointer`}
-                          style={{
-                            backgroundImage: `url("${user?.profilePicture?.secure_url || "/avatar.png"}")`,
-                            marginLeft: i === 0 ? 0 : -12,
-                            zIndex: 10 - i
-                          }}
-                        ></Link>
-                      </Tooltip>
-                    ))}
-                  </div>
-                </div>
-
-
-                {/* Your Blogs */}
-                {
-                  userAuth.userId &&
-                  <div className={`p-6 rounded-md  ${globalData.themeGlobal ? ' bgt-light text-black' : 'bgt-dark hover:bg-zinc-700 text-white'}`}>
-                    <h2 className='text-xl font-bold leading-tight'>Your Blogs</h2>
-                    <p className='text-base font-normal leading-relaxed mt-4'>
-                      You have <span className='font-bold '>{categoryFullInfo?.countsPosts || 0} blogs</span> in the <span className='font-bold'>{categoryFullInfo?.category?.name}</span> category. Keep sharing your insights and expertise with the community.
-                    </p>
-                  </div>
-                }
-
-                {/* Related Categories */}
-                <div className={`p-6 rounded-md  ${globalData.themeGlobal ? ' bgt-light text-black' : 'bgt-dark hover:bg-zinc-700 text-white'}`}>
-                  <h2 className='text-xl font-bold leading-tight'>Related Categories</h2>
-                  <div className='space-y-3 mt-4'>
-                    {categoryFullInfo?.relatedCategories?.map((cat: any, i: any) => (
-                      <div key={i} className="flex items-center justify-between mb-2">
-                        <div className="flex items-center gap-2">
-                          {/* Circulo con color de la categoría */}
-                          <span
-                            className="w-3 h-3 rounded-full border"
-                            style={{ backgroundColor: cat.color || '#000' }}
-                          ></span>
-                          <Link
-                            to={`/category/${cat.name}`}
-                            className="text-base font-medium hover:underline"
-                          >
-                            {cat.name}
-                          </Link>
-                        </div>
-                        <span className="text-sm text-gray-500">{cat.follows?.countFollows || 0} followers</span>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              </aside>
+              {/* End of posts */}
+              <AnimatePresence>
+                {!hasMore && posts.length > 0 && (
+                  <motion.div
+                    key="end"
+                    initial={{ opacity: 0, y: 8 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.4 }}
+                    className="flex items-center gap-4 mt-4"
+                  >
+                    <div className={`flex-1 h-px ${dark ? 'bg-gray-800' : 'bg-gray-100'}`} />
+                    <span className={`text-xs tracking-wider uppercase font-medium ${dark ? 'text-gray-600' : 'text-gray-400'}`}>
+                      End of posts
+                    </span>
+                    <div className={`flex-1 h-px ${dark ? 'bg-gray-800' : 'bg-gray-100'}`} />
+                  </motion.div>
+                )}
+              </AnimatePresence>
             </div>
+            <aside className="w-full md:w-72 flex-shrink-0">
+              <AnimatePresence mode="wait">
+                {categoryLoading ? (
+                  <motion.div key="aside-skel" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+                    className="space-y-4">
+                    {[0, 1, 2].map(i => <AsideSkeleton key={i} dark={dark} />)}
+                  </motion.div>
+                ) : (
+                  <motion.div
+                    key={`aside-${cat?._id}`}
+                    initial="hidden"
+                    animate="visible"
+                    exit={{ opacity: 0 }}
+                    variants={stagger}
+                    className="space-y-4"
+                  >
+
+                    {/* About */}
+                    {cat && (
+                      <AsideCard title={`About ${cat.name}`} dark={dark} delay={0}>
+                        <p className={`text-sm leading-relaxed ${dark ? 'text-gray-400' : 'text-gray-500'}`}>
+                          {cat.longDesc}
+                        </p>
+                        {userAuth.userId && (
+                          <Link
+                            to="/new-post"
+                            className="inline-flex items-center mt-4 rounded-full px-4 py-1.5 text-xs font-semibold text-white transition-colors"
+                            style={{ backgroundColor: '#2563EB' }}
+                            onMouseEnter={e => (e.currentTarget.style.backgroundColor = '#1d4ed8')}
+                            onMouseLeave={e => (e.currentTarget.style.backgroundColor = '#2563EB')}
+                          >
+                            + Write a post
+                          </Link>
+                        )}
+                      </AsideCard>
+                    )}
+
+                    {/* Followers */}
+                    {categoryInfo?.users?.length > 0 && (
+                      <AsideCard title="Followers" dark={dark} delay={1}>
+                        <div className="flex flex-wrap gap-1.5">
+                          {categoryInfo.users.map((user: any, i: number) => (
+                            <motion.div
+                              key={user._id}
+                              initial={{ opacity: 0, scale: 0.8 }}
+                              animate={{ opacity: 1, scale: 1 }}
+                              transition={{ delay: i * 0.04, type: 'spring', stiffness: 400, damping: 20 }}
+                            >
+                              <Link
+                                to={`/profile/${user._id}`}
+                                title={user.name}
+                                className="block"
+                              >
+                                <img
+                                  src={user?.profilePicture?.secure_url || '/avatar.png'}
+                                  alt={user.name}
+                                  className="h-8 w-8 rounded-full object-cover ring-2 ring-offset-1 transition-transform hover:scale-110"
+                                />
+                              </Link>
+                            </motion.div>
+                          ))}
+                        </div>
+                      </AsideCard>
+                    )}
+
+                    {/* Your blogs */}
+                    {userAuth.userId && (
+                      <AsideCard title="Your blogs" dark={dark} delay={2}>
+                        <p className={`text-sm leading-relaxed ${dark ? 'text-gray-400' : 'text-gray-500'}`}>
+                          You have{' '}
+                          <span className={`font-semibold ${dark ? 'text-white' : 'text-gray-900'}`}>
+                            {categoryInfo?.countsPosts || 0} {categoryInfo?.countsPosts === 1 ? 'blog' : 'blogs'}
+                          </span>{' '}
+                          in{' '}
+                          <span className={`font-semibold ${dark ? 'text-white' : 'text-gray-900'}`}>
+                            #{cat?.name}
+                          </span>.
+                        </p>
+                      </AsideCard>
+                    )}
+
+                    {/* Related categories */}
+                    {categoryInfo?.relatedCategories?.length > 0 && (
+                      <AsideCard title="Related categories" dark={dark} delay={3}>
+                        <div className="space-y-2">
+                          {categoryInfo.relatedCategories.map((related: any, i: number) => (
+                            <motion.div
+                              key={related._id || i}
+                              variants={fadeUp}
+                              custom={i}
+                              className="flex items-center justify-between"
+                            >
+                              <Link
+                                to={`/category/${related.name}`}
+                                className={`flex items-center gap-2 text-sm transition-colors
+                                  ${dark ? 'text-gray-300 hover:text-white' : 'text-gray-600 hover:text-gray-900'}`}
+                              >
+                                <span
+                                  className="h-2 w-2 rounded-full flex-shrink-0"
+                                  style={{ backgroundColor: related.color || '#888' }}
+                                />
+                                #{related.name}
+                              </Link>
+                              <span className={`text-xs ${dark ? 'text-gray-600' : 'text-gray-400'}`}>
+                                {related.follows?.countFollows || 0}
+                              </span>
+                            </motion.div>
+                          ))}
+                        </div>
+                      </AsideCard>
+                    )}
+
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </aside>
           </div>
-        )
-
-      }
-
+        </div>
+      )}
     </div>
   )
 }

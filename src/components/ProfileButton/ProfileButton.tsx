@@ -1,172 +1,217 @@
-import { useEffect, useRef, useState } from 'react';
-/**
- * router
- */
-import { Link } from 'react-router-dom';
-
-/**
- * hooks
- */
-import userUserAuthContext from '../../context/hooks/useUserAuthContext';
-import useGlobalDataContext from '../../context/hooks/useGlobalDataContext';
-
-/**
- * icons
- */
-import AccountCircleOutlinedIcon from '@mui/icons-material/AccountCircleOutlined';
-import SettingsOutlinedIcon from '@mui/icons-material/SettingsOutlined';
-import DashboardOutlinedIcon from '@mui/icons-material/DashboardOutlined';
-import AddCircleOutlineOutlinedIcon from '@mui/icons-material/AddCircleOutlineOutlined';
-import ChatBubbleOutlineOutlinedIcon from '@mui/icons-material/ChatBubbleOutlineOutlined';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { useEffect, useRef, useState } from 'react'
+import { Link } from 'react-router-dom'
+import { motion, AnimatePresence } from 'framer-motion'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faSun, faMoon } from '@fortawesome/free-solid-svg-icons'
+import userUserAuthContext from '../../context/hooks/useUserAuthContext'
+import useGlobalDataContext from '../../context/hooks/useGlobalDataContext'
+
+const menuItems = [
+  {
+    to: (id: string) => `/profile/${id}`,
+    label: 'My Profile',
+    icon: (
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.7} strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4">
+        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" /><circle cx="12" cy="7" r="4" />
+      </svg>
+    ),
+  },
+  {
+    to: () => '/chat/',
+    label: 'My Chats',
+    icon: (
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.7} strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4">
+        <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+      </svg>
+    ),
+  },
+  {
+    to: (id: string) => `/edit-profile/${id}`,
+    label: 'Settings',
+    icon: (
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.7} strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4">
+        <circle cx="12" cy="12" r="3" /><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z" />
+      </svg>
+    ),
+  },
+  {
+    to: (id: string) => `/dashboard/${id}`,
+    label: 'Dashboard',
+    icon: (
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.7} strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4">
+        <rect x="3" y="3" width="7" height="7" /><rect x="14" y="3" width="7" height="7" /><rect x="14" y="14" width="7" height="7" /><rect x="3" y="14" width="7" height="7" />
+      </svg>
+    ),
+  },
+  {
+    to: () => '/new-post',
+    label: 'New Post',
+    icon: (
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.7} strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4">
+        <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" /><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
+      </svg>
+    ),
+  },
+]
 
 const ProfileButton = () => {
+  const { userAuth } = userUserAuthContext()
+  const { setGlobalData, globalData } = useGlobalDataContext()
+  const dark = !globalData.themeGlobal
 
-  /**
-   * hooks
-   */
-  const { userAuth } = userUserAuthContext();
-  const { setGlobalData, globalData } = useGlobalDataContext();
-
-  const [open, setOpen] = useState(false);
-  let menuRef = useRef<any>();
-
-
+  const [open, setOpen] = useState(false)
+  const menuRef = useRef<any>()
 
   useEffect(() => {
-
-
-    let handler = (e: any) => {
-      if (!menuRef.current.contains(e.target)) {
-        setOpen(false);
-      }
-    };
-
-    document.addEventListener("mousedown", handler);
-    return () => {
-      document.removeEventListener("mousedown", handler);
+    const handler = (e: any) => {
+      if (!menuRef.current?.contains(e.target)) setOpen(false)
     }
-
-  });
+    document.addEventListener('mousedown', handler)
+    return () => document.removeEventListener('mousedown', handler)
+  })
 
   const handleLogOut = () => {
-    localStorage.removeItem('token');
-    localStorage.removeItem("tokenAuthUser");
-    localStorage.removeItem("email");
-    localStorage.removeItem("username");
-    localStorage.removeItem("userId");
-    localStorage.removeItem("profileImage");
-
-    document.location.reload();
-    document.location = '/'
+    ['token', 'tokenAuthUser', 'email', 'username', 'userId', 'profileImage']
+      .forEach(k => localStorage.removeItem(k))
+    document.location.reload()
+    document.location.href = '/'
   }
 
   const handleChange = () => {
-
-    setGlobalData(prev => {
-      const newTheme = !prev.themeGlobal;
-      localStorage.setItem("theme", JSON.stringify(newTheme));
-      return { ...prev, themeGlobal: newTheme };
-    });
+    setGlobalData((prev: any) => {
+      const newTheme = !prev.themeGlobal
+      localStorage.setItem('theme', JSON.stringify(newTheme))
+      return { ...prev, themeGlobal: newTheme }
+    })
   }
 
-
   return (
-    <div className={`relative ${globalData.themeGlobal ? 'bgt-light text-black' : 'bgt-dark '} ml-2 h-10 w-10 border border-gray-300 dark:border-gray-600 rounded-full`}>
-      <div ref={menuRef}>
-        {/* Botón de perfil */}
-        <button
-          type="button"
-          className="rounded-md border border-1 border-zinc-900 text-center text-sm text-white transition-all"
-          onClick={() => setOpen(!open)}
-        >
-          <img
-            className="h-10 w-10 rounded-full"
-            src={userAuth?.profileImage || '/avatar.png'}
-            alt="User"
-          />
-        </button>
+    <div className="relative ml-3" ref={menuRef}>
+      {/* Avatar trigger */}
+      <motion.button
+        type="button"
+        onClick={() => setOpen(v => !v)}
+        whileTap={{ scale: 0.93 }}
+        className={`relative h-9 w-9 rounded-full overflow-hidden ring-2 ring-offset-2 transition-all duration-200
+          ${open
+            ? 'ring-[#2563EB]'
+            : dark ? 'ring-gray-700 ring-offset-[#0f0f0f]' : 'ring-gray-200 ring-offset-white'
+          }`}
+      >
+        <img
+          src={userAuth?.profileImage || '/avatar.png'}
+          alt="User"
+          className="h-full w-full object-cover"
+        />
+      </motion.button>
 
-        {/* Dropdown */}
+      {/* Dropdown */}
+      <AnimatePresence>
         {open && (
-          <ul
-            role="menu"
-            className={`absolute right-0 mt-2 z-20 min-w-[180px] overflow-auto rounded-lg border  bg-white p-1.5 shadow-sm 
-              transform transition-all duration-200 ease-out
-              scale-95 opacity-0
-              ${open ? 'scale-100 opacity-100' : ''}
-              ${globalData.themeGlobal ? 'bgt-light border-gray-300' : 'bgt-dark text-white border-gray-500'}
-            `}
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95, y: -6 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 0.95, y: -6 }}
+            transition={{ duration: 0.18, ease: [0.25, 0.46, 0.45, 0.94] }}
+            className={`absolute right-0 mt-2.5 w-56 rounded-2xl border overflow-hidden shadow-xl z-50
+              ${dark ? 'bgt-dark border-gray-800' : 'bg-white border-gray-100'}`}
           >
-            <li className="text-center p-2 text-lg font-semibold">{userAuth.username}</li>
-            <li className="text-center p-1 text-xs">{userAuth.email}</li>
-
-            <li className="cursor-pointer flex items-center rounded-md p-2 transition-all hover:bg-gray-500 mb-1 mt-1">
-              <AccountCircleOutlinedIcon />
-              <Link
-                className='ml-2'
-                to={`/profile/${userAuth.userId}`}
-              >My Profile</Link>
-            </li>
-            <li className="cursor-pointer flex items-center rounded-md p-2 transition-all hover:bg-gray-500 mb-1">
-              <ChatBubbleOutlineOutlinedIcon />
-              <Link
-                className='ml-2'
-                to={`/chat/`}>My chats</Link>
-            </li>
-            <li className="cursor-pointer flex items-center rounded-md p-2 transition-all hover:bg-gray-500 mb-1">
-              <SettingsOutlinedIcon />
-              <Link
-                className='ml-2'
-                to={`/edit-profile/${userAuth.userId}`}>Settings</Link>
-            </li>
-            <li className="cursor-pointer flex items-center rounded-md p-2 transition-all hover:bg-gray-500 mb-1">
-              <DashboardOutlinedIcon />
-              <Link
-                className='ml-2'
-                to={`/dashboard/${userAuth.userId}`}>Dashboard</Link>
-            </li>
-            <li className="cursor-pointer flex items-center rounded-md p-2 transition-all hover:bg-gray-500 mb-1">
-              <AddCircleOutlineOutlinedIcon />
-              <Link
-                className='ml-2'
-                to="/new-post">New Post</Link>
-            </li>
-
-            {/* Theme toggle */}
-            <li className="flex justify-center p-2">
-              <p className='mr-2'>Theme</p>
-              {globalData.themeGlobal ? (
-                <FontAwesomeIcon
-                  icon={faSun}
-                  className="text-yellow-400 cursor-pointer text-2xl"
-                  onClick={handleChange}
+            {/* User info */}
+            <div className={`px-4 py-3.5 border-b ${dark ? 'border-gray-800' : 'border-gray-100'}`}>
+              <div className="flex items-center gap-3">
+                <img
+                  src={userAuth?.profileImage || '/avatar.png'}
+                  alt="User"
+                  className="h-8 w-8 rounded-full object-cover flex-shrink-0"
                 />
-              ) : (
-                <FontAwesomeIcon
-                  icon={faMoon}
-                  className="text-gray-600 cursor-pointer text-2xl"
-                  onClick={handleChange}
-                />
-              )}
-            </li>
+                <div className="min-w-0">
+                  <p className={`text-sm font-semibold truncate ${dark ? 'text-white' : 'text-gray-900'}`}>
+                    {userAuth.username}
+                  </p>
+                  <p className={`text-xs truncate ${dark ? 'text-gray-500' : 'text-gray-400'}`}>
+                    {userAuth.email}
+                  </p>
+                </div>
+              </div>
+            </div>
 
-            {/* Logout */}
-            <li className="flex justify-center p-2 border-t">
+            {/* Nav items */}
+            <div className="py-1.5">
+              {menuItems.map((item, i) => (
+                <motion.div
+                  key={item.label}
+                  initial={{ opacity: 0, x: -6 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: i * 0.04, duration: 0.2 }}
+                >
+                  <Link
+                    to={item.to(userAuth.userId as string)}
+                    onClick={() => setOpen(false)}
+                    className={`flex items-center gap-3 px-4 py-2.5 text-sm transition-colors duration-150
+                      ${dark
+                        ? 'text-gray-300 hover:bg-gray-800 hover:text-white'
+                        : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
+                      }`}
+                  >
+                    <span className={dark ? 'text-gray-500' : 'text-gray-400'}>{item.icon}</span>
+                    {item.label}
+                  </Link>
+                </motion.div>
+              ))}
+            </div>
+
+            {/* Theme + Logout */}
+            <div className={`border-t py-2 ${dark ? 'border-gray-800' : 'border-gray-100'}`}>
+              {/* Theme toggle */}
               <button
                 type="button"
-                className="text-white bg-red-700 hover:bg-red-800 rounded-md px-4 py-2 text-sm w-full"
-                onClick={handleLogOut}
+                onClick={handleChange}
+                className={`w-full flex items-center justify-between px-4 py-2.5 text-sm transition-colors duration-150
+                  ${dark ? 'text-gray-300 hover:bg-gray-800' : 'text-gray-600 hover:bg-gray-50'}`}
               >
-                Logout
-              </button>
-            </li>
-          </ul>
-        )}
-      </div>
-    </div>
+                <span className="flex items-center gap-3">
+                  <span className={dark ? 'text-gray-500' : 'text-gray-400'}>
+                    {dark ? (
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.7} strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
+                      </svg>
+                    ) : (
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.7} strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4">
+                        <circle cx="12" cy="12" r="5" /><line x1="12" y1="1" x2="12" y2="3" /><line x1="12" y1="21" x2="12" y2="23" /><line x1="4.22" y1="4.22" x2="5.64" y2="5.64" /><line x1="18.36" y1="18.36" x2="19.78" y2="19.78" /><line x1="1" y1="12" x2="3" y2="12" /><line x1="21" y1="12" x2="23" y2="12" /><line x1="4.22" y1="19.78" x2="5.64" y2="18.36" /><line x1="18.36" y1="5.64" x2="19.78" y2="4.22" />
+                      </svg>
+                    )}
+                  </span>
+                  {dark ? 'Dark mode' : 'Light mode'}
+                </span>
 
+                {/* Toggle pill */}
+                <div className={`relative h-5 w-9 rounded-full transition-colors duration-200 ${dark ? 'bg-[#2563EB]' : 'bg-gray-200'}`}>
+                  <motion.div
+                    className="absolute top-0.5 h-4 w-4 rounded-full bg-white shadow-sm"
+                    animate={{ x: dark ? 16 : 2 }}
+                    transition={{ type: 'spring', stiffness: 500, damping: 28 }}
+                  />
+                </div>
+              </button>
+
+              {/* Logout */}
+              <motion.button
+                type="button"
+                onClick={handleLogOut}
+                whileTap={{ scale: 0.97 }}
+                className={`w-full flex items-center gap-3 px-4 py-2.5 text-sm transition-colors duration-150
+                  ${dark ? 'text-red-400 hover:bg-red-900/20' : 'text-red-500 hover:bg-red-50'}`}
+              >
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.7} strokeLinecap="round" strokeLinejoin="round" className={`w-4 h-4 ${dark ? 'text-red-500' : 'text-red-400'}`}>
+                  <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" /><polyline points="16 17 21 12 16 7" /><line x1="21" y1="12" x2="9" y2="12" />
+                </svg>
+                Log out
+              </motion.button>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
   )
 }
 
