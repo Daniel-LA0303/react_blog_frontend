@@ -1,0 +1,73 @@
+
+import { useSwal } from '../../hooks/useSwal.js';
+import clientAuthAxios from '../../services/clientAuthAxios.js';
+import { 
+    EDIT_USER, 
+    EDIT_USER_ERROR, 
+    EDIT_USER_SUCCESS, 
+    NEW_POST_SUCCESS 
+} from '../types/index.js';
+
+const { showAutoSwal, showConfirmSwal } = useSwal();
+
+const editUser = () => ({ type: EDIT_USER});
+
+const editUserSuccess = (user: any, message: any) => ({
+    type: EDIT_USER_SUCCESS,
+    payload: {data: user, message}
+});
+
+const editUserError = (error: any) => ({
+    type: EDIT_USER_ERROR,
+    payload: error
+});
+
+export function editUserAction(userId: any, editUserData: any, route: any){
+    return async (dispatch: any) => {
+
+        // 1. diapatch edit user action
+        dispatch(editUser());
+
+        try {
+            
+            // 2. edit user 
+            const response = await clientAuthAxios.post(`/users/new-info/${userId}`, editUserData);
+            
+            dispatch(editUserSuccess(response.data.data || null, response.data.message));
+            
+            const updatedUser = response.data.data;
+            localStorage.setItem("profileImage", updatedUser?.profilePicture?.secure_url || "/avatar.png");
+
+            
+            // 4. Show success message
+            showAutoSwal({ 
+                message: response.data.message, 
+                status: "success", 
+                timer: 2000       
+            });
+
+            setTimeout(() => {
+                window.location.href = `/profile/${userId}`;
+            }, 500);
+
+            return updatedUser;
+
+        } catch (error: any) {
+
+            // 5. get error message
+            const msg = error.response?.data?.message || "Error inesperado";
+            
+            // 6. Dispatch error action
+            dispatch(editUserError(msg));
+
+            // 7. Show error message
+            showConfirmSwal({ 
+                message: msg, 
+                status: "error", 
+                confirmButton: true 
+            });
+
+            // we don't redirect here
+        }
+    }
+}

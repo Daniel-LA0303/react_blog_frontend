@@ -1,0 +1,136 @@
+import { useState } from 'react'
+
+/**
+ * hooks
+ */
+import userUserAuthContext from '../../context/hooks/useUserAuthContext';
+import { useSwal } from '../../hooks/useSwal';
+
+/**
+ * router
+ */
+import { Link } from 'react-router-dom';
+
+/**
+ * service
+ */
+import clientAuthAxios from '../../services/clientAuthAxios';
+import useGlobalDataContext from '../../context/hooks/useGlobalDataContext';
+
+
+const NewComment = ({
+    user,
+    idPost,
+    comments,
+    setCommentsState,
+    setEngagementPost
+}: any) => {
+
+    /**
+     * hooks
+     */
+    const { userAuth } = userUserAuthContext();
+    const { showConfirmSwal } = useSwal();
+    const { globalData } = useGlobalDataContext();
+
+    /**
+     * state
+     */
+    const [comment, setComment] = useState('');
+
+    //new comment
+    const newComment = async (id: any, e: any) => {
+
+        e.preventDefault();
+
+        // 1. valid data
+        if (comment.trim() === '') {
+            showConfirmSwal({
+                message: "Comment is empty",
+                status: "warning",
+                confirmButton: true
+            });
+            return;
+        }
+
+        // 2. build data
+        const data = {
+            userID: user.userId,
+            comment: comment,
+        }
+
+        try {
+
+            // 3. request to backend
+            const response = await clientAuthAxios.post(`/comments/new-comment/${id}`, data);
+            setComment('');
+
+            // update comments
+            setCommentsState((prev: any) => [response.data.data, ...prev]);
+            setEngagementPost((prev: any) => ({
+                ...prev,
+                numberComments: prev.numberComments + 1
+            }));
+        } catch (error: any) {
+            console.log(error);
+
+            // show error
+            showConfirmSwal({
+                message: error.response.data.message,
+                status: "error",
+                confirmButton: true
+            });
+        }
+    }
+
+    return (
+        <section className={`${globalData.themeGlobal ? ' bgt-light text-black' : 'bgt-dark hover:bg-zinc-900 text-white'} rounded-lg py-2`}>
+            <div className="mx-auto px-4">
+                <div className="flex justify-between items-center mb-6">
+                    <h2 className="text-sm lg:text-base font-bold ">Discussion ({comments.length})</h2>
+                </div>
+
+                <div className='flex'>
+                    <Link
+                        to={`/profile/${userAuth.userId}`}
+                        className="h-12 w-12 flex-shrink-0 rounded-full bg-cover bg-center bg-no-repeat mr-2 hidden sm:block"
+                        style={{
+                            backgroundImage: `url("${userAuth.profileImage ? userAuth.profileImage : '/avatar.png'}")`,
+                            backgroundSize: "cover",
+                            backgroundPosition: "center"
+                        }}
+                    ></Link>
+                    <form
+                        onSubmit={(e) => newComment(idPost, e)}
+                        className="mb-6 w-full">
+                        <div className={` ${globalData.themeGlobal ? "bg-white" : "bg-gray-700"}
+                            py-2 px-4 mb-4 rounded-lg rounded-t-lg`}>
+                            <textarea
+                                id="comment"
+                                rows={6}
+                                className={`
+                                    ${globalData.themeGlobal ? "bg-white" : "bg-gray-700 text-white placeholder-gray-400 "}
+                                    px-0 w-full text-sm  border-0 focus:ring-0 
+                                    focus:outline-none  
+                                     resize-y max-h-40 min-h-24
+                                     rounded-lg
+                                    `}
+                                name="body"
+                                placeholder='Type Your Comment'
+                                onChange={(e) => setComment(e.target.value)}
+                                value={comment}
+                            ></textarea>
+                        </div>
+                        <button
+                            type='submit'
+                            className="btn-theme-light-op1 hover:bg-blue-700 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2"
+                            placeholder='Type your Comment'
+                        >Comment</button>
+                    </form>
+                </div>
+
+            </div>
+        </section>
+    )
+}
+export default NewComment
