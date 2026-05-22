@@ -11,6 +11,7 @@ import Sidebar from '../../../components/Sidebar/Sidebar'
 import Post from '../../../components/Post/Post'
 import useGlobalDataContext from '../../../context/hooks/useGlobalDataContext'
 import clientAuthAxios from '../../../services/clientAuthAxios'
+import SmallSpinner from '../../../components/Spinner/SmallSpinner'
 
 const SavePost = () => {
 
@@ -105,8 +106,8 @@ const SavePost = () => {
         </div>
 
         {/* MAIN CONTENT */}
-        <div className="flex flex-col items-center w-full lg:w-6/12 px-4 lg:mx-auto">
-          <div className="mt-8 w-full">
+        <div className="flex flex-col items-center w-full lg:w-6/12 px-4 lg:mx-auto py-5">
+          <div className="w-full">
             <h3
               className={`text-left text-xl md:text-3xl font-semibold pb-0 ${globalData.themeGlobal ? '' : 'text-white'
                 }`}
@@ -120,7 +121,7 @@ const SavePost = () => {
               ))}
             </div>
 
-            {loading && <Spinner />}
+            {loading && <SmallSpinner />}
             {!hasMore && (
               <p className="text-center my-4 text-gray-500 text-sm">
                 No more posts

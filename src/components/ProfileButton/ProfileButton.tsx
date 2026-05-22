@@ -86,7 +86,7 @@ const ProfileButton = () => {
   }
 
   return (
-    <div className="relative ml-3" ref={menuRef}>
+    <div className="relative ml-3 mt-1.5" ref={menuRef}>
       {/* Avatar trigger */}
       <motion.button
         type="button"

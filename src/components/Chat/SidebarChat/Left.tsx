@@ -27,7 +27,7 @@ function Left() {
     localStorage.removeItem("userId");
     localStorage.removeItem("profileImage");
 
-    document.location.reload(true);
+    document.location.reload();
     document.location = '/'
   };
 

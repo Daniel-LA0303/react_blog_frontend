@@ -1,60 +1,65 @@
-import { Link } from "react-router-dom";
-import useConversation from "../../../context/hooks/useConversation";
-import { useSocketContext } from "../../../context/SocketContext";
-import MenuOutlinedIcon from '@mui/icons-material/MenuOutlined';
-import useGlobalDataContext from "../../../context/hooks/useGlobalDataContext";
-
+import { Link } from 'react-router-dom'
+import { motion } from 'framer-motion'
+import useConversation from '../../../context/hooks/useConversation'
+import { useSocketContext } from '../../../context/SocketContext'
+import useGlobalDataContext from '../../../context/hooks/useGlobalDataContext'
 
 function Chatuser({ openSidebar }: any) {
+  const { selectedConversation } = useConversation()
+  const { globalData } = useGlobalDataContext()
+  const { onlineUsers } = useSocketContext()
+  const dark = !globalData.themeGlobal
 
-  // we get state zustand
-  const { selectedConversation } = useConversation();
-  const { globalData } = useGlobalDataContext();
-
-  // we get online users from socket context
-  const { onlineUsers } = useSocketContext();
-
-  // if user is online
-  const getOnlineUsersStatus = (userId: any) => {
-    return onlineUsers.includes(userId) ? "Online" : "Offline";
-  };
-
-  const isOnline = onlineUsers.includes(selectedConversation._id);
+  const isOnline = onlineUsers.includes(selectedConversation._id)
 
   return (
-    <div className={`
-       p-2 h-16 md:h-20 flex items-center space-x-3 md:space-x-4 duration-300 shadow-md rounded-md 
-      ${globalData.themeGlobal ? ' bgt-light text-black' : 'bgt-dark hover:bg-zinc-900 text-white'}
-    `}>
-      <button
-        className="sm:hidden p-1 rounded hover:bg-gray-500"
+    <div className={`flex items-center gap-3 px-4 h-16 border-b flex-shrink-0
+      ${dark ? 'bg-[#111] border-gray-800' : 'bg-white border-gray-100'}`}>
+
+      {/* Mobile hamburger */}
+      <motion.button
+        type="button"
         onClick={openSidebar}
+        whileTap={{ scale: 0.9 }}
+        className={`sm:hidden h-8 w-8 flex items-center justify-center rounded-lg flex-shrink-0 transition-colors
+          ${dark ? 'text-gray-500 hover:bg-gray-800 hover:text-gray-200' : 'text-gray-400 hover:bg-gray-100'}`}
       >
-        <MenuOutlinedIcon className="text-xl " />
-      </button>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8}
+          strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5">
+          <line x1="3" y1="6" x2="21" y2="6" />
+          <line x1="3" y1="12" x2="21" y2="12" />
+          <line x1="3" y1="18" x2="21" y2="18" />
+        </svg>
+      </motion.button>
+
       {/* Avatar */}
-      <div>
-        <div className="relative w-10 sm:w-12 md:w-14 rounded-full cursor-pointer">
-          <img
-            src={`${selectedConversation?.profilePicture?.secure_url || "/avatar.png"}`}
-            alt="user avatar"
-          />
-        </div>
+      <div className="relative flex-shrink-0">
+        <img
+          src={selectedConversation?.profilePicture?.secure_url || '/avatar.png'}
+          alt={selectedConversation?.name || selectedConversation?.email}
+          className="h-9 w-9 rounded-full object-cover"
+        />
+        <span className={`absolute bottom-0 right-0 h-2.5 w-2.5 rounded-full ring-2
+          ${dark ? 'ring-[#111]' : 'ring-white'}
+          ${isOnline ? 'bg-emerald-400' : dark ? 'bg-gray-700' : 'bg-gray-300'}`}
+        />
       </div>
 
       {/* Info */}
-      <div className="flex flex-col">
+      <div className="flex-1 min-w-0">
         <Link
           to={`/profile/${selectedConversation._id}`}
-          className="text-sm sm:text-base md:text-lg font-medium cursor-pointer truncate ">
-          {selectedConversation.email}
+          className={`text-sm font-semibold truncate block hover:underline underline-offset-2 transition-colors
+            ${dark ? 'text-white' : 'text-gray-900'}`}
+        >
+          {selectedConversation?.name || selectedConversation?.email}
         </Link>
-        <span className="text-xs sm:text-sm md:text-base">
-          {getOnlineUsersStatus(selectedConversation._id)}
-        </span>
+        <p className={`text-xs ${isOnline ? 'text-emerald-400' : dark ? 'text-gray-600' : 'text-gray-400'}`}>
+          {isOnline ? 'Online' : 'Offline'}
+        </p>
       </div>
     </div>
-  );
+  )
 }
 
-export default Chatuser;
+export default Chatuser

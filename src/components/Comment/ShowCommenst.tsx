@@ -9,437 +9,381 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 /**
  * libraries
  */
-import axios from 'axios';
-import { toast } from 'react-hot-toast';
+import axios from 'axios'
+import { toast } from 'react-hot-toast'
+import { motion, AnimatePresence } from 'framer-motion'
 
 /**
  * router
-*/
-import { Link } from 'react-router-dom';
-import Swal from 'sweetalert2';
+ */
+import { Link } from 'react-router-dom'
+import Swal from 'sweetalert2'
 
 /**
  * components
  */
-import EditComment from './EditComment';
-import ReplyComment from './ReplyComment';
-import ShowReplies from './ShowReplies';
-import LoadMoreRepliesButton from './LoadMoreRepliesButton';
+import EditComment from './EditComment'
+import ReplyComment from './ReplyComment'
+import ShowReplies from './ShowReplies'
+import LoadMoreRepliesButton from './LoadMoreRepliesButton'
 
 /**
  * hooks
  */
-import userUserAuthContext from '../../context/hooks/useUserAuthContext';
-import { useSwal } from '../../hooks/useSwal';
-import useGlobalDataContext from '../../context/hooks/useGlobalDataContext';
+import userUserAuthContext from '../../context/hooks/useUserAuthContext'
+import { useSwal } from '../../hooks/useSwal'
+import useGlobalDataContext from '../../context/hooks/useGlobalDataContext'
 
 /**
  * services
  */
-import clientAuthAxios from '../../services/clientAuthAxios';
+import clientAuthAxios from '../../services/clientAuthAxios'
 
-
-
-const notify = () => toast(
-    'Comment saved.',
-    {
-        duration: 1500,
-        icon: '👌'
-    }
-);
+const notify = () => toast('Comment saved.', { duration: 1500, icon: '👌' })
 
 const ShowCommenst = ({
-    comment,
-    idPost,
-    setCommentsState,
-    setEngagementPost
+  comment,
+  idPost,
+  setCommentsState,
+  setEngagementPost,
 }: any) => {
 
-    /**
-     * hooks
-     */
-    const { userAuth } = userUserAuthContext();
-    const { showConfirmSwal } = useSwal();
-    const { globalData } = useGlobalDataContext();
+  /**
+   * hooks
+   */
+  const { userAuth } = userUserAuthContext()
+  const { showConfirmSwal } = useSwal()
+  const { globalData } = useGlobalDataContext()
+  const dark = !globalData.themeGlobal
 
-    /**
-     * states
-     */
-    const [editActive, setEditActive] = useState(false); // show a form to update 
-    const [newComment, setNewComment] = useState('');    // new comment update
-    const [highlight, setHighlight] = useState(true);    // state to show animation in new comment
+  /**
+   * states
+   */
+  const [editActive, setEditActive] = useState(false)
+  const [newComment, setNewComment] = useState('')
+  const [highlight, setHighlight] = useState(true)
+  const [replyActive, setReplyActive] = useState(false)
+  const [repliesState, setRepliesState] = useState<any[]>([])
+  const [repliesMeta, setRepliesMeta] = useState({ total: 0, totalPages: 1, hasMore: false })
+  const [currentRepliesPage, setCurrentRepliesPage] = useState(0)
+  const [loadingMoreReplies, setLoadingMoreReplies] = useState(false)
+  const [initialLoadDone, setInitialLoadDone] = useState(false)
 
-    const [replyActive, setReplyActive] = useState(false);
+  /**
+   * useEffect
+   */
 
-    const [repliesState, setRepliesState] = useState<any>([]);
-    const [repliesMeta, setRepliesMeta] = useState({
-        total: 0,
-        totalPages: 1,
-        hasMore: false
-    });
-    const [currentRepliesPage, setCurrentRepliesPage] = useState(0); // Empezar en 0
-    const [loadingMoreReplies, setLoadingMoreReplies] = useState(false);
-    const [initialLoadDone, setInitialLoadDone] = useState(false); // Para controlar la carga inicial
+  // effect to get comment to edit
+  useEffect(() => { setNewComment(comment.comment) }, [])
 
-    /**
-     * useEffect
-     */
+  // animation to show new comment
+  useEffect(() => {
+    setHighlight(true)
+    const timer = setTimeout(() => setHighlight(false), 400)
+    return () => clearTimeout(timer)
+  }, [comment.comment])
 
-    // effect to get comment to edit
-    useEffect(() => {
-        setNewComment(comment.comment);
-    }, [])
+  useEffect(() => {
+    if (!initialLoadDone && comment._id) loadInitialReplies()
+  }, [comment._id, initialLoadDone])
 
-    // animation to show new comment
-    useEffect(() => {
-        setHighlight(true);
-        const timer = setTimeout(() => setHighlight(false), 400);
-        return () => clearTimeout(timer);
-    }, [comment.comment]);
+  const loadInitialReplies = async () => {
+    try {
+      setLoadingMoreReplies(true)
 
-    useEffect(() => {
-        if (!initialLoadDone && comment._id) {
-            loadInitialReplies();
-        }
-    }, [comment._id, initialLoadDone]);
+      // Primero obtener el conteo total
+      const countResponse = await axios.get(
+        `${globalData.link}/replies/count-replies-by-comment/${comment._id}`
+      )
+      const totalReplies = countResponse.data.data.total
 
+      // Si hay replies, cargar las primeras 3
+      if (totalReplies > 0) {
+        const repliesResponse = await axios.get(
+          `${globalData.link}/replies/get-replies-paginated-by-comment/${comment._id}?page=1&limit=3`
+        )
+        setRepliesState(repliesResponse.data.data.data)
+        setCurrentRepliesPage(1)
+      }
 
-    const loadInitialReplies = async () => {
+      setRepliesMeta({
+        total: totalReplies,
+        totalPages: Math.ceil(totalReplies / 3),
+        hasMore: totalReplies > 3,
+      })
+      setInitialLoadDone(true)
+    } catch (error) {
+      console.error('Error loading initial replies:', error)
+    } finally {
+      setLoadingMoreReplies(false)
+    }
+  }
+
+  const loadMoreReplies = async () => {
+    if (loadingMoreReplies || currentRepliesPage >= repliesMeta.totalPages) return
+    setLoadingMoreReplies(true)
+    const nextPage = currentRepliesPage + 1
+    try {
+      const response = await axios.get(
+        `${globalData.link}/replies/get-replies-paginated-by-comment/${comment._id}?page=${nextPage}&limit=3`
+      )
+      const newReplies = response.data.data.data
+
+      // Usar Set para evitar duplicados
+      setRepliesState(prev => {
+        const existingIds = new Set(prev.map((r: any) => r._id))
+        return [...prev, ...newReplies.filter((r: any) => !existingIds.has(r._id))]
+      })
+      setRepliesMeta(prev => ({
+        ...prev,
+        total: response.data.data.meta.total,
+        totalPages: response.data.data.meta.totalPages,
+        hasMore: nextPage < response.data.data.meta.totalPages,
+      }))
+      setCurrentRepliesPage(nextPage)
+    } catch (error) {
+      console.error('Error loading more replies:', error)
+    } finally {
+      setLoadingMoreReplies(false)
+    }
+  }
+
+  const handleNewReply = (newReply: any) => {
+    // Evitar duplicados
+    setRepliesState(prev => {
+      const existingIds = new Set(prev.map((r: any) => r._id))
+      return existingIds.has(newReply._id) ? prev : [newReply, ...prev]
+    })
+    // Actualizar el contador
+    setRepliesMeta(prev => ({
+      ...prev,
+      total: prev.total + 1,
+      totalPages: Math.ceil((prev.total + 1) / 3),
+      hasMore: prev.total + 1 > 3,
+    }))
+  }
+
+  const handleUpdateReply = (updatedReply: any) => {
+    setRepliesState(prev => prev.map(r => r._id === updatedReply._id ? updatedReply : r))
+  }
+
+  const handleDeleteReply = (deletedReplyId: any) => {
+    setRepliesState(prev => prev.filter(r => r._id !== deletedReplyId))
+    setRepliesMeta(prev => ({
+      ...prev,
+      total: prev.total - 1,
+      totalPages: Math.ceil((prev.total - 1) / 3),
+      hasMore: prev.total - 1 > 3,
+    }))
+  }
+
+  /**
+   * functions
+   */
+
+  // to edit a comment
+  const handleEditComment = async () => {
+    setEditActive(!editActive)
+    try {
+      // send info to backend
+      await clientAuthAxios.put(`/comments/edit-comment/${comment._id}?user=${userAuth.userId}`, {
+        comment: newComment,
+        postId: idPost,
+      })
+      // update ui
+      setCommentsState((prevComments: any) =>
+        prevComments.map((c: any) => c._id === comment._id ? { ...c, comment: newComment } : c)
+      )
+      notify()
+    } catch (error: any) {
+      console.log(error)
+      showConfirmSwal({ message: error.response.data.message, status: 'error', confirmButton: true })
+    }
+  }
+
+  // to delete a comment
+  const handleDeleteComment = async (idComment: any) => {
+    Swal.fire({
+      title: 'Are you sure you want to remove this comment?',
+      text: 'Deleted comment cannot be recovered',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Yes, Delete',
+      cancelButtonText: 'No, Cancel',
+      customClass: {
+        popup: 'swal-popup-warning',
+        title: 'swal-title-warning',
+        confirmButton: 'swal-btn-warning',
+        cancelButton: 'swal-btn-error',
+      },
+      buttonsStyling: false,
+    }).then(async result => {
+      if (result.isConfirmed) {
         try {
-            setLoadingMoreReplies(true);
-
-            // Primero obtener el conteo total
-            const countResponse = await axios.get(
-                `${globalData.link}/replies/count-replies-by-comment/${comment._id}`
-            );
-
-            const totalReplies = countResponse.data.data.total;
-
-            // Si hay replies, cargar las primeras 3
-            if (totalReplies > 0) {
-                const repliesResponse = await axios.get(
-                    `${globalData.link}/replies/get-replies-paginated-by-comment/${comment._id}?page=1&limit=3`
-                );
-                setRepliesState(repliesResponse.data.data.data);
-                setCurrentRepliesPage(1);
-            }
-
-            setRepliesMeta({
-                total: totalReplies,
-                totalPages: Math.ceil(totalReplies / 3),
-                hasMore: totalReplies > 3
-            });
-
-            setInitialLoadDone(true);
-        } catch (error) {
-            console.error('Error loading initial replies:', error);
-        } finally {
-            setLoadingMoreReplies(false);
-        }
-    };
-
-    const loadMoreReplies = async () => {
-        if (loadingMoreReplies || currentRepliesPage >= repliesMeta.totalPages) return;
-
-        setLoadingMoreReplies(true);
-        const nextPage = currentRepliesPage + 1;
-
-        try {
-            const response = await axios.get(
-                `${globalData.link}/replies/get-replies-paginated-by-comment/${comment._id}?page=${nextPage}&limit=3`
-            );
-
-            const newReplies = response.data.data.data;
-
-            // Usar Set para evitar duplicados
-            setRepliesState((prev: any) => {
-                const existingIds = new Set(prev.map((r: any) => r._id));
-                const filteredNewReplies = newReplies.filter((reply: any) => !existingIds.has(reply._id));
-                return [...prev, ...filteredNewReplies];
-            });
-
-            setRepliesMeta(prev => ({
-                ...prev,
-                total: response.data.data.meta.total,
-                totalPages: response.data.data.meta.totalPages,
-                hasMore: nextPage < response.data.data.meta.totalPages
-            }));
-
-            setCurrentRepliesPage(nextPage);
-
-        } catch (error) {
-            console.error('Error loading more replies:', error);
-        } finally {
-            setLoadingMoreReplies(false);
-        }
-    };
-
-    const handleNewReply = (newReply: any) => {
-        // Evitar duplicados
-        setRepliesState((prev: any) => {
-            const existingIds = new Set(prev.map((r: any) => r._id));
-            if (!existingIds.has(newReply._id)) {
-                return [newReply, ...prev];
-            }
-            return prev;
-        });
-
-        // Actualizar el contador
-        setRepliesMeta(prev => ({
-            ...prev,
-            total: prev.total + 1,
-            totalPages: Math.ceil((prev.total + 1) / 3),
-            hasMore: (prev.total + 1) > 3
-        }));
-    };
-
-
-
-    const handleUpdateReply = (updatedReply: any) => {
-        setRepliesState((prev: any) =>
-            prev.map((r: any) => r._id === updatedReply._id ? updatedReply : r)
-        );
-    };
-
-    const handleDeleteReply = (deletedReplyId: any) => {
-        setRepliesState((prev: any) => prev.filter((r: any) => r._id !== deletedReplyId));
-        setRepliesMeta(prev => ({
-            ...prev,
-            total: prev.total - 1,
-            totalPages: Math.ceil((prev.total - 1) / 3),
-            hasMore: (prev.total - 1) > 3
-        }));
-    };
-
-
-    /**
-     * functions
-     */
-
-    // to edit a comment
-    const handleEditComment = async () => {
-
-        setEditActive(!editActive);
-        try {
-
-            // send info to backend
-            await clientAuthAxios.put(`/comments/edit-comment/${comment._id}?user=${userAuth.userId}`, {
-                comment: newComment,
-                postId: idPost
-            });
-
-
-            // update ui
-            setCommentsState((prevComments: any) =>
-                prevComments.map((c: any) =>
-                    c._id === comment._id
-                        ? { ...c, comment: newComment }
-                        : c
-                )
-            );
-            notify();
+          await clientAuthAxios.delete(
+            `/comments/delete-comment/${idComment}?user=${userAuth.userId}&post=${idPost}`
+          )
+          // update state
+          setCommentsState((prev: any) => prev.filter((c: any) => c._id !== idComment))
+          setEngagementPost((prev: any) => ({ ...prev, numberComments: prev.numberComments - 1 }))
         } catch (error: any) {
-            console.log(error);
-            // show error
-            showConfirmSwal({
-                message: error.response.data.message,
-                status: "error",
-                confirmButton: true
-            });
+          console.error(error)
+          showConfirmSwal({ message: error.response.data.message, status: 'error', confirmButton: true })
         }
-    }
+      }
+    })
+  }
 
-    // to delete a comment
-    const handleDeleteComment = async (idComment: any) => {
-        Swal.fire({
-            title: 'Are you sure you want to remove this comment?',
-            text: "Deleted comment cannot be recovered",
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonText: 'Yes, Delete',
-            cancelButtonText: 'No, Cancel',
-            customClass: {
-                popup: 'swal-popup-warning',
-                title: 'swal-title-warning',
-                confirmButton: 'swal-btn-warning',
-                cancelButton: 'swal-btn-error'
-            },
-            buttonsStyling: false,
-        }).then(async (result) => {
-            if (result.isConfirmed) {
-                try {
-                    const res = await clientAuthAxios.delete(
-                        `/comments/delete-comment/${idComment}?user=${userAuth.userId}&post=${idPost}`
-                    );
+  const handleReplyComment = () => setReplyActive(v => !v)
 
-                    // update state
-                    setCommentsState((prev: any) =>
-                        prev.filter((c: any) => c._id !== idComment)
-                    );
+  const isOwner = userAuth.userId === comment.userID._id
 
-                    setEngagementPost((prev:any) => ({
-                        ...prev,
-                        numberComments: prev.numberComments - 1
-                    }));
+  return (
+    <div className="mb-4">
+      <motion.article
+        className={`rounded-2xl border p-5 transition-colors duration-500
+          ${highlight
+            ? dark ? 'border-yellow-600/40 bg-yellow-900/10' : 'border-yellow-200 bg-yellow-50'
+            : dark ? 'bg-[#141414] border-gray-800' : 'bg-white border-gray-100'
+          }`}
+      >
+        {/* Comment header */}
+        <div className={`flex items-start justify-between pb-4 mb-4 border-b ${dark ? 'border-gray-800' : 'border-gray-100'}`}>
+          <Link to={`/profile/${comment.userID._id}`} className="flex items-center gap-3 group">
+            <img
+              src={comment.userID.profilePicture?.secure_url || '/avatar.png'}
+              alt={comment.userID.name}
+              className="h-8 w-8 rounded-full object-cover flex-shrink-0"
+            />
+            <div>
+              <p className={`text-sm font-semibold group-hover:underline underline-offset-2 ${dark ? 'text-white' : 'text-gray-900'}`}>
+                {comment.userID.name}
+              </p>
+              <p className={`text-xs ${dark ? 'text-gray-600' : 'text-gray-400'}`}>
+                {new Date(comment.dateComment).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+              </p>
+            </div>
+          </Link>
 
-                } catch (error: any) {
-                    console.error(error);
-                    // show error
-                    showConfirmSwal({
-                        message: error.response.data.message,
-                        status: "error",
-                        confirmButton: true
-                    });
-                }
-            }
-        });
-    };
-
-    // -- Actions comments end
-    const handleReplyComment = async () => {
-        setReplyActive(!replyActive)
-        // setCommentId(commentId);
-    }
-
-    // -- actions replies end
-
-    return (
-
-        <div>
-            <article
-                className={`
-                    p-4 mb-6 text-base rounded-lg my-2 transition-colors duration-700
-                    ${highlight
-                        ? 'bg-yellow-200 dark:bg-yellow-300'
-                        : globalData.themeGlobal
-                            ? 'bgt-light text-black'
-                            : 'bgt-dark text-white'}
-                    `}
-            >
-                <footer className=" mb-2">
-                    <div className="flex flex-col w-full border-b border-gray-200 dark:border-gray-700 pb-3 mb-3">
-                        <div className="flex items-start justify-between">
-                            <div className="flex items-center">
-                                <Link
-                                    to={`/profile/${comment.userID._id}`}
-                                    className="h-10 w-10 rounded-full bg-cover bg-center bg-no-repeat mr-3"
-                                    style={{
-                                        backgroundImage: `url("${comment.userID.profilePicture.secure_url
-                                            ? comment.userID.profilePicture.secure_url
-                                            : "/avatar.png"
-                                            }")`,
-                                    }}
-                                ></Link>
-
-                                <div className="flex flex-col">
-                                    <Link
-                                        to={`/profile/${comment.userID._id}`}
-                                        className="text-sm font-medium whitespace-nowrap truncate"
-                                    >
-                                        {comment.userID.name}
-                                    </Link>
-                                    <p className="text-xs">
-                                        {new Date(comment.dateComment).toDateString()}
-                                    </p>
-                                </div>
-                            </div>
-
-                            {userAuth.userId === comment.userID._id && (
-                                <div className="flex items-center space-x-2">
-                                    <FontAwesomeIcon
-                                        className={`
-                                            ${globalData.themeGlobal ? "btn-theme-light-delete" : "btn-theme-dark-delete"}
-                                                text-xs p-2 cursor-pointer`}
-                                        icon={faTrash}
-                                        onClick={() => handleDeleteComment(comment._id)}
-                                    />
-                                    {!editActive && (
-                                        <FontAwesomeIcon
-                                            icon={faPen}
-                                            className={`
-                                                ${globalData.themeGlobal ? "btn-theme-light-edit" : "btn-theme-dark-edit"}
-                                                    text-xs p-2 cursor-pointer`}
-                                            onClick={() => setEditActive(!editActive)}
-                                        />
-                                    )}
-                                </div>
-                            )}
-                        </div>
-
-                        <div className="mt-2 pl-13">
-                            {editActive ? (
-                                <EditComment
-                                    setEditActive={setEditActive}
-                                    editActive={editActive}
-                                    newComment={newComment}
-                                    setNewComment={setNewComment}
-                                    handleEditComment={handleEditComment}
-                                    idComment={comment._id}
-                                />
-                            ) : (
-                                <p className="">{comment.comment}</p>
-                            )}
-                        </div>
-                    </div>
-                </footer>
-                <div className="flex items-center mt-4 space-x-4">
-                    {
-                        Object.keys(userAuth).length != 0 &&
-                        <button
-                            type="button"
-                            onClick={() => handleReplyComment()}
-                            className="flex items-center text-sm text-gray-500 hover:underline dark:text-gray-400">
-                            <svg aria-hidden="true" className="mr-1 w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path></svg>
-                            Reply
-                        </button>
-                    }
-
-                    {repliesMeta.total > 0 && (
-                        <span className="text-sm text-gray-500 dark:text-gray-400">
-                            {repliesMeta.total} {repliesMeta.total === 1 ? 'reply' : 'replies'}
-                        </span>
-                    )}
-                </div>
-            </article>
-            {replyActive && (
-                <ReplyComment
-                    setReplyActive={setReplyActive}
-                    replyActive={replyActive}
-                    userID={userAuth.userId}
-                    comment={comment}
-                    idPost={idPost}
-                    onNewReply={handleNewReply}
-                />
-            )}
-
-            {/* Lista de replies */}
-            {repliesState.length > 0 && (
-                <div className="ml-6 lg:ml-12 mt-2">
-                    {repliesState.map((reply: any) => (
-                        <ShowReplies
-                            key={reply._id}
-                            reply={reply}
-                            userP={userAuth}
-                            onUpdateReply={handleUpdateReply}
-                            onDeleteReply={handleDeleteReply}
-                        />
-                    ))}
-
-                    {/* Botón para cargar más replies si aún hay */}
-                    {repliesMeta.hasMore && (
-                        <LoadMoreRepliesButton
-                            loading={loadingMoreReplies}
-                            onClick={loadMoreReplies}
-                            theme={globalData.themeGlobal}
-                            hasMore={repliesMeta.hasMore}
-                        />
-                    )}
-                </div>
-            )}
-
+          {/* Owner actions */}
+          {isOwner && (
+            <div className="flex items-center gap-1">
+              <motion.button
+                type="button"
+                onClick={() => handleDeleteComment(comment._id)}
+                whileTap={{ scale: 0.9 }}
+                className={`h-7 w-7 flex items-center justify-center rounded-lg text-xs transition-colors
+                  ${dark ? 'text-gray-600 hover:bg-red-900/30 hover:text-red-400' : 'text-gray-400 hover:bg-red-50 hover:text-red-500'}`}
+              >
+                <FontAwesomeIcon icon={faTrash} />
+              </motion.button>
+              {!editActive && (
+                <motion.button
+                  type="button"
+                  onClick={() => setEditActive(!editActive)}
+                  whileTap={{ scale: 0.9 }}
+                  className={`h-7 w-7 flex items-center justify-center rounded-lg text-xs transition-colors
+                    ${dark ? 'text-gray-600 hover:bg-gray-800 hover:text-gray-300' : 'text-gray-400 hover:bg-gray-100 hover:text-gray-600'}`}
+                >
+                  <FontAwesomeIcon icon={faPen} />
+                </motion.button>
+              )}
+            </div>
+          )}
         </div>
 
-    )
+        {/* Comment body */}
+        <AnimatePresence mode="wait">
+          {editActive ? (
+            <EditComment
+              key="edit"
+              setEditActive={setEditActive}
+              editActive={editActive}
+              newComment={newComment}
+              setNewComment={setNewComment}
+              handleEditComment={handleEditComment}
+              idComment={comment._id}
+            />
+          ) : (
+            <motion.p
+              key="text"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              className={`text-sm leading-relaxed ${dark ? 'text-gray-300' : 'text-gray-700'}`}
+            >
+              {comment.comment}
+            </motion.p>
+          )}
+        </AnimatePresence>
+
+        {/* Footer actions */}
+        <div className="flex items-center gap-4 mt-4">
+          {Object.keys(userAuth).length !== 0 && (
+            <motion.button
+              type="button"
+              onClick={handleReplyComment}
+              whileTap={{ scale: 0.95 }}
+              className={`flex items-center gap-1.5 text-xs font-medium transition-colors
+                ${replyActive
+                  ? 'text-[#2563EB]'
+                  : dark ? 'text-gray-500 hover:text-gray-300' : 'text-gray-400 hover:text-gray-600'
+                }`}
+            >
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round" className="w-3.5 h-3.5">
+                <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+              </svg>
+              Reply
+            </motion.button>
+          )}
+
+          {repliesMeta.total > 0 && (
+            <span className={`text-xs ${dark ? 'text-gray-600' : 'text-gray-400'}`}>
+              {repliesMeta.total} {repliesMeta.total === 1 ? 'reply' : 'replies'}
+            </span>
+          )}
+        </div>
+      </motion.article>
+
+      {/* Reply form */}
+      <AnimatePresence>
+        {replyActive && (
+          <ReplyComment
+            setReplyActive={setReplyActive}
+            replyActive={replyActive}
+            userID={userAuth.userId}
+            comment={comment}
+            idPost={idPost}
+            onNewReply={handleNewReply}
+          />
+        )}
+      </AnimatePresence>
+
+      {/* Replies list */}
+      {repliesState.length > 0 && (
+        <div className="ml-6 lg:ml-10 mt-2 space-y-2">
+          {repliesState.map((reply: any) => (
+            <ShowReplies
+              key={reply._id}
+              reply={reply}
+              userP={userAuth}
+              onUpdateReply={handleUpdateReply}
+              onDeleteReply={handleDeleteReply}
+            />
+          ))}
+
+          {/* Botón para cargar más replies si aún hay */}
+          {repliesMeta.hasMore && (
+            <LoadMoreRepliesButton
+              loading={loadingMoreReplies}
+              onClick={loadMoreReplies}
+              theme={globalData.themeGlobal}
+              hasMore={repliesMeta.hasMore}
+            />
+          )}
+        </div>
+      )}
+    </div>
+  )
 }
 
 export default ShowCommenst

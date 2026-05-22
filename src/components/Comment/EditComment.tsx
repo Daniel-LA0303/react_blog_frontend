@@ -1,58 +1,71 @@
 /**
  * hooks
  */
-import useGlobalDataContext from '../../context/hooks/useGlobalDataContext';
+import useGlobalDataContext from '../../context/hooks/useGlobalDataContext'
+
+/**
+ * libraries
+ */
+import { motion } from 'framer-motion'
 
 const EditComment = ({
-    setEditActive,
-    editActive,
-    newComment,
-    setNewComment,
-    handleEditComment,
-    idComment
+  setEditActive,
+  editActive,
+  newComment,
+  setNewComment,
+  handleEditComment,
+  idComment,
 }: any) => {
 
-    const { globalData } = useGlobalDataContext();
+  const { globalData } = useGlobalDataContext()
+  const dark = !globalData.themeGlobal
 
-    return (
-        <div className={` ${globalData.themeGlobal ? ' bg-gray-400 text-black' : 'bgt-dark hover:bg-zinc-700 text-white'} w-full flex mx-auto items-center justify-center shadow-lg mb-4 rounded-lg`}>
-            <div className="w-full rounded-lg px-4 pt-2" >
-                <div className="flex flex-wrap -mx-3 mb-2">
-                    <div className="w-full md:w-full px-3 mb-2 mt-2">
-                        <textarea
-                            rows={6}
-                            className={`
-                                    ${globalData.themeGlobal ? "" : "bg-gray-700 text-white placeholder-gray-400 "}
-                                    p-2 w-full text-sm  border-0 focus:ring-0 
-                                    focus:outline-none  
-                                     resize-y max-h-40 min-h-24
-                                     rounded-lg 
-                                    `}
-                            placeholder='Type Your Comment'
-                            required
-                            onChange={(e) => setNewComment(e.target.value)}
-                            value={newComment}
-                        ></textarea>
-                    </div>
-                    <div className="w-full md:w-full flex justify-end items-start px-3">
-                        <div className="-mr-1">
-                            <button
-                                onClick={() => setEditActive(!editActive)}
-                                className="text-white font-medium rounded-lg text-sm px-5 py-2 mr-2 mb-2 bg-red-500 hover:bg-red-700"
-                                placeholder='Type your Comment'
-                            >Cancel</button>
-                            <button
-                                type='submit'
-                                onClick={() => handleEditComment(idComment)}
-                                className="text-white bg-blue-700 hover:bg-blue-800 font-medium rounded-lg text-sm px-5 py-2 mr-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800"
-                                placeholder='Type your Comment'
-                            >Update</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    )
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: -6 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: -6 }}
+      transition={{ duration: 0.2 }}
+      className="mt-3"
+    >
+      <div
+        className={`rounded-xl border overflow-hidden transition-colors
+          ${dark ? 'border-[#2563EB] ring-2 ring-[#2563EB]/20' : 'border-[#2563EB] ring-2 ring-[#2563EB]/15'}`}
+      >
+        <textarea
+          rows={4}
+          placeholder="Edit your comment…"
+          value={newComment}
+          onChange={e => setNewComment(e.target.value)}
+          className={`w-full px-4 py-3 text-sm resize-none outline-none bg-transparent
+            ${dark ? 'text-white placeholder-gray-600' : 'text-gray-900 placeholder-gray-400'}`}
+        />
+      </div>
+
+      <div className="flex justify-end gap-2 mt-2">
+        <motion.button
+          type="button"
+          onClick={() => setEditActive(!editActive)}
+          whileTap={{ scale: 0.96 }}
+          className={`rounded-xl px-4 py-1.5 text-xs font-medium border transition-colors
+            ${dark ? 'border-gray-700 text-gray-400 hover:bg-gray-800' : 'border-gray-200 text-gray-500 hover:bg-gray-50'}`}
+        >
+          Cancel
+        </motion.button>
+        <motion.button
+          type="button"
+          onClick={() => handleEditComment(idComment)}
+          whileTap={{ scale: 0.96 }}
+          className="rounded-xl px-4 py-1.5 text-xs font-semibold text-white transition-colors"
+          style={{ backgroundColor: '#2563EB' }}
+          onMouseEnter={(e: any) => (e.currentTarget.style.backgroundColor = '#1d4ed8')}
+          onMouseLeave={(e: any) => (e.currentTarget.style.backgroundColor = '#2563EB')}
+        >
+          Update
+        </motion.button>
+      </div>
+    </motion.div>
+  )
 }
 
 export default EditComment

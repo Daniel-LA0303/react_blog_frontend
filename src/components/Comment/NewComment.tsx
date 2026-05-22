@@ -3,134 +3,150 @@ import { useState } from 'react'
 /**
  * hooks
  */
-import userUserAuthContext from '../../context/hooks/useUserAuthContext';
-import { useSwal } from '../../hooks/useSwal';
+import userUserAuthContext from '../../context/hooks/useUserAuthContext'
+import { useSwal } from '../../hooks/useSwal'
 
 /**
  * router
  */
-import { Link } from 'react-router-dom';
+import { Link } from 'react-router-dom'
 
 /**
  * service
  */
-import clientAuthAxios from '../../services/clientAuthAxios';
-import useGlobalDataContext from '../../context/hooks/useGlobalDataContext';
+import clientAuthAxios from '../../services/clientAuthAxios'
+import useGlobalDataContext from '../../context/hooks/useGlobalDataContext'
 
+/**
+ * libraries
+ */
+import { motion } from 'framer-motion'
 
 const NewComment = ({
-    user,
-    idPost,
-    comments,
-    setCommentsState,
-    setEngagementPost
+  user,
+  idPost,
+  comments,
+  setCommentsState,
+  setEngagementPost,
 }: any) => {
 
-    /**
-     * hooks
-     */
-    const { userAuth } = userUserAuthContext();
-    const { showConfirmSwal } = useSwal();
-    const { globalData } = useGlobalDataContext();
+  /**
+   * hooks
+   */
+  const { userAuth } = userUserAuthContext()
+  const { showConfirmSwal } = useSwal()
+  const { globalData } = useGlobalDataContext()
+  const dark = !globalData.themeGlobal
 
-    /**
-     * state
-     */
-    const [comment, setComment] = useState('');
+  /**
+   * state
+   */
+  const [comment, setComment] = useState('')
+  const [focused, setFocused] = useState(false)
+  const [submitting, setSubmitting] = useState(false)
 
-    //new comment
-    const newComment = async (id: any, e: any) => {
+  // new comment
+  const newComment = async (id: any, e: any) => {
+    e.preventDefault()
 
-        e.preventDefault();
-
-        // 1. valid data
-        if (comment.trim() === '') {
-            showConfirmSwal({
-                message: "Comment is empty",
-                status: "warning",
-                confirmButton: true
-            });
-            return;
-        }
-
-        // 2. build data
-        const data = {
-            userID: user.userId,
-            comment: comment,
-        }
-
-        try {
-
-            // 3. request to backend
-            const response = await clientAuthAxios.post(`/comments/new-comment/${id}`, data);
-            setComment('');
-
-            // update comments
-            setCommentsState((prev: any) => [response.data.data, ...prev]);
-            setEngagementPost((prev: any) => ({
-                ...prev,
-                numberComments: prev.numberComments + 1
-            }));
-        } catch (error: any) {
-            console.log(error);
-
-            // show error
-            showConfirmSwal({
-                message: error.response.data.message,
-                status: "error",
-                confirmButton: true
-            });
-        }
+    // 1. valid data
+    if (comment.trim() === '') {
+      showConfirmSwal({ message: 'Comment is empty', status: 'warning', confirmButton: true })
+      return
     }
 
-    return (
-        <section className={`${globalData.themeGlobal ? ' bgt-light text-black' : 'bgt-dark hover:bg-zinc-900 text-white'} rounded-lg py-2`}>
-            <div className="mx-auto px-4">
-                <div className="flex justify-between items-center mb-6">
-                    <h2 className="text-sm lg:text-base font-bold ">Discussion ({comments.length})</h2>
-                </div>
+    // 2. build data
+    const data = { userID: user.userId, comment }
+    setSubmitting(true)
+    try {
+      // 3. request to backend
+      const response = await clientAuthAxios.post(`/comments/new-comment/${id}`, data)
+      setComment('')
+      setFocused(false)
 
-                <div className='flex'>
-                    <Link
-                        to={`/profile/${userAuth.userId}`}
-                        className="h-12 w-12 flex-shrink-0 rounded-full bg-cover bg-center bg-no-repeat mr-2 hidden sm:block"
-                        style={{
-                            backgroundImage: `url("${userAuth.profileImage ? userAuth.profileImage : '/avatar.png'}")`,
-                            backgroundSize: "cover",
-                            backgroundPosition: "center"
-                        }}
-                    ></Link>
-                    <form
-                        onSubmit={(e) => newComment(idPost, e)}
-                        className="mb-6 w-full">
-                        <div className={` ${globalData.themeGlobal ? "bg-white" : "bg-gray-700"}
-                            py-2 px-4 mb-4 rounded-lg rounded-t-lg`}>
-                            <textarea
-                                id="comment"
-                                rows={6}
-                                className={`
-                                    ${globalData.themeGlobal ? "bg-white" : "bg-gray-700 text-white placeholder-gray-400 "}
-                                    px-0 w-full text-sm  border-0 focus:ring-0 
-                                    focus:outline-none  
-                                     resize-y max-h-40 min-h-24
-                                     rounded-lg
-                                    `}
-                                name="body"
-                                placeholder='Type Your Comment'
-                                onChange={(e) => setComment(e.target.value)}
-                                value={comment}
-                            ></textarea>
-                        </div>
-                        <button
-                            type='submit'
-                            className="btn-theme-light-op1 hover:bg-blue-700 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2"
-                            placeholder='Type your Comment'
-                        >Comment</button>
-                    </form>
-                </div>
+      // update comments
+      setCommentsState((prev: any) => [response.data.data, ...prev])
+      setEngagementPost((prev: any) => ({ ...prev, numberComments: prev.numberComments + 1 }))
+    } catch (error: any) {
+      console.log(error)
+      showConfirmSwal({ message: error.response.data.message, status: 'error', confirmButton: true })
+    } finally {
+      setSubmitting(false)
+    }
+  }
 
+  return (
+    <section className={`rounded-2xl border p-5 ${dark ? 'bg-[#141414] border-gray-800' : 'bg-white border-gray-100'}`}>
+      <div className="flex gap-3">
+
+        {/* Avatar */}
+        <Link to={`/profile/${userAuth.userId}`} className="flex-shrink-0">
+          <img
+            src={userAuth.profileImage || '/avatar.png'}
+            className="h-8 w-8 rounded-full object-cover ring-2 ring-offset-1 ring-gray-100 dark:ring-gray-800"
+          />
+        </Link>
+
+        {/* Input area */}
+        <form onSubmit={(e) => newComment(idPost, e)} className="flex-1 min-w-0">
+          <div
+            className={`rounded-xl border transition-all duration-200 overflow-hidden
+              ${focused
+                ? dark ? 'border-[#2563EB] ring-2 ring-[#2563EB]/20' : 'border-[#2563EB] ring-2 ring-[#2563EB]/15'
+                : dark ? 'border-gray-700' : 'border-gray-200'
+              }`}
+          >
+            <textarea
+              rows={focused ? 4 : 2}
+              placeholder="Share your thoughts…"
+              value={comment}
+              onChange={e => setComment(e.target.value)}
+              onFocus={() => setFocused(true)}
+              className={`w-full px-4 py-3 text-sm resize-none outline-none transition-all duration-200 bg-transparent
+                ${dark ? 'text-white placeholder-gray-600' : 'text-gray-900 placeholder-gray-400'}`}
+            />
+          </div>
+
+          {/* Action row — only visible when focused or has text */}
+          <motion.div
+            initial={false}
+            animate={{ height: focused || comment ? 'auto' : 0, opacity: focused || comment ? 1 : 0 }}
+            transition={{ duration: 0.2 }}
+            className="overflow-hidden"
+          >
+            <div className="flex justify-end gap-2 mt-2">
+              <motion.button
+                type="button"
+                onClick={() => { setFocused(false); setComment('') }}
+                whileTap={{ scale: 0.96 }}
+                className={`rounded-xl px-4 py-1.5 text-xs font-medium border transition-colors
+                  ${dark ? 'border-gray-700 text-gray-400 hover:bg-gray-800' : 'border-gray-200 text-gray-500 hover:bg-gray-50'}`}
+              >
+                Cancel
+              </motion.button>
+              <motion.button
+                type="submit"
+                disabled={submitting || !comment.trim()}
+                whileTap={{ scale: 0.96 }}
+                className="rounded-xl px-4 py-1.5 text-xs font-semibold text-white transition-colors disabled:opacity-40 disabled:cursor-not-allowed flex items-center gap-1.5"
+                style={{ backgroundColor: '#2563EB' }}
+                onMouseEnter={(e: any) => !submitting && (e.currentTarget.style.backgroundColor = '#1d4ed8')}
+                onMouseLeave={(e: any) => (e.currentTarget.style.backgroundColor = '#2563EB')}
+              >
+                {submitting ? (
+                  <motion.span
+                    className="h-3.5 w-3.5 rounded-full border-2 border-white/30 border-t-white"
+                    animate={{ rotate: 360 }}
+                    transition={{ duration: 0.7, repeat: Infinity, ease: 'linear' }}
+                  />
+                ) : 'Comment'}
+              </motion.button>
             </div>
-        </section>
-    )
+          </motion.div>
+        </form>
+      </div>
+    </section>
+  )
 }
+
 export default NewComment

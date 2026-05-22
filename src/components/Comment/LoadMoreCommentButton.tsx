@@ -1,57 +1,54 @@
-import React from 'react'
+import { motion } from 'framer-motion'
 
-const LoadMoreCommentsButton = ({ 
-  hasMore, 
-  loading, 
-  onClick, 
-  theme 
+export const LoadMoreCommentsButton = ({
+  hasMore,
+  loading,
+  onClick,
+  theme,
 }: any) => {
+  const dark = !theme
+
   if (!hasMore) {
     return (
-      <div className={`text-center py-6 ${theme ? 'text-gray-500' : 'text-gray-400'}`}>
-        <div className="flex items-center justify-center">
-          <span className="mr-2">•</span>
-          <span>All comments loaded</span>
-          <span className="ml-2">•</span>
-        </div>
+      <div className="flex items-center gap-4 mt-6">
+        <div className={`flex-1 h-px ${dark ? 'bg-gray-800' : 'bg-gray-100'}`} />
+        <span className={`text-xs tracking-wider uppercase font-medium ${dark ? 'text-gray-700' : 'text-gray-400'}`}>
+          All comments loaded
+        </span>
+        <div className={`flex-1 h-px ${dark ? 'bg-gray-800' : 'bg-gray-100'}`} />
       </div>
-    );
+    )
   }
-  
+
   return (
-    <div className="text-center py-6">
-      <button
+    <div className="flex justify-center mt-6">
+      <motion.button
+        type="button"
         onClick={onClick}
         disabled={loading}
-        className={`
-          inline-flex items-center px-6 py-3 border border-transparent 
-          text-base font-medium rounded-md shadow-sm 
-          ${theme 
-            ? 'bg-blue-600 text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:bg-blue-300' 
-            : 'bg-blue-700 text-white hover:bg-blue-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-600 disabled:bg-blue-500'
-          }
-          transition-colors duration-200
-          disabled:cursor-not-allowed
-        `}
+        whileTap={{ scale: 0.97 }}
+        className={`flex items-center gap-2 rounded-xl px-5 py-2.5 text-xs font-medium border transition-colors disabled:opacity-40 disabled:cursor-not-allowed
+          ${dark
+            ? 'border-gray-700 text-gray-300 hover:bg-gray-800'
+            : 'border-gray-200 text-gray-600 hover:bg-gray-50'
+          }`}
       >
         {loading ? (
-          <>
-            <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-              <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-              <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-            </svg>
-            Loading more comments...
-          </>
+          <motion.span
+            className={`h-3.5 w-3.5 rounded-full border-2 ${dark ? 'border-gray-600 border-t-gray-300' : 'border-gray-300 border-t-gray-600'}`}
+            animate={{ rotate: 360 }}
+            transition={{ duration: 0.8, repeat: Infinity, ease: 'linear' }}
+          />
         ) : (
-          <>
-            <svg className="-ml-1 mr-3 h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
-            </svg>
-            Load More Comments
-          </>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8}
+            strokeLinecap="round" strokeLinejoin="round" className="w-3.5 h-3.5">
+            <polyline points="6 9 12 15 18 9" />
+          </svg>
         )}
-      </button>
+        {loading ? 'Loading…' : 'Load more comments'}
+      </motion.button>
     </div>
-  );
-};
-export default LoadMoreCommentsButton;
+  )
+}
+
+export default LoadMoreCommentsButton
