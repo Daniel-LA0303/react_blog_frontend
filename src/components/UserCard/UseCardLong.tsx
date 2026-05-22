@@ -1,10 +1,8 @@
 import { useEffect, useState } from "react";
-
 /**
  * route
  */
 import { Link, useNavigate } from "react-router-dom";
-
 /**
  * hooks
  */
@@ -14,41 +12,28 @@ import { useSwal } from "../../hooks/useSwal";
 import clientAuthAxios from "../../services/clientAuthAxios";
 import useConversation from "../../context/hooks/useConversation";
 import useGetAllUsers from "../../context/hooks/useGetAllUsers";
-
+import { motion, AnimatePresence } from "framer-motion";
 
 const UserCardLong = ({ user }: any) => {
-
     const navigate = useNavigate();
 
-    /**
-     * states
-     */
     const [isFollow, setIsFollow] = useState(false);
 
-    /**
-     * hooks
-     */
     const { userAuth } = userUserAuthContext();
     const { showConfirmSwal } = useSwal();
     const { globalData } = useGlobalDataContext();
     const { selectedConversation, setSelectedConversation } = useConversation();
     const [allUsers, loading, addUser, prependUser] = useGetAllUsers();
 
-    /**
-     * useEffect
-     */
+    const isLight = globalData.themeGlobal;
+
     useEffect(() => {
         const userProfileFound = user.followersUsers.followers.includes(
             userAuth.userId
         );
-        if (userProfileFound) {
-            setIsFollow(true);
-        }
+        if (userProfileFound) setIsFollow(true);
     }, [userAuth, user]);
 
-    /**
-     * functions
-     */
     const handleClickUnFollow = async () => {
         try {
             await clientAuthAxios.post(
@@ -56,7 +41,6 @@ const UserCardLong = ({ user }: any) => {
             );
             setIsFollow(false);
         } catch (error: any) {
-            console.log(error);
             showConfirmSwal({
                 message: error?.response?.data?.message || "Error in unfollow User",
                 status: "error",
@@ -72,7 +56,6 @@ const UserCardLong = ({ user }: any) => {
             );
             setIsFollow(true);
         } catch (error: any) {
-            console.log(error);
             showConfirmSwal({
                 message: error?.response?.data?.message || "Error in follow User",
                 status: "error",
@@ -87,101 +70,150 @@ const UserCardLong = ({ user }: any) => {
             name: user.name,
             email: user.email,
             profilePicture: user.profilePicture,
-        }
-        // console.log("Click en el botón de Chat", user);
+        };
         setSelectedConversation(userChat);
         prependUser(userChat);
         navigate(`/chat/${user._id}`);
     };
 
+    const stats = [
+        { label: "Followers", value: user.followersUsers.conutFollowers || 0 },
+        { label: "Following", value: user.followedUsers.conutFollowed || 0 },
+        { label: "Posts", value: user.posts.length || 0 },
+    ];
+
     return (
         <div
             className={`
-          ${globalData.themeGlobal
-                    ? " bgt-light text-black "
-                    : "bgt-dark hover:bg-zinc-700 text-white"
+                w-full rounded-2xl overflow-hidden transition-all duration-200
+                ${isLight
+                    ? "bg-white border border-gray-100 shadow-sm hover:shadow-md text-gray-900"
+                    : "bg-zinc-800 border border-zinc-700 hover:border-zinc-600 text-white"
                 }
-          w-full overflow-hidden rounded-xl shadow-lg hover:cursor-pointer`}
+            `}
         >
-            <div className="flex gap-6 p-4 md:p-8 flex-row flex-wrap justify-between items-center">
-                <div className="flex items-center gap-6">
+            <div className="p-5 md:p-6 flex flex-col sm:flex-row gap-5 items-start sm:items-center justify-between">
+
+                {/* Left: Avatar + Info */}
+                <div className="flex items-center gap-4 min-w-0">
+                    {/* Avatar */}
                     <Link
                         to={`/profile/${user._id}`}
-                        className="bg-center bg-no-repeat aspect-square bg-cover rounded-full h-16 w-16 sm:h-28 sm:w-28 shrink-0"
-                        style={{
-                            backgroundImage: `url("${user?.profilePicture.secure_url || "/avatar.png"
-                                }")`,
-                        }}
-                    ></Link>
-                    <div className="flex flex-col justify-center">
+                        className="shrink-0 relative block"
+                    >
+                        <div
+                            className="h-14 w-14 sm:h-16 sm:w-16 rounded-full bg-center bg-cover bg-no-repeat ring-2 ring-offset-2 transition-all
+                                hover:ring-blue-500
+                                ring-transparent
+                            "
+                            style={{
+                                backgroundImage: `url("${user?.profilePicture?.secure_url || "/avatar.png"}")`
+                            }}
+                            aria-label={`${user.name}'s profile picture`}
+                        />
+                        {/* Online indicator (optional visual touch) */}
+                        <span className="absolute bottom-0 right-0 h-3 w-3 rounded-full bg-emerald-400 border-2 border-white dark:border-zinc-800" />
+                    </Link>
+
+                    {/* Text info */}
+                    <div className="min-w-0 flex flex-col gap-0.5">
                         <Link
                             to={`/profile/${user._id}`}
-                            className=" text-base md:text-xl font-bold leading-tight tracking-[-0.015em]">
+                            className={`text-base sm:text-lg font-semibold leading-tight truncate hover:underline underline-offset-2
+                                ${isLight ? "text-gray-900" : "text-zinc-100"}
+                            `}
+                        >
                             {user.name}
                         </Link>
                         <Link
                             to={`/profile/${user._id}`}
-                            className="text-sm md:text-base font-normal mt-1">
+                            className={`text-xs sm:text-sm truncate
+                                ${isLight ? "text-gray-500 hover:text-gray-700" : "text-zinc-400 hover:text-zinc-300"}
+                            `}
+                        >
                             {user.email}
                         </Link>
-                        <div className="flex items-center gap-4 mt-3 text-xs md:text-sm">
-                            <div>
-                                <span className="font-semibold">
-                                    {user.followersUsers.conutFollowers || 0}
-                                </span>{" "}
-                                Followers
-                            </div>
-                            <div className="h-4 border-l border-slate-500 "></div>
-                            <div>
-                                <span className="font-semibold">
-                                    {user.followedUsers.conutFollowed || 0}
-                                </span>{" "}
-                                Following
-                            </div>
-                            <div className="h-4 border-l border-slate-500 "></div>
-                            <div>
-                                <span className="font-semibold">
-                                    {user.posts.length || 0}
-                                </span>{" "}
-                                Posts
-                            </div>
+
+                        {/* Stats row */}
+                        <div className="flex items-center gap-3 mt-2">
+                            {stats.map((stat, i) => (
+                                <span key={stat.label} className="flex items-center gap-2">
+                                    <span className="text-xs font-medium">
+                                        <span className={`font-bold ${isLight ? "text-gray-900" : "text-zinc-100"}`}>
+                                            {stat.value.toLocaleString()}
+                                        </span>
+                                        {" "}
+                                        <span className={isLight ? "text-gray-400" : "text-zinc-500"}>
+                                            {stat.label}
+                                        </span>
+                                    </span>
+                                    {i < stats.length - 1 && (
+                                        <span className={`h-3 w-px ${isLight ? "bg-gray-200" : "bg-zinc-600"}`} />
+                                    )}
+                                </span>
+                            ))}
                         </div>
                     </div>
                 </div>
-                {userAuth?.userId && user._id !== userAuth.userId && (
-                    <div className="flex justify-between w-full">
-                        {/* Botón de Follow / Unfollow */}
-                        <button
-                            type="button"
-                            onClick={isFollow ? handleClickUnFollow : handleClickFollow}
-                            className={`flex cursor-pointer items-center justify-center overflow-hidden rounded-md h-8 md:h-10 px-5 text-sm font-bold transition-colors w-32 @[480px]:w-auto ${globalData.themeGlobal
-                                    ? isFollow
-                                        ? "bg-gray-200 text-black hover:bg-gray-300"
-                                        : "bg-blue-600 text-white hover:bg-blue-700"
-                                    : isFollow
-                                        ? "bg-gray-700 text-white hover:bg-gray-600"
-                                        : "bg-blue-600 text-white hover:bg-blue-700"
-                                }`}
-                        >
-                            <span className="truncate">
-                                {isFollow ? "Following" : "Follow"}
-                            </span>
-                        </button>
 
-                        {/* Botón extra: Otro */}
-                        <button
+                {/* Right: Action buttons */}
+                {userAuth?.userId && user._id !== userAuth.userId && (
+                    <div className="flex items-center gap-2 shrink-0 w-full sm:w-auto">
+                        {/* Follow / Unfollow */}
+                        <AnimatePresence mode="wait" initial={false}>
+                            {isFollow ? (
+                                <motion.button
+                                    key="following"
+                                    type="button"
+                                    onClick={handleClickUnFollow}
+                                    initial={{ opacity: 0, scale: 0.9 }}
+                                    animate={{ opacity: 1, scale: 1 }}
+                                    exit={{ opacity: 0, scale: 0.9 }}
+                                    transition={{ duration: 0.15 }}
+                                    whileTap={{ scale: 0.95 }}
+                                    className={`flex-1 sm:flex-none rounded-xl px-5 py-2 text-xs font-medium border transition-colors
+                                        ${isLight
+                                            ? "bg-gray-100 border-gray-200 text-gray-600 hover:bg-red-50 hover:border-red-200 hover:text-red-500"
+                                            : "bg-gray-800 border-gray-700 text-gray-300 hover:bg-red-900/30 hover:border-red-800 hover:text-red-400"
+                                        }`}
+                                >
+                                    ✓ Following
+                                </motion.button>
+                            ) : (
+                                <motion.button
+                                    key="follow"
+                                    type="button"
+                                    onClick={handleClickFollow}
+                                    initial={{ opacity: 0, scale: 0.9 }}
+                                    animate={{ opacity: 1, scale: 1 }}
+                                    exit={{ opacity: 0, scale: 0.9 }}
+                                    transition={{ duration: 0.15 }}
+                                    whileTap={{ scale: 0.95 }}
+                                    className="flex-1 sm:flex-none rounded-xl px-5 py-2 text-xs font-semibold text-white transition-colors"
+                                    style={{ backgroundColor: "#2563EB" }}
+                                    onMouseEnter={(e: any) => (e.currentTarget.style.backgroundColor = "#1d4ed8")}
+                                    onMouseLeave={(e: any) => (e.currentTarget.style.backgroundColor = "#2563EB")}
+                                >
+                                    Follow
+                                </motion.button>
+                            )}
+                        </AnimatePresence>
+
+                        {/* Message */}
+                        <motion.button
                             type="button"
                             onClick={handleClickChat}
-                            className={`flex cursor-pointer items-center justify-center overflow-hidden rounded-md h-8 md:h-10 px-5 text-sm font-bold transition-colors w-32 @[480px]:w-auto ${globalData.themeGlobal
-                                    ? "bg-green-600 text-white hover:bg-green-700"
-                                    : "bg-green-500 text-white hover:bg-green-600"
+                            whileTap={{ scale: 0.95 }}
+                            className={`flex-1 sm:flex-none rounded-xl px-5 py-2 text-xs font-medium border transition-colors
+                                ${isLight
+                                    ? "border-gray-200 text-gray-600 hover:bg-gray-50"
+                                    : "border-gray-700 text-gray-300 hover:bg-gray-800"
                                 }`}
                         >
-                            <span className="truncate">Message</span>
-                        </button>
+                            Message
+                        </motion.button>
                     </div>
                 )}
-
             </div>
         </div>
     );

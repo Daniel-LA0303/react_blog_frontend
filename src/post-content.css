@@ -1,0 +1,180 @@
+/* ═══════════════════════════════════════════════════════════════════════════
+   post-content.css
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+
+/* ── Base ─────────────────────────────────────────────────────────────────── */
+.post-content {
+  font-size: 17px;
+  line-height: 1.8;
+  word-break: break-word;
+}
+
+/* ── Theme: light ─────────────────────────────────────────────────────────── */
+.post-content--light {
+  color: #111827;
+}
+
+/* ── Theme: dark ──────────────────────────────────────────────────────────── */
+.post-content--dark {
+  color: #e4e4e7;
+}
+
+/* ── Headings ─────────────────────────────────────────────────────────────── */
+.post-content h1,
+.post-content h2,
+.post-content h3,
+.post-content h4,
+.post-content h5,
+.post-content h6 {
+  font-weight: 700;
+  line-height: 1.3;
+  margin-top: 2em;
+  margin-bottom: 0.5em;
+  letter-spacing: -0.02em;
+  /* inherit from theme root — no hardcoded color */
+  color: inherit;
+}
+.post-content h1 { font-size: 2rem; }
+.post-content h2 { font-size: 1.5rem; }
+.post-content h3 { font-size: 1.25rem; }
+.post-content h4 { font-size: 1.1rem; }
+.post-content h5,
+.post-content h6 { font-size: 1rem; }
+
+/* ── Paragraphs ───────────────────────────────────────────────────────────── */
+.post-content p {
+  margin-bottom: 1.25em;
+  color: inherit;
+}
+
+/* ── Inline spans — Quill wraps colored text in <span style="color:..."> ──── */
+/* inline style always beats class rules — nothing to do, just don't block it */
+.post-content span {
+  color: inherit; /* fallback when no inline style present */
+}
+
+/* ── Links ────────────────────────────────────────────────────────────────── */
+.post-content a {
+  color: #2563EB !important; /* links always blue regardless of theme */
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  transition: opacity 0.15s;
+}
+.post-content a:hover {
+  opacity: 0.75;
+}
+
+/* ── Blockquote ───────────────────────────────────────────────────────────── */
+.post-content blockquote {
+  border-left: 3px solid #2563EB;
+  margin: 1.5em 0;
+  padding: 0.75em 1.25em;
+  border-radius: 0 8px 8px 0;
+  font-style: italic;
+}
+.post-content--light blockquote {
+  background: #f0f4ff;
+  color: #374151;
+}
+.post-content--dark blockquote {
+  background: #1e2a45;
+  color: #93c5fd;
+}
+
+/* ── Inline code ──────────────────────────────────────────────────────────── */
+.post-content code {
+  font-family: "Courier New", monospace;
+  font-size: 0.875em;
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+.post-content--light code {
+  background: #f3f4f6;
+  color: #1f2937;
+}
+.post-content--dark code {
+  background: #27272a;
+  color: #e4e4e7;
+}
+
+/* ── Code block ───────────────────────────────────────────────────────────── */
+/*
+   Quill outputs code blocks as:
+     <pre class="ql-syntax" spellcheck="false">your code here</pre>
+   We target both pre and pre.ql-syntax to cover all cases.
+   Important: white-space must be `pre` (not pre-wrap) so indentation
+   and line breaks are preserved exactly. Also reset color to avoid
+   theme inheritance fighting with the dark background.
+*/
+.post-content pre,
+.post-content pre.ql-syntax {
+  font-family: "Courier New", monospace !important;
+  font-size: 14px !important;
+  border-radius: 10px;
+  padding: 20px 24px !important;
+  margin: 1.5em 0;
+  overflow-x: auto;
+  white-space: pre !important; /* preserve indentation */
+  line-height: 1.6;
+  background: #1e1e2e !important; /* always dark — code blocks look better dark */
+  color: #cdd6f4 !important;      /* always light text on dark bg */
+  border: 1px solid #313244;
+}
+
+/* ── Lists ────────────────────────────────────────────────────────────────── */
+.post-content ul,
+.post-content ol {
+  padding-left: 1.75em;
+  margin-bottom: 1.25em;
+}
+.post-content li {
+  margin-bottom: 0.4em;
+  line-height: 1.7;
+  color: inherit;
+}
+.post-content ul > li { list-style-type: disc; }
+.post-content ol > li { list-style-type: decimal; }
+
+/* Quill indent classes */
+.post-content .ql-indent-1 { padding-left: 3em; }
+.post-content .ql-indent-2 { padding-left: 6em; }
+.post-content .ql-indent-3 { padding-left: 9em; }
+
+/* ── Images ───────────────────────────────────────────────────────────────── */
+.post-content img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 10px;
+  display: block;
+  margin: 1.5em auto;
+}
+
+/* ── Video ────────────────────────────────────────────────────────────────── */
+.post-content .ql-video,
+.post-content iframe {
+  display: block;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  border-radius: 10px;
+  margin: 1.5em 0;
+  border: none;
+}
+
+/* ── HR ───────────────────────────────────────────────────────────────────── */
+.post-content hr {
+  border: none;
+  height: 1px;
+  margin: 2.5em 0;
+}
+.post-content--light hr { background: #e5e7eb; }
+.post-content--dark  hr { background: #3f3f46; }
+
+/* ── Spacing: first/last child ────────────────────────────────────────────── */
+.post-content > *:first-child { margin-top: 0 !important; }
+.post-content > *:last-child  { margin-bottom: 0 !important; }
+
+/* ── Strong / em ──────────────────────────────────────────────────────────── */
+.post-content strong { font-weight: 700; color: inherit; }
+.post-content em     { font-style: italic; color: inherit; }
+.post-content s      { text-decoration: line-through; color: inherit; }

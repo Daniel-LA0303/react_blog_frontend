@@ -6,14 +6,6 @@ import { useEffect, useRef, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 
 /**
- * editor
- */
-import ReactQuill from 'react-quill'
-import 'react-quill/dist/quill.snow.css'
-import '../../components/EditorToolBar/EditorToolBar.css'
-import EditorToolBar, { modules, formats } from '../../components/EditorToolBar/EditorToolBar'
-
-/**
  * libraries
  */
 import { motion, AnimatePresence } from 'framer-motion'
@@ -35,6 +27,7 @@ import useGlobalDataContext from '../../context/hooks/useGlobalDataContext'
 import clientAuthAxios from '../../services/clientAuthAxios'
 import { PostImage, PostUpdate } from '../../interfaces/post.interfaces'
 import Spinner from '../../components/Spinner/Spinner'
+import EditorWithPreview from '../../components/EditorToolBar/EditorWithPreview'
 
 const fadeUp = {
   hidden: { opacity: 0, y: 16 },
@@ -412,7 +405,7 @@ const EditPost = () => {
     <div className={`min-h-screen transition-colors duration-300 ${dark ? 'bg-[#0f0f0f]' : 'bg-[#fafafa]'}`}>
       <Sidebar />
 
-      <main className="mx-auto w-full max-w-3xl px-4 py-12 sm:px-6 lg:px-8">
+      <main className="mx-auto w-full max-w-5xl px-4 py-12 sm:px-6 lg:px-8">
 
         {/* Page header */}
         <motion.div
@@ -435,7 +428,6 @@ const EditPost = () => {
         >
           <div className="px-7 pt-7 space-y-0">
 
-            {/* ── Meta fields ─────────────────────────────────────────── */}
             <motion.div
               variants={fadeUp} custom={1}
               className={`pb-7 border-b ${dark ? 'border-gray-800' : 'border-gray-100'}`}
@@ -550,15 +542,12 @@ const EditPost = () => {
                 Content
               </p>
               <div className="rounded-xl overflow-hidden bg-white text-black">
-                <EditorToolBar toolbarId="t1" />
-                <ReactQuill
-                  theme="snow"
-                  value={content}
-                  onChange={onContent}
-                  placeholder="Write something awesome..."
-                  modules={modules('t1')}
-                  formats={formats}
-                  style={{ minHeight: '360px' }}
+                <EditorWithPreview
+                  content={content}
+                  onContent={onContent} 
+                  error={errors.content}
+                  onClearError={() => setErrors(p => ({ ...p, content: '' }))}
+                  dark={dark}
                 />
               </div>
               <AnimatePresence>

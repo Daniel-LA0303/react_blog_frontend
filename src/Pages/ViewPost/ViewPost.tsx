@@ -51,6 +51,7 @@ import { useSwal } from '../../hooks/useSwal'
 import userUserAuthContext from '../../context/hooks/useUserAuthContext'
 import useGlobalDataContext from '../../context/hooks/useGlobalDataContext'
 import Spinner from '../../components/Spinner/Spinner'
+import PostContent from '../../components/EditorToolBar/PostContent'
 
 
 const ViewPost = () => {
@@ -316,7 +317,7 @@ const ViewPost = () => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.45, ease: [0.25, 0.46, 0.45, 0.94] }}
-            className="flex-1 min-w-0 max-w-2xl"
+            className="flex-1 min-w-0 w-full"
           >
             {/* Post card */}
             <article className={`rounded-2xl border overflow-hidden ${dark ? 'bg-[#141414] border-gray-800' : 'bg-white border-gray-100'}`}>
@@ -412,10 +413,7 @@ const ViewPost = () => {
                 <div className={`h-px w-full mb-8 ${dark ? 'bg-gray-800' : 'bg-gray-100'}`} />
 
                 {/* Post body */}
-                <div
-                  className={` ${dark ? 'text-white' : 'text-black'}`}
-                  dangerouslySetInnerHTML={{ __html: post.content }}
-                />
+                <PostContent html={post.content} dark={dark} />
               </div>
             </article>
 

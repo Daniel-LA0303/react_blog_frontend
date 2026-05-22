@@ -103,7 +103,7 @@ const FollowersUsers = () => {
   return (
     <div className={`${globalData.themeGlobal ? 'text-black' : 'text-white'}`}>
       <Sidebar />
-      <div className="flex flex-col lg:flex-row mx-auto w-full">
+      <div className="flex flex-col lg:flex-row mx-auto max-w-7xl">
         <div className=''>
           <AsideDashboard />
         </div>

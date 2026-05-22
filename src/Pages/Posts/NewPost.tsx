@@ -6,14 +6,6 @@ import { useEffect, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 
 /**
- * editor
- */
-import ReactQuill from 'react-quill'
-import 'react-quill/dist/quill.snow.css'
-import '../../components/EditorToolBar/EditorToolBar.css'
-import EditorToolBar, { modules, formats } from '../../components/EditorToolBar/EditorToolBar'
-
-/**
  * components
  */
 import Sidebar from '../../components/Sidebar/Sidebar'
@@ -49,6 +41,7 @@ import useGlobalDataContext from '../../context/hooks/useGlobalDataContext.js'
 import userUserAuthContext from '../../context/hooks/useUserAuthContext.js'
 import { NewPostI } from '../../interfaces/post.interfaces'
 import Spinner from '../../components/Spinner/Spinner'
+import EditorWithPreview from '../../components/EditorToolBar/EditorWithPreview'
 
 const fadeUp = {
   hidden: { opacity: 0, y: 16 },
@@ -372,7 +365,7 @@ const NewPost = () => {
     <div className={`min-h-screen transition-colors duration-300 ${dark ? 'bg-[#0f0f0f]' : 'bg-[#fafafa]'}`}>
       <Sidebar />
 
-      <main className="mx-auto w-full max-w-3xl px-4 py-6 sm:px-6 lg:px-8">
+      <main className="mx-auto w-full max-w-5xl px-4 py-6 sm:px-6 lg:px-8">
 
         {/* Page header */}
         <motion.div
@@ -395,7 +388,6 @@ const NewPost = () => {
         >
           <div className="px-7 pt-7 space-y-0">
 
-            {/* ── Meta fields ─────────────────────────────────────────── */}
             <motion.div
               variants={fadeUp} custom={1}
               className={`pb-7 border-b ${dark ? 'border-gray-800' : 'border-gray-100'}`}
@@ -436,7 +428,6 @@ const NewPost = () => {
               </div>
             </motion.div>
 
-            {/* ── Featured image ───────────────────────────────────────── */}
             <motion.div
               variants={fadeUp} custom={2}
               className={`py-7 border-b ${dark ? 'border-gray-800' : 'border-gray-100'}`}
@@ -513,15 +504,12 @@ const NewPost = () => {
                 Content
               </p>
               <div className="rounded-xl overflow-hidden bg-white text-black">
-                <EditorToolBar toolbarId="t1" />
-                <ReactQuill
-                  theme="snow"
-                  value={content}
-                  onChange={val => { onContent(val); if (errors.content) setErrors(p => ({ ...p, content: '' })) }}
-                  placeholder="Write something awesome..."
-                  modules={modules('t1')}
-                  formats={formats}
-                  style={{ minHeight: '360px' }}
+                <EditorWithPreview
+                  content={content}
+                  onContent={onContent} 
+                  error={errors.content}
+                  onClearError={() => setErrors(p => ({ ...p, content: '' }))}
+                  dark={dark}
                 />
               </div>
               <AnimatePresence>

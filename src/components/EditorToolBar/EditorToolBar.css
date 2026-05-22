@@ -1,78 +1,213 @@
-/* Set content for font-families */
+/* ═══════════════════════════════════════════════════════════════════════════
+   quill.css  —  editor only (create/edit post)
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* ── Fonts ────────────────────────────────────────────────────────────────── */
 .ql-font-arial,
-.ql-font span[data-value="arial"]::before {
-  font-family: Arial, sans-serif;
-}
+.ql-font span[data-value="arial"]::before { font-family: Arial, sans-serif; }
 .ql-font-comic-sans,
-.ql-font span[data-value="comic-sans"]::before {
-  font-family: "Comic Sans MS", cursive, sans-serif;
-}
+.ql-font span[data-value="comic-sans"]::before { font-family: "Comic Sans MS", cursive; }
 .ql-font-courier-new,
-.ql-font span[data-value="courier-new"]::before {
-  font-family: "Courier New";
-}
+.ql-font span[data-value="courier-new"]::before { font-family: "Courier New", monospace; }
 .ql-font-georgia,
-.ql-font span[data-value="georgia"]::before {
-  font-family: Georgia, serif;
-}
+.ql-font span[data-value="georgia"]::before { font-family: Georgia, serif; }
 .ql-font-helvetica,
-.ql-font span[data-value="helvetica"]::before {
-  font-family: Helvetica, sans-serif;
-}
+.ql-font span[data-value="helvetica"]::before { font-family: Helvetica, sans-serif; }
 .ql-font-Inter,
-.ql-font span[data-value="Inter"]::before {
-  font-family: 'Inter', sans-serif;
-}
-.ql-font-lucida,
-.ql-font span[data-value="lucida"]::before {
-  font-family: "Lucida Sans Unicode", "Lucida Grande", sans-serif;
-}
+.ql-font span[data-value="Inter"]::before { font-family: "Inter", sans-serif; }
 
-/* Set content for sizes */
+/* ── Sizes ────────────────────────────────────────────────────────────────── */
 .ql-size-extra-small,
-.ql-size span[data-value="extra-small"]::before {
-  font-size: 13px !important;
-}
+.ql-size span[data-value="extra-small"]::before { font-size: 13px !important; }
 .ql-size-small,
-.ql-size span[data-value="small"]::before {
-  font-size: 14px !important;
-}
+.ql-size span[data-value="small"]::before { font-size: 14px !important; }
 .ql-size-medium,
-.ql-size span[data-value="medium"]::before {
-  font-size: 18px !important;
-}
+.ql-size span[data-value="medium"]::before { font-size: 18px !important; }
 .ql-size-large,
-.ql-size span[data-value="large"]::before {
-  font-size: 20px !important;
+.ql-size span[data-value="large"]::before { font-size: 20px !important; }
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   WRAPPER
+   Key insight: the wrapper must NOT have overflow:hidden — that kills sticky.
+   Instead we give the wrapper a fixed height and let .ql-container scroll.
+   ═══════════════════════════════════════════════════════════════════════════ */
+.quill-wrapper {
+  display: flex;
+  flex-direction: column;
+  border-radius: 12px;
+  border: 1px solid #e5e7eb;
+  height: 600px;
+  /* NO overflow:hidden here — sticky toolbar needs the wrapper to not clip */
+  position: relative;
 }
 
-.ql-editor {
-  min-height: 400px; 
+/* Light theme (default) */
+.quill-wrapper {
+  background: #ffffff;
+}
+
+/* Dark theme — add .quill-wrapper--dark on the div in JSX */
+.quill-wrapper--dark {
+  background: #141414;
+  border-color: #27272a;
+}
+
+/* ── Toolbar: sticky at top of wrapper ────────────────────────────────────── */
+.quill-wrapper .ql-toolbar.ql-snow {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  flex-shrink: 0;
+
+  border: none;
+  border-bottom: 1px solid #e5e7eb;
+  padding: 6px 10px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2px;
+  align-items: center;
+  border-radius: 12px 12px 0 0;
+}
+
+.quill-wrapper .ql-toolbar.ql-snow {
+  background: #f9fafb;
+}
+.quill-wrapper--dark .ql-toolbar.ql-snow {
+  background: #1a1a1a;
+  border-bottom-color: #27272a;
+}
+
+/* toolbar icon colors in dark mode */
+.quill-wrapper--dark .ql-toolbar .ql-stroke { stroke: #a1a1aa; }
+.quill-wrapper--dark .ql-toolbar .ql-fill   { fill:   #a1a1aa; }
+.quill-wrapper--dark .ql-toolbar .ql-picker-label { color: #a1a1aa; }
+.quill-wrapper--dark .ql-toolbar button:hover .ql-stroke,
+.quill-wrapper--dark .ql-toolbar .ql-active .ql-stroke { stroke: #ffffff; }
+.quill-wrapper--dark .ql-toolbar button:hover .ql-fill,
+.quill-wrapper--dark .ql-toolbar .ql-active .ql-fill   { fill:   #ffffff; }
+.quill-wrapper--dark .ql-toolbar .ql-picker-options {
+  background: #1f1f1f;
+  border-color: #3f3f46;
+  color: #e4e4e7;
+}
+
+/* ── Quill inner container — THIS is the scroll container ────────────────── */
+.quill-wrapper .quill {
+  flex: 1;
+  min-height: 0;         /* allow flex child to shrink */
+  display: flex;
+  flex-direction: column;
+}
+
+.quill-wrapper .ql-container.ql-snow {
+  flex: 1;
+  min-height: 0;
+  border: none;
   font-size: 16px;
+  overflow-y: auto;      /* ← scroll lives here */
+  background: transparent;
 }
-.App .ql-snow .ql-tooltip.ql-flip {
-  width: auto;
-  left: 17px!important;
+
+/* ── Editor area ──────────────────────────────────────────────────────────── */
+.quill-wrapper .ql-editor {
+  min-height: 100%;
+  padding: 18px 24px;
+  font-size: 16px;
+  line-height: 1.7;
+  white-space: pre-wrap;
+  color: #111827;         /* light default */
+}
+
+.quill-wrapper--dark .ql-editor {
+  color: #e4e4e7;         /* dark: white text */
+}
+
+/* placeholder */
+.quill-wrapper .ql-editor.ql-blank::before {
+  color: #9ca3af;
+  font-style: italic;
+}
+.quill-wrapper--dark .ql-editor.ql-blank::before {
+  color: #52525b;
+}
+
+/* ── Images inside editor ─────────────────────────────────────────────────── */
+/*
+   IMPORTANT: do NOT set height:auto here — it breaks quill-image-resize.
+   The resize module sets inline width/height directly on the img element.
+   max-width:100% is safe, everything else should be left to the module.
+*/
+.quill-wrapper .ql-editor img {
+  display: inline-block;
+  cursor: default;
+  max-width: 100%;
+  /* Never set width or height here */
+}
+.quill-wrapper .ql-editor img[style*="width"] {
+  max-width: 100% !important;
+  height: auto;
+}
+
+/* When no size is set yet (fresh upload), cap at full width */
+.quill-wrapper .ql-editor img:not([style*="width"]) {
+  width: 100%;
+  height: auto;
+}
+
+.quill-wrapper .ql-editor img.ql-selected,
+.quill-wrapper .ql-editor img:focus {
+  outline: 2px solid #2563EB;
+}
+
+/* ── Blockquote inside editor ─────────────────────────────────────────────── */
+.quill-wrapper .ql-editor blockquote {
+  border-left: 4px solid #2563EB;
+  padding-left: 16px;
+  margin: 12px 0;
+  font-style: italic;
+  color: #6b7280;
+}
+.quill-wrapper--dark .ql-editor blockquote {
+  color: #93c5fd;
+  border-left-color: #2563EB;
+}
+
+/* ── Code block inside editor ─────────────────────────────────────────────── */
+.quill-wrapper .ql-editor pre.ql-syntax {
+  background: #1e1e2e !important;
+  color: #cdd6f4 !important;
+  border-radius: 8px;
+  padding: 16px !important;
+  font-family: "Courier New", monospace;
+  font-size: 14px;
+  overflow-x: auto;
+  white-space: pre !important;
+  line-height: 1.6;
+}
+
+/* ── Lists inside editor ──────────────────────────────────────────────────── */
+.quill-wrapper .ql-editor ol,
+.quill-wrapper .ql-editor ul {
+  padding-left: 1.5em;
+}
+
+/* ── Tooltip fix ──────────────────────────────────────────────────────────── */
+.ql-snow .ql-tooltip {
+  left: 8px !important;
   white-space: normal;
+  width: auto;
+  max-width: calc(100vw - 32px);
+  z-index: 100;
 }
 
- @page {
-  margin: 1in;
-}
-
+/* ── Print ────────────────────────────────────────────────────────────────── */
 @media print {
-  body {
-    background: none;
+  .quill-wrapper .ql-toolbar.ql-snow { display: none; }
+  .quill-wrapper,
+  .quill-wrapper .ql-container.ql-snow {
+    height: auto;
+    overflow: visible;
+    border: none;
   }
-  .container .ql-editor {
-    width: 6.5in;
-    height: 9in;
-    padding: 0;
-    margin: 0;
-    box-shadow: none;
-    align-self: flex-start;
-  }
-  .container .ql-toolbar.ql-snow {
-    display: none;
-  }
-} 
+  .quill-wrapper .ql-editor { width: 6.5in; padding: 0; }
+}
