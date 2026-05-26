@@ -34,6 +34,11 @@ import WrappedCategoryPost from "./Pages/CategoryPost/WrappedCategoryPost";
 import useGlobalDataContext from "./context/hooks/useGlobalDataContext";
 import userUserAuthContext from "./context/hooks/useUserAuthContext";
 import ChatLayout from "./components/Chat/ChatLayout";
+import AdminUserManagement from "./Pages/Admin/AdminUserManagement";
+import AdminPostModeration from "./Pages/Admin/AdminPostModeration";
+import AdminCats from "./Pages/Admin/AdminCats";
+import AdminDashboard from "./Pages/Admin/AdminDashboard";
+import AdminPanel from "./Pages/Admin/AdminPanel";
 
 
 /**
@@ -97,22 +102,27 @@ function App() {
 
           {/* MESSAGES */}
           {/* <Route
-          path="/"
-          element={userAuth.userId ? <Navigate to="/chat" /> : <Navigate to="/login" />}
-        /> */}
-
+            path="/"
+            element={userAuth.userId ? <Navigate to="/chat" /> : <Navigate to="/login" />}
+          /> */}
           <Route
             path="/chat"
             element={userAuth.userId ? <ChatLayout /> : <Navigate to="/login" />}
           />
-
           <Route
             path="/chat/:id"
             element={userAuth.userId ? <ChatLayout /> : <Navigate to="/login" />}
           />
-
-
           <Route path="/error" element={<ErrorPage />} />
+
+          {/* ADMIN PANEL */}
+          <Route path="/admin" element={<AdminPanel />}>
+            <Route path="dashboard" element={<AdminDashboard />} />
+            <Route path="user-management" element={<AdminUserManagement />} />
+            <Route path="post-moderation" element={<AdminPostModeration />} />
+            <Route path="categories" element={<AdminCats />} />
+          </Route>
+
         </Routes>
       </PagesProvider>
     </BrowserRouter>
