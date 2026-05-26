@@ -1,5 +1,4 @@
 import { useRef, useState } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
 import EmojiPicker, { Theme } from 'emoji-picker-react'
 
 import useSendMessage from '../../../context/hooks/useSendMessage'
@@ -9,7 +8,7 @@ function Typesend() {
   const [message, setMessage] = useState('')
   const [sending, setSending] = useState(false)
   const [emojiOpen, setEmojiOpen] = useState(false)
-  const { loading, sendMessages } = useSendMessage()
+  const { sendMessages } = useSendMessage()
   const { globalData } = useGlobalDataContext()
   const dark = !globalData.themeGlobal
   const inputRef = useRef<HTMLInputElement>(null)
@@ -25,51 +24,52 @@ function Typesend() {
   }
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter' && !e.shiftKey) {
-      handleSubmit(e)
-    }
+    if (e.key === 'Enter' && !e.shiftKey) handleSubmit(e)
   }
 
   const handleEmojiClick = (emojiData: any) => {
     setMessage(prev => prev + emojiData.emoji)
-    inputRef.current?.focus()
+    // no llamamos focus() — evita que el teclado aparezca/desaparezca en mobile
   }
 
   return (
     <div className={`relative px-3 py-3 border-t flex-shrink-0
       ${dark ? 'bg-[#111] border-gray-800' : 'bg-white border-gray-100'}`}>
 
+      {/* Overlay — cierra el picker al tocar afuera, sin afectar el input */}
+      {emojiOpen && (
+        <div
+          className="fixed inset-0 z-40"
+          onClick={() => setEmojiOpen(false)}
+        />
+      )}
+
       {/* Emoji picker */}
-      <AnimatePresence>
-        {emojiOpen && (
-          <motion.div
-            initial={{ opacity: 0, y: 10, scale: 0.96 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: 10, scale: 0.96 }}
-            transition={{ duration: 0.18, ease: [0.25, 0.46, 0.45, 0.94] }}
-            className="absolute bottom-full left-3 mb-2 z-50"
-          >
-            <EmojiPicker
-              onEmojiClick={handleEmojiClick}
-              theme={dark ? Theme.DARK : Theme.LIGHT}
-              height={380}
-              width={320}
-              searchDisabled={false}
-              skinTonesDisabled
-              lazyLoadEmojis
-            />
-          </motion.div>
-        )}
-      </AnimatePresence>
+      {emojiOpen && (
+        <div
+          className="absolute bottom-full left-3 mb-2 z-50"
+          // evita que el click dentro del picker llegue al overlay
+          onClick={e => e.stopPropagation()}
+        >
+          <EmojiPicker
+            onEmojiClick={handleEmojiClick}
+            theme={dark ? Theme.DARK : Theme.LIGHT}
+            height={380}
+            width={320}
+            searchDisabled={false}
+            skinTonesDisabled
+            lazyLoadEmojis
+          />
+        </div>
+      )}
 
       <form onSubmit={handleSubmit} className="flex items-center gap-2">
 
         {/* Emoji toggle */}
-        <motion.button
+        <button
           type="button"
           onClick={() => setEmojiOpen(v => !v)}
-          whileTap={{ scale: 0.9 }}
-          className={`flex-shrink-0 h-9 w-9 flex items-center justify-center rounded-xl transition-colors
+          className={`flex-shrink-0 h-9 w-9 flex items-center justify-center rounded-xl transition-colors active:scale-90
             ${emojiOpen
               ? 'bg-[#2563EB]/15 text-[#2563EB]'
               : dark
@@ -84,15 +84,12 @@ function Typesend() {
             <line x1="9" y1="9" x2="9.01" y2="9" />
             <line x1="15" y1="9" x2="15.01" y2="9" />
           </svg>
-        </motion.button>
+        </button>
 
         {/* Input */}
         <div className={`flex-1 flex items-center rounded-xl border px-3.5 py-2.5 transition-colors duration-150
           focus-within:ring-2 focus-within:ring-offset-0 focus-within:border-[#2563EB] focus-within:ring-[#2563EB]/20
-          ${dark
-            ? 'bg-[#1e1e1e] border-gray-700'
-            : 'bg-gray-50 border-gray-200'
-          }`}>
+          ${dark ? 'bg-[#1e1e1e] border-gray-700' : 'bg-gray-50 border-gray-200'}`}>
           <input
             ref={inputRef}
             type="text"
@@ -106,11 +103,10 @@ function Typesend() {
         </div>
 
         {/* Send button */}
-        <motion.button
+        <button
           type="submit"
           disabled={sending || !message.trim()}
-          whileTap={!sending && message.trim() ? { scale: 0.9 } : {}}
-          className={`flex-shrink-0 h-9 w-9 flex items-center justify-center rounded-xl transition-colors
+          className={`flex-shrink-0 h-9 w-9 flex items-center justify-center rounded-xl transition-colors active:scale-90
             ${message.trim() && !sending
               ? 'bg-[#2563EB] text-white hover:bg-[#1d4ed8]'
               : dark
@@ -119,11 +115,7 @@ function Typesend() {
             }`}
         >
           {sending ? (
-            <motion.span
-              className="h-4 w-4 rounded-full border-2 border-white/30 border-t-white"
-              animate={{ rotate: 360 }}
-              transition={{ duration: 0.7, repeat: Infinity, ease: 'linear' }}
-            />
+            <span className="h-4 w-4 rounded-full border-2 border-white/30 border-t-white animate-spin" />
           ) : (
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}
               strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4">
@@ -131,7 +123,7 @@ function Typesend() {
               <polygon points="22 2 15 22 11 13 2 9 22 2" />
             </svg>
           )}
-        </motion.button>
+        </button>
       </form>
     </div>
   )

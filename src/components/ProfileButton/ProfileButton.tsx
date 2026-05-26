@@ -1,8 +1,5 @@
-import { useEffect, useRef, useState } from 'react'
+import { useState } from 'react'
 import { Link } from 'react-router-dom'
-import { motion, AnimatePresence } from 'framer-motion'
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faSun, faMoon } from '@fortawesome/free-solid-svg-icons'
 import userUserAuthContext from '../../context/hooks/useUserAuthContext'
 import useGlobalDataContext from '../../context/hooks/useGlobalDataContext'
 
@@ -60,20 +57,10 @@ const ProfileButton = () => {
   const dark = !globalData.themeGlobal
 
   const [open, setOpen] = useState(false)
-  const menuRef = useRef<any>()
-
-  useEffect(() => {
-    const handler = (e: any) => {
-      if (!menuRef.current?.contains(e.target)) setOpen(false)
-    }
-    document.addEventListener('mousedown', handler)
-    return () => document.removeEventListener('mousedown', handler)
-  })
 
   const handleLogOut = () => {
     ['token', 'tokenAuthUser', 'email', 'username', 'userId', 'profileImage']
       .forEach(k => localStorage.removeItem(k))
-    document.location.reload()
     document.location.href = '/'
   }
 
@@ -86,132 +73,135 @@ const ProfileButton = () => {
   }
 
   return (
-    <div className="relative ml-3 mt-1.5" ref={menuRef}>
-      {/* Avatar trigger */}
-      <motion.button
-        type="button"
-        onClick={() => setOpen(v => !v)}
-        whileTap={{ scale: 0.93 }}
-        className={`relative h-9 w-9 rounded-full overflow-hidden ring-2 ring-offset-2 transition-all duration-200
-          ${open
-            ? 'ring-[#2563EB]'
-            : dark ? 'ring-gray-700 ring-offset-[#0f0f0f]' : 'ring-gray-200 ring-offset-white'
-          }`}
-      >
-        <img
-          src={userAuth?.profileImage || '/avatar.png'}
-          alt="User"
-          className="h-full w-full object-cover"
+    <>
+      {/* Overlay */}
+      {open && (
+        <div
+          className="fixed inset-0 z-40"
+          onClick={() => setOpen(false)}
         />
-      </motion.button>
+      )}
 
-      {/* Dropdown */}
-      <AnimatePresence>
-        {open && (
-          <motion.div
-            initial={{ opacity: 0, scale: 0.95, y: -6 }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.95, y: -6 }}
-            transition={{ duration: 0.18, ease: [0.25, 0.46, 0.45, 0.94] }}
-            className={`absolute right-0 mt-2.5 w-56 rounded-2xl border overflow-hidden shadow-xl z-50
-              ${dark ? 'bgt-dark border-gray-800' : 'bg-white border-gray-100'}`}
-          >
-            {/* User info */}
-            <div className={`px-4 py-3.5 border-b ${dark ? 'border-gray-800' : 'border-gray-100'}`}>
-              <div className="flex items-center gap-3">
-                <img
-                  src={userAuth?.profileImage || '/avatar.png'}
-                  alt="User"
-                  className="h-8 w-8 rounded-full object-cover flex-shrink-0"
-                />
-                <div className="min-w-0">
-                  <p className={`text-sm font-semibold truncate ${dark ? 'text-white' : 'text-gray-900'}`}>
-                    {userAuth.username}
-                  </p>
-                  <p className={`text-xs truncate ${dark ? 'text-gray-500' : 'text-gray-400'}`}>
-                    {userAuth.email}
-                  </p>
-                </div>
+      <div className="relative ml-3 mt-1.5">
+        {/* Avatar trigger */}
+        <button
+          type="button"
+          onClick={() => setOpen(v => !v)}
+          className={`relative h-9 w-9 rounded-full overflow-hidden ring-2 ring-offset-2
+            transition-all duration-200 active:scale-95 z-50
+            ${open
+              ? 'ring-[#2563EB]'
+              : dark
+                ? 'ring-gray-700 ring-offset-[#0f0f0f]'
+                : 'ring-gray-200 ring-offset-white'
+            }`}
+        >
+          <img
+            src={userAuth?.profileImage || '/avatar.png'}
+            alt="User"
+            className="h-full w-full object-cover"
+          />
+        </button>
+
+        {/* Dropdown — pure CSS transition */}
+        <div
+          className={`absolute right-0 mt-2.5 w-56 rounded-2xl border overflow-hidden shadow-xl z-50
+            transition-all duration-200 ease-out
+            ${open
+              ? 'opacity-100 translate-y-0 pointer-events-auto'
+              : 'opacity-0 -translate-y-2 pointer-events-none'
+            }
+            ${dark ? 'bgt-dark border-gray-800' : 'bg-white border-gray-100'}`}
+        >
+          {/* User info */}
+          <div className={`px-4 py-3.5 border-b ${dark ? 'border-gray-800' : 'border-gray-100'}`}>
+            <div className="flex items-center gap-3">
+              <img
+                src={userAuth?.profileImage || '/avatar.png'}
+                alt="User"
+                className="h-8 w-8 rounded-full object-cover flex-shrink-0"
+              />
+              <div className="min-w-0">
+                <p className={`text-sm font-semibold truncate ${dark ? 'text-white' : 'text-gray-900'}`}>
+                  {userAuth.username}
+                </p>
+                <p className={`text-xs truncate ${dark ? 'text-gray-500' : 'text-gray-400'}`}>
+                  {userAuth.email}
+                </p>
               </div>
             </div>
+          </div>
 
-            {/* Nav items */}
-            <div className="py-1.5">
-              {menuItems.map((item, i) => (
-                <motion.div
-                  key={item.label}
-                  initial={{ opacity: 0, x: -6 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: i * 0.04, duration: 0.2 }}
-                >
-                  <Link
-                    to={item.to(userAuth.userId as string)}
-                    onClick={() => setOpen(false)}
-                    className={`flex items-center gap-3 px-4 py-2.5 text-sm transition-colors duration-150
-                      ${dark
-                        ? 'text-gray-300 hover:bg-gray-800 hover:text-white'
-                        : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
-                      }`}
-                  >
-                    <span className={dark ? 'text-gray-500' : 'text-gray-400'}>{item.icon}</span>
-                    {item.label}
-                  </Link>
-                </motion.div>
-              ))}
-            </div>
-
-            {/* Theme + Logout */}
-            <div className={`border-t py-2 ${dark ? 'border-gray-800' : 'border-gray-100'}`}>
-              {/* Theme toggle */}
-              <button
-                type="button"
-                onClick={handleChange}
-                className={`w-full flex items-center justify-between px-4 py-2.5 text-sm transition-colors duration-150
-                  ${dark ? 'text-gray-300 hover:bg-gray-800' : 'text-gray-600 hover:bg-gray-50'}`}
+          {/* Nav items */}
+          <div className="py-1.5">
+            {menuItems.map((item) => (
+              <Link
+                key={item.label}
+                to={item.to(userAuth.userId as string)}
+                onClick={() => setOpen(false)}
+                className={`flex items-center gap-3 px-4 py-2.5 text-sm transition-colors duration-150
+                  ${dark
+                    ? 'text-gray-300 hover:bg-gray-800 hover:text-white'
+                    : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
+                  }`}
               >
-                <span className="flex items-center gap-3">
-                  <span className={dark ? 'text-gray-500' : 'text-gray-400'}>
-                    {dark ? (
-                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.7} strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4">
-                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
-                      </svg>
-                    ) : (
-                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.7} strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4">
-                        <circle cx="12" cy="12" r="5" /><line x1="12" y1="1" x2="12" y2="3" /><line x1="12" y1="21" x2="12" y2="23" /><line x1="4.22" y1="4.22" x2="5.64" y2="5.64" /><line x1="18.36" y1="18.36" x2="19.78" y2="19.78" /><line x1="1" y1="12" x2="3" y2="12" /><line x1="21" y1="12" x2="23" y2="12" /><line x1="4.22" y1="19.78" x2="5.64" y2="18.36" /><line x1="18.36" y1="5.64" x2="19.78" y2="4.22" />
-                      </svg>
-                    )}
-                  </span>
-                  {dark ? 'Dark mode' : 'Light mode'}
+                <span className={dark ? 'text-gray-500' : 'text-gray-400'}>{item.icon}</span>
+                {item.label}
+              </Link>
+            ))}
+          </div>
+
+          {/* Theme + Logout */}
+          <div className={`border-t py-2 ${dark ? 'border-gray-800' : 'border-gray-100'}`}>
+            {/* Theme toggle */}
+            <button
+              type="button"
+              onClick={handleChange}
+              className={`w-full flex items-center justify-between px-4 py-2.5 text-sm transition-colors duration-150
+                ${dark ? 'text-gray-300 hover:bg-gray-800' : 'text-gray-600 hover:bg-gray-50'}`}
+            >
+              <span className="flex items-center gap-3">
+                <span className={dark ? 'text-gray-500' : 'text-gray-400'}>
+                  {dark ? (
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.7} strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4">
+                      <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
+                    </svg>
+                  ) : (
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.7} strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4">
+                      <circle cx="12" cy="12" r="5" /><line x1="12" y1="1" x2="12" y2="3" /><line x1="12" y1="21" x2="12" y2="23" /><line x1="4.22" y1="4.22" x2="5.64" y2="5.64" /><line x1="18.36" y1="18.36" x2="19.78" y2="19.78" /><line x1="1" y1="12" x2="3" y2="12" /><line x1="21" y1="12" x2="23" y2="12" /><line x1="4.22" y1="19.78" x2="5.64" y2="18.36" /><line x1="18.36" y1="5.64" x2="19.78" y2="4.22" />
+                    </svg>
+                  )}
                 </span>
+                {dark ? 'Dark mode' : 'Light mode'}
+              </span>
 
-                {/* Toggle pill */}
-                <div className={`relative h-5 w-9 rounded-full transition-colors duration-200 ${dark ? 'bg-[#2563EB]' : 'bg-gray-200'}`}>
-                  <motion.div
-                    className="absolute top-0.5 h-4 w-4 rounded-full bg-white shadow-sm"
-                    animate={{ x: dark ? 16 : 2 }}
-                    transition={{ type: 'spring', stiffness: 500, damping: 28 }}
-                  />
-                </div>
-              </button>
+              {/* Toggle pill — CSS transition */}
+              <div className={`relative h-5 w-9 rounded-full transition-colors duration-200 ${dark ? 'bg-[#2563EB]' : 'bg-gray-200'}`}>
+                <div
+                  className={`absolute top-0.5 h-4 w-4 rounded-full bg-white shadow-sm
+                    transition-transform duration-200
+                    ${dark ? 'translate-x-4' : 'translate-x-0.5'}`}
+                />
+              </div>
+            </button>
 
-              {/* Logout */}
-              <motion.button
-                type="button"
-                onClick={handleLogOut}
-                whileTap={{ scale: 0.97 }}
-                className={`w-full flex items-center gap-3 px-4 py-2.5 text-sm transition-colors duration-150
-                  ${dark ? 'text-red-400 hover:bg-red-900/20' : 'text-red-500 hover:bg-red-50'}`}
-              >
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.7} strokeLinecap="round" strokeLinejoin="round" className={`w-4 h-4 ${dark ? 'text-red-500' : 'text-red-400'}`}>
-                  <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" /><polyline points="16 17 21 12 16 7" /><line x1="21" y1="12" x2="9" y2="12" />
-                </svg>
-                Log out
-              </motion.button>
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-    </div>
+            {/* Logout */}
+            <button
+              type="button"
+              onClick={handleLogOut}
+              className={`w-full flex items-center gap-3 px-4 py-2.5 text-sm transition-colors duration-150
+                active:scale-95
+                ${dark ? 'text-red-400 hover:bg-red-900/20' : 'text-red-500 hover:bg-red-50'}`}
+            >
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.7} strokeLinecap="round" strokeLinejoin="round" className={`w-4 h-4 ${dark ? 'text-red-500' : 'text-red-400'}`}>
+                <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" /><polyline points="16 17 21 12 16 7" /><line x1="21" y1="12" x2="9" y2="12" />
+              </svg>
+              Log out
+            </button>
+          </div>
+        </div>
+      </div>
+    </>
   )
 }
 

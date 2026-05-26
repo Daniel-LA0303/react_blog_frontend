@@ -3,13 +3,13 @@ import ReactQuill, { Quill } from "react-quill";
 import "react-quill/dist/quill.snow.css";
 import ImageResize from 'quill-image-resize-module-react';
 
-// ─── Image Resize ────────────────────────────────────────────────────────────
+// ─── Image Resize───
 // quill-image-resize-module-react must be registered on the window object
 // before Quill uses it (Webpack/Vite quirk)
 
 Quill.register("modules/imageResize", ImageResize);
 
-// ─── Custom icons ────────────────────────────────────────────────────────────
+// ─── Custom icons───
 const CustomUndo = () => (
   <svg viewBox="0 0 18 18">
     <polygon className="ql-fill ql-stroke" points="6 10 4 12 2 10 6 10" />
@@ -24,7 +24,7 @@ const CustomRedo = () => (
   </svg>
 );
 
-// ─── Undo / Redo handlers ─────────────────────────────────────────────────────
+// ─── Undo / Redo handlers
 // NOTE: handlers inside modules() receive `this` = the toolbar instance,
 // so we can't close over quillRef. Instead we navigate up from the toolbar
 // container to find the editor — this is the correct pattern for custom toolbars.
@@ -35,17 +35,17 @@ const redoChange = function (this: any) {
   this.quill?.history?.redo();
 };
 
-// ─── Register Size ────────────────────────────────────────────────────────────
+// ─── Register Size
 const Size = Quill.import("formats/size") as any;
 Size.whitelist = ["extra-small", "small", "medium", "large"];
 Quill.register(Size, true);
 
-// ─── Register Font ────────────────────────────────────────────────────────────
+// ─── Register Font
 const Font = Quill.import("formats/font") as any;
 Font.whitelist = ["arial", "comic-sans", "courier-new", "georgia", "helvetica", "Inter"];
 Quill.register(Font, true);
 
-// ─── Modules factory ─────────────────────────────────────────────────────────
+// ─── Modules factory
 export const modules = (toolbarId: string) => ({
   toolbar: {
     container: "#" + toolbarId,
@@ -69,7 +69,7 @@ export const modules = (toolbarId: string) => ({
   },
 });
 
-// ─── Formats ─────────────────────────────────────────────────────────────────
+// ─── Formats 
 export const formats = [
   "header", "font", "size",
   "bold", "italic", "underline", "strike",
@@ -80,7 +80,7 @@ export const formats = [
   "code-block",
 ];
 
-// ─── Toolbar UI ───────────────────────────────────────────────────────────────
+// ─── Toolbar UI 
 export const QuillToolbar = ({ toolbarId }: { toolbarId: string }) => {
   if (!toolbarId) return null;
   return (

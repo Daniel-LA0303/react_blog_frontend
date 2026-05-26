@@ -3,9 +3,9 @@ import { Link } from 'react-router-dom'
 
 const Logo = () => {
   return (
-    <div className=' mr-2 w-7 sm:w-8 ml-2 md:ml-0'>
+    <div className=' mr-0 w-7 sm:w-8 ml-0 md:ml-0'>
         <Link to={'/'}>
-            <img src='/react.png'/>
+            <img src='/icon.svg'/>
         </Link>
     </div>
   )

@@ -42,6 +42,7 @@ import userUserAuthContext from '../../context/hooks/useUserAuthContext.js'
 import { NewPostI } from '../../interfaces/post.interfaces'
 import Spinner from '../../components/Spinner/Spinner'
 import EditorWithPreview from '../../components/EditorToolBar/EditorWithPreview'
+import TipTapEditor from '../../components/EditorTipTap/TipTapEditor'
 
 const fadeUp = {
   hidden: { opacity: 0, y: 16 },
@@ -384,9 +385,9 @@ const NewPost = () => {
         <motion.form
           initial="hidden" animate="visible" variants={stagger}
           onSubmit={newPost}
-          className={`rounded-2xl border ${dark ? 'bgt-dark border-gray-800' : 'bg-white border-gray-100'}`}
+          className={`rounded-2xl border-2 ${dark ? 'bgt-dark border-gray-800' : 'bg-white border-gray-300'}`}
         >
-          <div className="px-7 pt-7 space-y-0">
+          <div className="px-2 md:px-7 pt-7 space-y-0">
 
             <motion.div
               variants={fadeUp} custom={1}
@@ -495,22 +496,21 @@ const NewPost = () => {
               </AnimatePresence>
             </motion.div>
 
-            {/* ── Content editor ───────────────────────────────────────── */}
+            {/* ── Content editor */}
             <motion.div
               variants={fadeUp} custom={3}
               className="py-7"
             >
-              <p className={`text-xs font-semibold uppercase tracking-widest mb-5 ${dark ? 'text-gray-500' : 'text-gray-400'}`}>
+              <p className={`text-xs font-semibold uppercase tracking-widest mb-0 ${dark ? 'text-gray-500' : 'text-gray-400'}`}>
                 Content
               </p>
-              <div className="rounded-xl overflow-hidden bg-white text-black">
-                <EditorWithPreview
-                  content={content}
-                  onContent={onContent} 
-                  error={errors.content}
-                  onClearError={() => setErrors(p => ({ ...p, content: '' }))}
-                  dark={dark}
-                />
+              <div className="rounded-xl overflow-hidden ">
+              <TipTapEditor
+                content={content}
+                onContent={onContent}
+                error={errors.content}
+                onClearError={() => setErrors(p => ({ ...p, content: '' }))}
+              />
               </div>
               <AnimatePresence>
                 {errors.content && (
@@ -528,7 +528,7 @@ const NewPost = () => {
 
           </div>
 
-          {/* ── Footer actions ────────────────────────────────────────── */}
+          {/* ── Footer actions ─*/}
           <motion.div
             variants={fadeUp} custom={4}
             className={`flex justify-end items-center gap-3 px-7 py-5 border-t rounded-b-2xl

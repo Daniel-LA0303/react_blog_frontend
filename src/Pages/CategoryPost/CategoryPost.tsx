@@ -210,7 +210,7 @@ const CategoryPost = () => {
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -8 }}
                 transition={{ duration: 0.4, ease: [0.25, 0.46, 0.45, 0.94] }}
-                className="pt-10 pb-2"
+                className="pt-0 md:pt-10 pb-2"
               >
                 <CategoryCard category={cat} />
               </motion.div>

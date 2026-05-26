@@ -413,7 +413,10 @@ const ViewPost = () => {
                 <div className={`h-px w-full mb-8 ${dark ? 'bg-gray-800' : 'bg-gray-100'}`} />
 
                 {/* Post body */}
-                <PostContent html={post.content} dark={dark} />
+                <div
+                  className={`post-content ${dark ? "post-content--dark text-white" : "post-content--light"}`}
+                  dangerouslySetInnerHTML={{ __html: post.content }}
+                />
               </div>
             </article>
 
