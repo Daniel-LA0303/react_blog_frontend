@@ -282,7 +282,7 @@ const ViewPost = () => {
   if (!post) return <Spinner />
 
   return (
-    <div className={`min-h-screen transition-colors duration-300 ${dark ? 'bg-[#0f0f0f]' : 'bg-[#fafafa]'}`}>
+    <div className={`min-h-screen transition-colors duration-300 ${dark ? 'bg-[#0f0f0f]' : 'bgt-white'}`}>
       <Sidebar />
       <Toaster position="bottom-right" reverseOrder={false} />
 
@@ -320,7 +320,7 @@ const ViewPost = () => {
             className="flex-1 min-w-0 w-full"
           >
             {/* Post card */}
-            <article className={`rounded-2xl border overflow-hidden ${dark ? 'bg-[#141414] border-gray-800' : 'bg-white border-gray-100'}`}>
+            <article className={`rounded-2xl border overflow-hidden ${dark ? 'bg-[#27272A] border-gray-800' : 'bg-white border-gray-100'}`}>
 
               {/* Hero image */}
               <AnimatePresence>
@@ -501,7 +501,7 @@ const ViewPost = () => {
           animate={{ y: 0 }}
           transition={{ duration: 0.35, delay: 0.4, ease: [0.25, 0.46, 0.45, 0.94] }}
           className={`fixed bottom-0 left-0 right-0 z-40 block sm:hidden border-t
-            ${dark ? 'bg-[#141414]/95 border-gray-800 backdrop-blur-md' : 'bg-white/95 border-gray-100 backdrop-blur-md'}`}
+            ${dark ? 'bg-[#27272A]/95 border-gray-800 backdrop-blur-md' : 'bg-white/95 border-gray-100 backdrop-blur-md'}`}
         >
           <div className="flex justify-center py-2 px-4">
             <ActionsPost

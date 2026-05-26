@@ -115,7 +115,7 @@ const FollowersUsers = () => {
               className={`text-left text-xl md:text-3xl font-semibold pb-0 ${globalData.themeGlobal ? '' : 'text-white'
                 }`}
             >
-              Followers
+              Followers Users
             </h3>
             <div className="mt-4 space-y-6">
               {users.map((user: any) => (

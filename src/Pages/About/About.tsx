@@ -71,7 +71,7 @@ const FeatureCard = ({
       animate={inView ? { opacity: 1, y: 0 } : {}}
       transition={{ duration: 0.4, delay: index * 0.06, ease: [0.25, 0.46, 0.45, 0.94] }}
       className={`rounded-2xl border p-5 space-y-3 transition-colors duration-200
-        ${dark ? 'bg-[#141414] border-gray-800 hover:border-gray-700' : 'bg-white border-gray-100 hover:border-gray-200 hover:shadow-sm'}`}
+        ${dark ? 'bg-[#27272A] border-gray-800 hover:border-gray-700' : 'bg-white border-gray-100 hover:border-gray-200 hover:shadow-sm'}`}
     >
       <div className={`h-10 w-10 rounded-xl flex items-center justify-center
         ${dark ? 'bg-[#2563EB]/15 text-blue-400' : 'bg-[#2563EB]/8 text-[#2563EB]'}`}>
@@ -191,7 +191,7 @@ const About = () => {
         </Section>
       </section>
 
-      <section className={`border-y ${dark ? 'border-gray-800 bg-[#141414]' : 'border-gray-100 bg-white'}`}>
+      <section className={`border-y ${dark ? 'border-gray-800 bg-[#27272A]' : 'border-gray-100 bg-white'}`}>
         <div className="max-w-3xl mx-auto px-4 sm:px-6 py-10">
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-8">
             <StatItem value="8+" label="Core features"   dark={dark} />
@@ -255,7 +255,7 @@ const About = () => {
 
             <motion.div variants={fadeUp} custom={2}
               className={`rounded-2xl border p-6 sm:p-8 space-y-4
-                ${dark ? 'bg-[#141414] border-gray-800' : 'bg-white border-gray-100'}`}>
+                ${dark ? 'bg-[#27272A] border-gray-800' : 'bg-white border-gray-100'}`}>
               <p className={`text-sm leading-relaxed ${dark ? 'text-gray-400' : 'text-gray-600'}`}>
                 DLTechBlog was built as part of social service at BUAP (Benemérita Universidad Autónoma de Puebla)
                 from August 2022 to August 2023. The goal was to create a platform where students and developers

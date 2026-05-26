@@ -86,7 +86,7 @@ const EditorWithPreview = ({ content, onContent, error, onClearError, dark = fal
             transition={{ duration: 0.15 }}
           >
             <div className={`min-h-[360px] rounded-b-xl rounded-tr-xl border px-8 py-6
-              ${dark ? "bg-[#141414] border-gray-700" : "bg-white border-gray-200"}`}
+              ${dark ? "bg-[#27272A] border-gray-700" : "bg-white border-gray-200"}`}
             >
               {content && content !== "<p><br></p>" ? (
                 <PostContent html={content} dark={dark} />

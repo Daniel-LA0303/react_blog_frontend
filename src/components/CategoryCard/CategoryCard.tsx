@@ -43,7 +43,7 @@ const CategoryCard = ({ category }: any) => {
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.4, ease: [0.25, 0.46, 0.45, 0.94] }}
       className={`relative w-full mt-5 rounded-2xl border overflow-hidden
-        ${dark ? 'bg-[#141414] border-gray-800' : 'bg-white border-gray-100'}`}
+        ${dark ? 'bg-[#27272A] border-gray-800' : 'bg-white border-gray-100'}`}
     >
       {/* Category color bar — top accent */}
       <div className="h-1 w-full" style={{ backgroundColor: category.color }} />

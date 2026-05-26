@@ -177,7 +177,7 @@ const Post = ({ post }: any) => {
     <article
       className={`group w-full rounded-2xl border overflow-hidden transition-colors duration-200 mt-4
         ${dark
-          ? 'bg-[#141414] border-gray-800 hover:border-gray-700'
+          ? 'bg-[#27272A] border-gray-800 hover:border-gray-700'
           : 'bg-white border-gray-100 hover:border-gray-200'
         }`}
     >

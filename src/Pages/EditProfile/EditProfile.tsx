@@ -235,7 +235,7 @@ const EditProfile = () => {
   if (Object.keys(userAuth).length === 0) return <Spinner />
 
   return (
-    <div className={`min-h-screen transition-colors duration-300 ${dark ? 'bg-[#0f0f0f]' : 'bg-[#fafafa]'}`}>
+    <div className={`min-h-screen transition-colors duration-300 ${dark ? 'bg-[#0f0f0f]' : 'bgt-white'}`}>
       <Sidebar />
 
       {loading ? <Spinner /> : (
@@ -257,7 +257,7 @@ const EditProfile = () => {
           {/* Card */}
           <motion.div
             initial="hidden" animate="visible" variants={stagger}
-            className={`rounded-2xl border ${dark ? 'bg-[#141414] border-gray-800' : 'bg-white border-gray-100'}`}
+            className={`rounded-2xl border ${dark ? 'bgt-dark border-gray-800' : 'bg-white border-gray-100'}`}
           >
             <div className="px-7 pt-7">
 

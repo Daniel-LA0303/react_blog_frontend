@@ -104,7 +104,7 @@ const ActionsPost = ({
 
   return (
     <div className={`flex flex-row sm:flex-col items-center gap-1 p-2 rounded-2xl border
-      ${dark ? 'bg-[#141414] border-gray-800' : 'bg-white border-gray-100'}`}>
+      ${dark ? 'bg-[#27272A] border-gray-800' : 'bg-white border-gray-100'}`}>
 
       {/* Like */}
       <ActionBtn

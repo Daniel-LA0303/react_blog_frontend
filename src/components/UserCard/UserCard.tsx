@@ -91,7 +91,7 @@ const UserCard = ({ user }: any) => {
 
   return (
     <div className={`w-full rounded-2xl border overflow-hidden
-      ${dark ? 'bg-[#141414] border-gray-800' : 'bg-white border-gray-100'}`}>
+      ${dark ? 'bg-[#27272A] border-gray-800' : 'bg-white border-gray-100'}`}>
       <div className="p-5">
 
         {/* Avatar + name */}

@@ -247,12 +247,12 @@ const TipTapEditor = ({ content, onContent, error, onClearError }: TipTapEditorP
 
                             {/* Editor box */}
                             <div className={`tiptap-wrapper rounded-b-xl rounded-tr-xl border-2 overflow-hidden
-                                ${dark ? "border-gray-700 bg-[#141414] text-white" : "border-gray-300 bg-white"}`}>
+                                ${dark ? "border-gray-700 bg-[#27272A] text-white" : "border-gray-300 bg-white"}`}>
 
                                 {/* ── Toolbar */}
                                 <div className={`flex flex-wrap items-center gap-0.5 px-3 py-2
                                     border-b sticky top-0 z-10
-                                    ${dark ? "bg-[#1a1a1a] border-gray-700" : "bg-gray-50 border-gray-100"}`}>
+                                    ${dark ? "bg-[#27272A] border-gray-700" : "bg-gray-50 border-gray-100"}`}>
 
                                     <ToolBtn dark={dark} title="Undo" onClick={() => editor.chain().focus().undo().run()}
                                         disabled={!editor.can().undo()}>
@@ -457,7 +457,7 @@ const TipTapEditor = ({ content, onContent, error, onClearError }: TipTapEditorP
                             initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
                             transition={{ duration: 0.12 }}>
                             <div className={`min-h-[400px] rounded-b-xl rounded-tr-xl border px-8 py-6
-                                ${dark ? "bg-[#141414] border-gray-700" : "bg-white border-gray-200"}`}>
+                                ${dark ? "bg-[#27272A] border-gray-700" : "bg-white border-gray-200"}`}>
                                 {editor.isEmpty ? (
                                     <p className={`text-sm italic ${dark ? "text-gray-600" : "text-gray-400"}`}>
                                         Nothing to preview yet. Switch to Write and add some content.

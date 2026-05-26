@@ -10,7 +10,7 @@ import userUserAuthContext from '../../context/hooks/useUserAuthContext'
 import useGlobalDataContext from '../../context/hooks/useGlobalDataContext'
 
 const SkeletonCard = ({ dark }: { dark: boolean }) => (
-  <div className={`rounded-2xl border overflow-hidden ${dark ? 'bg-[#141414] border-gray-800' : 'bg-white border-gray-100'}`}>
+  <div className={`rounded-2xl border overflow-hidden ${dark ? 'bg-[#27272A] border-gray-800' : 'bg-white border-gray-100'}`}>
     <motion.div
       className="h-1 w-full"
       animate={{ opacity: [0.3, 0.7, 0.3] }}
@@ -116,7 +116,7 @@ const Categories = () => {
   }, [loading, hasMore, page])
 
   return (
-    <div className={`min-h-screen transition-colors duration-300 ${dark ? 'bg-[#0f0f0f]' : 'bg-[#fafafa]'}`}>
+    <div className={`min-h-screen transition-colors duration-300 ${dark ? 'bg-[#0f0f0f]' : 'bgt-white'}`}>
       <Sidebar />
 
       <div className="mx-auto px-4 sm:px-6 lg:px-8 max-w-screen-xl pb-16">

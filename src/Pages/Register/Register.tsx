@@ -184,7 +184,7 @@ const Register = () => {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 0.5, delay: 0.1 }}
-        className={`flex-1 flex items-center justify-center px-8 py-16 ${dark ? 'bg-[#111]' : 'bg-[#f5f4f0]'}`}
+        className={`flex-1 flex items-center justify-center px-8 py-16 ${dark ? 'bg-[#27272A]' : 'bg-[#f5f4f0]'}`}
       >
         <div className="w-full max-w-sm">
 

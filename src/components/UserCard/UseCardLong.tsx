@@ -111,8 +111,6 @@ const UserCardLong = ({ user }: any) => {
                             }}
                             aria-label={`${user.name}'s profile picture`}
                         />
-                        {/* Online indicator (optional visual touch) */}
-                        <span className="absolute bottom-0 right-0 h-3 w-3 rounded-full bg-emerald-400 border-2 border-white dark:border-zinc-800" />
                     </Link>
 
                     {/* Text info */}

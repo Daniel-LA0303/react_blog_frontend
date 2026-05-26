@@ -14,7 +14,7 @@ function Chatuser({ openSidebar }: any) {
 
   return (
     <div className={`flex items-center gap-3 px-4 h-16 border-b flex-shrink-0
-      ${dark ? 'bg-[#111] border-gray-800' : 'bg-white border-gray-100'}`}>
+      ${dark ? 'bg-[#27272A] border-gray-800' : 'bg-white border-gray-100'}`}>
 
       {/* Mobile hamburger */}
       <motion.button

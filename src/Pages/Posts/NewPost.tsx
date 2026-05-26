@@ -363,7 +363,7 @@ const NewPost = () => {
   if (loading) return <Spinner />
 
   return (
-    <div className={`min-h-screen transition-colors duration-300 ${dark ? 'bg-[#0f0f0f]' : 'bg-[#fafafa]'}`}>
+    <div className={`min-h-screen transition-colors duration-300 ${dark ? 'bg-[#0f0f0f]' : 'bgt-white'}`}>
       <Sidebar />
 
       <main className="mx-auto w-full max-w-5xl px-4 py-6 sm:px-6 lg:px-8">
@@ -512,18 +512,6 @@ const NewPost = () => {
                 onClearError={() => setErrors(p => ({ ...p, content: '' }))}
               />
               </div>
-              <AnimatePresence>
-                {errors.content && (
-                  <motion.p
-                    initial={{ opacity: 0, y: -4 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0 }}
-                    className="mt-1.5 text-xs text-red-500"
-                  >
-                    {errors.content}
-                  </motion.p>
-                )}
-              </AnimatePresence>
             </motion.div>
 
           </div>

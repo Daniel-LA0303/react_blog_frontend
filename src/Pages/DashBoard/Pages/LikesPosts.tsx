@@ -119,7 +119,7 @@ const LikesPosts = () => {
               className={`text-left text-xl md:text-3xl font-semibold pb-0 ${globalData.themeGlobal ? '' : 'text-white'
                 }`}
             >
-              Published Blogs
+              Liked Blogs
             </h3>
 
             <div className="mt-4 space-y-6">

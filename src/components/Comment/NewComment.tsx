@@ -76,7 +76,7 @@ const NewComment = ({
   }
 
   return (
-    <section className={`rounded-2xl border p-5 ${dark ? 'bg-[#141414] border-gray-800' : 'bg-white border-gray-100'}`}>
+    <section className={`rounded-2xl border p-5 ${dark ? 'bg-[#27272A] border-gray-800' : 'bg-white border-gray-100'}`}>
       <div className="flex gap-3">
 
         {/* Avatar */}

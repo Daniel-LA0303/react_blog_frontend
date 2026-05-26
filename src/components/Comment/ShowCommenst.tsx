@@ -244,7 +244,7 @@ const ShowCommenst = ({
         className={`rounded-2xl border p-5 transition-colors duration-500
           ${highlight
             ? dark ? 'border-yellow-600/40 bg-yellow-900/10' : 'border-yellow-200 bg-yellow-50'
-            : dark ? 'bg-[#141414] border-gray-800' : 'bg-white border-gray-100'
+            : dark ? 'bg-[#27272A] border-gray-800' : 'bg-white border-gray-100'
           }`}
       >
         {/* Comment header */}

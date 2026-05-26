@@ -41,7 +41,7 @@ const NewCardCategory = ({ category, userAuth }: any) => {
       whileHover={{ y: -2 }}
       className={`group relative flex flex-col h-full rounded-2xl border overflow-hidden transition-colors duration-200
         ${dark
-          ? 'bg-[#141414] border-gray-800 hover:border-gray-600'
+          ? 'bg-[#27272A] border-gray-800 hover:border-gray-600'
           : 'bg-white border-gray-100 hover:border-gray-200 hover:shadow-sm'
         }`}
     >

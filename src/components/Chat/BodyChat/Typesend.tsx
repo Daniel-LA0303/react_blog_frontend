@@ -34,7 +34,7 @@ function Typesend() {
 
   return (
     <div className={`relative px-3 py-3 border-t flex-shrink-0
-      ${dark ? 'bg-[#111] border-gray-800' : 'bg-white border-gray-100'}`}>
+      ${dark ? 'bg-[#27272A] border-gray-800' : 'bg-white border-gray-100'}`}>
 
       {/* Overlay — cierra el picker al tocar afuera, sin afectar el input */}
       {emojiOpen && (

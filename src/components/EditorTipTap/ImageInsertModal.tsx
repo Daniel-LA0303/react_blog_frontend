@@ -47,7 +47,7 @@ const ImageInsertModal = ({ onInsert, onClose }: Props) => {
   };
 
   // Shorthand classes
-  const modal   = dark ? "bg-[#1a1a1a] border border-gray-700"        : "bg-white";
+  const modal   = dark ? "bg-[#27272A] border border-gray-700"        : "bg-white";
   const header  = dark ? "border-gray-700"                             : "border-gray-100";
   const title   = dark ? "text-gray-100"                               : "text-gray-900";
   const close   = dark ? "text-gray-500 hover:text-gray-300"           : "text-gray-400 hover:text-gray-600";

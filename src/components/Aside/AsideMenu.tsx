@@ -26,7 +26,7 @@ const AsideMenu = ({ user }: any) => {
     const { globalData } = useGlobalDataContext();
 
     return (
-        <div className={`${globalData.themeGlobal ? ' ' : 'bgt-dark text-white'}  rounded-lg`}>
+        <div className={`${globalData.themeGlobal ? 'bg-white' : 'bgt-dark text-white'}  rounded-lg`}>
             <Link 
                 to={'/'}
             className='px-5 text-sm flex hover:bg-zinc-700 hover:text-white cursor-pointer py-3 mb-2 transition'>

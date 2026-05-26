@@ -403,7 +403,7 @@ const EditPost = () => {
   if (loading) return <Spinner />
 
   return (
-    <div className={`min-h-screen transition-colors duration-300 ${dark ? 'bg-[#0f0f0f]' : 'bg-[#fafafa]'}`}>
+    <div className={`min-h-screen transition-colors duration-300 ${dark ? 'bg-[#0f0f0f]' : 'bgt-white'}`}>
       <Sidebar />
 
       <main className="mx-auto w-full max-w-5xl px-4 py-12 sm:px-6 lg:px-8">

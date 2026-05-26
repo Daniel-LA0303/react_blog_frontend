@@ -23,7 +23,7 @@ const fadeUp = {
 const stagger = { hidden: {}, visible: { transition: { staggerChildren: 0.07 } } }
 
 const PostSkeleton = ({ dark }: { dark: boolean }) => (
-  <div className={`rounded-2xl border p-5 space-y-3 ${dark ? 'bg-[#141414] border-gray-800' : 'bg-white border-gray-100'}`}>
+  <div className={`rounded-2xl border p-5 space-y-3 ${dark ? 'bg-[#27272A] border-gray-800' : 'bg-white border-gray-100'}`}>
     {[1, 0.75, 0.55].map((w, i) => (
       <motion.div
         key={i}
@@ -48,7 +48,7 @@ const PostSkeleton = ({ dark }: { dark: boolean }) => (
 )
 
 const AsideSkeleton = ({ dark }: { dark: boolean }) => (
-  <div className={`rounded-2xl border p-5 space-y-3 ${dark ? 'bg-[#141414] border-gray-800' : 'bg-white border-gray-100'}`}>
+  <div className={`rounded-2xl border p-5 space-y-3 ${dark ? 'bg-[#27272A] border-gray-800' : 'bg-white border-gray-100'}`}>
     <motion.div className={`h-4 w-32 rounded-md ${dark ? 'bg-gray-800' : 'bg-gray-100'}`}
       animate={{ opacity: [0.4, 0.8, 0.4] }} transition={{ duration: 1.6, repeat: Infinity, ease: 'easeInOut' }} />
     {[1, 0.8, 0.6].map((w, i) => (
@@ -66,7 +66,7 @@ const AsideCard = ({ title, dark, delay, children }: {
   <motion.div
     variants={fadeUp}
     custom={delay}
-    className={`rounded-2xl border p-5 mt-5 ${dark ? 'bg-[#141414] border-gray-800' : 'bg-white border-gray-100'}`}
+    className={`rounded-2xl border p-5 mt-5 ${dark ? 'bg-[#27272A] border-gray-800' : 'bg-white border-gray-100'}`}
   >
     <h2 className={`text-sm font-semibold uppercase tracking-widest mb-4 ${dark ? 'text-gray-400' : 'text-gray-400'}`}>
       {title}
@@ -173,7 +173,7 @@ const CategoryPost = () => {
   const cat = categoryInfo?.category
 
   return (
-    <div className={`min-h-screen transition-colors duration-300 ${dark ? 'bg-[#0f0f0f]' : 'bg-[#fafafa]'}`}>
+    <div className={`min-h-screen transition-colors duration-300 ${dark ? 'bg-[#0f0f0f]' : 'bgt-white'}`}>
       <Sidebar />
 
       {error ? (
@@ -187,7 +187,7 @@ const CategoryPost = () => {
                 initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
                 className="pt-10 pb-2"
               >
-                <div className={`rounded-2xl border overflow-hidden ${dark ? 'bg-[#141414] border-gray-800' : 'bg-white border-gray-100'}`}>
+                <div className={`rounded-2xl border overflow-hidden ${dark ? 'bg-[#27272A] border-gray-800' : 'bg-white border-gray-100'}`}>
                   <div className={`h-1 w-full ${dark ? 'bg-gray-800' : 'bg-gray-100'}`} />
                   <div className="px-6 py-5 space-y-3">
                     <div className="flex justify-between items-center">
@@ -240,7 +240,7 @@ const CategoryPost = () => {
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0 }}
                     transition={{ duration: 0.4 }}
-                    className={`rounded-2xl border p-12 text-center ${dark ? 'bg-[#141414] border-gray-800' : 'bg-white border-gray-100'}`}
+                    className={`rounded-2xl border p-12 text-center ${dark ? 'bg-[#27272A] border-gray-800' : 'bg-white border-gray-100'}`}
                   >
                     <p className="text-3xl mb-3">✍️</p>
                     <p className={`text-sm font-medium ${dark ? 'text-gray-400' : 'text-gray-500'}`}>

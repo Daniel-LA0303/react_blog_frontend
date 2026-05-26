@@ -47,7 +47,7 @@ function ChatLayout() {
 
       <aside
         className={`hidden sm:flex flex-col w-64 flex-shrink-0 border-r
-          ${dark ? 'bg-[#111] border-gray-800' : 'bg-white border-gray-100'}`}
+          ${dark ? 'bg-[#27272A] border-gray-800' : 'bg-white border-gray-100'}`}
       >
         {/* Header */}
         <div className={`flex items-center justify-between px-5 py-4 border-b flex-shrink-0
@@ -129,7 +129,7 @@ function ChatLayout() {
             exit={{ x: '-100%' }}
             transition={{ type: 'spring', stiffness: 320, damping: 32 }}
             className={`fixed inset-y-0 left-0 z-30 w-64 flex flex-col border-r sm:hidden
-              ${dark ? 'bg-[#111] border-gray-800' : 'bg-white border-gray-100'}`}
+              ${dark ? 'bg-[#27272A] border-gray-800' : 'bg-white border-gray-100'}`}
           >
             {/* Header */}
             <div className={`flex items-center justify-between px-5 py-4 border-b flex-shrink-0

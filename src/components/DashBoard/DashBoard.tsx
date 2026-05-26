@@ -110,7 +110,7 @@ const StatCard = ({
       to={to}
       className={`group flex flex-col gap-3 rounded-2xl border p-5 transition-all duration-200
         ${dark
-          ? 'bg-[#141414] border-gray-800 hover:border-gray-600'
+          ? 'bg-[#27272A] border-gray-800 hover:border-gray-600'
           : 'bg-white border-gray-100 hover:border-gray-300 hover:shadow-sm'
         }`}
     >
@@ -145,7 +145,7 @@ const SoonCard = ({
   <motion.div variants={fadeUp} custom={index}>
     <div
       className={`relative flex flex-col gap-3 rounded-2xl border p-5 opacity-60 select-none
-        ${dark ? 'bg-[#141414] border-gray-800' : 'bg-white border-gray-100'}`}
+        ${dark ? 'bg-[#27272A] border-gray-800' : 'bg-white border-gray-100'}`}
     >
       {/* Soon badge */}
       <span className={`absolute top-4 right-4 text-[10px] font-semibold uppercase tracking-widest px-2 py-0.5 rounded-full
@@ -199,7 +199,7 @@ const DashBoard = ({ counts }: any) => {
         variants={fadeUp}
         custom={0}
         className={`rounded-2xl border overflow-hidden mb-8
-          ${dark ? 'bg-[#141414] border-gray-800' : 'bg-white border-gray-100'}`}
+          ${dark ? 'bg-[#27272A] border-gray-800' : 'bg-white border-gray-100'}`}
       >
         <div className="flex flex-col sm:flex-row items-center sm:items-start gap-6 p-7">
           {/* Avatar */}

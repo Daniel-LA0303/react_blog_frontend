@@ -189,7 +189,7 @@ const SearchCom = ({
       initial={{ opacity: 0, y: 12 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.4 }}
-      className={`rounded-2xl border p-14 text-center ${dark ? 'bg-[#141414] border-gray-800' : 'bg-white border-gray-100'}`}
+      className={`rounded-2xl border p-14 text-center ${dark ? 'bg-[#27272A] border-gray-800' : 'bg-white border-gray-100'}`}
     >
       <p className="text-3xl mb-3">🔍</p>
       <p className={`text-sm font-medium ${dark ? 'text-gray-400' : 'text-gray-500'}`}>
@@ -213,7 +213,7 @@ const SearchCom = ({
 
       {/* Tab bar */}
       <div className={`relative flex items-center rounded-2xl border p-1 gap-1
-        ${dark ? 'bg-[#141414] border-gray-800' : 'bg-white border-gray-100'}`}>
+        ${dark ? 'bg-[#27272A] border-gray-800' : 'bg-white border-gray-100'}`}>
         {tabs.map(tab => (
           <button
             key={tab.id}

@@ -37,7 +37,7 @@ const VideoInsertModal = ({ onInsert, onClose }: Props) => {
         transition={{ duration: 0.18 }}
         onClick={(e: any) => e.stopPropagation()}
         className={`rounded-2xl shadow-2xl w-full max-w-md overflow-hidden
-          ${dark ? "bg-[#1a1a1a] border border-gray-700" : "bg-white"}`}
+          ${dark ? "bg-[#27272A] border border-gray-700" : "bg-white"}`}
       >
         {/* Header */}
         <div className={`flex items-center justify-between px-5 py-4 border-b

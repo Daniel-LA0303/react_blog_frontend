@@ -119,7 +119,7 @@ const ShowReplies = ({ reply, userP, onUpdateReply, onDeleteReply }: any) => {
       initial={{ opacity: 0, x: -8 }}
       animate={{ opacity: 1, x: 0 }}
       transition={{ duration: 0.25 }}
-      className={`rounded-xl border p-4 ${dark ? 'bg-[#1a1a1a] border-gray-800' : 'bg-gray-50 border-gray-100'}`}
+      className={`rounded-xl border p-4 ${dark ? 'bg-[#27272A] border-gray-800' : 'bg-gray-50 border-gray-100'}`}
     >
       {/* Header */}
       <div className="flex items-center justify-between mb-3">

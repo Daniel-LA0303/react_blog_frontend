@@ -76,7 +76,7 @@ const SkeletonPulse = ({ className = '' }: { className?: string }) => (
 );
 
 const ProfileSkeleton = ({ dark }: { dark: boolean }) => (
-  <div className={`overflow-hidden rounded-2xl shadow-sm border ${dark ? 'bg-[#1a1a1a] border-gray-800' : 'bg-white border-gray-100'} p-8`}>
+  <div className={`overflow-hidden rounded-2xl shadow-sm border ${dark ? 'bg-[#27272A] border-gray-800' : 'bg-white border-gray-100'} p-8`}>
     <div className="flex flex-col sm:flex-row gap-6 items-center sm:items-start">
       <SkeletonPulse className="h-24 w-24 rounded-full flex-shrink-0" />
       <div className="flex-1 space-y-3 w-full">
@@ -89,7 +89,7 @@ const ProfileSkeleton = ({ dark }: { dark: boolean }) => (
 );
 
 const PostSkeleton = ({ dark }: { dark: boolean }) => (
-  <div className={`rounded-2xl border ${dark ? 'bg-[#1a1a1a] border-gray-800' : 'bg-white border-gray-100'} p-6 space-y-3`}>
+  <div className={`rounded-2xl border ${dark ? 'bg-[#27272A] border-gray-800' : 'bg-white border-gray-100'} p-6 space-y-3`}>
     <SkeletonPulse className="h-5 w-3/4" />
     <SkeletonPulse className="h-4 w-full" />
     <SkeletonPulse className="h-4 w-2/3" />
@@ -234,7 +234,7 @@ const SideCard = ({
   <motion.div
     variants={fadeUp}
     custom={delay}
-    className={`rounded-2xl border ${dark ? 'bg-[#141414] border-gray-800' : 'bg-white border-gray-100'} overflow-hidden`}
+    className={`rounded-2xl border ${dark ? 'bg-[#27272A] border-gray-800' : 'bg-white border-gray-100'} overflow-hidden`}
   >
     <div className="p-6">
       <h3 className={`text-sm font-semibold uppercase tracking-widest mb-4 ${dark ? 'text-gray-400' : 'text-gray-400'}`}>
@@ -419,7 +419,7 @@ const Profile = () => {
   const isGuest = Object.keys(userAuth).length === 0;
 
   return (
-    <div className={`min-h-screen ${dark ? 'bg-[#0f0f0f]' : 'bg-[#fafafa]'} transition-colors duration-300`}>
+    <div className={`min-h-screen ${dark ? 'bg-[#0f0f0f]' : 'bgt-white'} transition-colors duration-300`}>
       <Sidebar />
 
       <main className="max-w-screen-xl mx-auto px-4 py-10 sm:px-6 lg:px-10">
@@ -439,7 +439,7 @@ const Profile = () => {
                   initial="hidden"
                   animate="visible"
                   variants={staggerContainer}
-                  className={`rounded-2xl border overflow-hidden ${dark ? 'bg-[#141414] border-gray-800' : 'bg-white border-gray-100'}`}
+                  className={`rounded-2xl border overflow-hidden ${dark ? 'bg-[#27272A] border-gray-800' : 'bg-white border-gray-100'}`}
                 >
                   <div className="p-8">
                     <div className="flex flex-col sm:flex-row items-center sm:items-start gap-6">
@@ -615,7 +615,7 @@ const Profile = () => {
                     initial={{ opacity: 0, y: 16 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.5 }}
-                    className={`text-center py-16 rounded-2xl border ${dark ? 'border-gray-800 bg-[#141414]' : 'border-gray-100 bg-white'}`}
+                    className={`text-center py-16 rounded-2xl border ${dark ? 'border-gray-800 bg-[#27272A]' : 'border-gray-100 bg-white'}`}
                   >
                     <p className="text-4xl mb-3">✍️</p>
                     <p className={`text-sm font-medium ${dark ? 'text-gray-400' : 'text-gray-500'}`}>No posts yet</p>
