@@ -5,6 +5,7 @@ import useConversation from "./useConversation";
 import axios from "axios";
 import useGlobalDataContext from "./useGlobalDataContext";
 import { Socket } from "socket.io-client";
+import { NewMessageFromSocketI } from "../../interfaces/message.interfaces";
 
 type Notifications = Record<string, number>;
 
@@ -44,14 +45,24 @@ const useGetSocketMessage = () => {
 
     if (!socket) return;
 
-    const handleNewMessage = (newMessage: any) => {
+    const handleNewMessage = (newMessage: NewMessageFromSocketI) => {
+
+      console.log("new message from socket: ", newMessage);
+      console.log("selected conversation id: ", selectedConversation._id.toString());
+      
+      // TODO: this is wrong, we use user id as -> /chat/68af8251c9d1f9e8fcfec0a2
+      // we need to use conversationId not senderId._id
+
       if (
         selectedConversation &&
         newMessage.senderId._id.toString() ===
           selectedConversation._id.toString()
       ) {
+        // we update messages UI
         setMessage([...messages, newMessage]);
       } else {
+
+        // update UI to go up ui to the top
         const sender = newMessage.senderId;
         const senderId = sender._id || sender;
 
@@ -60,7 +71,7 @@ const useGetSocketMessage = () => {
             typeof newMessage.senderId === "object"
               ? {
                   _id: newMessage.senderId._id,
-                  fullname: newMessage.senderId.fullname,
+                  fullname: newMessage.senderId.name,
                   email: newMessage.senderId.email,
                 }
               : { _id: newMessage.senderId };
