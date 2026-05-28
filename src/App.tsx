@@ -34,6 +34,7 @@ import WrappedCategoryPost from "./Pages/CategoryPost/WrappedCategoryPost";
 import useGlobalDataContext from "./context/hooks/useGlobalDataContext";
 import userUserAuthContext from "./context/hooks/useUserAuthContext";
 import ChatLayout from "./components/Chat/ChatLayout";
+import Pricing from "./Pages/Pricing/Princing";
 
 
 /**
@@ -67,6 +68,7 @@ function App() {
           <Route path="/forget-password" element={<ForgetPassword />} />
           <Route path="/forget-password/:id" element={<NewPassword />} />
           <Route path="/user-confirmed/:id" element={<UserConfirmed />} />
+          <Route path="/pricing" element={<Pricing />} />
 
           <Route path="/about" element={<About />} />
 
