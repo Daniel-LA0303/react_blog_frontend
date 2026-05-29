@@ -17,6 +17,8 @@
     "@mui/icons-material": "^5.14.1",
     "@mui/lab": "^5.0.0-alpha.140",
     "@mui/material": "^5.14.2",
+    "@stripe/react-stripe-js": "^6.4.0",
+    "@stripe/stripe-js": "^9.7.0",
     "@tiptap/extension-code-block-lowlight": "^3.23.6",
     "@tiptap/extension-color": "^3.23.6",
     "@tiptap/extension-highlight": "^3.23.6",

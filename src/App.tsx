@@ -35,6 +35,7 @@ import useGlobalDataContext from "./context/hooks/useGlobalDataContext";
 import userUserAuthContext from "./context/hooks/useUserAuthContext";
 import ChatLayout from "./components/Chat/ChatLayout";
 import Pricing from "./Pages/Pricing/Princing";
+import AddPaymentMethod from "./Pages/Payment/AddPaymentMethod";
 
 
 /**
@@ -89,7 +90,7 @@ function App() {
           <Route path="/user-likes-posts/:id" element={userAuth.userId ? <LikesPosts /> : <Login />} />
           <Route path="/followed-users/:id" element={userAuth.userId ? <FollowedUsers /> : <Login />} />
           <Route path="/followers-users/:id" element={userAuth.userId ? <FollowersUsers /> : <Login />} />
-
+          <Route path="/payment-methods" element={userAuth.userId ? <AddPaymentMethod /> : <Login />} />
 
           <Route path="/profile/:id" element={<Profile />} />
           <Route path="/edit-profile/:id" element={userAuth.userId ? <EditProfile /> : <Login />} />
