@@ -90,7 +90,7 @@ function App() {
           <Route path="/user-likes-posts/:id" element={userAuth.userId ? <LikesPosts /> : <Login />} />
           <Route path="/followed-users/:id" element={userAuth.userId ? <FollowedUsers /> : <Login />} />
           <Route path="/followers-users/:id" element={userAuth.userId ? <FollowersUsers /> : <Login />} />
-          <Route path="/payment-methods" element={userAuth.userId ? <AddPaymentMethod /> : <Login />} />
+          <Route path="/payment-methods/:id" element={userAuth.userId ? <AddPaymentMethod /> : <Login />} />
 
           <Route path="/profile/:id" element={<Profile />} />
           <Route path="/edit-profile/:id" element={userAuth.userId ? <EditProfile /> : <Login />} />
