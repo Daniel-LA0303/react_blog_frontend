@@ -203,7 +203,7 @@ const Notifications = () => {
                             )}
                         </div>
 
-                        {unread > 0 && (
+                        {/*{unread > 0 && (
                             <button
                                 onClick={markAll}
                                 className={`
@@ -214,7 +214,7 @@ const Notifications = () => {
                                 <FontAwesomeIcon icon={faCheckDouble} className="text-[9px]" />
                                 Mark all read
                             </button>
-                        )}
+                        )}*/}
                     </div>
 
                     {/* body */}
