@@ -5,6 +5,7 @@ import {
     faMessage,
     faNoteSticky,
     faCheckDouble,
+    faUser,
 } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { useEffect, useRef, useState } from 'react'
@@ -14,14 +15,57 @@ import useGlobalDataContext from '../../context/hooks/useGlobalDataContext'
 import clientAuthAxios from '../../services/clientAuthAxios'
 import usePages from '../../context/hooks/usePages'
 import { NotificationI, NotificationType } from '../../interfaces/notification.interface'
+import { Link, useNavigate } from 'react-router-dom'
 
 /* Helpers */
-const typeConfig: Record<string, { icon: any; iconClass: string; dotClass: string }> = {
-    LIKE_POST: { icon: faHeart, iconClass: 'text-rose-400', dotClass: 'bg-rose-400' },
-    COMMENT_POST: { icon: faComment, iconClass: 'text-sky-400', dotClass: 'bg-sky-400' },
-    MESSAGE: { icon: faMessage, iconClass: 'text-violet-400', dotClass: 'bg-violet-400' },
-    NOTE: { icon: faNoteSticky, iconClass: 'text-amber-400', dotClass: 'bg-amber-400' },
-    DEFAULT: { icon: faBell, iconClass: 'text-slate-400', dotClass: 'bg-slate-400' },
+const typeConfig: Record<string, {
+    icon: any;
+    iconClass: string;
+    dotClass: string;
+    route: string;
+}> = {
+    LIKE_POST: {
+        icon: faHeart,
+        iconClass: "text-rose-400",
+        dotClass: "bg-rose-400",
+        route: "/view-post/"
+    },
+    FOLLOW_USER: {
+        icon: faUser,
+        iconClass: "text-blue-400",
+        dotClass: "bg-blue-400",
+        route: "/profile/"
+    },
+    COMMENT_POST: {
+        icon: faComment,
+        iconClass: "text-sky-400",
+        dotClass: "bg-sky-400",
+        route: "/view-post/"
+    },
+    REPLY_COMMENT: {
+        icon: faComment,
+        iconClass: "text-violet-400",
+        dotClass: "bg-violet-400",
+        route: "/view-post/"
+    },
+    MESSAGE: {
+        icon: faMessage,
+        iconClass: "text-purple-400",
+        dotClass: "bg-purple-400",
+        route: "/view-post/"
+    },
+    NOTE: {
+        icon: faNoteSticky,
+        iconClass: "text-amber-400",
+        dotClass: "bg-amber-400",
+        route: "/view-post/"
+    },
+    DEFAULT: {
+        icon: faBell,
+        iconClass: "text-slate-400",
+        dotClass: "bg-slate-400",
+        route: "/view-post/"
+    },
 }
 
 const getConfig = (type: NotificationType) => typeConfig[type] ?? typeConfig.DEFAULT;
@@ -38,6 +82,9 @@ const relativeTime = (iso: string) => {
 
 /* Component */
 const Notifications = () => {
+
+    const navigate = useNavigate();
+
     const { notifications, setNotifications } = useGetSocketNotification()
     const { globalData } = useGlobalDataContext()
     const { userAuth } = useAuth()
@@ -55,7 +102,9 @@ const Notifications = () => {
         setLoading(true)
         clientAuthAxios
             .get(`notifications/get-notifications-by-user-paginated/${userAuth.userId}?page=0&limit=5`)
-            .then(r => setNotifications(r.data.data.data))
+            .then(r => {
+                setNotifications(r.data.data.data)
+            })
             .catch(e => console.error('notifications error:', e))
             .finally(() => setTimeout(() => setLoading(false), 200))
     }, [])
@@ -74,9 +123,29 @@ const Notifications = () => {
         notifications.map(n => ({ ...n, isRead: true }))
     );
 
-    const markOne = (id: string) => setNotifications(
-        notifications.map(n => (n._id === id ? { ...n, isRead: true } : n))
-    );
+    const markOne = async (notification: any, config: any) => {
+
+        if(!config.isRead){
+            await changeStatus(notification._id);
+        }
+        routePage(config, notification.entityId);
+
+        setNotifications(
+            notifications.map(n => (n._id === notification._id ? { ...n, isRead: true } : n))
+        );
+    }
+
+    const changeStatus = async (notificationId: string) => {
+        try {
+            await clientAuthAxios.post(`notifications/change-status/${notificationId}`);
+        } catch (error) {
+            console.log(error);
+        }
+    }
+
+    const routePage = async (config: any, notificationId: string) => {
+        navigate(`${config.route}${notificationId}`);
+    }
 
     return (
         <div ref={wrapperRef} className="relative inline-block">
@@ -181,12 +250,12 @@ const Notifications = () => {
                             return (
                                 <div
                                     key={notif._id}
-                                    onClick={() => markOne(notif._id)}
+                                    onClick={() => markOne(notif, cfg)}
                                     className={`
                                         relative flex items-start gap-3 px-4 py-3 cursor-pointer
                                         transition-colors duration-150
                                         ${!isLast ? 'border-b border-white/[0.04]' : ''}
-                                        ${notif.isRead 
+                                        ${notif.isRead
                                             ? (!globalData.themeGlobal ? 'bg-black/20 hover:bg-black/10' : 'bg-slate-100 hover:bg-slate-50')
                                             : (!globalData.themeGlobal ? 'bg-black/40 hover:bg-black/10' : 'bg-slate-[#e9eef4] hover:bg-slate-50')
                                         }
@@ -220,7 +289,7 @@ const Notifications = () => {
                                         {/* type badge */}
                                         <div className={`
                                             absolute -bottom-1 -right-1 w-[18px] h-[18px] rounded-md  border border-white/[0.08] flex items-center justify-center
-                                            ${ !globalData.themeGlobal ? 'bg-[#13131f]' : 'bg-slate-200'}`}
+                                            ${!globalData.themeGlobal ? 'bg-[#13131f]' : 'bg-slate-200'}`}
                                         >
                                             <FontAwesomeIcon
                                                 icon={cfg.icon}
@@ -254,12 +323,14 @@ const Notifications = () => {
                     {/* footer */}
                     {!loading && notifications?.length > 0 && (
                         <div className="border-t border-white/[0.06] px-4 py-2.5 text-center">
-                            <button className={`
+                            <Link
+                                to={`/notifications/${userAuth.userId}`}
+                                className={`
                                 text-[11px] font-semibold  transition-colors duration-150
                                 ${!globalData.themeGlobal ? 'text-white' : 'text-black'}
                             `}>
                                 View all notifications
-                            </button>
+                            </Link>
                         </div>
                     )}
                 </div>
