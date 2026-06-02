@@ -9,6 +9,7 @@ import ConfigButton from '../ConfigButton/ConfigButton'
 import Logo from '../Logo/Logo'
 import userUserAuthContext from '../../context/hooks/useUserAuthContext'
 import useGlobalDataContext from '../../context/hooks/useGlobalDataContext'
+import Notifications from '../Notifications/Notifications'
 
 const Sidebar = () => {
   const { userAuth } = userUserAuthContext()
@@ -68,6 +69,7 @@ const Sidebar = () => {
                   </svg>
                   Write
                 </Link>
+                <Notifications />
                 <ProfileButton />
               </div>
             ) : (
