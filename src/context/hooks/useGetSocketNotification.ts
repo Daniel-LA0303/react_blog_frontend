@@ -22,8 +22,6 @@ const useGetSocketNotification = () => {
         if (!socket) return;
 
         const handleNotification = (newNotification: NotificationI) => {
-
-            console.log("response from backend web socket: ", newNotification);
             
             addNotification(newNotification);
         };

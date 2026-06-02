@@ -11,7 +11,7 @@ type Notifications = Record<string, number>;
 const useGetSocketMessage = () => {
   const { socket } = useSocketContext() as { socket: Socket | null };
   const { setAllUsers, userAuth } = useAuth();
-  const { messages, setMessage, selectedConversation } = useConversation();
+  const { messages, setMessage, selectedConversation, conversations, setConversations } = useConversation();
   const [notifications, setNotifications] = useState<Notifications>({});
   const [unreadMessages, setUnreadMessages] = useState<number>(0);
   const { globalData } = useGlobalDataContext();
@@ -41,27 +41,21 @@ const useGetSocketMessage = () => {
         selectedConversation.members?.some((m: any) => m._id === senderId)
       );
 
+      //update ui last message
+      const updatedConv = conversations.find((c: any) => c._id === newMessage.conversationId)
+      if (updatedConv) {
+        const withUpdatedMessage = { ...updatedConv, lastMessage: { message: newMessage.message, createdAt: newMessage.createdAt } }
+        setConversations([
+          withUpdatedMessage,
+          ...conversations.filter((c: any) => c._id !== newMessage.conversationId)
+        ])
+      }
+
       if (isCurrentConversation) {
         setMessage([...messages, newMessage]);
       } else {
-        // move sender to top of users list
-        setAllUsers((prev) => {
-          const normalizedSender = typeof newMessage.senderId === "object"
-            ? {
-                _id: newMessage.senderId._id,
-                fullname: newMessage.senderId.name,
-                email: newMessage.senderId.email,
-              }
-            : { _id: newMessage.senderId };
 
-          const exists = prev.find((u) => u._id === normalizedSender._id);
-          if (exists) {
-            const merged = { ...exists, ...normalizedSender };
-            return [merged, ...prev.filter((u) => u._id !== normalizedSender._id)];
-          } else {
-            return [normalizedSender, ...prev];
-          }
-        });
+
 
         setNotifications((prev) => ({
           ...prev,

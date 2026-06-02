@@ -6,6 +6,7 @@ import { ConversationI } from '../../../interfaces/message.interfaces'
 import clientAuthAxios from '../../../services/clientAuthAxios'
 import { useAuth } from '../../../context/UserAuthContex'
 import useConversation from '../../../context/hooks/useConversation'
+import useGetSocketNewChat from '../../../context/hooks/useGetSocketNewChat'
 
 const LoadingSpinner = () => (
   <div className="flex justify-center py-10">
@@ -18,6 +19,9 @@ const LoadingSpinner = () => (
 )
 
 function Users({ onSelect }: any) {
+
+  useGetSocketNewChat() 
+
   const { conversations, setConversations, prependConversation } = useConversation()
 
   const userAuth = useAuth()
@@ -42,6 +46,8 @@ const fetchConversations = async (pageToFetch = pageRef.current) => {
       `${globalData.link}/message/get-conversations/${userAuth.userAuth.userId}?page=${pageToFetch}&limit=${limit}`
     )
     const { conversations: newConvs, meta } = response.data
+    console.log(response.data.conversations);
+    
     if (newConvs && newConvs.length > 0) {
       setConversations(pageToFetch === 1 ? newConvs : [...conversations, ...newConvs])  // ✅
       pageRef.current = pageToFetch + 1

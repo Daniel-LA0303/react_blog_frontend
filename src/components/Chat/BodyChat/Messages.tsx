@@ -82,10 +82,17 @@ function Messages() {
       setMessagePage(1)
       setHasMoreMessages(true)
       try {
-        const res = await axios.get(
-          `${globalData.link}/message/get/${otherUserId}?page=1&limit=20`,  // ✅ otherUserId
-          { headers: { Authorization: `Bearer ${userAuth.userAuthToken}` } }
-        )
+        const [res] = await Promise.all([
+          axios.get(
+            `${globalData.link}/message/get/${otherUserId}?page=1&limit=20`,
+            { headers: { Authorization: `Bearer ${userAuth.userAuthToken}` } }
+          ),
+          axios.put(
+            `${globalData.link}/message/mark-read/${selectedConversation._id}`,
+            {},
+            { headers: { Authorization: `Bearer ${userAuth.userAuthToken}` } }
+          )
+        ])
         const reversedMessages = res.data.messages.reverse()
         setMessage(reversedMessages)
         setHasMoreMessages(res.data.meta.page < res.data.meta.totalPages)

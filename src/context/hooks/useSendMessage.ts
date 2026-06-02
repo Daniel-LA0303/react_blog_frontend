@@ -49,11 +49,17 @@ const useSendMessage = () => {
           isTemp: false
         }
         setSelectedConversation(realConv)
-        const updated = conversations.map((c: any) =>
-          c._id === selectedConversation._id ? realConv : c
-        )
-        setConversations(updated)
       }
+      const convId = selectedConversation.isTemp
+        ? res.data.conversationId
+        : selectedConversation._id
+
+      const updatedConversations = conversations.map((c: any) =>
+        c._id === convId
+          ? { ...c, lastMessage: { message: res.data.message, createdAt: res.data.createdAt } }
+          : c
+      )
+      setConversations(updatedConversations)
     } catch (error) {
       console.log('Error in send messages', error)
     } finally {

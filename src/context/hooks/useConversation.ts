@@ -7,9 +7,10 @@ type ConversationStore = {
   selectedConversation: any | null;
   setSelectedConversation: (selectedConversation: any | null) => void;
 
-  conversations: any[];                              // ✅ add
-  setConversations: (c: any[]) => void;              // ✅ add
-  prependConversation: (c: any) => void;             // ✅ add
+  conversations: any[];                              
+  setConversations: (c: any[]) => void; 
+               
+  prependConversation: (c: any) => void;             
 
   messages: Message[];
   setMessage: (messages: Message[]) => void;
@@ -24,9 +25,9 @@ const useConversation = create<ConversationStore>((set, get) => ({
   selectedConversation: null,
   setSelectedConversation: (selectedConversation) => set({ selectedConversation }),
 
-  conversations: [],                                 // ✅
+  conversations: [],                                
   setConversations: (conversations) => set({ conversations }),
-  prependConversation: (conversation) =>             // ✅
+  prependConversation: (conversation) =>            
     set((state) => {
       const exists = state.conversations.find(c => c._id === conversation._id)
       if (exists) return state

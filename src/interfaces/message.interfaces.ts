@@ -10,12 +10,20 @@ export interface MemberConversationI{
     profilePicture: ProfilePictureI;
 }
 
+export interface LastMessageI{
+    _id: string;
+    message: string;
+    read: boolean;
+    createdAt: string;
+}
+
 export interface ConversationI{
     groupName?: string;
     createdBy?: any;
     _id: string;
     members: MemberConversationI[];
     isGroup: boolean;
+    lastMessage: LastMessageI;
     createdAt: string;
 }
 
