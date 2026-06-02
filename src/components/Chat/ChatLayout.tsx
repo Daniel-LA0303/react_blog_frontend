@@ -4,10 +4,10 @@ import { motion, AnimatePresence } from 'framer-motion'
 
 import Users from './SidebarChat/Users'
 import Search from './SidebarChat/Search'
-import Right from './BodyChat/Right'
 
 import useGlobalDataContext from '../../context/hooks/useGlobalDataContext'
 import userUserAuthContext from '../../context/hooks/useUserAuthContext'
+import Right from './BodyChat/Right'
 
 function ChatLayout() {
   const [sidebarOpen, setSidebarOpen] = useState(false)

@@ -5,9 +5,19 @@ import useConversation from '../../../context/hooks/useConversation'
 import { useSocketContext } from '../../../context/SocketContext'
 import useGetSocketMessage from '../../../context/hooks/useGetSocketMessage'
 import useGlobalDataContext from '../../../context/hooks/useGlobalDataContext'
+import { ConversationI } from '../../../interfaces/message.interfaces'
+import { useAuth } from '../../../context/UserAuthContex'
 
-function User({ user, onSelect }: any) {
-  const navigate = useNavigate()
+function User({
+  conversation,
+  onSelect
+}: {
+  conversation: ConversationI,
+  onSelect: () => void
+}) {
+  const navigate = useNavigate();
+
+  const userAuth = useAuth();
 
   // state zustand
   const { selectedConversation, setSelectedConversation } = useConversation()
@@ -21,24 +31,34 @@ function User({ user, onSelect }: any) {
   const { notifications, setNotifications } = useGetSocketMessage()
 
   // we select one user then we paint the messages
-  const isSelected = selectedConversation?._id === user._id
+  const isSelected = selectedConversation?._id === conversation._id
 
   // Check if the user is online
-  const isOnline = onlineUsers.includes(user._id)
+  const otherUser = conversation.members.find(c => userAuth.userAuth.userId !== c._id)
+  const isOnline = onlineUsers.includes(otherUser?._id ?? '')
 
-  // Count unread messages for the user
-  const unreadMessages = notifications[user._id] || 0
+  const unreadMessages = notifications[conversation._id] || 0
 
   // Handle user selection
   const handleSelectConversation = () => {
-    navigate(`/chat/${user._id}`)
-    setSelectedConversation(user)
+    navigate(`/chat/${conversation._id}`)
+    setSelectedConversation(conversation)
 
-    setNotifications((prev: any) => ({ ...prev, [user._id]: 0 }))
+    setNotifications((prev: any) => ({ ...prev, [conversation._id]: 0 }))
 
     if (window.innerWidth < 640) {
       onSelect?.()
     }
+  }
+
+  const getName = () => {
+    const user = conversation.members.find(c => userAuth.userAuth.userId !== c._id);
+    return user?.name;
+  }
+
+  const getImage = () => {
+    const user = conversation.members.find(c => userAuth.userAuth.userId !== c._id);
+    return user?.profilePicture.secure_url;
   }
 
   return (
@@ -54,8 +74,8 @@ function User({ user, onSelect }: any) {
       {/* Avatar with online indicator */}
       <div className="relative flex-shrink-0">
         <img
-          src={user.profilePicture?.secure_url || '/avatar.png'}
-          alt={user.name || user.email}
+          src={conversation.isGroup ? '/group.png' : getImage() || '/avatar.png'}
+          //alt={conversation.name || user.email}
           className="h-10 w-10 rounded-full object-cover"
         />
         <span
@@ -68,7 +88,7 @@ function User({ user, onSelect }: any) {
       {/* User info */}
       <div className="flex-1 min-w-0">
         <p className={`text-sm font-medium truncate ${dark ? 'text-white' : 'text-gray-900'}`}>
-          {user.name || user.email}
+          {conversation.isGroup ? conversation.groupName : getName()}
         </p>
         <p className={`text-xs truncate ${dark ? 'text-gray-600' : 'text-gray-400'}`}>
           {isOnline ? 'Online' : 'Offline'}

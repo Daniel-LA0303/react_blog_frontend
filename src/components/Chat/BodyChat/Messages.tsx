@@ -64,16 +64,28 @@ function Messages() {
   useEffect(() => {
     const getMessages = async () => {
       if (!selectedConversation?._id) return
-      readyForScrollRef.current = false // block scroll listener until we reach the bottom
+      if (selectedConversation.isTemp) {
+        setMessage([])
+        setLoading(false)
+        return
+      }
+
+      // get the other user's id
+      const otherUserId = selectedConversation.members
+        ? selectedConversation.members.find((m: any) => m._id !== userAuth.userId)?._id
+        : selectedConversation._id
+
+      if (!otherUserId) return
+
+      readyForScrollRef.current = false
       setLoading(true)
       setMessagePage(1)
       setHasMoreMessages(true)
       try {
         const res = await axios.get(
-          `${globalData.link}/message/get/${selectedConversation._id}?page=1&limit=20`,
+          `${globalData.link}/message/get/${otherUserId}?page=1&limit=20`,  // ✅ otherUserId
           { headers: { Authorization: `Bearer ${userAuth.userAuthToken}` } }
         )
-        // INVERTIR el orden: los más recientes deben estar al final
         const reversedMessages = res.data.messages.reverse()
         setMessage(reversedMessages)
         setHasMoreMessages(res.data.meta.page < res.data.meta.totalPages)
@@ -84,7 +96,7 @@ function Messages() {
       }
     }
     getMessages()
-  }, [selectedConversation, setMessage, setMessagePage, setHasMoreMessages])
+  }, [selectedConversation?._id])
 
   // Auto scroll al último mensaje (el más reciente) - CORREGIDO
   useEffect(() => {
@@ -173,8 +185,8 @@ function Messages() {
 
     container.addEventListener('scroll', onScroll, { passive: true })
     return () => container.removeEventListener('scroll', onScroll)
-  // Re-register whenever messages load (ref is guaranteed populated after first render)
-  // and whenever hasMoreMessages changes
+    // Re-register whenever messages load (ref is guaranteed populated after first render)
+    // and whenever hasMoreMessages changes
   }, [hasMoreMessages, containerReady])
 
   return (

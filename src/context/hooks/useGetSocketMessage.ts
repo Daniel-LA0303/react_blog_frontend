@@ -45,47 +45,24 @@ const useGetSocketMessage = () => {
     if (!socket) return;
 
     const handleNewMessage = (newMessage: any) => {
-      if (
-        selectedConversation &&
-        newMessage.senderId._id.toString() ===
-          selectedConversation._id.toString()
-      ) {
-        setMessage([...messages, newMessage]);
+      const senderId = newMessage.senderId._id || newMessage.senderId
+
+      // check if message belongs to current open conversation
+      const isCurrentConversation = selectedConversation && (
+        selectedConversation._id === newMessage.conversationId ||
+        selectedConversation.members?.some((m: any) => m._id === senderId)
+      )
+
+      if (isCurrentConversation) {
+        setMessage([...messages, newMessage])
       } else {
-        const sender = newMessage.senderId;
-        const senderId = sender._id || sender;
-
-        setAllUsers((prev) => {
-          const normalizedSender =
-            typeof newMessage.senderId === "object"
-              ? {
-                  _id: newMessage.senderId._id,
-                  fullname: newMessage.senderId.fullname,
-                  email: newMessage.senderId.email,
-                }
-              : { _id: newMessage.senderId };
-
-          const exists = prev.find((u) => u._id === normalizedSender._id);
-
-          if (exists) {
-            const merged = { ...exists, ...normalizedSender };
-            return [
-              merged,
-              ...prev.filter((u) => u._id !== normalizedSender._id),
-            ];
-          } else {
-            return [normalizedSender, ...prev];
-          }
-        });
-
         setNotifications((prev) => ({
           ...prev,
           [senderId.toString()]: (prev[senderId.toString()] || 0) + 1,
-        }));
-
-        setUnreadMessages((prev) => prev + 1);
+        }))
+        setUnreadMessages((prev) => prev + 1)
       }
-    };
+    }
 
     socket.on("newMessage", handleNewMessage);
 

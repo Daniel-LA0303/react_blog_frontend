@@ -19,7 +19,7 @@ const useSendMessage = () => {
   const { globalData } = useGlobalDataContext();
 
   // state zustand
-  const { messages, setMessage, selectedConversation } = useConversation();
+  const { messages, setMessage, selectedConversation, setConversations, setSelectedConversation, conversations } = useConversation();
 
   // function to send messages
 
@@ -27,37 +27,39 @@ const useSendMessage = () => {
   // SE ENCARGA DE ENVIAR LOS MENSAJES NUEVOS
   // *******************************************
   const sendMessages = async (message: any) => {
-
-    setLoading(true);
+    setLoading(true)
     try {
+      const receiverId = selectedConversation.members
+        ? selectedConversation.members.find((m: any) => m._id !== userAuth.userId)?._id
+        : selectedConversation._id
+
       const res = await axios.post(
-        `${globalData.link}/message/send/${selectedConversation._id}`,
+        `${globalData.link}/message/send/${receiverId}`,
         { message },
-        {
-          headers: {
-            Authorization: `Bearer ${userAuth.userAuthToken}`,
-          },
-        });
+        { headers: { Authorization: `Bearer ${userAuth.userAuthToken}` } }
+      )
 
-      // set new message to conversation
-      setMessage([...messages, res.data]);
+      setMessage([...messages, res.data])
 
-      /// estaba mal esto
-      // if (socket) {
-      //   socket.emit("sendMessage", {
-      //     senderId: res.data.senderId,
-      //     receiverId: res.data.receiverId,
-      //     message: res.data.message,
-      //     conversationId: res.data.conversationId,
-      //   });
-      // }
-
-      setLoading(false);
+      // if temp, replace with real conversation
+      if (selectedConversation.isTemp) {
+        const realConv = {
+          ...selectedConversation,
+          _id: res.data.conversationId,
+          isTemp: false
+        }
+        setSelectedConversation(realConv)
+        const updated = conversations.map((c: any) =>
+          c._id === selectedConversation._id ? realConv : c
+        )
+        setConversations(updated)
+      }
     } catch (error) {
-      console.log("Error in send messages", error);
-      setLoading(false);
+      console.log('Error in send messages', error)
+    } finally {
+      setLoading(false)
     }
-  };
+  }
   return { loading, sendMessages };
 };
 
