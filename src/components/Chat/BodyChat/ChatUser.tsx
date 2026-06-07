@@ -5,9 +5,13 @@ import { useSocketContext } from '../../../context/SocketContext'
 import useGlobalDataContext from '../../../context/hooks/useGlobalDataContext'
 
 function Chatuser({ openSidebar }: any) {
+
   const { selectedConversation } = useConversation()
+
   const { globalData } = useGlobalDataContext()
+
   const { onlineUsers } = useSocketContext()
+  
   const dark = !globalData.themeGlobal
 
   const isOnline = onlineUsers.includes(selectedConversation._id)
