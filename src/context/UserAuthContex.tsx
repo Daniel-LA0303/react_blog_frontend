@@ -45,23 +45,25 @@ const UserAuthProvider = ({ children }: Props) => {
 
   const [allUsers, setAllUsers] = useState<User[]>([]);
 
-  const addUser = (user: User) => {
-    setAllUsers((prev) => {
-      if (!prev.find((u) => u._id === user._id)) {
-        return [...prev, user];
-      }
-      return prev;
-    });
-  };
+const addUser = (user: User) => {
+  if (!user) return  
+  setAllUsers((prev) => {
+    if (!prev.find((u) => u._id === user._id)) {
+      return [...prev, user]
+    }
+    return prev
+  })
+}
 
-  const prependUser = (user: User) => {
-    setAllUsers((prev) => {
-      if (!prev.find((u) => u._id === user._id)) {
-        return [user, ...prev];
-      }
-      return prev;
-    });
-  };
+const prependUser = (user: User) => {
+  if (!user) return  
+  setAllUsers((prev) => {
+    if (!prev.find((u) => u._id === user._id)) {
+      return [user, ...prev]
+    }
+    return prev
+  })
+}
 
   return (
     <UserAuthContext.Provider

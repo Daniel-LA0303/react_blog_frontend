@@ -17,7 +17,6 @@ import useGlobalDataContext from '../../context/hooks/useGlobalDataContext'
  */
 import clientAuthAxios from '../../services/clientAuthAxios'
 import useConversation from '../../context/hooks/useConversation'
-import useGetAllUsers from '../../context/hooks/useGetAllUsers'
 
 /**
  * libraries
@@ -28,7 +27,6 @@ const UserCard = ({ user }: any) => {
 
   const navigate = useNavigate()
   const { setSelectedConversation } = useConversation()
-  const [allUsers, loading, addUser, prependUser] = useGetAllUsers()
 
   /**
    * states
@@ -82,7 +80,6 @@ const UserCard = ({ user }: any) => {
     }
     console.log('Click en el botón de Chat', user)
     setSelectedConversation(userChat)
-    prependUser(userChat)
     navigate(`/chat/${user._id}`)
   }
 

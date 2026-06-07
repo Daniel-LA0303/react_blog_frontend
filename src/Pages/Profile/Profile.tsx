@@ -27,7 +27,6 @@ import userUserAuthContext from '../../context/hooks/useUserAuthContext';
 import { useSwal } from '../../hooks/useSwal';
 import useGlobalDataContext from '../../context/hooks/useGlobalDataContext';
 import clientAuthAxios from '../../services/clientAuthAxios';
-import useGetAllUsers from '../../context/hooks/useGetAllUsers';
 import useConversation from '../../context/hooks/useConversation';
 
 const fadeUp = {
@@ -311,7 +310,6 @@ const Profile = () => {
   const { showConfirmSwal } = useSwal();
   const { globalData } = useGlobalDataContext();
   const { setSelectedConversation } = useConversation();
-  const [allUsers, addUser, prependUser] = useGetAllUsers();
   const params = useParams();
   const route = useNavigate();
 
@@ -411,7 +409,6 @@ const Profile = () => {
   const handleClickChat = () => {
     const userChat = { _id: user._id, name: user.name, email: user.email, profilePicture: user.profilePicture };
     setSelectedConversation(userChat);
-    prependUser(userChat);
     route(`/chat/${user._id}`);
   };
 

@@ -4,6 +4,7 @@ import { useSocketContext } from "../SocketContext";
 import useConversation from "./useConversation";
 import axios from "axios";
 import useGlobalDataContext from "./useGlobalDataContext";
+import { SendNewMessageI } from "../../interfaces/message.interfaces";
 
 
 // custom hook to send messages
@@ -19,45 +20,54 @@ const useSendMessage = () => {
   const { globalData } = useGlobalDataContext();
 
   // state zustand
-  const { messages, setMessage, selectedConversation } = useConversation();
+  const { messages, setMessage, selectedConversation, setConversations, setSelectedConversation, conversations } = useConversation();
 
   // function to send messages
 
   // *******************************************
   // SE ENCARGA DE ENVIAR LOS MENSAJES NUEVOS
   // *******************************************
-  const sendMessages = async (message: any) => {
-
-    setLoading(true);
+  const sendMessages = async (message: SendNewMessageI) => {
+    setLoading(true)
     try {
+      const receiverId = selectedConversation.members
+        ? selectedConversation.members.find((m: any) => m._id !== userAuth.userId)?._id
+        : selectedConversation._id
+
       const res = await axios.post(
-        `${globalData.link}/message/send/${selectedConversation._id}`,
-        { message },
-        {
-          headers: {
-            Authorization: `Bearer ${userAuth.userAuthToken}`,
-          },
-        });
+        `${globalData.link}/message/send/${receiverId}`,
+         message ,
+        { headers: { Authorization: `Bearer ${userAuth.userAuthToken}` } }
+      )
 
-      // set new message to conversation
-      setMessage([...messages, res.data]);
+      // set HTTP response for user that send message
+      setMessage([...messages, res.data])
 
-      /// estaba mal esto
-      // if (socket) {
-      //   socket.emit("sendMessage", {
-      //     senderId: res.data.senderId,
-      //     receiverId: res.data.receiverId,
-      //     message: res.data.message,
-      //     conversationId: res.data.conversationId,
-      //   });
-      // }
+      // if temp, replace with real conversation
+      if (selectedConversation.isTemp) {
+        const realConv = {
+          ...selectedConversation,
+          _id: res.data.conversationId,
+          isTemp: false
+        }
+        setSelectedConversation(realConv)
+      }
+      const convId = selectedConversation.isTemp
+        ? res.data.conversationId
+        : selectedConversation._id
 
-      setLoading(false);
+      const updatedConversations = conversations.map((c: any) =>
+        c._id === convId
+          ? { ...c, lastMessage: { message: res.data.message, createdAt: res.data.createdAt } }
+          : c
+      )
+      setConversations(updatedConversations)
     } catch (error) {
-      console.log("Error in send messages", error);
-      setLoading(false);
+      console.log('Error in send messages', error)
+    } finally {
+      setLoading(false)
     }
-  };
+  }
   return { loading, sendMessages };
 };
 

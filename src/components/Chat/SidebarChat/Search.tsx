@@ -4,7 +4,6 @@ import { motion, AnimatePresence } from 'framer-motion'
 import axios from 'axios'
 
 import { useAuth } from '../../../context/UserAuthContex'
-import useGetAllUsers from '../../../context/hooks/useGetAllUsers'
 import useConversation from '../../../context/hooks/useConversation'
 import useGlobalDataContext from '../../../context/hooks/useGlobalDataContext'
 
@@ -15,8 +14,7 @@ function Search() {
   const [results, setResults] = useState<any[]>([])
   const [searching, setSearching] = useState(false)
   const { userAuth } = useAuth()
-  const [allUsers, loading, addUser, prependUser] = useGetAllUsers()
-  const { setSelectedConversation } = useConversation()
+  const { setSelectedConversation, prependConversation } = useConversation()
   const { globalData } = useGlobalDataContext()
   const dark = !globalData.themeGlobal
 
@@ -40,13 +38,24 @@ function Search() {
     return () => clearTimeout(delayDebounceFn)
   }, [query, userAuth])
 
-  const handleSelectUser = (user: any) => {
-    setSelectedConversation(user)
-    prependUser(user)
-    setQuery('')
-    setResults([])
-    navigate(`/chat/${user._id}`)
+const handleSelectUser = (user: any) => {
+  const tempConversation = {
+    _id: user._id,
+    members: [
+      user,
+      { _id: userAuth.userId }  // current user placeholder
+    ],
+    isGroup: false,
+    createdAt: new Date().toISOString(),
+    isTemp: true
   }
+
+  prependConversation(tempConversation)
+  setSelectedConversation(tempConversation)
+  setQuery('')
+  setResults([])
+  navigate(`/chat/${user._id}`)
+}
 
   return (
     <div className="relative">
