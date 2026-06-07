@@ -46,7 +46,7 @@ const ActionBtn = ({
   count: number
   dark: boolean
 }) => (
-  <div className="flex flex-row sm:flex-col items-center gap-1">
+  <div className="flex flex-row lg:flex-col items-center gap-1">
     <motion.button
       type="button"
       onClick={onClick}
@@ -103,7 +103,7 @@ const ActionsPost = ({
   const isLoggedIn = Object.keys(user).length !== 0
 
   return (
-    <div className={`flex flex-row sm:flex-col items-center gap-1 p-2 rounded-2xl border
+    <div className={`flex flex-row lg:flex-col items-center gap-1 p-1 rounded-2xl border
       ${dark ? 'bg-[#27272A] border-gray-800' : 'bg-white border-gray-100'}`}>
 
       {/* Like */}
@@ -119,7 +119,7 @@ const ActionsPost = ({
       </ActionBtn>
 
       {/* Divider */}
-      <div className={`w-6 h-px sm:w-px sm:h-6 ${dark ? 'bg-gray-800' : 'bg-gray-100'}`} />
+      <div className={`w-6 h-px lg:w-px lg:h-6 ${dark ? 'bg-gray-800' : 'bg-gray-100'}`} />
 
       {/* Comments — not clickable, just display */}
       <ActionBtn
@@ -132,7 +132,7 @@ const ActionsPost = ({
       </ActionBtn>
 
       {/* Divider */}
-      <div className={`w-6 h-px sm:w-px sm:h-6 ${dark ? 'bg-gray-800' : 'bg-gray-100'}`} />
+      <div className={`w-6 h-px lg:w-px lg:h-6 ${dark ? 'bg-gray-800' : 'bg-gray-100'}`} />
 
       {/* Save */}
       <ActionBtn

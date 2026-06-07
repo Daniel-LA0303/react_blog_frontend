@@ -52,6 +52,8 @@ import userUserAuthContext from '../../context/hooks/useUserAuthContext'
 import useGlobalDataContext from '../../context/hooks/useGlobalDataContext'
 import Spinner from '../../components/Spinner/Spinner'
 import PostContent from '../../components/EditorToolBar/PostContent'
+import AIToolsPanel from '../../components/IA/ViewPost/AIToolsPanel'
+import AIResponseModal from '../../components/IA/ViewPost/IAResponseModal'
 
 
 const ViewPost = () => {
@@ -92,7 +94,9 @@ const ViewPost = () => {
   const [save, setSave] = useState(false)
   const [post, setPost] = useState<any>(null)
   const [commentsState, setCommentsState] = useState<any[]>([])
-  const [loading, setLoading] = useState(false)
+  const [loading, setLoading] = useState(false);
+  const [showIAOptions, setShowIAOptions] = useState<boolean>(false);
+  const [activeAITool, setActiveAITool] = useState<string | null>(null)
 
   /**
    * states redux
@@ -276,6 +280,12 @@ const ViewPost = () => {
     }
   }
 
+  const handleAITool = (toolKey: string) => {
+    console.log('Tool clicked:', toolKey)
+    setActiveAITool(toolKey);
+    // handle each tool action here
+  }
+
   const isOwner = userAuth.userId === post?.user?._id
   const isLoggedIn = Object.keys(userAuth).length !== 0
 
@@ -290,7 +300,7 @@ const ViewPost = () => {
         <div className="flex gap-8 mt-6">
 
           {/* ── Left sticky actions — desktop ─────────────────────────── */}
-          <div className="hidden sm:flex flex-col items-center sticky top-20 h-fit pt-10">
+          <div className="hidden lg:flex flex-col items-center sticky top-20 h-fit pt-10">
             {isLoggedIn && (
               <motion.div
                 initial={{ opacity: 0, x: -12 }}
@@ -419,6 +429,21 @@ const ViewPost = () => {
                 />
               </div>
             </article>
+            {
+
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.45, ease: [0.25, 0.46, 0.45, 0.94] }}
+                  className="block lg:hidden"
+                >
+                  <AIToolsPanel
+                    onToolClick={handleAITool}
+                    userPlan="FREE" // pass from userAuth
+                  />
+                </motion.div>
+
+            }
 
             {/* Mobile user card */}
             <div className="block lg:hidden mt-6">
@@ -480,6 +505,26 @@ const ViewPost = () => {
 
           <aside className="hidden lg:block w-64 flex-shrink-0">
             <div className="sticky top-20 space-y-4">
+              <button
+                className='w-full py-1.5 rounded-lg bg-[#2563EB] text-white text-xs font-medium hover:bg-blue-700 transition-colors'
+                onClick={() => setShowIAOptions(!showIAOptions)}
+              >
+                {showIAOptions ? 'Hidden IA Options' : 'Show IA Options'}
+              </button>
+              {
+                showIAOptions && (
+                  <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.45, ease: [0.25, 0.46, 0.45, 0.94] }}
+                  >
+                    <AIToolsPanel
+                      onToolClick={handleAITool}
+                      userPlan="FREE" // pass from userAuth
+                    />
+                  </motion.div>
+                )
+              }
               <p className={`text-xs font-semibold uppercase tracking-widest ${dark ? 'text-gray-500' : 'text-gray-400'}`}>
                 About the author
               </p>
@@ -495,15 +540,21 @@ const ViewPost = () => {
         </div>
       </div>
 
+      <AIResponseModal
+      toolKey={activeAITool}
+      onClose={() => setActiveAITool(null)}
+      dark={dark}
+    />
+
       {isLoggedIn && (
         <motion.div
           initial={{ y: 80 }}
           animate={{ y: 0 }}
           transition={{ duration: 0.35, delay: 0.4, ease: [0.25, 0.46, 0.45, 0.94] }}
-          className={`fixed bottom-0 left-0 right-0 z-40 block sm:hidden border-t
+          className={`fixed bottom-0 left-0 right-0 z-40 block lg:hidden border-t
             ${dark ? 'bg-[#27272A]/95 border-gray-800 backdrop-blur-md' : 'bg-white/95 border-gray-100 backdrop-blur-md'}`}
         >
-          <div className="flex justify-center py-2 px-4">
+          <div className="flex justify-center py-0 px-4">
             <ActionsPost
               user={userAuth}
               id={params.id}
