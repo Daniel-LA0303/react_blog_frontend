@@ -7,8 +7,8 @@ import useConversation from '../../../context/hooks/useConversation'
 import useGlobalDataContext from '../../../context/hooks/useGlobalDataContext'
 import { useAuth } from '../../../context/UserAuthContex'
 
-
-// ─── Date separator helper ────────────────────────────────────────────────────
+// EXPLANAITION: WE SET MESSAGE IN TWO CASES, HTTP RESPONSE ARRIVE TO USER THAT
+// SEND MESSAGE, VIA WEB SOCKET RESPONSE IS FOR USER RECEIVER
 
 const getDateLabel = (dateStr: string): string => {
   const date = new Date(dateStr)
@@ -199,7 +199,7 @@ function Messages() {
   return (
     <div
       ref={setContainerRef}
-      className="flex-1 min-h-0 overflow-y-auto py-3"
+      className={`flex-1 min-h-0 overflow-y-auto py-3 ${dark ? 'chat-scroll-dark' : 'chat-scroll-light'}`}
     >
       {loading ? (
         // Message skeletons

@@ -49,3 +49,10 @@ export interface NewMessageFromSocketI {
     updatedAt: string;
     _id: string;
 }
+
+export interface SendNewMessageI {
+    message: string;
+    messageType: string;
+    replyTo?: string;
+    image?: string | null;
+}

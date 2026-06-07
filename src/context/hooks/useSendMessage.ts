@@ -4,6 +4,7 @@ import { useSocketContext } from "../SocketContext";
 import useConversation from "./useConversation";
 import axios from "axios";
 import useGlobalDataContext from "./useGlobalDataContext";
+import { SendNewMessageI } from "../../interfaces/message.interfaces";
 
 
 // custom hook to send messages
@@ -26,7 +27,7 @@ const useSendMessage = () => {
   // *******************************************
   // SE ENCARGA DE ENVIAR LOS MENSAJES NUEVOS
   // *******************************************
-  const sendMessages = async (message: any) => {
+  const sendMessages = async (message: SendNewMessageI) => {
     setLoading(true)
     try {
       const receiverId = selectedConversation.members
@@ -35,10 +36,11 @@ const useSendMessage = () => {
 
       const res = await axios.post(
         `${globalData.link}/message/send/${receiverId}`,
-        { message },
+         message ,
         { headers: { Authorization: `Bearer ${userAuth.userAuthToken}` } }
       )
 
+      // set HTTP response for user that send message
       setMessage([...messages, res.data])
 
       // if temp, replace with real conversation

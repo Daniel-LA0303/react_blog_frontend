@@ -9,6 +9,10 @@ type ConversationStore = {
 
   conversations: any[];                              
   setConversations: (c: any[]) => void; 
+
+  // reply a message
+  replyTo: any | null;
+  setReplyTo: (msg: any | null) => void;
                
   prependConversation: (c: any) => void;             
 
@@ -33,6 +37,10 @@ const useConversation = create<ConversationStore>((set, get) => ({
       if (exists) return state
       return { conversations: [conversation, ...state.conversations] }
     }),
+
+  // reply a message
+  replyTo: null,
+  setReplyTo: (replyTo) => set({ replyTo }),
 
   messages: [],
   setMessage: (messages) => set({ messages }),

@@ -51,11 +51,10 @@ const useGetSocketMessage = () => {
         ])
       }
 
+      // print message only for user receiver
       if (isCurrentConversation) {
         setMessage([...messages, newMessage]);
       } else {
-
-
 
         setNotifications((prev) => ({
           ...prev,
