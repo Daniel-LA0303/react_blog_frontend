@@ -97,6 +97,7 @@ const ViewPost = () => {
   const [loading, setLoading] = useState(false);
   const [showIAOptions, setShowIAOptions] = useState<boolean>(false);
   const [activeAITool, setActiveAITool] = useState<string | null>(null)
+  const [activeAIPrompt, setActiveAIPrompt] = useState<string>('');
 
   /**
    * states redux
@@ -280,12 +281,15 @@ const ViewPost = () => {
     }
   }
 
-  const handleAITool = (toolKey: string) => {
-    console.log('Tool clicked:', toolKey)
-    setActiveAITool(toolKey);
-    // handle each tool action here
+  const handleAITool = (toolKey: string, customPrompt?: string) => {
+    if (customPrompt) {
+      setActiveAIPrompt(customPrompt)
+      setActiveAITool('custom')
+    } else {
+      setActiveAIPrompt('')
+      setActiveAITool(toolKey)
+    }
   }
-
   const isOwner = userAuth.userId === post?.user?._id
   const isLoggedIn = Object.keys(userAuth).length !== 0
 
@@ -431,17 +435,17 @@ const ViewPost = () => {
             </article>
             {
 
-                <motion.div
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.45, ease: [0.25, 0.46, 0.45, 0.94] }}
-                  className="block lg:hidden"
-                >
-                  <AIToolsPanel
-                    onToolClick={handleAITool}
-                    userPlan="FREE" // pass from userAuth
-                  />
-                </motion.div>
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.45, ease: [0.25, 0.46, 0.45, 0.94] }}
+                className="block lg:hidden"
+              >
+                <AIToolsPanel
+                  onToolClick={handleAITool}
+                  userPlan="FREE" // pass from userAuth
+                />
+              </motion.div>
 
             }
 
@@ -541,10 +545,14 @@ const ViewPost = () => {
       </div>
 
       <AIResponseModal
-      toolKey={activeAITool}
-      onClose={() => setActiveAITool(null)}
-      dark={dark}
-    />
+        toolKey={activeAITool}
+        customPrompt={activeAIPrompt}
+        onClose={() => {
+          setActiveAITool(null)
+          // don't clear prompt on close — keeps it cached
+        }}
+        dark={dark}
+      />
 
       {isLoggedIn && (
         <motion.div
