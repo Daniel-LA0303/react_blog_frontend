@@ -41,6 +41,19 @@ const menuItems = [
     ),
   },
   {
+    to: (id: string) => `/plans`,
+    label: 'Plans',
+    icon: (
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.7} strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5">
+        <path d="M2 20h20M5 20V10l7-6 7 6v10" />
+        <path d="M2 10l3 2M22 10l-3 2" />
+        <circle cx="12" cy="4" r="1" fill="currentColor" />
+        <circle cx="5" cy="12" r="1" fill="currentColor" />
+        <circle cx="19" cy="12" r="1" fill="currentColor" />
+      </svg>
+    ),
+  },
+  {
     to: (id: string) => `/payment-methods/${id}`,
     label: 'Payments Methods',
     icon: (

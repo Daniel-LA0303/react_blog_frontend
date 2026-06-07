@@ -36,6 +36,7 @@ import userUserAuthContext from "./context/hooks/useUserAuthContext";
 import ChatLayout from "./components/Chat/ChatLayout";
 import Pricing from "./Pages/Pricing/Princing";
 import AddPaymentMethod from "./Pages/Payment/AddPaymentMethod";
+import Plans from "./Pages/Payment/Plans";
 
 
 /**
@@ -70,6 +71,7 @@ function App() {
           <Route path="/forget-password/:id" element={<NewPassword />} />
           <Route path="/user-confirmed/:id" element={<UserConfirmed />} />
           <Route path="/pricing" element={<Pricing />} />
+          <Route path="/plans" element={<Plans />} />
 
           <Route path="/about" element={<About />} />
 
@@ -123,3 +125,4 @@ function App() {
 }
 
 export default App
+

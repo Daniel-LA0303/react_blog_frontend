@@ -27,13 +27,27 @@ const AsideMenu = ({ user }: any) => {
 
     return (
         <div className={`${globalData.themeGlobal ? 'bg-white' : 'bgt-dark text-white'}  rounded-lg`}>
-            <Link 
+            <Link
                 to={'/'}
-            className='px-5 text-sm flex hover:bg-zinc-700 hover:text-white cursor-pointer py-3 mb-2 transition'>
+                className='px-5 text-sm flex hover:bg-zinc-700 hover:text-white cursor-pointer py-3 mb-2 transition'>
                 <HomeOutlinedIcon />
                 <p
                     className='ml-3'
                 >Home</p>
+            </Link>
+            <Link
+                to={'/plans'}
+                className='px-5 flex text-sm hover:bg-zinc-700 hover:text-white cursor-pointer py-3 mb-2 transition'>
+                <svg viewBox="0 0 22 22" fill="none" stroke="currentColor" strokeWidth={1.7} strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5">
+                    <path d="M2 20h20M5 20V10l7-6 7 6v10" />
+                    <path d="M2 10l3 2M22 10l-3 2" />
+                    <circle cx="12" cy="4" r="1" fill="currentColor" />
+                    <circle cx="5" cy="12" r="1" fill="currentColor" />
+                    <circle cx="19" cy="12" r="1" fill="currentColor" />
+                </svg>
+                <p
+                    className='ml-3'
+                >Plans</p>
             </Link>
 
             {!user?.userId ? null : (
