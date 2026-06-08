@@ -37,6 +37,7 @@ import ChatLayout from "./components/Chat/ChatLayout";
 import Pricing from "./Pages/Pricing/Princing";
 import AddPaymentMethod from "./Pages/Payment/AddPaymentMethod";
 import Plans from "./Pages/Payment/Plans";
+import PaymentFlow from "./Pages/Payment/PaymentFlow";
 
 
 /**
@@ -72,6 +73,7 @@ function App() {
           <Route path="/user-confirmed/:id" element={<UserConfirmed />} />
           <Route path="/pricing" element={<Pricing />} />
           <Route path="/plans" element={<Plans />} />
+          <Route path="/payment-flow/:id" element={userAuth.userId ? <PaymentFlow /> : <Login />} />
 
           <Route path="/about" element={<About />} />
 
@@ -98,6 +100,7 @@ function App() {
           <Route path="/edit-profile/:id" element={userAuth.userId ? <EditProfile /> : <Login />} />
           <Route path="/search/:id" element={<Search />} />
           <Route path="/notifications/:id" element={userAuth.userId ? <Notifications /> : <Login />} />
+          
 
 
           {/* MESSAGES */}
