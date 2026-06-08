@@ -80,19 +80,25 @@ const Login = () => {
     if (!validate()) return
     setLoading(true)
     try {
-      const res = await axios.post(`${globalData.link}/users/login`, data)
+      const res = await axios.post(`${globalData.link}/users/login`, data);
       localStorage.setItem('token', JSON.stringify(res.data.data.token))
       localStorage.setItem('tokenAuthUser', res.data.data.token)
       localStorage.setItem('email', res.data.data.email)
       localStorage.setItem('username', res.data.data.name)
       localStorage.setItem('userId', res.data.data._id)
       localStorage.setItem('profileImage', res.data.data.profileImage)
+      localStorage.setItem('isFree', res.data.data.isFree)
+      localStorage.setItem('expiresAt', res.data.data.expiresAt)
+      localStorage.setItem('plan', JSON.stringify(res.data.data.plan))
       setUserAuth({
         userAuthToken: res.data.data.token,
         username: res.data.data.name,
         profileImage: res.data.data.profileImage,
         email: res.data.data.email,
         userId: res.data.data._id,
+        isFree: res.data.data.isFree,
+        expiresAt: res.data.data.expiresAt,
+        plan: res.data.data.plan
       })
       showAutoSwal({ message: 'Login successfully', status: 'success', timer: 2000 })
       setTimeout(() => route('/'), 1000)

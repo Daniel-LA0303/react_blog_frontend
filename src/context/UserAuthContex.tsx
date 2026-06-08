@@ -1,4 +1,5 @@
 import { createContext, useState, useContext, ReactNode } from "react";
+import { PlanI } from "../interfaces/payment.interfaces";
 
 type User = {
   _id: string;
@@ -13,6 +14,9 @@ type UserAuth = {
   profileImage: string | null;
   email: string | null;
   userId: string | null;
+  isFree: boolean | null;
+  expiresAt: string | null;
+  plan: PlanI | null
 };
 
 type UserAuthContextType = {
@@ -40,30 +44,33 @@ const UserAuthProvider = ({ children }: Props) => {
       profileImage: localStorage.getItem("profileImage"),
       email: localStorage.getItem("email"),
       userId: localStorage.getItem("userId"),
+      isFree: localStorage.getItem("isFree") === 'true',
+      expiresAt: localStorage.getItem("expiresAt"),
+      plan: JSON.parse(localStorage.getItem("plan") || 'null'),
     };
   });
 
   const [allUsers, setAllUsers] = useState<User[]>([]);
 
-const addUser = (user: User) => {
-  if (!user) return  
-  setAllUsers((prev) => {
-    if (!prev.find((u) => u._id === user._id)) {
-      return [...prev, user]
-    }
-    return prev
-  })
-}
+  const addUser = (user: User) => {
+    if (!user) return
+    setAllUsers((prev) => {
+      if (!prev.find((u) => u._id === user._id)) {
+        return [...prev, user]
+      }
+      return prev
+    })
+  }
 
-const prependUser = (user: User) => {
-  if (!user) return  
-  setAllUsers((prev) => {
-    if (!prev.find((u) => u._id === user._id)) {
-      return [user, ...prev]
-    }
-    return prev
-  })
-}
+  const prependUser = (user: User) => {
+    if (!user) return
+    setAllUsers((prev) => {
+      if (!prev.find((u) => u._id === user._id)) {
+        return [user, ...prev]
+      }
+      return prev
+    })
+  }
 
   return (
     <UserAuthContext.Provider
