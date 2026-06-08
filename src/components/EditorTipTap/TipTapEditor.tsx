@@ -472,15 +472,6 @@ const TipTapEditor = ({ content, onContent, error, onClearError }: TipTapEditorP
                         </motion.div>
                     )}
                 </AnimatePresence>
-
-                <AnimatePresence>
-                    {error && (
-                        <motion.p initial={{ opacity: 0, y: -4 }} animate={{ opacity: 1, y: 0 }}
-                            exit={{ opacity: 0 }} className="mt-1.5 text-xs text-red-500">
-                            {error}
-                        </motion.p>
-                    )}
-                </AnimatePresence>
             </div>
 
             <AnimatePresence>
