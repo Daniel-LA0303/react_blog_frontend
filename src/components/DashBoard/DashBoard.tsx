@@ -268,26 +268,62 @@ const DashBoard = ({ counts }: any) => {
             </Link>
           </motion.div>
         </div>
+
+        <div className='py-1.5 pl-3 flex flex-col gap-1 justify-center items-center'>
+
+          <span className={`inline-flex items-center gap-1.5 w-fit text-xs font-semibold px-2.5 py-1 rounded-full
+              ${userAuth.plan?.name === 'PRO'
+              ? 'bg-blue-50 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300'
+              : userAuth.plan?.name === 'PREMIUM'
+                ? 'bg-purple-50 text-purple-700 dark:bg-purple-900/30 dark:text-purple-300'
+                : 'bg-gray-100 text-gray-500 dark:bg-gray-800 dark:text-gray-400'
+            }`}>
+            {userAuth.plan?.name === 'PRO' && (
+              <svg viewBox="0 0 24 24" fill="currentColor" className="w-3 h-3">
+                <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" />
+              </svg>
+            )}
+            {userAuth.plan?.name === 'PREMIUM' && (
+              <svg viewBox="0 0 24 24" fill="currentColor" className="w-3 h-3">
+                <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+              </svg>
+            )}
+            {userAuth.plan?.name}
+          </span>
+
+          {!userAuth.isFree && userAuth.expiresAt && (
+            <span className={`text-lg flex items-center gap-1.5 ${dark ? 'text-white' : 'text-gray-400'}`}>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8}
+                strokeLinecap="round" strokeLinejoin="round" className="w-3.5 h-3.5">
+                <circle cx="12" cy="12" r="10" />
+                <polyline points="12 6 12 12 16 14" />
+              </svg>
+              Renews {new Date(userAuth.expiresAt).toLocaleDateString('en-US', {
+                month: 'short', day: 'numeric', year: 'numeric'
+              })}
+            </span>
+          )}
+        </div>
       </motion.div>
 
       <motion.div initial="hidden" animate="visible" variants={stagger}>
         <SectionLabel label="Your activity" dark={dark} />
         <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 mb-8">
-          <StatCard to={`/user-posts/${userAuth.userId}`}      icon={Icons.blog}         label="Blogs Published" value={counts.postsCount}          accent={dark ? 'bg-indigo-900/40 text-indigo-400' : 'bg-indigo-50 text-indigo-500'}  index={1} dark={dark} />
-          <StatCard to={`/user-likes-posts/${userAuth.userId}`} icon={Icons.likes}        label="Post Likes"      value={counts.likePostsCount}       accent={dark ? 'bg-rose-900/40 text-rose-400'     : 'bg-rose-50 text-rose-500'}        index={2} dark={dark} />
-          <StatCard to={`/save-posts/${userAuth.userId}`}       icon={Icons.saved}        label="Posts Saved"     value={counts.savedPostsCount}      accent={dark ? 'bg-amber-900/40 text-amber-400'   : 'bg-amber-50 text-amber-500'}      index={3} dark={dark} />
-          <StatCard to={`/followers-users/${userAuth.userId}`}  icon={Icons.followers}    label="Followers"       value={counts.followersCount}       accent={dark ? 'bg-teal-900/40 text-teal-400'     : 'bg-teal-50 text-teal-500'}        index={4} dark={dark} />
-          <StatCard to={`/followed-users/${userAuth.userId}`}   icon={Icons.following}    label="Following"       value={counts.followedUsersCount}   accent={dark ? 'bg-sky-900/40 text-sky-400'       : 'bg-sky-50 text-sky-500'}          index={5} dark={dark} />
-          <StatCard to={`/user-tags/${userAuth.userId}`}        icon={Icons.tags}         label="Tags Saved"      value={counts.tagsCount}            accent={dark ? 'bg-violet-900/40 text-violet-400' : 'bg-violet-50 text-violet-500'}    index={6} dark={dark} />
+          <StatCard to={`/user-posts/${userAuth.userId}`} icon={Icons.blog} label="Blogs Published" value={counts.postsCount} accent={dark ? 'bg-indigo-900/40 text-indigo-400' : 'bg-indigo-50 text-indigo-500'} index={1} dark={dark} />
+          <StatCard to={`/user-likes-posts/${userAuth.userId}`} icon={Icons.likes} label="Post Likes" value={counts.likePostsCount} accent={dark ? 'bg-rose-900/40 text-rose-400' : 'bg-rose-50 text-rose-500'} index={2} dark={dark} />
+          <StatCard to={`/save-posts/${userAuth.userId}`} icon={Icons.saved} label="Posts Saved" value={counts.savedPostsCount} accent={dark ? 'bg-amber-900/40 text-amber-400' : 'bg-amber-50 text-amber-500'} index={3} dark={dark} />
+          <StatCard to={`/followers-users/${userAuth.userId}`} icon={Icons.followers} label="Followers" value={counts.followersCount} accent={dark ? 'bg-teal-900/40 text-teal-400' : 'bg-teal-50 text-teal-500'} index={4} dark={dark} />
+          <StatCard to={`/followed-users/${userAuth.userId}`} icon={Icons.following} label="Following" value={counts.followedUsersCount} accent={dark ? 'bg-sky-900/40 text-sky-400' : 'bg-sky-50 text-sky-500'} index={5} dark={dark} />
+          <StatCard to={`/user-tags/${userAuth.userId}`} icon={Icons.tags} label="Tags Saved" value={counts.tagsCount} accent={dark ? 'bg-violet-900/40 text-violet-400' : 'bg-violet-50 text-violet-500'} index={6} dark={dark} />
         </div>
       </motion.div>
 
       <motion.div initial="hidden" animate="visible" variants={stagger}>
         <SectionLabel label="Coming soon" dark={dark} />
         <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-          <SoonCard icon={Icons.comments}      label="Comments"      desc="All replies and threads in one place."   index={1} dark={dark} />
-          <SoonCard icon={Icons.analytics}     label="Analytics"     desc="Views, reads, and engagement over time."  index={2} dark={dark} />
-          <SoonCard icon={Icons.notifications} label="Notifications" desc="Mentions, likes, and follower alerts."    index={3} dark={dark} />
+          <SoonCard icon={Icons.comments} label="Comments" desc="All replies and threads in one place." index={1} dark={dark} />
+          <SoonCard icon={Icons.analytics} label="Analytics" desc="Views, reads, and engagement over time." index={2} dark={dark} />
+          <SoonCard icon={Icons.notifications} label="Notifications" desc="Mentions, likes, and follower alerts." index={3} dark={dark} />
         </div>
       </motion.div>
 
