@@ -121,9 +121,11 @@ const CategoryPost = () => {
   const fetchCategoryInfo = async () => {
     setCategoryLoading(true)
     try {
-      const { data } = await axios.get(
-        `${globalData.link}/pages/page-category-post/${params.id}?userId=${userAuth.userId}`
-      )
+      const url = userAuth.userId
+        ? `${globalData.link}/pages/page-category-post/${params.id}?userId=${userAuth.userId}`
+        : `${globalData.link}/pages/page-category-post/${params.id}`
+
+      const { data } = await axios.get(url)
       setCategoryInfo(data.data.fullCategoryInfo)
     } catch (err: any) {
       setErrorPage({

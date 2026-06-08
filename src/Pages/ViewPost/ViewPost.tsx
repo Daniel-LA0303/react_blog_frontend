@@ -277,7 +277,7 @@ const ViewPost = () => {
   }
 
   const isOwner = userAuth.userId === post?.user?._id
-  const isLoggedIn = Object.keys(userAuth).length !== 0
+  const isLoggedIn = !!userAuth.userId
 
   if (!post) return <Spinner />
 

@@ -166,6 +166,15 @@ const ProfileButton = () => {
             </div>
           </div>
 
+          <div className='py-1.5 pl-3'>
+            <p className={`inline-block text-xs font-medium px-2.5 py-0.5 rounded-full
+                ${userAuth.plan?.name === 'PRO' ? 'bg-blue-50 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300' :
+                userAuth.plan?.name === 'PREMIUM' ? 'bg-purple-50 text-purple-700 dark:bg-purple-900/30 dark:text-purple-300' :
+                  'bg-gray-100 text-gray-500 dark:bg-gray-800 dark:text-gray-400'}
+                `}>
+              {userAuth.plan?.name}
+            </p>
+          </div>
           {/* Nav items */}
           <div className="py-1.5">
             {menuItems.map((item) => (

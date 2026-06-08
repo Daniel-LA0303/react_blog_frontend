@@ -451,7 +451,7 @@ const Profile = () => {
                           animate={{ opacity: 1, scale: 1 }}
                           transition={{ duration: 0.5, ease: [0.34, 1.56, 0.64, 1] }}
                         />
-                       
+
                       </motion.div>
 
                       {/* Info */}
@@ -489,45 +489,49 @@ const Profile = () => {
                     </div>
 
                     {/* Action Buttons */}
-                    {!isOwn && !isGuest && (
-                      <motion.div
-                        variants={fadeUp}
-                        custom={5}
-                        className="mt-6 flex justify-center sm:justify-end items-center gap-3"
-                      >
-                        <AnimatePresence mode="wait">
-                          {isFollow ? (
-                            <motion.div
-                              key="following"
-                              initial={{ opacity: 0, scale: 0.9 }}
-                              animate={{ opacity: 1, scale: 1 }}
-                              exit={{ opacity: 0, scale: 0.9 }}
-                              transition={{ duration: 0.2 }}
-                            >
-                              <ActionButton onClick={handleUnFollowUser} variant="outline">
-                                ✓ Following
-                              </ActionButton>
-                            </motion.div>
-                          ) : (
-                            <motion.div
-                              key="follow"
-                              initial={{ opacity: 0, scale: 0.9 }}
-                              animate={{ opacity: 1, scale: 1 }}
-                              exit={{ opacity: 0, scale: 0.9 }}
-                              transition={{ duration: 0.2 }}
-                            >
-                              <ActionButton onClick={handleFollowUser} variant="primary">
-                                Follow
-                              </ActionButton>
-                            </motion.div>
-                          )}
-                        </AnimatePresence>
+                    {
+                      userAuth.userId !== null && (
+                        !isOwn && !isGuest && (
+                          <motion.div
+                            variants={fadeUp}
+                            custom={5}
+                            className="mt-6 flex justify-center sm:justify-end items-center gap-3"
+                          >
+                            <AnimatePresence mode="wait">
+                              {isFollow ? (
+                                <motion.div
+                                  key="following"
+                                  initial={{ opacity: 0, scale: 0.9 }}
+                                  animate={{ opacity: 1, scale: 1 }}
+                                  exit={{ opacity: 0, scale: 0.9 }}
+                                  transition={{ duration: 0.2 }}
+                                >
+                                  <ActionButton onClick={handleUnFollowUser} variant="outline">
+                                    ✓ Following
+                                  </ActionButton>
+                                </motion.div>
+                              ) : (
+                                <motion.div
+                                  key="follow"
+                                  initial={{ opacity: 0, scale: 0.9 }}
+                                  animate={{ opacity: 1, scale: 1 }}
+                                  exit={{ opacity: 0, scale: 0.9 }}
+                                  transition={{ duration: 0.2 }}
+                                >
+                                  <ActionButton onClick={handleFollowUser} variant="primary">
+                                    Follow
+                                  </ActionButton>
+                                </motion.div>
+                              )}
+                            </AnimatePresence>
 
-                        <ActionButton onClick={handleClickChat} variant="success">
-                          Message
-                        </ActionButton>
-                      </motion.div>
-                    )}
+                            <ActionButton onClick={handleClickChat} variant="success">
+                              Message
+                            </ActionButton>
+                          </motion.div>
+                        )
+                      )
+                    }
                   </div>
                 </motion.div>
               )}

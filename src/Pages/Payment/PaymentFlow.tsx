@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { useNavigate, useParams, useSearchParams } from 'react-router-dom'
+import { Link, useNavigate, useParams, useSearchParams } from 'react-router-dom'
 import useGlobalDataContext from '../../context/hooks/useGlobalDataContext'
 import clientAuthAxios from '../../services/clientAuthAxios'
 import { PaymentFlowI } from '../../interfaces/payment.interfaces'
@@ -33,18 +33,24 @@ const PaymentFlow = () => {
     const isYearly = interval === 'YEAR'
 
     useEffect(() => {
+
+        if (!userAuth.plan?.isFree) {
+            console.log("This user has a suscription");
+
+        }
+
         const getPlan = async () => {
             try {
                 const res = await clientAuthAxios.get(`/payment/get-plan-by-name/${params.id}`)
-                setData(res.data.data)
+                setData(res.data.data);
             } catch (error) {
                 console.error(error)
             } finally {
                 setLoading(false)
             }
         }
-        getPlan()
-    }, [params.id])
+        getPlan();
+    }, [params.id]);
 
     if (loading) return <Spinner />
     if (!data) return null
@@ -156,20 +162,34 @@ const PaymentFlow = () => {
                 </div>
 
                 {/* Payment method */}
-                <div className={`rounded-2xl border p-5 flex items-center justify-between ${card}`}>
-                    <div className="flex items-center gap-3">
-                        <div className={`w-10 h-10 rounded-xl flex items-center justify-center text-lg ${dark ? 'bg-gray-800' : 'bg-gray-100'}`}>
-                            {brandIcons[method.brand] ?? '💳'}
+                {
+                    data.method === null
+                        ?
+                        <>
+                            <p className='text-red-400 text-center font-semibold'>You don't have any payment method</p>
+                            <Link
+                                to={`/payment-methods/${userAuth.userId}`}
+                                className="inline-block px-4 py-2 rounded-xl bg-blue-500 text-white hover:bg-blue-100 text-sm font-medium transition-colors text-center"
+                            >
+                                Add one here
+                            </Link>
+                        </>
+                        :
+                        <div className={`rounded-2xl border p-5 flex items-center justify-between ${card}`}>
+                            <div className="flex items-center gap-3">
+                                <div className={`w-10 h-10 rounded-xl flex items-center justify-center text-lg ${dark ? 'bg-gray-800' : 'bg-gray-100'}`}>
+                                    {brandIcons[method.brand] ?? '💳'}
+                                </div>
+                                <div>
+                                    <p className="font-medium text-sm capitalize">{method.brand} •••• {method.last4}</p>
+                                    <p className={`text-xs ${dark ? 'text-gray-400' : 'text-gray-500'}`}>
+                                        Expires {method.expMonth}/{method.expYear}
+                                    </p>
+                                </div>
+                            </div>
+                            <span className="text-xs font-medium bg-green-100 text-green-700 px-2 py-0.5 rounded-full">Default</span>
                         </div>
-                        <div>
-                            <p className="font-medium text-sm capitalize">{method.brand} •••• {method.last4}</p>
-                            <p className={`text-xs ${dark ? 'text-gray-400' : 'text-gray-500'}`}>
-                                Expires {method.expMonth}/{method.expYear}
-                            </p>
-                        </div>
-                    </div>
-                    <span className="text-xs font-medium bg-green-100 text-green-700 px-2 py-0.5 rounded-full">Default</span>
-                </div>
+                }
 
                 {/* Price lock notice */}
                 <p className={`text-xs px-1 ${dark ? 'text-gray-500' : 'text-gray-400'}`}>
@@ -177,23 +197,27 @@ const PaymentFlow = () => {
                 </p>
 
                 {/* CTA */}
-                <button
-                    onClick={handlePay}
-                    disabled={paying}
-                    className="w-full py-3 rounded-xl bg-[#2563EB] text-white font-medium text-sm hover:bg-blue-700 transition-colors disabled:opacity-60"
-                >
-                    {paying ? (
-                        <span className="flex items-center justify-center gap-2">
-                            <svg className="animate-spin w-4 h-4" viewBox="0 0 24 24" fill="none">
-                                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
-                            </svg>
-                            Processing...
-                        </span>
-                    ) : (
-                        `Pay $${displayPrice} ${plan.currency}`
-                    )}
-                </button>
+                {
+                    data.method !== null && (
+                        <button
+                            onClick={handlePay}
+                            disabled={paying}
+                            className="w-full py-3 rounded-xl bg-[#2563EB] text-white font-medium text-sm hover:bg-blue-700 transition-colors disabled:opacity-60"
+                        >
+                            {paying ? (
+                                <span className="flex items-center justify-center gap-2">
+                                    <svg className="animate-spin w-4 h-4" viewBox="0 0 24 24" fill="none">
+                                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+                                    </svg>
+                                    Processing...
+                                </span>
+                            ) : (
+                                `Pay $${displayPrice} ${plan.currency}`
+                            )}
+                        </button>)
+                }
+
 
             </div>
         </div>

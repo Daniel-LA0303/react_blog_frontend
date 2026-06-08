@@ -7,6 +7,7 @@ import useGlobalDataContext from '../../context/hooks/useGlobalDataContext'
  * libraries
  */
 import { motion, AnimatePresence } from 'framer-motion'
+import { useAuth } from '../../context/UserAuthContex'
 
 const HeartIcon = ({ filled }: { filled: boolean }) => (
   <svg viewBox="0 0 24 24" fill={filled ? 'currentColor' : 'none'} stroke="currentColor"
@@ -98,9 +99,11 @@ const ActionsPost = ({
   handleUnsave,
 }: any) => {
 
-  const { globalData } = useGlobalDataContext()
+  const { globalData } = useGlobalDataContext();
+  const {userAuth} = useAuth();
+
   const dark = !globalData.themeGlobal
-  const isLoggedIn = Object.keys(user).length !== 0
+  const isLoggedIn = !!userAuth.userId
 
   return (
     <div className={`flex flex-row sm:flex-col items-center gap-1 p-2 rounded-2xl border
