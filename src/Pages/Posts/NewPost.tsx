@@ -43,6 +43,10 @@ import { NewPostI } from '../../interfaces/post.interfaces'
 import Spinner from '../../components/Spinner/Spinner'
 import EditorWithPreview from '../../components/EditorToolBar/EditorWithPreview'
 import TipTapEditor from '../../components/EditorTipTap/TipTapEditor'
+import { AIWordSuggest } from '../../components/IA/NewPost/AIWordSuggest'
+import { AIContentToolbar } from '../../components/IA/NewPost/AIContentToolbar'
+import { AIAssistModal } from '../../components/IA/NewPost/AIAssistModal'
+import { AIFieldAssist } from '../../components/IA/NewPost/AIFieldAssist'
 
 const fadeUp = {
   hidden: { opacity: 0, y: 16 },
@@ -71,20 +75,22 @@ const Field = ({
   error,
   dark,
   children,
+  labelAction
 }: {
   label: string
   htmlFor?: string
   error?: string
   dark: boolean
-  children: React.ReactNode
+  children: React.ReactNode,
+  labelAction?: React.ReactNode
 }) => (
   <div>
-    <label
-      htmlFor={htmlFor}
-      className={`block text-xs font-medium mb-1.5 ${dark ? 'text-gray-400' : 'text-gray-500'}`}
-    >
-      {label}
-    </label>
+    <div className="flex items-center justify-between mb-1.5">
+      <label htmlFor={htmlFor} className={`block text-xs font-medium ${dark ? 'text-gray-400' : 'text-gray-500'}`}>
+        {label}
+      </label>
+      {labelAction}
+    </div>
     {children}
     <AnimatePresence>
       {error && (
@@ -116,9 +122,11 @@ const CategorySelect = ({
   dark: boolean
   hasError: boolean
 }) => {
-  const [open, setOpen] = useState(false)
-  const [search, setSearch] = useState('')
-  const ref = useRef<HTMLDivElement>(null)
+
+  const [open, setOpen] = useState(false);
+  const [search, setSearch] = useState('');
+  const ref = useRef<HTMLDivElement>(null);
+
 
   // Close on outside click
   useEffect(() => {
@@ -143,7 +151,9 @@ const CategorySelect = ({
     }
   }
 
-  const remove = (id: string) => onChange(selected.filter(s => s._id !== id))
+  const remove = (id: string) => onChange(selected.filter(s => s._id !== id));
+
+
 
   return (
     <div ref={ref} className="relative">
@@ -255,6 +265,7 @@ const NewPost = () => {
   const { showConfirmSwal } = useSwal()
   const dark = !globalData.themeGlobal
 
+
   /**
    * router
    */
@@ -278,6 +289,11 @@ const NewPost = () => {
   const inputRef = useRef<HTMLInputElement>(null)
   const dispatch = useDispatch<any>()
   const newPostRedux = (newPost: any, r: any) => dispatch(newPostAction(newPost, r))
+
+  // tools ia
+  const [aiToolKey, setAiToolKey] = useState<string | null>(null)
+  const [aiLoadingKey, setAiLoadingKey] = useState<string | null>(null)
+  const userPlan: 'FREE' | 'PRO' | 'PREMIUM' = 'PREMIUM' // from userAuth later
 
   /**
    * useEffect
@@ -359,6 +375,17 @@ const NewPost = () => {
     setSaving(false)
   }
 
+
+
+  const handleAI = (toolKey: string) => {
+    setAiLoadingKey(toolKey)
+    // simulate API delay
+    setTimeout(() => {
+      setAiLoadingKey(null)
+      setAiToolKey(toolKey)
+    }, 900)
+  }
+
   if (error) return <Error message={message} />
   if (loading) return <Spinner />
 
@@ -397,7 +424,22 @@ const NewPost = () => {
                 Post details
               </p>
               <div className="space-y-4">
-                <Field label="Title" htmlFor="title" error={errors.title} dark={dark}>
+                <Field
+                  label="Title"
+                  htmlFor="title"
+                  error={errors.title}
+                  dark={dark}
+                  labelAction={
+                    <AIFieldAssist
+                      dark={dark}
+                      userPlan={userPlan}
+                      requiredPlan="PRO"
+                      label="Generate title"
+                      loading={aiLoadingKey === 'generateTitle'}
+                      onAction={() => handleAI('generateTitle')}
+                    />
+                  }
+                >
                   <input
                     id="title"
                     type="text"
@@ -406,8 +448,31 @@ const NewPost = () => {
                     onChange={e => { setTitle(e.target.value); if (errors.title) setErrors(p => ({ ...p, title: '' })) }}
                     className={inputCls(dark, !!errors.title)}
                   />
+                  <AIWordSuggest
+                    value={title}
+                    dark={dark}
+                    userPlan={userPlan}
+                    onSuggest={word => setTitle(prev => prev + ' ' + word)}
+                  />
                 </Field>
-                <Field label="Description" htmlFor="desc" error={errors.desc} dark={dark}>
+
+
+                <Field
+                  label="Description"
+                  htmlFor="desc"
+                  error={errors.desc}
+                  dark={dark}
+                  labelAction={
+                    <AIFieldAssist
+                      dark={dark}
+                      userPlan={userPlan}
+                      requiredPlan="PRO"
+                      label="Improve"
+                      loading={aiLoadingKey === 'improveDesc'}
+                      onAction={() => handleAI('improveDesc')}
+                    />
+                  }
+                >
                   <input
                     id="desc"
                     type="text"
@@ -497,24 +562,49 @@ const NewPost = () => {
             </motion.div>
 
             {/* ── Content editor */}
-            <motion.div
-              variants={fadeUp} custom={3}
-              className="py-7"
-            >
-              <p className={`text-xs font-semibold uppercase tracking-widest mb-0 ${dark ? 'text-gray-500' : 'text-gray-400'}`}>
+
+            <motion.div variants={fadeUp} custom={3} className="py-7">
+              <p className={`text-xs font-semibold uppercase tracking-widest mb-4 ${dark ? 'text-gray-500' : 'text-gray-400'}`}>
                 Content
               </p>
-              <div className="rounded-xl overflow-hidden ">
-              <TipTapEditor
-                content={content}
-                onContent={onContent}
-                error={errors.content}
-                onClearError={() => setErrors(p => ({ ...p, content: '' }))}
-              />
+              <div className="rounded-xl overflow-hidden">
+                <AIContentToolbar
+                  dark={dark}
+                  userPlan={userPlan}
+                  onAction={handleAI}
+                  loadingKey={aiLoadingKey}
+                />
+                <TipTapEditor
+                  content={content}
+                  onContent={onContent}
+                  error={errors.content}
+                  onClearError={() => setErrors(p => ({ ...p, content: '' }))}
+                />
+                {errors.content && (
+                  <motion.p
+                    initial={{ opacity: 0, y: -4 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -4 }}
+                    transition={{ duration: 0.2 }}
+                    className="mt-1.5 text-xs text-red-500"
+                  >
+                    {errors.content}
+                  </motion.p>
+                )}
               </div>
             </motion.div>
 
           </div>
+
+          <AIAssistModal
+            toolKey={aiToolKey}
+            dark={dark}
+            onClose={() => setAiToolKey(null)}
+            onApply={(result) => {
+              if (aiToolKey === 'generateTitle') setTitle(result.split('\n')[2]?.replace(/^\d+\.\s"?/, '').replace(/"$/, '') ?? result)
+              if (aiToolKey === 'improveDesc') setDesc(result.replace('Improved description:\n\n', ''))
+            }}
+          />
 
           {/* ── Footer actions ─*/}
           <motion.div
