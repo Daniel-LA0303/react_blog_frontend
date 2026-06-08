@@ -6,6 +6,7 @@ import { PaymentFlowI } from '../../interfaces/payment.interfaces'
 import Spinner from '../../components/Spinner/Spinner'
 import { useAuth } from '../../context/UserAuthContex'
 import { useSwal } from '../../hooks/useSwal'
+import userUserAuthContext from '../../context/hooks/useUserAuthContext'
 
 const brandIcons: Record<string, string> = {
     visa: '💳',
@@ -18,6 +19,8 @@ const PaymentFlow = () => {
     const { globalData } = useGlobalDataContext()
     const dark = !globalData.themeGlobal
     const { userAuth } = useAuth();
+
+    const { setUserAuth } = userUserAuthContext()
 
     const { showConfirmSwal, showAutoSwal } = useSwal()
 
@@ -76,6 +79,20 @@ const PaymentFlow = () => {
             const res = await clientAuthAxios.post('/payment/subscribe', body)
             console.log(res.data)
             console.log(body);
+
+            ['expiresAt', 'isFree', 'plan']
+                .forEach(k => localStorage.removeItem(k));
+
+            localStorage.setItem('isFree', res.data.data.isFree)
+            localStorage.setItem('expiresAt', res.data.data.expiresAt)
+            localStorage.setItem('plan', JSON.stringify(res.data.data.planData))
+
+            setUserAuth(prev => ({
+                ...prev,
+                isFree: res.data.data.isFree,
+                expiresAt: res.data.data.expiresAt,
+                plan: res.data.data.planData
+            }))
 
             setTimeout(() => {
                 route(`/profile/${userAuth.userId}`);
@@ -271,4 +288,4 @@ const PaymentFlow = () => {
         </>
     )
 }
-    export default PaymentFlow;
+export default PaymentFlow;
