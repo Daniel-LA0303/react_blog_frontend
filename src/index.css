@@ -495,3 +495,10 @@ h1{
 .chat-scroll-light::-webkit-scrollbar-thumb:hover {
   background-color: #9e9e9e; /* gris más fuerte en hover */
 }
+
+
+/*quit stripe btn*/
+#stripe-dev-tools-button,
+[data-testid="dev-tools-button"] {
+    display: none !important;
+}

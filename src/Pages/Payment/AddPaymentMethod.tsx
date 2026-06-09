@@ -24,9 +24,6 @@ import Spinner from '../../components/Spinner/Spinner'
 import { motion, AnimatePresence } from 'framer-motion'
 import { PaymentMenthodRequestI, PaymentMenthodResponseI } from '../../interfaces/payment.interfaces'
 
-/* Stripe public key  */
-const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLIC_KEY)
-
 /* Inner form — must live inside <Elements>  */
 interface CardFormProps {
     dark: boolean
@@ -63,20 +60,8 @@ const CardForm = ({ dark, onSuccess, onCancel }: CardFormProps) => {
         })
         console.log("response: ", res);
 
-
-        /*if (res?.stripeError) {
-            setError(stripeError.message ?? 'Something went wrong.');
-            setLoading(false);
-            return
-        }*/
-
         console.log('Stripe paymentMethod:', res.paymentMethod)
         //console.log('paymentMethod.id ready to send:', res.paymentMethod.id)
-
-        // // HERE YOU PUT BACKEND CONNECTION
-        // // e.g. await clientAuthAxios.post('/payments/attach-payment-method', {
-        // //     paymentMethodId: paymentMethod.id,
-        // // })
 
         setLoading(false)
         onSuccess(res.paymentMethod)
@@ -86,14 +71,24 @@ const CardForm = ({ dark, onSuccess, onCancel }: CardFormProps) => {
         <form onSubmit={handleSubmit} className="space-y-5">
 
             {/* Stripe's prebuilt UI renders here */}
-            <div className={`transition-opacity duration-300 ${ready ? 'opacity-100' : 'opacity-0'}`}>
-                <PaymentElement
-                    onReady={() => setReady(true)}
-                    options={{
-                        layout: 'tabs',
-                    }}
-                />
-            </div>
+            <PaymentElement
+                onReady={() => setReady(true)}
+                options={{
+                    layout: 'tabs',
+                    wallets: {
+                        applePay: 'never',
+                        googlePay: 'never',
+                    },
+                    terms: {
+                        card: 'never',
+                    },
+                    defaultValues: {
+                        billingDetails: {
+                            email: '',
+                        }
+                    },
+                }}
+            />
 
             {/* skeleton while Stripe loads its iframe */}
             {!ready && (
@@ -164,6 +159,17 @@ const AddPaymentMethod = () => {
 
     const [methods, setMethods] = useState<PaymentMenthodResponseI[]>([]);
 
+    const [stripePromise, setStripePromise] = useState<any>(null)
+    const handleOpen = () => {
+        if (!stripePromise) {
+            const promise = loadStripe(import.meta.env.VITE_STRIPE_PUBLIC_KEY, {
+                betas: ['link_autofill_modal_beta_1'],
+                locale: 'en',
+            })
+            setStripePromise(promise)
+        }
+        setOpen(true)
+    }
 
     useEffect(() => {
 
@@ -205,6 +211,7 @@ const AddPaymentMethod = () => {
     const handleCancel = () => {
         setOpen(false)
         setSuccess(false)
+        setStripePromise(null)  // <-- destruye Stripe al cerrar
     }
 
     // Stripe appearance — synced to your theme
@@ -216,7 +223,6 @@ const AddPaymentMethod = () => {
             colorPrimary: '#2563eb',
         },
     }
-
     // animation
     const list = {
         hidden: {},
@@ -267,115 +273,117 @@ const AddPaymentMethod = () => {
                 </motion.div>
                 <div className='flex flex-col md:flex-row justify-between max-w-4xl mx-auto'>
                     <div>
-                    {/* trigger */}
-                    {!open && (
-                        <button
-                            onClick={() => setOpen(true)}
-                            className={`w-full py-3.5 rounded-2xl border text-sm font-medium transition-all duration-150 flex items-center justify-center gap-2 ${dark
-                                ? 'border-dashed border-gray-700 text-gray-500 hover:border-blue-500 hover:text-blue-400 hover:bg-blue-500/5'
-                                : 'border-dashed border-gray-300 text-gray-400 hover:border-blue-400 hover:text-blue-500 hover:bg-blue-50'
-                                }`}
-                        >
-                            <span className="text-lg leading-none">+</span>
-                            Add payment method
-                        </button>
-                    )}
+                        {/* trigger */}
+                        {!open && (
+                            <button
+                                onClick={handleOpen}
+                                className={`w-full py-3.5 rounded-2xl border text-sm font-medium transition-all duration-150 flex items-center justify-center gap-2 ${dark
+                                    ? 'border-dashed border-gray-700 text-gray-500 hover:border-blue-500 hover:text-blue-400 hover:bg-blue-500/5'
+                                    : 'border-dashed border-gray-300 text-gray-400 hover:border-blue-400 hover:text-blue-500 hover:bg-blue-50'
+                                    }`}
+                            >
+                                <span className="text-lg leading-none">+</span>
+                                Add payment method
+                            </button>
+                        )}
 
-                    {/* form */}
-                    {open && (
-                        <div className={`rounded-2xl border transition-colors ${dark ? 'bg-[#27272A] border-gray-800' : 'bg-white border-gray-100'} p-6`}>
-                            <div className="flex items-center gap-2 mb-5">
-                                <FontAwesomeIcon icon={faCreditCard} className={`text-sm ${dark ? 'text-gray-400' : 'text-gray-500'}`} />
-                                <p className={`text-sm font-semibold ${dark ? 'text-white' : 'text-gray-900'}`}>New payment method</p>
-                            </div>
-
-                            {success && paymentResult ? (
-                                <div className="space-y-4">
-                                    <div className="flex flex-col items-center gap-2 py-4">
-                                        <FontAwesomeIcon icon={faCircleCheck} className="text-emerald-500 text-3xl" />
-                                        <p className={`text-sm font-medium ${dark ? 'text-gray-300' : 'text-gray-700'}`}>
-                                            PaymentMethod created
-                                        </p>
-                                    </div>
-
-                                    {/* response viewer */}
-                                    <div className={`rounded-xl border text-xs font-mono overflow-auto max-h-64 p-4 ${dark ? 'bg-[#0f0f1a] border-gray-800 text-emerald-400' : 'bg-gray-50 border-gray-200 text-emerald-700'
-                                        }`}>
-                                        <pre>{JSON.stringify(paymentResult, null, 2)}</pre>
-                                    </div>
-
-                                    <div className={`rounded-xl border px-4 py-3 ${dark ? 'bg-blue-500/10 border-blue-500/20' : 'bg-blue-50 border-blue-100'}`}>
-                                        <p className={`text-[11px] font-mono ${dark ? 'text-blue-300' : 'text-blue-700'}`}>
-                                            paymentMethod.id
-                                        </p>
-                                        <p className={`text-xs font-semibold mt-0.5 break-all ${dark ? 'text-blue-200' : 'text-blue-800'}`}>
-                                            {paymentResult.id}
-                                        </p>
-                                    </div>
-
-                                    <button
-                                        onClick={() => { setOpen(false); setSuccess(false); setPaymentResult(null) }}
-                                        className={`w-full py-2.5 rounded-xl text-sm font-medium transition-colors ${dark ? 'bg-gray-800 text-gray-300 hover:bg-gray-700' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-                                            }`}
-                                    >
-                                        Done
-                                    </button>
+                        {/* form */}
+                        {open && (
+                            <div className={`rounded-2xl border transition-colors ${dark ? 'bg-[#27272A] border-gray-800' : 'bg-white border-gray-100'} p-6`}>
+                                <div className="flex items-center gap-2 mb-5">
+                                    <FontAwesomeIcon icon={faCreditCard} className={`text-sm ${dark ? 'text-gray-400' : 'text-gray-500'}`} />
+                                    <p className={`text-sm font-semibold ${dark ? 'text-white' : 'text-gray-900'}`}>New payment method</p>
                                 </div>
-                            ) : (
-                                // mode="setup" tells Stripe this is for saving a card, not charging it
-                                <Elements
-                                    stripe={stripePromise}
-                                    options={{
-                                        mode: 'setup',
-                                        currency: 'usd',
-                                        appearance,
-                                        paymentMethodCreation: 'manual',
-                                    }}
-                                >
-                                    <CardForm
-                                        dark={dark}
-                                        onSuccess={handleSuccess} // here we can call a function to send info to backend
-                                        onCancel={handleCancel}
-                                    />
-                                </Elements>
-                            )}
-                        </div>
-                    )}
 
-                    {!open && (
-                        <p className={`text-center text-[11px] mt-4 ${dark ? 'text-gray-700' : 'text-gray-300'}`}>
-                            We accept Visa, Mastercard, American Express and more
-                        </p>
-                    )}
+                                {success && paymentResult ? (
+                                    <div className="space-y-4">
+                                        <div className="flex flex-col items-center gap-2 py-4">
+                                            <FontAwesomeIcon icon={faCircleCheck} className="text-emerald-500 text-3xl" />
+                                            <p className={`text-sm font-medium ${dark ? 'text-gray-300' : 'text-gray-700'}`}>
+                                                PaymentMethod created
+                                            </p>
+                                        </div>
 
-                </div>
+                                        {/* response viewer */}
+                                        <div className={`rounded-xl border text-xs font-mono overflow-auto max-h-64 p-4 ${dark ? 'bg-[#0f0f1a] border-gray-800 text-emerald-400' : 'bg-gray-50 border-gray-200 text-emerald-700'
+                                            }`}>
+                                            <pre>{JSON.stringify(paymentResult, null, 2)}</pre>
+                                        </div>
 
-                {/* saved card placeholder */}
-                <motion.div
-                    className="space-y-3 mb-4 mt-4 md:mt-0"
-                    variants={list}
-                    initial="hidden"
-                    animate="visible"
-                >
-                    <AnimatePresence>
-                        {
-                            methods.map(c => (
-                                <motion.div
-                                    key={c._id}
-                                    variants={item}
-                                    exit={item.exit}
-                                    layout
-                                >
-                                    <PaymentMethodCard
-                                        paymentMethod={c}
-                                        changeDefault={() => changeDefault(c._id)}
-                                        deleteMethod={() => deleteMethod(c._id)}
-                                    />
-                                </motion.div>
-                            ))
-                        }
-                    </AnimatePresence>
-                </motion.div>
+                                        <div className={`rounded-xl border px-4 py-3 ${dark ? 'bg-blue-500/10 border-blue-500/20' : 'bg-blue-50 border-blue-100'}`}>
+                                            <p className={`text-[11px] font-mono ${dark ? 'text-blue-300' : 'text-blue-700'}`}>
+                                                paymentMethod.id
+                                            </p>
+                                            <p className={`text-xs font-semibold mt-0.5 break-all ${dark ? 'text-blue-200' : 'text-blue-800'}`}>
+                                                {paymentResult.id}
+                                            </p>
+                                        </div>
+
+                                        <button
+                                            onClick={() => { setOpen(false); setSuccess(false); setPaymentResult(null) }}
+                                            className={`w-full py-2.5 rounded-xl text-sm font-medium transition-colors ${dark ? 'bg-gray-800 text-gray-300 hover:bg-gray-700' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                                                }`}
+                                        >
+                                            Done
+                                        </button>
+                                    </div>
+                                ) : (
+                                    // mode="setup" tells Stripe this is for saving a card, not charging it
+                                    <Elements
+                                        stripe={stripePromise}
+                                        options={{
+                                            mode: 'setup',
+                                            currency: 'usd',
+                                            appearance,
+                                            paymentMethodCreation: 'manual',
+                                            paymentMethodTypes: ['card'],
+                                            loader: 'auto',
+                                        }}
+                                    >
+                                        <CardForm
+                                            dark={dark}
+                                            onSuccess={handleSuccess} // here we can call a function to send info to backend
+                                            onCancel={handleCancel}
+                                        />
+                                    </Elements>
+                                )}
+                            </div>
+                        )}
+
+                        {!open && (
+                            <p className={`text-center text-[11px] mt-4 ${dark ? 'text-gray-700' : 'text-gray-300'}`}>
+                                We accept Visa, Mastercard, American Express and more
+                            </p>
+                        )}
+
+                    </div>
+
+                    {/* saved card placeholder */}
+                    <motion.div
+                        className="space-y-3 mb-4 mt-4 md:mt-0"
+                        variants={list}
+                        initial="hidden"
+                        animate="visible"
+                    >
+                        <AnimatePresence>
+                            {
+                                methods.map(c => (
+                                    <motion.div
+                                        key={c._id}
+                                        variants={item}
+                                        exit={item.exit}
+                                        layout
+                                    >
+                                        <PaymentMethodCard
+                                            paymentMethod={c}
+                                            changeDefault={() => changeDefault(c._id)}
+                                            deleteMethod={() => deleteMethod(c._id)}
+                                        />
+                                    </motion.div>
+                                ))
+                            }
+                        </AnimatePresence>
+                    </motion.div>
                 </div>
 
 

@@ -38,6 +38,7 @@ import Pricing from "./Pages/Pricing/Princing";
 import AddPaymentMethod from "./Pages/Payment/AddPaymentMethod";
 import Plans from "./Pages/Payment/Plans";
 import PaymentFlow from "./Pages/Payment/PaymentFlow";
+import TestIA from "./Pages/Test/TestIA";
 
 
 /**
@@ -84,6 +85,8 @@ function App() {
 
           <Route path="/categories/" element={<Categories />} />
           {/* <Route path="/dashboard/:id" element={<DashBoardProfile />} /> */}
+
+          <Route path="/test-ia" element={userAuth.userId ? <TestIA /> : <Login />} />
 
           {/* DashBoard */}
           <Route path="/dashboard/:id" element={userAuth.userId ? <DashBoardProfile /> : <Login />} />
