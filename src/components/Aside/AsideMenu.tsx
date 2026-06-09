@@ -35,7 +35,7 @@ const AsideMenu = ({ user }: any) => {
                     className='ml-3'
                 >Home</p>
             </Link>
-            <Link
+            {/*<Link
                 to={'/plans'}
                 className='px-5 flex text-sm hover:bg-zinc-700 hover:text-white cursor-pointer py-3 mb-2 transition'>
                 <svg viewBox="0 0 22 22" fill="none" stroke="currentColor" strokeWidth={1.7} strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5">
@@ -48,7 +48,7 @@ const AsideMenu = ({ user }: any) => {
                 <p
                     className='ml-3'
                 >Plans</p>
-            </Link>
+            </Link> */}
 
             {!user?.userId ? null : (
                 <>

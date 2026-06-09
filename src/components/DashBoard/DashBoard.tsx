@@ -1,4 +1,4 @@
-import { Link } from 'react-router-dom'
+ import { Link } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import useGlobalDataContext from '../../context/hooks/useGlobalDataContext'
 import userUserAuthContext from '../../context/hooks/useUserAuthContext'
@@ -269,7 +269,7 @@ const DashBoard = ({ counts }: any) => {
           </motion.div>
         </div>
 
-        <div className='py-1.5 pl-3 flex flex-col gap-1 justify-center items-center'>
+        {/*<div className='py-1.5 pl-3 flex flex-col gap-1 justify-center items-center'>
 
           <span className={`inline-flex items-center gap-1.5 w-fit text-xs font-semibold px-2.5 py-1 rounded-full
               ${userAuth.plan?.name === 'PRO'
@@ -289,7 +289,7 @@ const DashBoard = ({ counts }: any) => {
               </svg>
             )}
             {userAuth.plan?.name}
-          </span>
+          </span> 
 
           {!userAuth.isFree && userAuth.expiresAt && (
             <span className={`text-lg flex items-center gap-1.5 ${dark ? 'text-white' : 'text-gray-400'}`}>
@@ -302,8 +302,8 @@ const DashBoard = ({ counts }: any) => {
                 month: 'short', day: 'numeric', year: 'numeric'
               })}
             </span>
-          )}
-        </div>
+          )} 
+        </div> */}
       </motion.div>
 
       <motion.div initial="hidden" animate="visible" variants={stagger}>

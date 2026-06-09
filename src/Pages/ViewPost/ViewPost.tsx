@@ -509,25 +509,25 @@ const ViewPost = () => {
 
           <aside className="hidden lg:block w-64 flex-shrink-0">
             <div className="sticky top-20 space-y-4">
-              <button
+              {/*<button
                 className='w-full py-1.5 rounded-lg bg-[#2563EB] text-white text-xs font-medium hover:bg-blue-700 transition-colors'
                 onClick={() => setShowIAOptions(!showIAOptions)}
               >
-                {showIAOptions ? 'Hidden IA Options' : 'Show IA Options'}
-              </button>
+                {showIAOptions ? 'Show IA Options ' : 'Hidden IA Options'}
+              </button>*/}
               {
-                showIAOptions && (
-                  <motion.div
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.45, ease: [0.25, 0.46, 0.45, 0.94] }}
-                  >
-                    <AIToolsPanel
-                      onToolClick={handleAITool}
-                      userPlan="FREE" // pass from userAuth
-                    />
-                  </motion.div>
-                )
+                //showIAOptions && (
+                  //<motion.div
+                    //initial={{ opacity: 0, y: 20 }}
+                    //animate={{ opacity: 1, y: 0 }}
+                    //transition={{ duration: 0.45, ease: [0.25, 0.46, 0.45, 0.94] }}
+                  //>
+                    //<AIToolsPanel
+                      //onToolClick={handleAITool}
+                      //userPlan="FREE" // pass from userAuth
+                    //</div>/>
+                  //</aside></motion.div>
+                //)
               }
               <p className={`text-xs font-semibold uppercase tracking-widest ${dark ? 'text-gray-500' : 'text-gray-400'}`}>
                 About the author
