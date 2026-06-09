@@ -75,21 +75,21 @@ const Field = ({
   error,
   dark,
   children,
-  labelAction
+  //labelAction
 }: {
   label: string
   htmlFor?: string
   error?: string
   dark: boolean
   children: React.ReactNode,
-  labelAction?: React.ReactNode
+  //labelAction?: React.ReactNode
 }) => (
   <div>
     <div className="flex items-center justify-between mb-1.5">
       <label htmlFor={htmlFor} className={`block text-xs font-medium ${dark ? 'text-gray-400' : 'text-gray-500'}`}>
         {label}
       </label>
-      {labelAction}
+      {/*{labelAction} */}
     </div>
     {children}
     <AnimatePresence>
@@ -429,17 +429,17 @@ const NewPost = () => {
                   htmlFor="title"
                   error={errors.title}
                   dark={dark}
-                  labelAction={
-                    <AIFieldAssist
-                      dark={dark}
-                      userPlan={userPlan}
-                      requiredPlan="PRO"
-                      label="Generate title"
-                      loading={aiLoadingKey === 'generateTitle'}
-                      onAction={() => handleAI('generateTitle')}
-                    />
-                  }
-                >
+                  //labelAction={
+                    //<AIFieldAssist
+                      //dark={dark}
+                      //userPlan={userPlan}
+                      //requiredPlan="PRO"
+                      //label="Generate title"
+                      //loading={aiLoadingKey === 'generateTitle'}
+                      //onAction={() => handleAI('generateTitle')}
+                    ///>
+                  //}
+                > 
                   <input
                     id="title"
                     type="text"
@@ -448,12 +448,13 @@ const NewPost = () => {
                     onChange={e => { setTitle(e.target.value); if (errors.title) setErrors(p => ({ ...p, title: '' })) }}
                     className={inputCls(dark, !!errors.title)}
                   />
-                  <AIWordSuggest
+                  
+                  {/*<AIWordSuggest
                     value={title}
                     dark={dark}
                     userPlan={userPlan}
                     onSuggest={word => setTitle(prev => prev + ' ' + word)}
-                  />
+                  /> */}
                 </Field>
 
 
@@ -462,16 +463,16 @@ const NewPost = () => {
                   htmlFor="desc"
                   error={errors.desc}
                   dark={dark}
-                  labelAction={
-                    <AIFieldAssist
-                      dark={dark}
-                      userPlan={userPlan}
-                      requiredPlan="PRO"
-                      label="Improve"
-                      loading={aiLoadingKey === 'improveDesc'}
-                      onAction={() => handleAI('improveDesc')}
-                    />
-                  }
+                  //labelAction={
+                    //<AIFieldAssist
+                      //dark={dark}
+                      //userPlan={userPlan}
+                      //requiredPlan="PRO"
+                      //label="Improve"
+                      //loading={aiLoadingKey === 'improveDesc'}
+                      //onAction={() => handleAI('improveDesc')}
+                    ///>
+                  //}
                 >
                   <input
                     id="desc"
@@ -568,12 +569,12 @@ const NewPost = () => {
                 Content
               </p>
               <div className="rounded-xl overflow-hidden">
-                <AIContentToolbar
+                {/*<AIContentToolbar
                   dark={dark}
                   userPlan={userPlan}
                   onAction={handleAI}
                   loadingKey={aiLoadingKey}
-                />
+                /> */}
                 <TipTapEditor
                   content={content}
                   onContent={onContent}
