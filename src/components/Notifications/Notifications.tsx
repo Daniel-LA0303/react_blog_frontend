@@ -179,7 +179,7 @@ const Notifications = () => {
             {/* Dropdown */}
             {open && (
                 <div className={`
-                    absolute right-0 top-[calc(100%+8px)] w-[360px] z-50
+                    absolute right-0 top-[calc(100%+8px)] w-[280px] md:w-[360px] z-50
                     rounded-2xl border border-white/[0.07]
 
                     ${!globalData.themeGlobal ? 'bg-[#27272A] border-gray-800 hover:border-gray-700'

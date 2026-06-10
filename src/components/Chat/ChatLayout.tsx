@@ -8,9 +8,13 @@ import Search from './SidebarChat/Search'
 import useGlobalDataContext from '../../context/hooks/useGlobalDataContext'
 import userUserAuthContext from '../../context/hooks/useUserAuthContext'
 import Right from './BodyChat/Right'
+import useConversation from '../../context/hooks/useConversation'
 
 function ChatLayout() {
-  const [sidebarOpen, setSidebarOpen] = useState(false)
+  //const [sidebarOpen, setSidebarOpen] = useState(false);
+
+  const { sidebarOpen, setSidebarOpen } = useConversation()
+
   const { globalData } = useGlobalDataContext()
   const { userAuth } = userUserAuthContext()
   const dark = !globalData.themeGlobal

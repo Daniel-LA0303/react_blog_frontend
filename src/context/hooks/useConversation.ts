@@ -7,6 +7,9 @@ type ConversationStore = {
   selectedConversation: any | null;
   setSelectedConversation: (selectedConversation: any | null) => void;
 
+  sidebarOpen: boolean;
+  setSidebarOpen: (setSidebarOpen: boolean | any) => void;
+
   conversations: any[];                              
   setConversations: (c: any[]) => void; 
 
@@ -28,6 +31,9 @@ type ConversationStore = {
 const useConversation = create<ConversationStore>((set, get) => ({
   selectedConversation: null,
   setSelectedConversation: (selectedConversation) => set({ selectedConversation }),
+
+  sidebarOpen: false,
+  setSidebarOpen: () => set((state) => ({sidebarOpen: !state.sidebarOpen})),
 
   conversations: [],                                
   setConversations: (conversations) => set({ conversations }),

@@ -13,6 +13,7 @@ import usePages from '../../context/hooks/usePages'
 import Spinner from '../../components/Spinner/Spinner'
 import clientAuthAxios from '../../services/clientAuthAxios'
 import TagRecommendedCard from '../../components/CategoryCard/TagRecommendedCard'
+import LoadingPosts from '../../components/Spinner/LoadingPosts'
 
 const fadeUp = {
   hidden: { opacity: 0, y: 18 },
@@ -302,7 +303,7 @@ const CategoryPost = () => {
               <AnimatePresence>
                 {postsLoading && posts.length > 0 && (
                   <motion.div key="spin" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
-                    <Spinner />
+                    <LoadingPosts />
                   </motion.div>
                 )}
               </AnimatePresence>

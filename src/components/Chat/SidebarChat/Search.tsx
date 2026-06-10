@@ -14,7 +14,7 @@ function Search() {
   const [results, setResults] = useState<any[]>([])
   const [searching, setSearching] = useState(false)
   const { userAuth } = useAuth()
-  const { setSelectedConversation, prependConversation } = useConversation()
+  const { setSelectedConversation, prependConversation, sidebarOpen, setSidebarOpen } = useConversation()
   const { globalData } = useGlobalDataContext()
   const dark = !globalData.themeGlobal
 
@@ -38,24 +38,25 @@ function Search() {
     return () => clearTimeout(delayDebounceFn)
   }, [query, userAuth])
 
-const handleSelectUser = (user: any) => {
-  const tempConversation = {
-    _id: user._id,
-    members: [
-      user,
-      { _id: userAuth.userId }  // current user placeholder
-    ],
-    isGroup: false,
-    createdAt: new Date().toISOString(),
-    isTemp: true
-  }
+  const handleSelectUser = (user: any) => {
+    const tempConversation = {
+      _id: user._id,
+      members: [
+        user,
+        { _id: userAuth.userId }  // current user placeholder
+      ],
+      isGroup: false,
+      createdAt: new Date().toISOString(),
+      isTemp: true
+    }
 
-  prependConversation(tempConversation)
-  setSelectedConversation(tempConversation)
-  setQuery('')
-  setResults([])
-  navigate(`/chat/${user._id}`)
-}
+    prependConversation(tempConversation)
+    setSelectedConversation(tempConversation)
+    setQuery('')
+    setResults([])
+    setSidebarOpen(false);
+    navigate(`/chat/${user._id}`)
+  }
 
   return (
     <div className="relative">
@@ -125,11 +126,13 @@ const handleSelectUser = (user: any) => {
                 whileHover={{ backgroundColor: dark ? 'rgba(37,99,235,0.12)' : 'rgba(37,99,235,0.06)' }}
                 className="flex items-center gap-3 px-4 py-3 cursor-pointer transition-colors"
               >
-                <img
-                  src={user.profilePicture?.secure_url || '/avatar.png'}
-                  alt={user.name}
-                  className="h-8 w-8 rounded-full object-cover flex-shrink-0"
-                />
+                <div>
+                  <img
+                    src={user.profilePicture?.secure_url || '/avatar.png'}
+                    alt={user.name}
+                    className="h-8 w-8 rounded-full object-cover flex-shrink-0"
+                  />
+                </div>
                 <div className="min-w-0">
                   <p className={`text-sm font-medium truncate ${dark ? 'text-white' : 'text-gray-900'}`}>
                     {user.name}
