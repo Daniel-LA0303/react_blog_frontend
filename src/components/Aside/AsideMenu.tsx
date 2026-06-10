@@ -106,21 +106,21 @@ const AsideMenu = ({ user }: any) => {
                 </Link>
             </div>
 
-            {/*<p className={labelClass}>Other</p>
+            <p className={labelClass}>Other</p>
             <div className="px-2">
-                <Link to="/categories" className={itemClass}>
+                <Link to="/code-conduct" className={itemClass}>
                     <EmailOutlinedIcon sx={{ fontSize: 16 }} />
                     <span>Code of Conduct</span>
                 </Link>
-                <Link to="/about" className={itemClass}>
+                <Link to="/privacy-policy" className={itemClass}>
                     <PrivacyTipOutlinedIcon sx={{ fontSize: 16 }} />
                     <span>Privacy Policy</span>
                 </Link>
-                <Link to="/about" className={itemClass}>
+                <Link to="/terms-use" className={itemClass}>
                     <GavelOutlinedIcon sx={{ fontSize: 16 }} />
                     <span>Privacy Policy</span>
                 </Link>
-            </div>*/}
+            </div>
         </div>
     );
 };

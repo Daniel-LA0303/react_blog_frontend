@@ -40,6 +40,9 @@ import Plans from "./Pages/Payment/Plans";
 import PaymentFlow from "./Pages/Payment/PaymentFlow";
 import TestIA from "./Pages/Test/TestIA";
 import ScrollToTop from "./components/Global/ScrollToTop";
+import CodeOfConduct from "./Pages/About/CodeOfConduct";
+import PrivacyPolicy from "./Pages/About/PrivacyPolicy";
+import TermsOfUse from "./Pages/About/TermsOfUse";
 
 
 /**
@@ -71,6 +74,7 @@ function App() {
           <Route path="/" element={<Home />} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
+          
           <Route path="/forget-password" element={<ForgetPassword />} />
           <Route path="/forget-password/:id" element={<NewPassword />} />
           <Route path="/user-confirmed/:id" element={<UserConfirmed />} />
@@ -79,6 +83,9 @@ function App() {
           <Route path="/payment-flow/:id" element={userAuth.userId ? <PaymentFlow /> : <Login />} />
 
           <Route path="/about" element={<About />} />
+          <Route path="/code-conduct" element={<CodeOfConduct />} />
+          <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+          <Route path="/terms-use" element={<TermsOfUse />} />
 
           <Route path="/new-post" element={userAuth.userId ? <NewPost /> : <Login />} />
           <Route path="/edit-post/:id" element={userAuth.userId ? <EditPost /> : <Login />} />
