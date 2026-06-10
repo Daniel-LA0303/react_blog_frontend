@@ -11,6 +11,8 @@ import userUserAuthContext from '../../context/hooks/useUserAuthContext'
 import useGlobalDataContext from '../../context/hooks/useGlobalDataContext'
 import usePages from '../../context/hooks/usePages'
 import Spinner from '../../components/Spinner/Spinner'
+import clientAuthAxios from '../../services/clientAuthAxios'
+import TagRecommendedCard from '../../components/CategoryCard/TagRecommendedCard'
 
 const fadeUp = {
   hidden: { opacity: 0, y: 18 },
@@ -102,7 +104,13 @@ const CategoryPost = () => {
   const [posts, setPosts] = useState<any[]>([])
   const [categoryInfo, setCategoryInfo] = useState<any>(null)
   const [categoryLoading, setCategoryLoading] = useState(true)
-  const [postsLoading, setPostsLoading] = useState(false)
+  const [postsLoading, setPostsLoading] = useState(false);
+
+  const [recommendedTags, setRecommendedTags] = useState<any[]>([]);
+  const [tagsLoading, setTagsLoading] = useState(false);
+
+  const [shuffledTags, setShuffledTags] = useState<any[]>([]);
+
   const [page, setPage] = useState(1)
   const [hasMore, setHasMore] = useState(true)
   const limit = 5
@@ -116,7 +124,31 @@ const CategoryPost = () => {
 
     fetchCategoryInfo()
     fetchPosts(1)
-  }, [params.id])
+  }, [params.id]);
+
+  useEffect(() => {
+    if (recommendedTags.length > 0) {
+      setShuffledTags(
+        [...recommendedTags]
+          .filter((c: any) => c.name !== params.id)
+          .sort(() => Math.random() - 0.5)
+          .slice(0, 3)
+      );
+    }
+  }, [recommendedTags]);
+
+  useEffect(() => {
+    if (!userAuth.userId) return;
+    setTagsLoading(true);
+    clientAuthAxios.get(`${globalData.link}/users/get-tags-recommended`)
+      .then((res) => {
+        console.log(res.data.data.recomended.recommendedTags);
+
+        setRecommendedTags(res.data.data.recomended.recommendedTags);
+      })
+      .catch(console.error)
+      .finally(() => setTagsLoading(false));
+  }, [params.id]);
 
   const fetchCategoryInfo = async () => {
     setCategoryLoading(true)
@@ -175,13 +207,14 @@ const CategoryPost = () => {
   const cat = categoryInfo?.category
 
   return (
-    <div className={`min-h-screen transition-colors duration-300 ${dark ? 'bg-[#0f0f0f]' : 'bgt-white'}`}>
+    <div className={`min-h-screen transition-colors duration-300 ${dark ? 'bg-[#0f0f0f]' : 'bg-white'}`}>
       <Sidebar />
-
       {error ? (
         <Error message={errorPage.message} />
       ) : (
         <div className="max-w-screen-xl mx-auto px-4 sm:px-6 lg:px-8 pb-16">
+
+          {/* ── 1. Hero category card ── */}
           <AnimatePresence mode="wait">
             {categoryLoading ? (
               <motion.div
@@ -208,9 +241,7 @@ const CategoryPost = () => {
             ) : cat ? (
               <motion.div
                 key={`hero-${cat._id}`}
-                initial={{ opacity: 0, y: 12 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -8 }}
+                initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }}
                 transition={{ duration: 0.4, ease: [0.25, 0.46, 0.45, 0.94] }}
                 className="pt-0 md:pt-10 pb-2"
               >
@@ -218,12 +249,13 @@ const CategoryPost = () => {
               </motion.div>
             ) : null}
           </AnimatePresence>
+
           <div className="flex flex-col md:flex-row gap-8">
 
-            {/* Posts column */}
-            <div className="flex-1 min-w-0 space-y-4">
+            {/* ── Posts column ── */}
+            <div className="flex-1 min-w-0 space-y-4 order-2 md:order-1">
 
-              {/* Skeleton on first load */}
+              {/* Skeleton first load */}
               <AnimatePresence>
                 {posts.length === 0 && postsLoading && (
                   <motion.div key="post-skels" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
@@ -238,9 +270,7 @@ const CategoryPost = () => {
                 {posts.length === 0 && !postsLoading && (
                   <motion.div
                     key="empty"
-                    initial={{ opacity: 0, y: 12 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0 }}
+                    initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}
                     transition={{ duration: 0.4 }}
                     className={`rounded-2xl border p-12 text-center ${dark ? 'bg-[#27272A] border-gray-800' : 'bg-white border-gray-100'}`}
                   >
@@ -261,7 +291,7 @@ const CategoryPost = () => {
                 )}
               </AnimatePresence>
 
-              {/* Posts */}
+              {/* Posts list */}
               <AnimatePresence>
                 {posts.map((post, index) => (
                   <AnimatedPost key={post._id} post={post} index={index} />
@@ -282,8 +312,7 @@ const CategoryPost = () => {
                 {!hasMore && posts.length > 0 && (
                   <motion.div
                     key="end"
-                    initial={{ opacity: 0, y: 8 }}
-                    animate={{ opacity: 1, y: 0 }}
+                    initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.4 }}
                     className="flex items-center gap-4 mt-4"
                   >
@@ -296,7 +325,9 @@ const CategoryPost = () => {
                 )}
               </AnimatePresence>
             </div>
-            <aside className="w-full md:w-72 flex-shrink-0">
+
+            {/* ── 2. Aside — shows ABOVE posts on mobile ── */}
+            <aside className="w-full md:w-72 flex-shrink-0 order-1 md:order-2">
               <AnimatePresence mode="wait">
                 {categoryLoading ? (
                   <motion.div key="aside-skel" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
@@ -306,13 +337,10 @@ const CategoryPost = () => {
                 ) : (
                   <motion.div
                     key={`aside-${cat?._id}`}
-                    initial="hidden"
-                    animate="visible"
-                    exit={{ opacity: 0 }}
+                    initial="hidden" animate="visible" exit={{ opacity: 0 }}
                     variants={stagger}
                     className="space-y-4"
                   >
-
                     {/* About */}
                     {cat && (
                       <AsideCard title={`About ${cat.name}`} dark={dark} delay={0}>
@@ -344,11 +372,7 @@ const CategoryPost = () => {
                               animate={{ opacity: 1, scale: 1 }}
                               transition={{ delay: i * 0.04, type: 'spring', stiffness: 400, damping: 20 }}
                             >
-                              <Link
-                                to={`/profile/${user._id}`}
-                                title={user.name}
-                                className="block"
-                              >
+                              <Link to={`/profile/${user._id}`} title={user.name} className="block">
                                 <img
                                   src={user?.profilePicture?.secure_url || '/avatar.png'}
                                   alt={user.name}
@@ -377,6 +401,33 @@ const CategoryPost = () => {
                       </AsideCard>
                     )}
 
+                    {/* Tags recommended */}
+                    {userAuth.userId && shuffledTags.length > 0 && (
+                      <>
+                        <p className={`pt-2 font-semibold ${dark ? 'text-white' : 'text-black'}`}>
+                          Tags recommended for you
+                        </p>
+                        <div className="flex flex-col gap-2">
+                          {tagsLoading
+                            ? Array.from({ length: 3 }).map((_, i) => (
+                              <div key={i} className={`flex items-center gap-3 p-3 rounded-xl border animate-pulse
+                              ${dark ? 'bg-[#27272A] border-gray-800' : 'bg-white border-gray-100'}`}
+                              >
+                                <div className={`h-8 w-8 rounded-full flex-shrink-0 ${dark ? 'bg-gray-700' : 'bg-gray-200'}`} />
+                                <div className="flex flex-col gap-2 flex-1">
+                                  <div className={`h-3 w-20 rounded-full ${dark ? 'bg-gray-700' : 'bg-gray-200'}`} />
+                                  <div className={`h-2 w-36 rounded-full ${dark ? 'bg-gray-800' : 'bg-gray-100'}`} />
+                                </div>
+                              </div>
+                            ))
+                            : shuffledTags.map((tag: any) => (
+                              <TagRecommendedCard key={tag._id} tag={tag} />
+                            ))
+                          }
+                        </div>
+                      </>
+                    )}
+
                     {/* Related categories */}
                     {categoryInfo?.relatedCategories?.length > 0 && (
                       <AsideCard title="Related categories" dark={dark} delay={3}>
@@ -391,7 +442,7 @@ const CategoryPost = () => {
                               <Link
                                 to={`/category/${related.name}`}
                                 className={`flex items-center gap-2 text-sm transition-colors
-                                  ${dark ? 'text-gray-300 hover:text-white' : 'text-gray-600 hover:text-gray-900'}`}
+                              ${dark ? 'text-gray-300 hover:text-white' : 'text-gray-600 hover:text-gray-900'}`}
                               >
                                 <span
                                   className="h-2 w-2 rounded-full flex-shrink-0"
@@ -407,11 +458,11 @@ const CategoryPost = () => {
                         </div>
                       </AsideCard>
                     )}
-
                   </motion.div>
                 )}
               </AnimatePresence>
             </aside>
+
           </div>
         </div>
       )}

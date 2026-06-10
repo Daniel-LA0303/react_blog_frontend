@@ -54,6 +54,7 @@ import Spinner from '../../components/Spinner/Spinner'
 import PostContent from '../../components/EditorToolBar/PostContent'
 import AIToolsPanel from '../../components/IA/ViewPost/AIToolsPanel'
 import AIResponseModal from '../../components/IA/ViewPost/IAResponseModal'
+import BlogRecommendedCard from '../../components/Post/BlogRecommendedCard'
 
 
 const ViewPost = () => {
@@ -99,6 +100,11 @@ const ViewPost = () => {
   const [activeAITool, setActiveAITool] = useState<string | null>(null)
   const [activeAIPrompt, setActiveAIPrompt] = useState<string>('');
 
+  const [recommendedBlogs, setRecommendedBlogs] = useState<any[]>([]);
+  const [shuffledBlogs, setShuffledBlogs] = useState<any[]>([]);
+  const [blogsLoading, setBlogsLoading] = useState(false);
+
+
   /**
    * states redux
    */
@@ -134,7 +140,17 @@ const ViewPost = () => {
           total: response.data.data.totalComments,
           totalPages: Math.ceil(response.data.data.totalComments / 5),
           hasMore: response.data.data.totalComments > 5,
-        })
+        });
+
+        if (userAuth.userId) {
+          setBlogsLoading(true);
+          clientAuthAxios.get(`${globalData.link}/users/get-blogs-recommended`)
+            .then((res) => {
+              setRecommendedBlogs(res.data.data.recomended.recommendedBlogs);
+            })
+            .catch(console.error)
+            .finally(() => setBlogsLoading(false));
+        }
       })
       .catch(error => {
         console.log(error)
@@ -152,7 +168,19 @@ const ViewPost = () => {
           }).then(() => route('/'))
         }
       })
-  }, [params.id])
+  }, [params.id]);
+
+
+  useEffect(() => {
+    if (recommendedBlogs.length > 0) {
+      setShuffledBlogs(
+        [...recommendedBlogs]
+          .filter((b: any) => b._id !== params.id) // exclude current post
+          .sort(() => Math.random() - 0.5)
+          .slice(0, 3)
+      );
+    }
+  }, [recommendedBlogs]);
 
   // dont delete this, if fail paint btns retake this
   // check this
@@ -435,7 +463,7 @@ const ViewPost = () => {
             </article>
             {
 
-              <motion.div
+              /*<motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.45, ease: [0.25, 0.46, 0.45, 0.94] }}
@@ -445,7 +473,7 @@ const ViewPost = () => {
                   onToolClick={handleAITool}
                   userPlan="FREE" // pass from userAuth
                 />
-              </motion.div>
+              </motion.div>*/
 
             }
 
@@ -453,6 +481,33 @@ const ViewPost = () => {
             <div className="block lg:hidden mt-6">
               <UserCard user={post.user} />
             </div>
+
+            {userAuth.userId && shuffledBlogs.length > 0 && (
+              <div className="mt-4">
+                <p className={`font-semibold mb-2 ${dark ? 'text-white' : 'text-black'}`}>
+                  Recommended for you
+                </p>
+                <div className="flex flex-col gap-2">
+                  {blogsLoading
+                    ? Array.from({ length: 3 }).map((_, i) => (
+                      <div key={i} className={`flex gap-3 p-3 rounded-xl border animate-pulse
+                          ${dark ? 'bg-[#27272A] border-gray-800' : 'bg-white border-gray-100'}`}
+                      >
+                        <div className={`h-16 w-16 rounded-lg flex-shrink-0 ${dark ? 'bg-gray-700' : 'bg-gray-200'}`} />
+                        <div className="flex flex-col gap-2 flex-1 justify-center">
+                          <div className={`h-3 w-full rounded-full ${dark ? 'bg-gray-700' : 'bg-gray-200'}`} />
+                          <div className={`h-3 w-3/4 rounded-full ${dark ? 'bg-gray-700' : 'bg-gray-200'}`} />
+                          <div className={`h-2 w-16 rounded-full ${dark ? 'bg-gray-800' : 'bg-gray-100'}`} />
+                        </div>
+                      </div>
+                    ))
+                    : shuffledBlogs.map((blog: any) => (
+                      <BlogRecommendedCard key={blog._id} blog={blog} />
+                    ))
+                  }
+                </div>
+              </div>
+            )}
 
             {/* Comments section */}
             <div className="mt-10">
@@ -517,16 +572,16 @@ const ViewPost = () => {
               </button>*/}
               {
                 //showIAOptions && (
-                  //<motion.div
-                    //initial={{ opacity: 0, y: 20 }}
-                    //animate={{ opacity: 1, y: 0 }}
-                    //transition={{ duration: 0.45, ease: [0.25, 0.46, 0.45, 0.94] }}
-                  //>
-                    //<AIToolsPanel
-                      //onToolClick={handleAITool}
-                      //userPlan="FREE" // pass from userAuth
-                    //</div>/>
-                  //</aside></motion.div>
+                //<motion.div
+                //initial={{ opacity: 0, y: 20 }}
+                //animate={{ opacity: 1, y: 0 }}
+                //transition={{ duration: 0.45, ease: [0.25, 0.46, 0.45, 0.94] }}
+                //>
+                //<AIToolsPanel
+                //onToolClick={handleAITool}
+                //userPlan="FREE" // pass from userAuth
+                //</div>/>
+                //</aside></motion.div>
                 //)
               }
               <p className={`text-xs font-semibold uppercase tracking-widest ${dark ? 'text-gray-500' : 'text-gray-400'}`}>
@@ -539,6 +594,33 @@ const ViewPost = () => {
               >
                 <UserCard user={post.user} />
               </motion.div>
+
+              {userAuth.userId && (
+                <div className="mt-4">
+                  <p className={`font-semibold mb-2 ${dark ? 'text-white' : 'text-black'}`}>
+                    Recommended for you
+                  </p>
+                  <div className="flex flex-col gap-2">
+                    {blogsLoading
+                      ? Array.from({ length: 3 }).map((_, i) => (
+                        <div key={i} className={`flex gap-3 p-3 rounded-xl border animate-pulse
+                          ${dark ? 'bg-[#27272A] border-gray-800' : 'bg-white border-gray-100'}`}
+                        >
+                          <div className={`h-16 w-16 rounded-lg flex-shrink-0 ${dark ? 'bg-gray-700' : 'bg-gray-200'}`} />
+                          <div className="flex flex-col gap-2 flex-1 justify-center">
+                            <div className={`h-3 w-full rounded-full ${dark ? 'bg-gray-700' : 'bg-gray-200'}`} />
+                            <div className={`h-3 w-3/4 rounded-full ${dark ? 'bg-gray-700' : 'bg-gray-200'}`} />
+                            <div className={`h-2 w-16 rounded-full ${dark ? 'bg-gray-800' : 'bg-gray-100'}`} />
+                          </div>
+                        </div>
+                      ))
+                      : shuffledBlogs.map((blog: any) => (
+                        <BlogRecommendedCard key={blog._id} blog={blog} />
+                      ))
+                    }
+                  </div>
+                </div>
+              )}
             </div>
           </aside>
         </div>

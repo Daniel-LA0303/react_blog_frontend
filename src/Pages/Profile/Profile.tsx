@@ -28,6 +28,7 @@ import { useSwal } from '../../hooks/useSwal';
 import useGlobalDataContext from '../../context/hooks/useGlobalDataContext';
 import clientAuthAxios from '../../services/clientAuthAxios';
 import useConversation from '../../context/hooks/useConversation';
+import UserRecommendedCard from '../../components/UserCard/UserRecommendedCard';
 
 const fadeUp = {
   hidden: { opacity: 0, y: 24 },
@@ -320,6 +321,9 @@ const Profile = () => {
   const [user, setUser] = useState<any>({});
   const [loading, setLoading] = useState(false);
   const [profileLoading, setProfileLoading] = useState(true);
+  const [recommendedUsers, setRecommendedUsers] = useState<any[]>([]);
+  const [usersLoading, setUsersLoading] = useState(false);
+  const [shuffledUsers, setShuffledUsers] = useState<any[]>([]);
   const [page, setPage] = useState(0);
   const [hasMore, setHasMore] = useState(true);
   const limit = 5;
@@ -329,12 +333,35 @@ const Profile = () => {
   }, []);
 
   useEffect(() => {
+    if (recommendedUsers.length > 0) {
+      setShuffledUsers(
+        [...recommendedUsers]
+          .filter((c: any) => c.name !== params.id)
+          .sort(() => Math.random() - 0.5)
+          .slice(0, 3)
+      );
+    }
+  }, [recommendedUsers]);
+
+  useEffect(() => {
     setProfileLoading(true);
-    axios
-      .get(`${globalData.link}/pages/page-profile-user/${params.id}`)
-      .then((res) => {
-        setUser(res.data.data);
-        setIsFollow(res.data.data.followersUsers.followers.includes(userAuth.userId));
+
+    const profileRequest = axios.get(`${globalData.link}/pages/page-profile-user/${params.id}`);
+    const recommendedRequest = userAuth.userId && params.id !== userAuth.userId
+      ? clientAuthAxios.get(`${globalData.link}/users/get-users-recommended`)
+      : null;
+
+    Promise.all([profileRequest, recommendedRequest])
+      .then(([profileRes, recommendedRes]) => {
+        setUser(profileRes.data.data);
+        setIsFollow(profileRes.data.data.followersUsers.followers.includes(userAuth.userId));
+
+        if (recommendedRes) {
+          const { recommendedUsers } = recommendedRes.data.data.recomended;
+          console.log(recommendedUsers);
+
+          setRecommendedUsers(recommendedUsers);
+        }
         setProfileLoading(false);
       })
       .catch((error) => {
@@ -347,6 +374,7 @@ const Profile = () => {
           route('/');
         }
       });
+
   }, [params.id]);
 
   useEffect(() => {
@@ -365,6 +393,7 @@ const Profile = () => {
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, [loading, hasMore, page]);
+
 
   const fetchPosts = async (pageToFetch = page) => {
     if (loading || !hasMore) return;
@@ -545,6 +574,35 @@ const Profile = () => {
               className="space-y-4 block lg:hidden"
             >
               <SidebarContent user={user} dark={dark} animated={false} />
+              {
+                userAuth.userId !== null && shuffledUsers.length > 0 && (
+                  <>
+                    <p className={`pt-5 font-semibold ${dark ? 'text-white' : 'text-black'}`}>Users recommended</p>
+                    <div className='flex flex-col gap-2'>
+                      {profileLoading
+                        ? Array.from({ length: 3 }).map((_, i) => (
+                          <div key={i} className={`flex items-center justify-between gap-3 p-3 rounded-xl border animate-pulse
+                            ${dark ? 'bg-[#27272A] border-gray-800' : 'bg-white border-gray-100'}`}
+                          >
+                            <div className="flex items-center gap-3">
+                              <div className={`h-10 w-10 rounded-full flex-shrink-0 ${dark ? 'bg-gray-700' : 'bg-gray-200'}`} />
+                              <div className="flex flex-col gap-2">
+                                <div className={`h-3 w-24 rounded-full ${dark ? 'bg-gray-700' : 'bg-gray-200'}`} />
+                                <div className={`h-2 w-16 rounded-full ${dark ? 'bg-gray-800' : 'bg-gray-100'}`} />
+                              </div>
+                            </div>
+                            <div className={`h-7 w-16 rounded-full ${dark ? 'bg-gray-700' : 'bg-gray-200'}`} />
+                          </div>
+                        ))
+                        :
+                        shuffledUsers.map((u: any) =>
+                          <UserRecommendedCard key={u._id} user={u} />
+                        )
+                      }
+                    </div>
+                  </>
+                )
+              }
             </motion.div>
 
             {/* Posts Section */}
@@ -627,7 +685,6 @@ const Profile = () => {
             </motion.div>
           </div>
 
-          {/* ── Right Sidebar Desktop ────────────────────────────────────── */}
           <motion.aside
             initial="hidden"
             animate="visible"
@@ -635,6 +692,35 @@ const Profile = () => {
             className="space-y-4 hidden lg:block"
           >
             <SidebarContent user={user} dark={dark} animated />
+
+            {
+              userAuth.userId !== null && recommendedUsers.length > 0 && (
+                <>
+                  <p className={`pt-5 font-semibold ${dark ? 'text-white' : 'text-black'}`}>Users recommended</p>
+                  <div className='flex flex-col gap-2'>
+                    {profileLoading
+                      ? Array.from({ length: 3 }).map((_, i) => (
+                        <div key={i} className={`flex items-center justify-between gap-3 p-3 rounded-xl border animate-pulse
+                          ${dark ? 'bg-[#27272A] border-gray-800' : 'bg-white border-gray-100'}`}
+                        >
+                          <div className="flex items-center gap-3">
+                            <div className={`h-10 w-10 rounded-full flex-shrink-0 ${dark ? 'bg-gray-700' : 'bg-gray-200'}`} />
+                            <div className="flex flex-col gap-2">
+                              <div className={`h-3 w-24 rounded-full ${dark ? 'bg-gray-700' : 'bg-gray-200'}`} />
+                              <div className={`h-2 w-16 rounded-full ${dark ? 'bg-gray-800' : 'bg-gray-100'}`} />
+                            </div>
+                          </div>
+                          <div className={`h-7 w-16 rounded-full ${dark ? 'bg-gray-700' : 'bg-gray-200'}`} />
+                        </div>
+                      ))
+                      : shuffledUsers.map((u: any) =>
+                        <UserRecommendedCard key={u._id} user={u} />
+                      )
+                    }
+                  </div>
+                </>
+              )
+            }
           </motion.aside>
         </div>
       </main>
