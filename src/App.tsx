@@ -39,6 +39,7 @@ import AddPaymentMethod from "./Pages/Payment/AddPaymentMethod";
 import Plans from "./Pages/Payment/Plans";
 import PaymentFlow from "./Pages/Payment/PaymentFlow";
 import TestIA from "./Pages/Test/TestIA";
+import ScrollToTop from "./components/Global/ScrollToTop";
 
 
 /**
@@ -64,6 +65,7 @@ function App() {
 
   return (
     <BrowserRouter>
+      <ScrollToTop />
       <PagesProvider>
         <Routes>
           <Route path="/" element={<Home />} />
