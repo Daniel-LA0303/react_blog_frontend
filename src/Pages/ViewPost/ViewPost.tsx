@@ -94,12 +94,13 @@ const ViewPost = () => {
   const [like, setLike] = useState(false)
   const [save, setSave] = useState(false)
   const [post, setPost] = useState<any>(null)
-  const [commentsState, setCommentsState] = useState<any[]>([])
+  const [commentsState, setCommentsState] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
   const [showIAOptions, setShowIAOptions] = useState<boolean>(false);
   const [activeAITool, setActiveAITool] = useState<string | null>(null)
   const [activeAIPrompt, setActiveAIPrompt] = useState<string>('');
 
+  const [recommendedMoreFromAuthor, setRecommendedMoreFromAuthor] = useState<any[]>([]);
   const [recommendedBlogs, setRecommendedBlogs] = useState<any[]>([]);
   const [shuffledBlogs, setShuffledBlogs] = useState<any[]>([]);
   const [blogsLoading, setBlogsLoading] = useState(false);
@@ -117,10 +118,13 @@ const ViewPost = () => {
   // useeffect to get one post or blog
   useEffect(() => {
     setPost(null)
+    setLoading(true);
     axios.get(`${globalData.link}/pages/page-view-post/${params.id}`)
       .then(response => {
-        console.log(response)
+
         setPost(response.data.data.post)
+        console.log(response.data.data);
+
 
         const newEngagement = {
           numberLikes: response.data.data.post.likePost.users.length,
@@ -142,6 +146,8 @@ const ViewPost = () => {
           hasMore: response.data.data.totalComments > 5,
         });
 
+        setRecommendedMoreFromAuthor(response.data.data.blogsUserSuggestion);
+
         if (userAuth.userId) {
           setBlogsLoading(true);
           clientAuthAxios.get(`${globalData.link}/users/get-blogs-recommended`)
@@ -157,7 +163,6 @@ const ViewPost = () => {
         if (error.code === 'ERR_NETWORK') {
           route('/error', { state: { error: true, message: { status: null, message: 'Network Error', desc: null } } })
         } else {
-          setLoading(false)
           Swal.fire({
             title: error.response.data.message,
             text: 'Status ' + error.response?.status,
@@ -167,7 +172,7 @@ const ViewPost = () => {
             buttonsStyling: false,
           }).then(() => route('/'))
         }
-      })
+      }).finally(() => setLoading(false))
   }, [params.id]);
 
 
@@ -321,7 +326,7 @@ const ViewPost = () => {
   const isOwner = userAuth.userId === post?.user?._id
   const isLoggedIn = !!userAuth.userId
 
-  if (!post) return <Spinner />
+  if (loading || !post) return <Spinner />
 
   return (
     <div className={`min-h-screen transition-colors duration-300 ${dark ? 'bg-[#0f0f0f]' : 'bgt-white'}`}>
@@ -482,32 +487,51 @@ const ViewPost = () => {
               <UserCard user={post.user} />
             </div>
 
-            {userAuth.userId && shuffledBlogs.length > 0 && (
-              <div className="mt-4">
-                <p className={`font-semibold mb-2 ${dark ? 'text-white' : 'text-black'}`}>
-                  Recommended for you
-                </p>
-                <div className="flex flex-col gap-2">
-                  {blogsLoading
-                    ? Array.from({ length: 3 }).map((_, i) => (
-                      <div key={i} className={`flex gap-3 p-3 rounded-xl border animate-pulse
-                          ${dark ? 'bg-[#27272A] border-gray-800' : 'bg-white border-gray-100'}`}
-                      >
-                        <div className={`h-16 w-16 rounded-lg flex-shrink-0 ${dark ? 'bg-gray-700' : 'bg-gray-200'}`} />
-                        <div className="flex flex-col gap-2 flex-1 justify-center">
-                          <div className={`h-3 w-full rounded-full ${dark ? 'bg-gray-700' : 'bg-gray-200'}`} />
-                          <div className={`h-3 w-3/4 rounded-full ${dark ? 'bg-gray-700' : 'bg-gray-200'}`} />
-                          <div className={`h-2 w-16 rounded-full ${dark ? 'bg-gray-800' : 'bg-gray-100'}`} />
-                        </div>
-                      </div>
-                    ))
-                    : shuffledBlogs.map((blog: any) => (
-                      <BlogRecommendedCard key={blog._id} blog={blog} />
-                    ))
+              <motion.div 
+                className='block lg:hidden mt-6'
+                initial={{ opacity: 0, y: 12 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.4, delay: 0.25 }}  
+              >
+                <p className={`font-semibold mb-2 ${dark ? 'text-white' : 'text-black'}`}>More from {post.user.name}</p>
+                <div className='flex flex-col gap-2'>
+                  {
+                    recommendedMoreFromAuthor.map((b => (
+                      <BlogRecommendedCard key={b._id} blog={b} />
+                    )))
                   }
+
                 </div>
-              </div>
-            )}
+              </motion.div>
+
+            <div className='block lg:hidden mt-6'>
+              {userAuth.userId && shuffledBlogs.length > 0 && (
+                <div className="mt-4">
+                  <p className={`font-semibold mb-2 ${dark ? 'text-white' : 'text-black'}`}>
+                    Recommended for you
+                  </p>
+                  <div className="flex flex-col gap-2">
+                    {blogsLoading
+                      ? Array.from({ length: 3 }).map((_, i) => (
+                        <div key={i} className={`flex gap-3 p-3 rounded-xl border animate-pulse
+                          ${dark ? 'bg-[#27272A] border-gray-800' : 'bg-white border-gray-100'}`}
+                        >
+                          <div className={`h-16 w-16 rounded-lg flex-shrink-0 ${dark ? 'bg-gray-700' : 'bg-gray-200'}`} />
+                          <div className="flex flex-col gap-2 flex-1 justify-center">
+                            <div className={`h-3 w-full rounded-full ${dark ? 'bg-gray-700' : 'bg-gray-200'}`} />
+                            <div className={`h-3 w-3/4 rounded-full ${dark ? 'bg-gray-700' : 'bg-gray-200'}`} />
+                            <div className={`h-2 w-16 rounded-full ${dark ? 'bg-gray-800' : 'bg-gray-100'}`} />
+                          </div>
+                        </div>
+                      ))
+                      : shuffledBlogs.map((blog: any) => (
+                        <BlogRecommendedCard key={blog._id} blog={blog} />
+                      ))
+                    }
+                  </div>
+                </div>
+              )}
+            </div>
 
             {/* Comments section */}
             <div className="mt-10">
@@ -593,6 +617,23 @@ const ViewPost = () => {
                 transition={{ duration: 0.4, delay: 0.25 }}
               >
                 <UserCard user={post.user} />
+              </motion.div>
+
+              <motion.div
+                className='mt-4'
+                initial={{ opacity: 0, y: 12 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.4, delay: 0.25 }}
+              >
+                <p className={`font-semibold mb-2 ${dark ? 'text-white' : 'text-black'}`}>More from {post.user.name}</p>
+                <div className='flex flex-col gap-2'>
+                  {
+                    recommendedMoreFromAuthor.map((b => (
+                      <BlogRecommendedCard key={b._id} blog={b} />
+                    )))
+                  }
+
+                </div>
               </motion.div>
 
               {userAuth.userId && (

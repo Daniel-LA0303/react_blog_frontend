@@ -12,94 +12,117 @@ import LocalOfferOutlinedIcon from '@mui/icons-material/LocalOfferOutlined'; // 
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
 import AddCircleOutlineOutlinedIcon from '@mui/icons-material/AddCircleOutlineOutlined';
 import ChatBubbleOutlineOutlinedIcon from '@mui/icons-material/ChatBubbleOutlineOutlined';
-
+import HelpOutlineOutlinedIcon from '@mui/icons-material/HelpOutlineOutlined';       // ? circle
+import LiveHelpOutlinedIcon from '@mui/icons-material/LiveHelpOutlined';               // ? with chat bubble
+import ContactSupportOutlinedIcon from '@mui/icons-material/ContactSupportOutlined';   // headset + ?
+import EmailOutlinedIcon from '@mui/icons-material/EmailOutlined';              // Contact
+import PrivacyTipOutlinedIcon from '@mui/icons-material/PrivacyTipOutlined';    // Privacy Policy
+import GavelOutlinedIcon from '@mui/icons-material/GavelOutlined';              // Terms of Use
 /**
  * context
  */
 import useGlobalDataContext from '../../context/hooks/useGlobalDataContext';
 
 const AsideMenu = ({ user }: any) => {
-
-    /**
-    * hooks
-    */
     const { globalData } = useGlobalDataContext();
+    const dark = !globalData.themeGlobal;
+
+    const itemClass = `flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-[13.5px] transition-colors
+    ${dark
+            ? 'text-gray-400 hover:bg-gray-800 hover:text-white'
+            : 'text-gray-500 hover:bg-gray-100 hover:text-gray-900'
+        }`;
+
+    const labelClass = `px-3 pt-3 pb-1.5 text-[10px] font-medium uppercase tracking-widest
+    ${dark ? 'text-zinc-200' : 'text-gray-400'}`;
+
+    const divider = <div className={`my-1.5 mx-3 h-px ${dark ? 'bg-zinc-800' : 'bg-gray-100'}`} />;
 
     return (
-        <div className={`${globalData.themeGlobal ? 'bg-white' : 'bgt-dark text-white'}  rounded-lg`}>
-            <Link
-                to={'/'}
-                className='px-5 text-sm flex hover:bg-zinc-700 hover:text-white cursor-pointer py-3 mb-2 transition'>
-                <HomeOutlinedIcon />
-                <p
-                    className='ml-3'
-                >Home</p>
-            </Link>
-            {/*<Link
-                to={'/plans'}
-                className='px-5 flex text-sm hover:bg-zinc-700 hover:text-white cursor-pointer py-3 mb-2 transition'>
-                <svg viewBox="0 0 22 22" fill="none" stroke="currentColor" strokeWidth={1.7} strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5">
-                    <path d="M2 20h20M5 20V10l7-6 7 6v10" />
-                    <path d="M2 10l3 2M22 10l-3 2" />
-                    <circle cx="12" cy="4" r="1" fill="currentColor" />
-                    <circle cx="5" cy="12" r="1" fill="currentColor" />
-                    <circle cx="19" cy="12" r="1" fill="currentColor" />
-                </svg>
-                <p
-                    className='ml-3'
-                >Plans</p>
-            </Link> */}
+        <div className={`${dark ? 'bg-[#27272A] text-white' : 'bg-white'} rounded-xl py-2 text-sm`}>
 
-            {!user?.userId ? null : (
+            {/* — Navigation — */}
+            <p className={labelClass}>Navigation</p>
+            <div className="px-2">
+                <Link to="/" className={itemClass}>
+                    <HomeOutlinedIcon sx={{ fontSize: 16 }} />
+                    <span>Home</span>
+                </Link>
+                {/*<Link to="/plans" className={itemClass}>
+          <svg viewBox="0 0 22 22" fill="none" stroke="currentColor" strokeWidth={1.7} strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4 flex-shrink-0">
+            <path d="M2 20h20M5 20V10l7-6 7 6v10" />
+            <path d="M2 10l3 2M22 10l-3 2" />
+            <circle cx="12" cy="4" r="1" fill="currentColor" />
+            <circle cx="5" cy="12" r="1" fill="currentColor" />
+            <circle cx="19" cy="12" r="1" fill="currentColor" />
+          </svg>
+          <span>Plans</span>
+        </Link>*/}
+            </div>
+
+            {divider}
+
+            {/* — Workspace (auth-only) — */}
+            {user?.userId && (
                 <>
-                    <Link
-                        to={`/chat`}
-                        className='px-5 flex text-sm hover:bg-zinc-700 hover:text-white cursor-pointer py-3 mb-2 transition'>
-                        <ChatBubbleOutlineOutlinedIcon />
-                        <p
-                            className='ml-3'
-
-                        >My Chats</p>
-                    </Link>
-                    <Link
-                        to={'/new-post'}
-                        className='px-5 flex text-sm hover:bg-zinc-700 hover:text-white cursor-pointer py-3 mb-2 transition'>
-                        <AddCircleOutlineOutlinedIcon />
-                        <p
-                            className='ml-3'
-
-                        >New Post</p>
-                    </Link>
-                    <Link
-                        to={`/save-posts/${user.userId}`}
-                        className='px-5 flex text-sm hover:bg-zinc-700 hover:text-white cursor-pointer py-3 mb-2 transition'>
-                        <BookmarkBorderOutlinedIcon />
-                        <p
-                            className='ml-3'
-
-                        >Saved</p>
-                    </Link>
+                    <p className={labelClass}>Workspace</p>
+                    <div className="px-2">
+                        <Link to="/chat" className={itemClass}>
+                            <ChatBubbleOutlineOutlinedIcon sx={{ fontSize: 16 }} />
+                            <span className="flex-1">My Chats</span>
+                            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 flex-shrink-0" />
+                        </Link>
+                        <Link to="/new-post" className={itemClass}>
+                            <AddCircleOutlineOutlinedIcon sx={{ fontSize: 16 }} />
+                            <span>New Post</span>
+                        </Link>
+                        <Link to={`/save-posts/${user.userId}`} className={itemClass}>
+                            <BookmarkBorderOutlinedIcon sx={{ fontSize: 16 }} />
+                            <span>Saved</span>
+                        </Link>
+                    </div>
+                    {divider}
                 </>
             )}
 
-            <Link
-                to={'/categories'}
-                className='px-5 flex text-sm hover:bg-zinc-700 hover:text-white cursor-pointer py-3 mb-2 transition'>
-                <LocalOfferOutlinedIcon />
-                <p
-                    className='ml-3'
-                >Categories</p>
-            </Link>
-            <Link
-                to={'/about'}
-                className='px-5 flex text-sm hover:bg-zinc-700 hover:text-white cursor-pointer py-3 mb-2 transition'>
-                <InfoOutlinedIcon />
-                <p
-                    className='ml-3'
-                >About</p>
-            </Link>
+            {/* — Explore — */}
+            <p className={labelClass}>Explore</p>
+            <div className="px-2">
+                <Link to="/categories" className={itemClass}>
+                    <LocalOfferOutlinedIcon sx={{ fontSize: 16 }} />
+                    <span>Categories</span>
+                </Link>
+                {/*<Link to="/about" className={itemClass}>
+                    <HelpOutlineOutlinedIcon sx={{ fontSize: 18 }} />
+                    <span>Help</span>
+                </Link>
+                <Link to="/about" className={itemClass}>
+                    <ContactSupportOutlinedIcon sx={{ fontSize: 18 }} />
+                    <span>Contact</span>
+                </Link>*/}
+                <Link to="/about" className={itemClass}>
+                    <InfoOutlinedIcon sx={{ fontSize: 16 }} />
+                    <span>About</span>
+                </Link>
+            </div>
+
+            {/*<p className={labelClass}>Other</p>
+            <div className="px-2">
+                <Link to="/categories" className={itemClass}>
+                    <EmailOutlinedIcon sx={{ fontSize: 16 }} />
+                    <span>Code of Conduct</span>
+                </Link>
+                <Link to="/about" className={itemClass}>
+                    <PrivacyTipOutlinedIcon sx={{ fontSize: 16 }} />
+                    <span>Privacy Policy</span>
+                </Link>
+                <Link to="/about" className={itemClass}>
+                    <GavelOutlinedIcon sx={{ fontSize: 16 }} />
+                    <span>Privacy Policy</span>
+                </Link>
+            </div>*/}
         </div>
-    )
-}
+    );
+};
 
 export default AsideMenu

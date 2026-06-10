@@ -22,6 +22,8 @@ import useConversation from '../../context/hooks/useConversation'
  * libraries
  */
 import { motion, AnimatePresence } from 'framer-motion'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faCake } from '@fortawesome/free-solid-svg-icons'
 
 const UserCard = ({ user }: any) => {
 
@@ -106,6 +108,15 @@ const UserCard = ({ user }: any) => {
             </h2>
             <p className={`text-xs mt-0.5 ${dark ? 'text-gray-500' : 'text-gray-400'}`}>
               {user.email}
+            </p>
+
+            <p className={`text-sm text-justify mt-0.5 ${dark ? 'text-white' : 'text-gray-400'}`}>
+              {user.info?.desc && user.info?.desc}
+            </p>
+            
+            <p className={`text-sm text-justify mt-2 ${dark ? 'text-white' : 'text-gray-400'}`}>
+              <FontAwesomeIcon icon={faCake} />
+              <span className='ml-2'>{new Date(user.createdAt).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}</span>
             </p>
           </div>
         </Link>
