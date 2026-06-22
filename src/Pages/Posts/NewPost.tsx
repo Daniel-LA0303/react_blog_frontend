@@ -47,6 +47,11 @@ import { AIWordSuggest } from '../../components/IA/NewPost/AIWordSuggest'
 import { AIContentToolbar } from '../../components/IA/NewPost/AIContentToolbar'
 import { AIAssistModal } from '../../components/IA/NewPost/AIAssistModal'
 import { AIFieldAssist } from '../../components/IA/NewPost/AIFieldAssist'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faMagic } from '@fortawesome/free-solid-svg-icons'
+import { Tiptap } from '@tiptap/react'
+import Tooltip from '../../components/Global/TooTip'
+import useIA from '../../context/hooks/useIA'
 
 const fadeUp = {
   hidden: { opacity: 0, y: 16 },
@@ -283,6 +288,11 @@ const NewPost = () => {
   const [categories, setCategories] = useState([])
   const [saving, setSaving] = useState(false)
 
+  const [titleIA, setTitleIA] = useState('');
+  const [descriptionIA, setDescriptionIA] = useState('');
+  const [flagCount, setFlagCount] = useState(false);
+  const { loadingType, errorIA, response, requestIA } = useIA();
+
   // Field-level validation errors
   const [errors, setErrors] = useState<Record<string, string>>({})
 
@@ -319,7 +329,17 @@ const NewPost = () => {
   /**
    * functions
    */
-  const onContent = (value: any) => setContent(value)
+  const onContent = (value: any) => {
+
+    const plain = value.replace(/<[^>]*>/g, '').trim()
+    if (plain.length > 500) {
+      setFlagCount(true);
+    } else {
+      setFlagCount(true);
+    }
+
+    setContent(value)
+  }
 
   const getFile = (e: any) => {
     if (e.target.files?.[0]) setFile(e.target.files[0])
@@ -375,6 +395,15 @@ const NewPost = () => {
     setSaving(false)
   }
 
+  const handleGenerateTitleIA = async () => {
+    const result = await requestIA('title', content)
+    if (result) setTitle(result)
+  }
+
+  const handleGenerateDescIA = async () => {
+    const result = await requestIA('description', content)
+    if (result) setDesc(result)
+  }
 
 
   const handleAI = (toolKey: string) => {
@@ -429,26 +458,57 @@ const NewPost = () => {
                   htmlFor="title"
                   error={errors.title}
                   dark={dark}
-                  //labelAction={
-                    //<AIFieldAssist
-                      //dark={dark}
-                      //userPlan={userPlan}
-                      //requiredPlan="PRO"
-                      //label="Generate title"
-                      //loading={aiLoadingKey === 'generateTitle'}
-                      //onAction={() => handleAI('generateTitle')}
-                    ///>
-                  //}
-                > 
-                  <input
-                    id="title"
-                    type="text"
-                    placeholder="Give your post a strong title"
-                    value={title}
-                    onChange={e => { setTitle(e.target.value); if (errors.title) setErrors(p => ({ ...p, title: '' })) }}
-                    className={inputCls(dark, !!errors.title)}
-                  />
-                  
+                //labelAction={
+                //<AIFieldAssist
+                //dark={dark}
+                //userPlan={userPlan}
+                //requiredPlan="PRO"
+                //label="Generate title"
+                //loading={aiLoadingKey === 'generateTitle'}
+                //onAction={() => handleAI('generateTitle')}
+                ///>
+                //}
+                >
+                  <div style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
+                    <input
+                      id="title"
+                      type="text"
+                      placeholder="Give your post a strong title"
+                      value={title}
+                      onChange={e => { setTitle(e.target.value); if (errors.title) setErrors(p => ({ ...p, title: '' })) }}
+                      className={inputCls(dark, !!errors.title)}
+                      style={{ paddingRight: '2.5rem' }}
+                    />
+                    <Tooltip text={flagCount ? 'Generate a Title with IA' : 'Write more than 500 characters to generate a title with IA'}>
+                      <button
+                        type="button"
+                        onClick={handleGenerateTitleIA}
+                        className='text-white'
+                        style={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          background: 'none',
+                          border: 'none',
+                          cursor: 'pointer',
+                          padding: '0.25rem',
+                          opacity: flagCount ? 1 : 0.4,
+                        }}
+                        disabled={!flagCount}
+                      >
+                        {loadingType === 'title'
+                          ? <span className={`w-3 h-3 border-2 rounded-full animate-spin
+                            ${dark ? 'border-white/30 border-t-white' : 'border-black/20 border-t-black'}`}
+                          />
+                          : <FontAwesomeIcon icon={faMagic} style={{ color: dark ? '#fff' : '#000' }} />
+                        }
+                      </button>
+                    </Tooltip>
+
+
+                  </div>
+
+
                   {/*<AIWordSuggest
                     value={title}
                     dark={dark}
@@ -463,25 +523,53 @@ const NewPost = () => {
                   htmlFor="desc"
                   error={errors.desc}
                   dark={dark}
-                  //labelAction={
-                    //<AIFieldAssist
-                      //dark={dark}
-                      //userPlan={userPlan}
-                      //requiredPlan="PRO"
-                      //label="Improve"
-                      //loading={aiLoadingKey === 'improveDesc'}
-                      //onAction={() => handleAI('improveDesc')}
-                    ///>
-                  //}
+                //labelAction={
+                //<AIFieldAssist
+                //dark={dark}
+                //userPlan={userPlan}
+                //requiredPlan="PRO"
+                //label="Improve"
+                //loading={aiLoadingKey === 'improveDesc'}
+                //onAction={() => handleAI('improveDesc')}
+                ///>
+                //}
                 >
-                  <input
-                    id="desc"
-                    type="text"
-                    placeholder="A short summary shown in previews"
-                    value={desc}
-                    onChange={e => { setDesc(e.target.value); if (errors.desc) setErrors(p => ({ ...p, desc: '' })) }}
-                    className={inputCls(dark, !!errors.desc)}
-                  />
+                  <div style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
+                    <input
+                      id="desc"
+                      type="teEditorxt"
+                      placeholder="A short summary shown in previews"
+                      value={desc}
+                      onChange={e => { setDesc(e.target.value); if (errors.desc) setErrors(p => ({ ...p, desc: '' })) }}
+                      className={inputCls(dark, !!errors.desc)}
+                      style={{ paddingRight: '2.5rem' }}
+                    />
+                    <Tooltip text={flagCount ? 'Generate a Description with IA' : 'Write more than 500 characters to generate a Description with IA'}>
+                      <button
+                        type="button"
+                        onClick={handleGenerateDescIA}
+                        className='text-white'
+                        style={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          background: 'none',
+                          border: 'none',
+                          cursor: 'pointer',
+                          padding: '0.25rem',
+                          opacity: flagCount ? 1 : 0.4,
+                        }}
+                        disabled={!flagCount}
+                      >
+                        {loadingType === 'description'
+                          ? <span className={`w-3 h-3 border-2 rounded-full animate-spin
+                              ${dark ? 'border-white/30 border-t-white' : 'border-black/20 border-t-black'}`}
+                            />
+                          : <FontAwesomeIcon icon={faMagic} style={{ color: dark ? '#fff' : '#000' }} />
+                        }
+                      </button>
+                    </Tooltip>
+                  </div>
                 </Field>
                 <Field label="Categories — up to 4" htmlFor="categories" error={errors.categories} dark={dark}>
                   <CategorySelect
@@ -563,7 +651,6 @@ const NewPost = () => {
             </motion.div>
 
             {/* ── Content editor */}
-
             <motion.div variants={fadeUp} custom={3} className="py-7">
               <p className={`text-xs font-semibold uppercase tracking-widest mb-4 ${dark ? 'text-gray-500' : 'text-gray-400'}`}>
                 Content

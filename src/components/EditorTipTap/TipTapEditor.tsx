@@ -21,7 +21,7 @@ import useGlobalDataContext from "../../context/hooks/useGlobalDataContext";
 
 const lowlight = createLowlight(common);
 
-/* ─── Toolbar button */
+/* Toolbar button */
 const ToolBtn = ({
     onClick, active = false, disabled = false, title, children, dark = false,
 }: {
@@ -135,7 +135,6 @@ interface TipTapEditorProps {
 
 type Tab = "Write" | "Preview";
 
-/* ══════════════════════════════════════════════════════════════════════════ */
 const TipTapEditor = ({ content, onContent, error, onClearError }: TipTapEditorProps) => {
     const { globalData } = useGlobalDataContext();
     const dark = !globalData.themeGlobal;
