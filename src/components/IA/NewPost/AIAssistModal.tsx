@@ -1,6 +1,7 @@
 // AIAssistModal.tsx
 import { useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
+import { marked } from 'marked'
 
 type ToolKey = 'summary' | 'custom'
 
@@ -70,10 +71,12 @@ export const AIAssistModal = ({ toolKey, result, dark, onClose, onApply }: AIAss
             </div>
 
             {/* Body */}
-            <div className={`px-5 py-4 max-h-[55vh] overflow-y-auto text-sm leading-relaxed whitespace-pre-line chat-scroll-dark
-              ${dark ? 'text-gray-300' : 'text-gray-700'}`}>
-              {result}
-            </div>
+            <div
+              className={`px-5 py-4 max-h-[55vh] overflow-y-auto text-sm leading-relaxed chat-scroll-dark
+                prose prose-sm max-w-none
+                ${dark ? 'prose-invert text-gray-300' : 'text-gray-700'}`}
+              dangerouslySetInnerHTML={{ __html: marked(result) as string }}
+            />
 
             {/* Footer */}
             <div className={`flex items-center justify-between px-5 py-3 border-t ${dark ? 'border-gray-800' : 'border-gray-100'}`}>

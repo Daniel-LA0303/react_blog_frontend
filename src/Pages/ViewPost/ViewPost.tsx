@@ -57,6 +57,8 @@ import AIResponseModal from '../../components/IA/ViewPost/IAResponseModal'
 import BlogRecommendedCard from '../../components/Post/BlogRecommendedCard'
 import useIA from '../../context/hooks/useIA'
 import { AIAssistModal } from '../../components/IA/NewPost/AIAssistModal'
+import { Divider } from '@mui/material'
+import { Question, QuizModal } from '../../components/IA/ViewPost/QuizModal'
 
 
 const ViewPost = () => {
@@ -98,9 +100,6 @@ const ViewPost = () => {
   const [post, setPost] = useState<any>(null)
   const [commentsState, setCommentsState] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
-  const [showIAOptions, setShowIAOptions] = useState<boolean>(false);
-  const [activeAITool, setActiveAITool] = useState<string | null>(null)
-  const [activeAIPrompt, setActiveAIPrompt] = useState<string>('');
 
   const [recommendedMoreFromAuthor, setRecommendedMoreFromAuthor] = useState<any[]>([]);
   const [recommendedBlogs, setRecommendedBlogs] = useState<any[]>([]);
@@ -109,6 +108,11 @@ const ViewPost = () => {
 
   const [activateCustom, setActivateCustom] = useState<boolean>(false);
   const [customPromt, setCustomPromt] = useState<string>('');
+
+  const [quizQuestions, setQuizQuestions] = useState<Question[]>([]);
+  const [showQuiz, setShowQuiz] = useState(false);
+
+  const [countContent, setCountContent] = useState<boolean>(false);
 
   const [activeTool, setActiveTool] = useState<'summary' | 'custom' | null>(null) // to show modal
   const { loadingType, errorIA, response, requestIA } = useIA();
@@ -130,7 +134,10 @@ const ViewPost = () => {
     axios.get(`${globalData.link}/pages/page-view-post/${params.id}`)
       .then(response => {
 
-        setPost(response.data.data.post)
+        setPost(response.data.data.post);
+
+        const plain = response.data.data.post.content.replace(/<[^>]*>/g, '').trim()
+        setCountContent(plain.length > 500 ? true : false);
 
         const newEngagement = {
           numberLikes: response.data.data.post.likePost.users.length,
@@ -324,12 +331,23 @@ const ViewPost = () => {
   }
 
   const hanndleActivateCustom = () => setActivateCustom(!activateCustom);
-  
+
 
   const handleCustomIA = async () => {
     const plain = post.content.replace(/<[^>]*>/g, '').trim()
     await requestIA('custom', `${customPromt}\n\nPost content:\n${plain}`)
     setActiveTool('custom')
+  }
+
+  const handleQuizIA = async () => {
+    const plain = post.content.replace(/<[^>]*>/g, '').trim()
+    const result = await requestIA('quiz', plain);
+
+    if (result) {
+      const parsed = JSON.parse(result)
+      setQuizQuestions(parsed.questions)
+      setShowQuiz(true)
+    }
   }
 
   const isOwner = userAuth.userId === post?.user?._id
@@ -345,7 +363,7 @@ const ViewPost = () => {
       <div className="max-w-screen-xl mx-auto px-4 sm:px-6 lg:px-8 pb-32">
         <div className="flex gap-8 mt-6">
 
-          {/* ── Left sticky actions — desktop ─────────────────────────── */}
+          {/* Left sticky actions — desktop */}
           <div className="hidden lg:flex flex-col items-center sticky top-20 h-fit pt-10">
             {isLoggedIn && (
               <motion.div
@@ -474,28 +492,52 @@ const ViewPost = () => {
                   dangerouslySetInnerHTML={{ __html: post.content }}
                 />
 
-                <div>
-                  <button
-                    onClick={handleSummaryIA}
-                    disabled={loadingType === 'summary'}
-                    className="rounded-xl py-2 px-3 mt-10 text-xs font-semibold text-white transition-colors"
-                    style={{ backgroundColor: '#2563EB' }}
-                  >
-                    {loadingType === 'summary'
-                      ? <span className="w-3 h-3 border-2 rounded-fiull animate-spin border-white/30 border-t-white inline-block" />
-                      : 'Summary'
-                    }
-                  </button>
+                {
+                  countContent && (
+                    <>
+                      <div>
+                        <hr />
+                        <p className={`${dark ? 'text-white' : 'text-black'} mt-5 font-semibold text-base md:text-xl`}>IA Tools</p>
+                      </div>
 
-                  <button
-                    onClick={hanndleActivateCustom}
-                    disabled={loadingType === 'custom'}
-                    className="rounded-xl ml-2 py-2 px-3 mt-10 text-xs font-semibold text-white transition-colors"
-                    style={{ backgroundColor: '#2563EB' }}
-                  >
-                    {activateCustom ? 'Close' : 'Custom Promt'}
-                  </button>
-                </div>
+                      <div>
+                        <button
+                          onClick={handleSummaryIA}
+                          disabled={loadingType === 'summary'}
+                          className="rounded-xl py-2 px-3 mt-10 text-xs font-semibold text-white transition-colors"
+                          style={{ backgroundColor: '#2563EB' }}
+                        >
+                          {loadingType === 'summary'
+                            ? <span className="w-3 h-3 border-2 rounded-fiull animate-spin border-white/30 border-t-white inline-block" />
+                            : 'Summary'
+                          }
+                        </button>
+
+                        <button
+                          onClick={handleQuizIA}
+                          disabled={loadingType === 'quiz'}
+                          className="rounded-xl ml-2 py-2 px-3 mt-10 text-xs font-semibold text-white transition-colors"
+                          style={{ backgroundColor: '#2563EB' }}
+                        >
+                          {loadingType === 'quiz'
+                            ? <span className="w-3 h-3 border-2 rounded-fiull animate-spin border-white/30 border-t-white inline-block" />
+                            : 'Generate a Quiz'
+                          }
+                        </button>
+
+
+                        <button
+                          onClick={hanndleActivateCustom}
+                          disabled={loadingType === 'custom'}
+                          className="rounded-xl ml-2 py-2 px-3 mt-10 text-xs font-semibold text-white transition-colors"
+                          style={{ backgroundColor: '#2563EB' }}
+                        >
+                          {activateCustom ? 'Close' : 'Ask about this Blog'}
+                        </button>
+                      </div>
+                    </>
+                  )
+                }
                 <div className='mt-3'>
                   {activateCustom && (
                     <motion.div
@@ -734,6 +776,14 @@ const ViewPost = () => {
           </aside>
         </div>
       </div>
+
+      {showQuiz && (
+        <QuizModal
+          questions={quizQuestions}
+          dark={dark}
+          onClose={() => setShowQuiz(false)}
+        />
+      )}
 
       <AIAssistModal
         toolKey={activeTool}

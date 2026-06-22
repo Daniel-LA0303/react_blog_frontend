@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { GoogleGenAI } from "@google/genai";
 
-type PromptType = 'title' | 'description' | 'summary' | 'improve' | 'custom'
+type PromptType = 'title' | 'description' | 'summary' | 'improve' | 'custom' | 'quiz'
 
 const prompts: Record<PromptType, (content: string) => string> = {
     title: (content) => `Generate a strong, catchy blog post title based on this content. Return only the title, no quotes or explanation:\n\n${content}`,
@@ -10,6 +10,9 @@ const prompts: Record<PromptType, (content: string) => string> = {
     content is > 500 5 - 10 sentences maybe more. Return only the summary, ignore images or videos links:\n\n${content}`,
     improve: (content) => `Improve the writing of this text, keeping the same meaning. Return only the improved text:\n\n${content}`,
     custom: (content) => `You are a helpful assistant. Answer the following request:\n\n${content}`,
+    quiz: (content) => `Generate 3 - 5 multiple choice questions based on this content. Return ONLY valid JSON in this exact format, no markdown:
+        {"questions":[{"id":1,"question":"...","options":[{"text":"...","isCorrect":false},{"text":"...","isCorrect":true},{"text":"...","isCorrect":false},{"text":"...","isCorrect":false}]}]}
+        Content:\n${content}`,
 }
 
 const useIA = () => {
