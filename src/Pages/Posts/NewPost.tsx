@@ -683,17 +683,6 @@ const NewPost = () => {
             </motion.div>
 
           </div>
-
-          <AIAssistModal
-            toolKey={aiToolKey}
-            dark={dark}
-            onClose={() => setAiToolKey(null)}
-            onApply={(result) => {
-              if (aiToolKey === 'generateTitle') setTitle(result.split('\n')[2]?.replace(/^\d+\.\s"?/, '').replace(/"$/, '') ?? result)
-              if (aiToolKey === 'improveDesc') setDesc(result.replace('Improved description:\n\n', ''))
-            }}
-          />
-
           {/* ── Footer actions ─*/}
           <motion.div
             variants={fadeUp} custom={4}

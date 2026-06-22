@@ -55,6 +55,8 @@ import PostContent from '../../components/EditorToolBar/PostContent'
 import AIToolsPanel from '../../components/IA/ViewPost/AIToolsPanel'
 import AIResponseModal from '../../components/IA/ViewPost/IAResponseModal'
 import BlogRecommendedCard from '../../components/Post/BlogRecommendedCard'
+import useIA from '../../context/hooks/useIA'
+import { AIAssistModal } from '../../components/IA/NewPost/AIAssistModal'
 
 
 const ViewPost = () => {
@@ -105,6 +107,12 @@ const ViewPost = () => {
   const [shuffledBlogs, setShuffledBlogs] = useState<any[]>([]);
   const [blogsLoading, setBlogsLoading] = useState(false);
 
+  const [activateCustom, setActivateCustom] = useState<boolean>(false);
+  const [customPromt, setCustomPromt] = useState<string>('');
+
+  const [activeTool, setActiveTool] = useState<'summary' | 'custom' | null>(null) // to show modal
+  const { loadingType, errorIA, response, requestIA } = useIA();
+
 
   /**
    * states redux
@@ -123,8 +131,6 @@ const ViewPost = () => {
       .then(response => {
 
         setPost(response.data.data.post)
-        console.log(response.data.data);
-
 
         const newEngagement = {
           numberLikes: response.data.data.post.likePost.users.length,
@@ -256,9 +262,6 @@ const ViewPost = () => {
       const res = await clientAuthAxios.post(`/posts/like-post/${id}?userId=${userAuth.userId}`)
       setLike(true)
       setEngagementPost(prev => ({ ...prev, numberLikes: prev.numberLikes + 1 }))
-      // dont delete this, if fail paint btns retake this
-      // addPostToLikes(id);
-      console.log(res)
     } catch (error: any) {
       console.log(error)
       showConfirmSwal({ message: error.response.data.message, status: 'error', confirmButton: true })
@@ -314,15 +317,21 @@ const ViewPost = () => {
     }
   }
 
-  const handleAITool = (toolKey: string, customPrompt?: string) => {
-    if (customPrompt) {
-      setActiveAIPrompt(customPrompt)
-      setActiveAITool('custom')
-    } else {
-      setActiveAIPrompt('')
-      setActiveAITool(toolKey)
-    }
+  const handleSummaryIA = async () => {
+    const plain = post.content.replace(/<[^>]*>/g, '').trim()
+    await requestIA('summary', plain);
+    setActiveTool('summary')
   }
+
+  const hanndleActivateCustom = () => setActivateCustom(!activateCustom);
+  
+
+  const handleCustomIA = async () => {
+    const plain = post.content.replace(/<[^>]*>/g, '').trim()
+    await requestIA('custom', `${customPromt}\n\nPost content:\n${plain}`)
+    setActiveTool('custom')
+  }
+
   const isOwner = userAuth.userId === post?.user?._id
   const isLoggedIn = !!userAuth.userId
 
@@ -464,6 +473,65 @@ const ViewPost = () => {
                   className={`post-content ${dark ? "post-content--dark text-white" : "post-content--light"}`}
                   dangerouslySetInnerHTML={{ __html: post.content }}
                 />
+
+                <div>
+                  <button
+                    onClick={handleSummaryIA}
+                    disabled={loadingType === 'summary'}
+                    className="rounded-xl py-2 px-3 mt-10 text-xs font-semibold text-white transition-colors"
+                    style={{ backgroundColor: '#2563EB' }}
+                  >
+                    {loadingType === 'summary'
+                      ? <span className="w-3 h-3 border-2 rounded-fiull animate-spin border-white/30 border-t-white inline-block" />
+                      : 'Summary'
+                    }
+                  </button>
+
+                  <button
+                    onClick={hanndleActivateCustom}
+                    disabled={loadingType === 'custom'}
+                    className="rounded-xl ml-2 py-2 px-3 mt-10 text-xs font-semibold text-white transition-colors"
+                    style={{ backgroundColor: '#2563EB' }}
+                  >
+                    {activateCustom ? 'Close' : 'Custom Promt'}
+                  </button>
+                </div>
+                <div className='mt-3'>
+                  {activateCustom && (
+                    <motion.div
+                      initial={{ opacity: 0, y: 16 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ duration: 0.4, ease: [0.25, 0.46, 0.45, 0.94] }}
+                      className="mt-3"
+                    >
+                      <input
+                        type="text"
+                        name='custompromt'
+                        value={customPromt}
+                        onChange={(e) => setCustomPromt(e.target.value)}
+                        placeholder="Ask anything about this post..."
+                        className={`w-full text-sm px-4 py-2.5 rounded-xl border outline-none transition-colors
+                          focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500
+                          ${dark
+                            ? 'bg-[#1a1a1a] border-gray-700 text-white placeholder:text-gray-600'
+                            : 'bg-gray-50 border-gray-200 text-gray-900 placeholder:text-gray-400'
+                          }`}
+                      />
+                      <button
+                        type="button"
+                        onClick={handleCustomIA}
+                        disabled={loadingType === 'custom' || !customPromt.trim()}
+                        className="flex-shrink-0 mt-3 rounded-xl py-2.5 px-3 text-xs font-semibold text-white transition-colors disabled:opacity-50"
+                        style={{ backgroundColor: '#2563EB' }}
+                      >
+                        {loadingType === 'custom'
+                          ? <span className="w-3 h-3 border-2 rounded-full animate-spin border-white/30 border-t-white inline-block" />
+                          : 'Send'
+                        }
+                      </button>
+                    </motion.div>
+                  )}
+                </div>
               </div>
             </article>
             {
@@ -487,22 +555,22 @@ const ViewPost = () => {
               <UserCard user={post.user} />
             </div>
 
-              <motion.div 
-                className='block lg:hidden mt-6'
-                initial={{ opacity: 0, y: 12 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.4, delay: 0.25 }}  
-              >
-                <p className={`font-semibold mb-2 ${dark ? 'text-white' : 'text-black'}`}>More from {post.user.name}</p>
-                <div className='flex flex-col gap-2'>
-                  {
-                    recommendedMoreFromAuthor.map((b => (
-                      <BlogRecommendedCard key={b._id} blog={b} />
-                    )))
-                  }
+            <motion.div
+              className='block lg:hidden mt-6'
+              initial={{ opacity: 0, y: 12 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.4, delay: 0.25 }}
+            >
+              <p className={`font-semibold mb-2 ${dark ? 'text-white' : 'text-black'}`}>More from {post.user.name}</p>
+              <div className='flex flex-col gap-2'>
+                {
+                  recommendedMoreFromAuthor.map((b => (
+                    <BlogRecommendedCard key={b._id} blog={b} />
+                  )))
+                }
 
-                </div>
-              </motion.div>
+              </div>
+            </motion.div>
 
             <div className='block lg:hidden mt-6'>
               {userAuth.userId && shuffledBlogs.length > 0 && (
@@ -667,14 +735,11 @@ const ViewPost = () => {
         </div>
       </div>
 
-      <AIResponseModal
-        toolKey={activeAITool}
-        customPrompt={activeAIPrompt}
-        onClose={() => {
-          setActiveAITool(null)
-          // don't clear prompt on close — keeps it cached
-        }}
+      <AIAssistModal
+        toolKey={activeTool}
+        result={response}
         dark={dark}
+        onClose={() => setActiveTool(null)}
       />
 
       {isLoggedIn && (
