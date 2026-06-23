@@ -51,7 +51,15 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faMagic } from '@fortawesome/free-solid-svg-icons'
 import { Tiptap } from '@tiptap/react'
 import Tooltip from '../../components/Global/TooTip'
-import useIA from '../../context/hooks/useIA'
+import useIA, { PromptType } from '../../context/hooks/useIA'
+
+export const toneOptions = [
+  { key: 'technical', label: 'Technical', icon: 'ti-code', desc: 'Precise and detailed' },
+  { key: 'professional', label: 'Professional', icon: 'ti-briefcase', desc: 'Formal and polished' },
+  { key: 'casual', label: 'Casual', icon: 'ti-mood-smile', desc: 'Friendly and relaxed' },
+  { key: 'educational', label: 'Educational', icon: 'ti-school', desc: 'Clear and instructive' },
+  { key: 'senior', label: 'Senior Engineer', icon: 'ti-terminal-2', desc: 'Opinionated and sharp' },
+]
 
 const fadeUp = {
   hidden: { opacity: 0, y: 16 },
@@ -288,8 +296,9 @@ const NewPost = () => {
   const [categories, setCategories] = useState([])
   const [saving, setSaving] = useState(false)
 
-  const [titleIA, setTitleIA] = useState('');
-  const [descriptionIA, setDescriptionIA] = useState('');
+
+  const [activeTool, setActiveTool] = useState<'summary' | 'custom' | null>(null)
+
   const [flagCount, setFlagCount] = useState(false);
   const { loadingType, errorIA, response, requestIA } = useIA();
 
@@ -335,7 +344,7 @@ const NewPost = () => {
     if (plain.length > 500) {
       setFlagCount(true);
     } else {
-      setFlagCount(true);
+      setFlagCount(false);
     }
 
     setContent(value)
@@ -406,14 +415,6 @@ const NewPost = () => {
   }
 
 
-  const handleAI = (toolKey: string) => {
-    setAiLoadingKey(toolKey)
-    // simulate API delay
-    setTimeout(() => {
-      setAiLoadingKey(null)
-      setAiToolKey(toolKey)
-    }, 900)
-  }
 
   if (error) return <Error message={message} />
   if (loading) return <Spinner />
@@ -564,7 +565,7 @@ const NewPost = () => {
                         {loadingType === 'description'
                           ? <span className={`w-3 h-3 border-2 rounded-full animate-spin
                               ${dark ? 'border-white/30 border-t-white' : 'border-black/20 border-t-black'}`}
-                            />
+                          />
                           : <FontAwesomeIcon icon={faMagic} style={{ color: dark ? '#fff' : '#000' }} />
                         }
                       </button>
@@ -651,10 +652,66 @@ const NewPost = () => {
             </motion.div>
 
             {/* ── Content editor */}
-            <motion.div variants={fadeUp} custom={3} className="py-7">
-              <p className={`text-xs font-semibold uppercase tracking-widest mb-4 ${dark ? 'text-gray-500' : 'text-gray-400'}`}>
-                Content
-              </p>
+            <p className={`text-xs font-semibold uppercase tracking-widest my-4 ${dark ? 'text-gray-500' : 'text-gray-400'}`}>
+              Content
+            </p>
+            <motion.div variants={fadeUp} custom={3} className="py-3">
+
+              {
+                flagCount && (
+                  <motion.div
+                    initial={{ opacity: 0, y: 16 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.4, ease: [0.25, 0.46, 0.45, 0.94] }}
+                    className={`rounded-xl border p-4 ${dark ? 'border-gray-800 bg-[#1a1a1a]' : 'border-gray-100 bg-gray-50'}`}>
+                    <p className={`text-xs font-medium uppercase tracking-widest mb-3 ${dark ? 'text-gray-500' : 'text-gray-400'}`}>
+                      Rewrite tone
+                    </p>
+                    <div className="flex flex-wrap gap-2">
+                      {toneOptions.map(({ key, label, icon }) => (
+                        <button
+                          key={key}
+                          type="button"
+                          disabled={loadingType === `tone_${key}`}
+                          onClick={async () => {
+                            await requestIA(`tone_${key}` as PromptType, content)
+                            setActiveTool('custom')
+                          }}
+                          className={`flex items-center gap-2 px-3 py-2 rounded-lg border text-xs font-medium transition-colors
+                            ${dark
+                              ? 'border-gray-700 hover:bg-gray-800 text-gray-300'
+                              : 'border-gray-200 hover:bg-white text-gray-700'
+                            } bg-transparent`}
+                        >
+                          <i className={`ti ${icon}`} style={{ fontSize: 13, color: '#2563EB' }} aria-hidden />
+                          {label}
+                          {loadingType === `tone_${key}`
+                            ? <span className="w-3 h-3 border-2 rounded-full animate-spin border-blue-300 border-t-blue-600" />
+                            : null
+                          }
+                        </button>
+                      ))}
+                    </div>
+                  </motion.div>
+                )
+              }
+
+              <AIAssistModal
+                toolKey={activeTool}
+                result={response}
+                dark={dark}
+                onClose={() => setActiveTool(null)}
+                onApply={(result) => {
+                  const clean = result
+                    .replace(/^```html\n?/, '')
+                    .replace(/^```\n?/, '')
+                    .replace(/```$/, '')
+                    .trim()
+                  setContent(clean)
+                  setActiveTool(null)
+                }}
+              />
+
               <div className="rounded-xl overflow-hidden">
                 {/*<AIContentToolbar
                   dark={dark}
