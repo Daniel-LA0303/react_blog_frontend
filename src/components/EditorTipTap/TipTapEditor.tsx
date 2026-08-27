@@ -21,7 +21,7 @@ import useGlobalDataContext from "../../context/hooks/useGlobalDataContext";
 
 const lowlight = createLowlight(common);
 
-/* ─── Toolbar button */
+/* Toolbar button */
 const ToolBtn = ({
     onClick, active = false, disabled = false, title, children, dark = false,
 }: {
@@ -135,7 +135,6 @@ interface TipTapEditorProps {
 
 type Tab = "Write" | "Preview";
 
-/* ══════════════════════════════════════════════════════════════════════════ */
 const TipTapEditor = ({ content, onContent, error, onClearError }: TipTapEditorProps) => {
     const { globalData } = useGlobalDataContext();
     const dark = !globalData.themeGlobal;
@@ -146,6 +145,13 @@ const TipTapEditor = ({ content, onContent, error, onClearError }: TipTapEditorP
     const [linkUrl, setLinkUrl] = useState("");
     const [showLink, setShowLink] = useState(false);
     const [selectedImageAlign, setSelectedImageAlign] = useState<"left" | "center" | "right">("center");
+
+    useEffect(() => {
+        if (!editor) return
+        if (content !== editor.getHTML()) {
+            editor.commands.setContent(content)
+        }
+    }, [content])
 
     const editor = useEditor({
         extensions: [
@@ -216,11 +222,11 @@ const TipTapEditor = ({ content, onContent, error, onClearError }: TipTapEditorP
 
     return (
         <>
-            <div className="py-7">
+            <div className="py-1">
                 {/* ── Tab bar */}
                 <div className={`flex items-center gap-1 px-1 pt-1 w-fit border-b
                     ${dark ? "border-gray-700 bg-[#0f0f0f]" : "border-gray-200 bg-transparent"}`}>
-                        {(["Write", "Preview"] as Tab[]).map((t) => (
+                    {(["Write", "Preview"] as Tab[]).map((t) => (
                         <button key={t} type="button" onClick={() => setTab(t)}
                             className={`relative px-4 py-2 text-sm font-medium rounded-t-lg transition-colors
                                 ${tab === t
@@ -470,15 +476,6 @@ const TipTapEditor = ({ content, onContent, error, onClearError }: TipTapEditorP
                                 )}
                             </div>
                         </motion.div>
-                    )}
-                </AnimatePresence>
-
-                <AnimatePresence>
-                    {error && (
-                        <motion.p initial={{ opacity: 0, y: -4 }} animate={{ opacity: 1, y: 0 }}
-                            exit={{ opacity: 0 }} className="mt-1.5 text-xs text-red-500">
-                            {error}
-                        </motion.p>
                     )}
                 </AnimatePresence>
             </div>

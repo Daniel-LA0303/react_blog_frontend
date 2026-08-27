@@ -27,8 +27,20 @@ import useGlobalDataContext from '../../context/hooks/useGlobalDataContext'
 import clientAuthAxios from '../../services/clientAuthAxios'
 import { PostImage, PostUpdate } from '../../interfaces/post.interfaces'
 import Spinner from '../../components/Spinner/Spinner'
-import EditorWithPreview from '../../components/EditorToolBar/EditorWithPreview'
 import TipTapEditor from '../../components/EditorTipTap/TipTapEditor'
+import { AIAssistModal } from '../../components/IA/NewPost/AIAssistModal'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faMagic } from '@fortawesome/free-solid-svg-icons'
+import Tooltip from '../../components/Global/TooTip'
+import useIA, { PromptType } from '../../context/hooks/useIA'
+
+export const toneOptions = [
+  { key: 'technical',     label: 'Technical',        icon: 'ti-code',        desc: 'Precise and detailed' },
+  { key: 'professional',  label: 'Professional',     icon: 'ti-briefcase',   desc: 'Formal and polished' },
+  { key: 'casual',        label: 'Casual',           icon: 'ti-mood-smile',  desc: 'Friendly and relaxed' },
+  { key: 'educational',   label: 'Educational',      icon: 'ti-school',      desc: 'Clear and instructive' },
+  { key: 'senior',        label: 'Senior Engineer',  icon: 'ti-terminal-2',  desc: 'Opinionated and sharp' },
+]
 
 const fadeUp = {
   hidden: { opacity: 0, y: 16 },
@@ -56,20 +68,30 @@ const Field = ({
   label: string; htmlFor?: string; error?: string; dark: boolean; children: React.ReactNode
 }) => (
   <div>
-    <label htmlFor={htmlFor}
-      className={`block text-xs font-medium mb-1.5 ${dark ? 'text-gray-400' : 'text-gray-500'}`}>
-      {label}
-    </label>
+    <div className="flex items-center justify-between mb-1.5">
+      <label
+        htmlFor={htmlFor}
+        className={`block text-xs font-medium ${dark ? 'text-gray-400' : 'text-gray-500'}`}
+      >
+        {label}
+      </label>
+    </div>
     {children}
     <AnimatePresence>
       {error && (
-        <motion.p initial={{ opacity: 0, y: -4 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}
-          className="mt-1.5 text-xs text-red-500">{error}</motion.p>
+        <motion.p
+          initial={{ opacity: 0, y: -4 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: -4 }}
+          transition={{ duration: 0.2 }}
+          className="mt-1.5 text-xs text-red-500"
+        >
+          {error}
+        </motion.p>
       )}
     </AnimatePresence>
   </div>
 )
-
 
 const CategorySelect = ({
   options, selected, onChange, dark, hasError,
@@ -179,8 +201,10 @@ const CategorySelect = ({
                       ${dark ? 'hover:bg-gray-800 text-gray-300' : 'hover:bg-gray-50 text-gray-700'}
                       ${selected.length >= 4 ? 'opacity-40 cursor-not-allowed pointer-events-none' : ''}`}
                   >
-                    <span className="h-2 w-2 rounded-full flex-shrink-0"
-                      style={{ backgroundColor: cat.color || '#888' }} />
+                    <span
+                      className="h-2 w-2 rounded-full flex-shrink-0"
+                      style={{ backgroundColor: cat.color || '#888' }}
+                    />
                     {getName(cat)}
                   </li>
                 ))
@@ -203,6 +227,11 @@ const EditPost = () => {
   const dark = !globalData.themeGlobal
 
   /**
+   * AI
+   */
+  const { loadingType, response, requestIA } = useIA()
+
+  /**
    * route
    */
   const route = useNavigate()
@@ -211,39 +240,39 @@ const EditPost = () => {
   /**
    * states
    */
-  const [title, setTitle] = useState('')
-  const [desc, setDesc] = useState('')
+  const [title, setTitle]                       = useState('')
+  const [desc, setDesc]                         = useState('')
   const [categoriesSelect, setCategoriesSelect] = useState<any[]>([])
-  const [content, setContent] = useState('')
-  const [image, setImage] = useState<any>('')
-  const [file, setFile] = useState<File | null>(null)
-  const [newImage, setNewImage] = useState(false)
-  const [categories, setCategories] = useState([])
-  const [loading, setLoading] = useState(false)
-  const [saving, setSaving] = useState(false)
+  const [content, setContent]                   = useState('')
+  const [image, setImage]                       = useState<any>('')
+  const [file, setFile]                         = useState<File | null>(null)
+  const [newImage, setNewImage]                 = useState(false)
+  const [categories, setCategories]             = useState([])
+  const [loading, setLoading]                   = useState(false)
+  const [saving, setSaving]                     = useState(false)
   const [prevImagePublicId, setPrevImagePublicId] = useState<string | null>(null)
-  const [removeImage, setRemoveImage] = useState(false)
-  const [errors, setErrors] = useState<Record<string, string>>({})
+  const [removeImage, setRemoveImage]           = useState(false)
+  const [errors, setErrors]                     = useState<Record<string, string>>({})
+
+  // AI states
+  const [flagCount, setFlagCount]   = useState(false)
+  const [activeTool, setActiveTool] = useState<'summary' | 'custom' | null>(null)
 
   const inputRef = useRef<HTMLInputElement>(null)
 
   /**
-   * useEffect
+   * useEffect — load post data
    */
   useEffect(() => {
     setLoading(true)
     clientAuthAxios.get(`/pages/page-edit-post/${params.id}`)
       .then(response => {
-        console.log(response)
-
-        // set all info
         setCategories(response.data.data.categories)
         setTitle(response.data.data.post.title)
         setContent(response.data.data.post.content)
         setImage(response.data.data.post.linkImage)
         setPrevImagePublicId(response.data.data.post.linkImage?.public_id || null)
 
-        // insert cats selected
         const allCategories = response.data.data.categories
         const postCategories = response.data.data.post.categories.map((cat: any) => ({
           value: cat.value || cat.name,
@@ -255,11 +284,14 @@ const EditPost = () => {
         setCategoriesSelect(selected)
         setDesc(response.data.data.post.desc)
 
+        // seed flagCount from existing content
+        const plain = response.data.data.post.content?.replace(/<[^>]*>/g, '').trim() || ''
+        setFlagCount(plain.length > 500)
+
         setTimeout(() => setLoading(false), 300)
       })
       .catch(error => {
         const msg = error.response?.data?.message
-        console.log(error)
         const data = { error: true, message: { status: null, message: 'Network Error', desc: null } }
         if (error.code === 'ERR_NETWORK') {
           setLoading(false)
@@ -272,19 +304,21 @@ const EditPost = () => {
       })
   }, [params.id])
 
-  // get content
+  /**
+   * content change — keeps flagCount in sync
+   */
   const onContent = (value: any) => {
+    const plain = value.replace(/<[^>]*>/g, '').trim()
+    setFlagCount(plain.length > 500)
     setContent(value)
     if (errors.content) setErrors(p => ({ ...p, content: '' }))
   }
 
-  // get categories
   const handleChangeS = (cats: any[]) => {
     setCategoriesSelect(cats)
     if (errors.categories) setErrors(p => ({ ...p, categories: '' }))
   }
 
-  // get file
   const getFile = (e: any) => {
     if (e.target.files?.[0]) {
       setFile(e.target.files[0])
@@ -294,25 +328,42 @@ const EditPost = () => {
 
   const quitImage = (e: any) => {
     e?.preventDefault?.()
-
-    // if there was a local file (not yet uploaded to Cloudinary)
     if (file) {
       setFile(null)
       setNewImage(false)
       return
     }
-
-    // if there was already an uploaded image (object with public_id)
     if (image?.public_id) {
-      const id = image.public_id        // capture the id BEFORE clearing the UI
-      setPrevImagePublicId(id)          // store it in state to send later
-      setRemoveImage(true)              // mark that it should be deleted
-      setImage(null)                    // update UI (remove preview)
+      const id = image.public_id
+      setPrevImagePublicId(id)
+      setRemoveImage(true)
+      setImage(null)
       setNewImage(false)
     }
   }
 
-  // Inline validation
+  /**
+   * AI helpers
+   */
+  const handleGenerateTitleIA = async () => {
+    const result = await requestIA('title', content)
+    if (result) {
+      setTitle(result)
+      if (errors.title) setErrors(p => ({ ...p, title: '' }))
+    }
+  }
+
+  const handleGenerateDescIA = async () => {
+    const result = await requestIA('description', content)
+    if (result) {
+      setDesc(result)
+      if (errors.desc) setErrors(p => ({ ...p, desc: '' }))
+    }
+  }
+
+  /**
+   * validation
+   */
   const validate = () => {
     const e: Record<string, string> = {}
     if (!title.trim()) e.title = 'Title is required'
@@ -324,23 +375,17 @@ const EditPost = () => {
     return Object.keys(e).length === 0
   }
 
-  const newPost = async (e: any) => {
+  /**
+   * submit
+   */
+  const handleSubmit = async (e: any) => {
     e.preventDefault()
-
-    // 1. validate data
     if (!validate()) return
 
     setSaving(true)
 
-    // 2. validate number of categories selected — already in validate()
+    let cats = categoriesSelect.map((c: any) => c.name)
 
-    // 3. assemble info
-    let cats = []
-    for (let i = 0; i < categoriesSelect.length; i++) {
-      cats.push(categoriesSelect[i].name)
-    }
-
-    // 4. new data updated
     const postUpdate: PostUpdate = {
       title,
       content,
@@ -349,50 +394,26 @@ const EditPost = () => {
       desc,
     }
 
-    // 5. delete or not the image
     if (newImage) {
-      // previousName = id of the previous image (if it exists)
       postUpdate.previousName = prevImagePublicId || null
-
-      // upload new image (if there is a file) and assign linkImage with the Cloudinary result
       if (file) {
         const formData = new FormData()
         formData.append('image', file)
         const res = await clientAuthAxios.post(`/posts/image-post`, formData)
         postUpdate.linkImage = res.data
       }
-    }
-    // if the user removed the image without replacing it
-    else if (removeImage) {
-      postUpdate.previousName = prevImagePublicId  // id to delete from Cloudinary
-      postUpdate.linkImage = null                   // leave the post in DB without an image
-    }
-    // if the user keeps the same image
-    else {
-      postUpdate.linkImage = image  // can be null or the object {public_id, secure_url}
-    }
-
-    // 6. if there is a file we insert the new image in backend
-    if (file) {
-      const formData = new FormData()
-      formData.append('image', file)
-      try {
-        const res = await clientAuthAxios.post<PostImage>('/posts/image-post', formData)
-        const resImage = res.data as PostImage
-        console.log(resImage)
-        postUpdate.linkImage = resImage
-      } catch (error) {
-        console.log(error)
-      }
+    } else if (removeImage) {
+      postUpdate.previousName = prevImagePublicId
+      postUpdate.linkImage = null
+    } else {
+      postUpdate.linkImage = image
     }
 
     try {
-      // 7. finally we update new info in backend
-      const response = await clientAuthAxios.put(`/posts/${params.id}`, postUpdate)
-      showAutoSwal({ message: response.data.message, status: 'success', timer: 1500 })
+      const res = await clientAuthAxios.put(`/posts/${params.id}`, postUpdate)
+      showAutoSwal({ message: res.data.message, status: 'success', timer: 1500 })
       route('/')
     } catch (error: any) {
-      console.log(error)
       const msg = error.response?.data?.message || 'Unexpected error'
       showConfirmSwal({ message: msg, status: 'error', confirmButton: true })
     } finally {
@@ -424,11 +445,12 @@ const EditPost = () => {
         {/* Form card */}
         <motion.form
           initial="hidden" animate="visible" variants={stagger}
-          onSubmit={newPost}
+          onSubmit={handleSubmit}
           className={`rounded-2xl border-2 ${dark ? 'bgt-dark border-gray-800' : 'bg-white border-gray-300'}`}
         >
           <div className="px-2 md:px-7 pt-7 space-y-0">
 
+            {/* ── Post details */}
             <motion.div
               variants={fadeUp} custom={1}
               className={`pb-7 border-b ${dark ? 'border-gray-800' : 'border-gray-100'}`}
@@ -437,26 +459,92 @@ const EditPost = () => {
                 Post details
               </p>
               <div className="space-y-4">
+
+                {/* Title */}
                 <Field label="Title" htmlFor="title" error={errors.title} dark={dark}>
-                  <input
-                    id="title"
-                    type="text"
-                    placeholder="Give your post a strong title"
-                    value={title}
-                    onChange={e => { setTitle(e.target.value); if (errors.title) setErrors(p => ({ ...p, title: '' })) }}
-                    className={inputCls(dark, !!errors.title)}
-                  />
+                  <div style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
+                    <input
+                      id="title"
+                      type="text"
+                      placeholder="Give your post a strong title"
+                      value={title}
+                      onChange={e => {
+                        setTitle(e.target.value)
+                        if (errors.title) setErrors(p => ({ ...p, title: '' }))
+                      }}
+                      className={inputCls(dark, !!errors.title)}
+                      style={{ paddingRight: '2.5rem' }}
+                    />
+                    <Tooltip text={flagCount ? 'Generate a Title with IA' : 'Write more than 500 characters to generate a title with IA'}>
+                      <button
+                        type="button"
+                        onClick={handleGenerateTitleIA}
+                        disabled={!flagCount}
+                        style={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          background: 'none',
+                          border: 'none',
+                          cursor: 'pointer',
+                          padding: '0.25rem',
+                          opacity: flagCount ? 1 : 0.4,
+                        }}
+                      >
+                        {loadingType === 'title'
+                          ? <span className={`w-3 h-3 border-2 rounded-full animate-spin
+                              ${dark ? 'border-white/30 border-t-white' : 'border-black/20 border-t-black'}`}
+                            />
+                          : <FontAwesomeIcon icon={faMagic} style={{ color: dark ? '#fff' : '#000' }} />
+                        }
+                      </button>
+                    </Tooltip>
+                  </div>
                 </Field>
+
+                {/* Description */}
                 <Field label="Description" htmlFor="desc" error={errors.desc} dark={dark}>
-                  <input
-                    id="desc"
-                    type="text"
-                    placeholder="A short summary shown in previews"
-                    value={desc}
-                    onChange={e => { setDesc(e.target.value); if (errors.desc) setErrors(p => ({ ...p, desc: '' })) }}
-                    className={inputCls(dark, !!errors.desc)}
-                  />
+                  <div style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
+                    <input
+                      id="desc"
+                      type="text"
+                      placeholder="A short summary shown in previews"
+                      value={desc}
+                      onChange={e => {
+                        setDesc(e.target.value)
+                        if (errors.desc) setErrors(p => ({ ...p, desc: '' }))
+                      }}
+                      className={inputCls(dark, !!errors.desc)}
+                      style={{ paddingRight: '2.5rem' }}
+                    />
+                    <Tooltip text={flagCount ? 'Generate a Description with IA' : 'Write more than 500 characters to generate a Description with IA'}>
+                      <button
+                        type="button"
+                        onClick={handleGenerateDescIA}
+                        disabled={!flagCount}
+                        style={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          background: 'none',
+                          border: 'none',
+                          cursor: 'pointer',
+                          padding: '0.25rem',
+                          opacity: flagCount ? 1 : 0.4,
+                        }}
+                      >
+                        {loadingType === 'description'
+                          ? <span className={`w-3 h-3 border-2 rounded-full animate-spin
+                              ${dark ? 'border-white/30 border-t-white' : 'border-black/20 border-t-black'}`}
+                            />
+                          : <FontAwesomeIcon icon={faMagic} style={{ color: dark ? '#fff' : '#000' }} />
+                        }
+                      </button>
+                    </Tooltip>
+                  </div>
                 </Field>
+
+                {/* Categories */}
                 <Field label="Categories — up to 4" htmlFor="categories" error={errors.categories} dark={dark}>
                   <CategorySelect
                     options={categories}
@@ -469,7 +557,7 @@ const EditPost = () => {
               </div>
             </motion.div>
 
-            {/* ── Featured image  */}
+            {/* ── Featured image */}
             <motion.div
               variants={fadeUp} custom={2}
               className={`py-7 border-b ${dark ? 'border-gray-800' : 'border-gray-100'}`}
@@ -537,28 +625,95 @@ const EditPost = () => {
               </AnimatePresence>
             </motion.div>
 
-            {/* ── Content editor  */}
-            <motion.div variants={fadeUp} custom={3} className="py-7">
-              <p className={`text-xs font-semibold uppercase tracking-widest mb-0 ${dark ? 'text-gray-500' : 'text-gray-400'}`}>
-                Content
-              </p>
-              <TipTapEditor
-                content={content}
-                onContent={onContent}
-                error={errors.content}
-                onClearError={() => setErrors(p => ({ ...p, content: '' }))}
+            {/* ── Content editor */}
+            <p className={`text-xs font-semibold uppercase tracking-widest my-4 ${dark ? 'text-gray-500' : 'text-gray-400'}`}>
+              Content
+            </p>
+
+            <motion.div variants={fadeUp} custom={3} className="py-3">
+
+              {/* Tone rewrite toolbar — only visible when content > 500 chars */}
+              {flagCount && (
+                <motion.div
+                  initial={{ opacity: 0, y: 16 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.4, ease: [0.25, 0.46, 0.45, 0.94] }}
+                  className={`rounded-xl border p-4 mb-4 ${dark ? 'border-gray-800 bg-[#1a1a1a]' : 'border-gray-100 bg-gray-50'}`}
+                >
+                  <p className={`text-xs font-medium uppercase tracking-widest mb-3 ${dark ? 'text-gray-500' : 'text-gray-400'}`}>
+                    Rewrite tone
+                  </p>
+                  <div className="flex flex-wrap gap-2">
+                    {toneOptions.map(({ key, label, icon }) => (
+                      <button
+                        key={key}
+                        type="button"
+                        disabled={loadingType === `tone_${key}`}
+                        onClick={async () => {
+                          await requestIA(`tone_${key}` as PromptType, content)
+                          setActiveTool('custom')
+                        }}
+                        className={`flex items-center gap-2 px-3 py-2 rounded-lg border text-xs font-medium transition-colors
+                          ${dark
+                            ? 'border-gray-700 hover:bg-gray-800 text-gray-300'
+                            : 'border-gray-200 hover:bg-white text-gray-700'
+                          } bg-transparent`}
+                      >
+                        <i className={`ti ${icon}`} style={{ fontSize: 13, color: '#2563EB' }} aria-hidden />
+                        {label}
+                        {loadingType === `tone_${key}` && (
+                          <span className="w-3 h-3 border-2 rounded-full animate-spin border-blue-300 border-t-blue-600" />
+                        )}
+                      </button>
+                    ))}
+                  </div>
+                </motion.div>
+              )}
+
+              {/* AI result modal */}
+              <AIAssistModal
+                toolKey={activeTool}
+                result={response}
+                dark={dark}
+                onClose={() => setActiveTool(null)}
+                onApply={(result) => {
+                  const clean = result
+                    .replace(/^```html\n?/, '')
+                    .replace(/^```\n?/, '')
+                    .replace(/```$/, '')
+                    .trim()
+                  setContent(clean)
+                  setActiveTool(null)
+                }}
               />
-              <AnimatePresence>
-                {errors.content && (
-                  <motion.p initial={{ opacity: 0, y: -4 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}
-                    className="mt-1.5 text-xs text-red-500">{errors.content}</motion.p>
-                )}
-              </AnimatePresence>
+
+              {/* Editor */}
+              <div className="rounded-xl overflow-hidden">
+                <TipTapEditor
+                  content={content}
+                  onContent={onContent}
+                  error={errors.content}
+                  onClearError={() => setErrors(p => ({ ...p, content: '' }))}
+                />
+                <AnimatePresence>
+                  {errors.content && (
+                    <motion.p
+                      initial={{ opacity: 0, y: -4 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: -4 }}
+                      transition={{ duration: 0.2 }}
+                      className="mt-1.5 text-xs text-red-500"
+                    >
+                      {errors.content}
+                    </motion.p>
+                  )}
+                </AnimatePresence>
+              </div>
             </motion.div>
 
           </div>
 
-          {/* ── Footer actions ─ */}
+          {/* ── Footer actions */}
           <motion.div
             variants={fadeUp} custom={4}
             className={`flex justify-end items-center gap-3 px-7 py-5 border-t rounded-b-2xl

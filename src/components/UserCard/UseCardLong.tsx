@@ -11,7 +11,6 @@ import userUserAuthContext from "../../context/hooks/useUserAuthContext";
 import { useSwal } from "../../hooks/useSwal";
 import clientAuthAxios from "../../services/clientAuthAxios";
 import useConversation from "../../context/hooks/useConversation";
-import useGetAllUsers from "../../context/hooks/useGetAllUsers";
 import { motion, AnimatePresence } from "framer-motion";
 
 const UserCardLong = ({ user }: any) => {
@@ -23,7 +22,6 @@ const UserCardLong = ({ user }: any) => {
     const { showConfirmSwal } = useSwal();
     const { globalData } = useGlobalDataContext();
     const { selectedConversation, setSelectedConversation } = useConversation();
-    const [allUsers, loading, addUser, prependUser] = useGetAllUsers();
 
     const isLight = globalData.themeGlobal;
 
@@ -72,7 +70,6 @@ const UserCardLong = ({ user }: any) => {
             profilePicture: user.profilePicture,
         };
         setSelectedConversation(userChat);
-        prependUser(userChat);
         navigate(`/chat/${user._id}`);
     };
 

@@ -35,7 +35,7 @@ const CategoryCard = ({ category }: any) => {
     }
   }
 
-  const isLoggedIn = Object.keys(userAuth).length > 0
+  const isLoggedIn = !!userAuth.userId
 
   return (
     <motion.div

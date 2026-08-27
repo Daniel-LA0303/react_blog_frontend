@@ -43,6 +43,23 @@ import { NewPostI } from '../../interfaces/post.interfaces'
 import Spinner from '../../components/Spinner/Spinner'
 import EditorWithPreview from '../../components/EditorToolBar/EditorWithPreview'
 import TipTapEditor from '../../components/EditorTipTap/TipTapEditor'
+import { AIWordSuggest } from '../../components/IA/NewPost/AIWordSuggest'
+import { AIContentToolbar } from '../../components/IA/NewPost/AIContentToolbar'
+import { AIAssistModal } from '../../components/IA/NewPost/AIAssistModal'
+import { AIFieldAssist } from '../../components/IA/NewPost/AIFieldAssist'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faMagic } from '@fortawesome/free-solid-svg-icons'
+import { Tiptap } from '@tiptap/react'
+import Tooltip from '../../components/Global/TooTip'
+import useIA, { PromptType } from '../../context/hooks/useIA'
+
+export const toneOptions = [
+  { key: 'technical', label: 'Technical', icon: 'ti-code', desc: 'Precise and detailed' },
+  { key: 'professional', label: 'Professional', icon: 'ti-briefcase', desc: 'Formal and polished' },
+  { key: 'casual', label: 'Casual', icon: 'ti-mood-smile', desc: 'Friendly and relaxed' },
+  { key: 'educational', label: 'Educational', icon: 'ti-school', desc: 'Clear and instructive' },
+  { key: 'senior', label: 'Senior Engineer', icon: 'ti-terminal-2', desc: 'Opinionated and sharp' },
+]
 
 const fadeUp = {
   hidden: { opacity: 0, y: 16 },
@@ -71,20 +88,22 @@ const Field = ({
   error,
   dark,
   children,
+  //labelAction
 }: {
   label: string
   htmlFor?: string
   error?: string
   dark: boolean
-  children: React.ReactNode
+  children: React.ReactNode,
+  //labelAction?: React.ReactNode
 }) => (
   <div>
-    <label
-      htmlFor={htmlFor}
-      className={`block text-xs font-medium mb-1.5 ${dark ? 'text-gray-400' : 'text-gray-500'}`}
-    >
-      {label}
-    </label>
+    <div className="flex items-center justify-between mb-1.5">
+      <label htmlFor={htmlFor} className={`block text-xs font-medium ${dark ? 'text-gray-400' : 'text-gray-500'}`}>
+        {label}
+      </label>
+      {/*{labelAction} */}
+    </div>
     {children}
     <AnimatePresence>
       {error && (
@@ -116,9 +135,11 @@ const CategorySelect = ({
   dark: boolean
   hasError: boolean
 }) => {
-  const [open, setOpen] = useState(false)
-  const [search, setSearch] = useState('')
-  const ref = useRef<HTMLDivElement>(null)
+
+  const [open, setOpen] = useState(false);
+  const [search, setSearch] = useState('');
+  const ref = useRef<HTMLDivElement>(null);
+
 
   // Close on outside click
   useEffect(() => {
@@ -143,7 +164,9 @@ const CategorySelect = ({
     }
   }
 
-  const remove = (id: string) => onChange(selected.filter(s => s._id !== id))
+  const remove = (id: string) => onChange(selected.filter(s => s._id !== id));
+
+
 
   return (
     <div ref={ref} className="relative">
@@ -255,6 +278,7 @@ const NewPost = () => {
   const { showConfirmSwal } = useSwal()
   const dark = !globalData.themeGlobal
 
+
   /**
    * router
    */
@@ -272,12 +296,23 @@ const NewPost = () => {
   const [categories, setCategories] = useState([])
   const [saving, setSaving] = useState(false)
 
+
+  const [activeTool, setActiveTool] = useState<'summary' | 'custom' | null>(null)
+
+  const [flagCount, setFlagCount] = useState(false);
+  const { loadingType, errorIA, response, requestIA } = useIA();
+
   // Field-level validation errors
   const [errors, setErrors] = useState<Record<string, string>>({})
 
   const inputRef = useRef<HTMLInputElement>(null)
   const dispatch = useDispatch<any>()
   const newPostRedux = (newPost: any, r: any) => dispatch(newPostAction(newPost, r))
+
+  // tools ia
+  const [aiToolKey, setAiToolKey] = useState<string | null>(null)
+  const [aiLoadingKey, setAiLoadingKey] = useState<string | null>(null)
+  const userPlan: 'FREE' | 'PRO' | 'PREMIUM' = 'PREMIUM' // from userAuth later
 
   /**
    * useEffect
@@ -303,7 +338,17 @@ const NewPost = () => {
   /**
    * functions
    */
-  const onContent = (value: any) => setContent(value)
+  const onContent = (value: any) => {
+
+    const plain = value.replace(/<[^>]*>/g, '').trim()
+    if (plain.length > 500) {
+      setFlagCount(true);
+    } else {
+      setFlagCount(false);
+    }
+
+    setContent(value)
+  }
 
   const getFile = (e: any) => {
     if (e.target.files?.[0]) setFile(e.target.files[0])
@@ -359,6 +404,18 @@ const NewPost = () => {
     setSaving(false)
   }
 
+  const handleGenerateTitleIA = async () => {
+    const result = await requestIA('title', content)
+    if (result) setTitle(result)
+  }
+
+  const handleGenerateDescIA = async () => {
+    const result = await requestIA('description', content)
+    if (result) setDesc(result)
+  }
+
+
+
   if (error) return <Error message={message} />
   if (loading) return <Spinner />
 
@@ -397,25 +454,123 @@ const NewPost = () => {
                 Post details
               </p>
               <div className="space-y-4">
-                <Field label="Title" htmlFor="title" error={errors.title} dark={dark}>
-                  <input
-                    id="title"
-                    type="text"
-                    placeholder="Give your post a strong title"
+                <Field
+                  label="Title"
+                  htmlFor="title"
+                  error={errors.title}
+                  dark={dark}
+                //labelAction={
+                //<AIFieldAssist
+                //dark={dark}
+                //userPlan={userPlan}
+                //requiredPlan="PRO"
+                //label="Generate title"
+                //loading={aiLoadingKey === 'generateTitle'}
+                //onAction={() => handleAI('generateTitle')}
+                ///>
+                //}
+                >
+                  <div style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
+                    <input
+                      id="title"
+                      type="text"
+                      placeholder="Give your post a strong title"
+                      value={title}
+                      onChange={e => { setTitle(e.target.value); if (errors.title) setErrors(p => ({ ...p, title: '' })) }}
+                      className={inputCls(dark, !!errors.title)}
+                      style={{ paddingRight: '2.5rem' }}
+                    />
+                    <Tooltip text={flagCount ? 'Generate a Title with IA' : 'Write more than 500 characters to generate a title with IA'}>
+                      <button
+                        type="button"
+                        onClick={handleGenerateTitleIA}
+                        className='text-white'
+                        style={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          background: 'none',
+                          border: 'none',
+                          cursor: 'pointer',
+                          padding: '0.25rem',
+                          opacity: flagCount ? 1 : 0.4,
+                        }}
+                        disabled={!flagCount}
+                      >
+                        {loadingType === 'title'
+                          ? <span className={`w-3 h-3 border-2 rounded-full animate-spin
+                            ${dark ? 'border-white/30 border-t-white' : 'border-black/20 border-t-black'}`}
+                          />
+                          : <FontAwesomeIcon icon={faMagic} style={{ color: dark ? '#fff' : '#000' }} />
+                        }
+                      </button>
+                    </Tooltip>
+
+
+                  </div>
+
+
+                  {/*<AIWordSuggest
                     value={title}
-                    onChange={e => { setTitle(e.target.value); if (errors.title) setErrors(p => ({ ...p, title: '' })) }}
-                    className={inputCls(dark, !!errors.title)}
-                  />
+                    dark={dark}
+                    userPlan={userPlan}
+                    onSuggest={word => setTitle(prev => prev + ' ' + word)}
+                  /> */}
                 </Field>
-                <Field label="Description" htmlFor="desc" error={errors.desc} dark={dark}>
-                  <input
-                    id="desc"
-                    type="text"
-                    placeholder="A short summary shown in previews"
-                    value={desc}
-                    onChange={e => { setDesc(e.target.value); if (errors.desc) setErrors(p => ({ ...p, desc: '' })) }}
-                    className={inputCls(dark, !!errors.desc)}
-                  />
+
+
+                <Field
+                  label="Description"
+                  htmlFor="desc"
+                  error={errors.desc}
+                  dark={dark}
+                //labelAction={
+                //<AIFieldAssist
+                //dark={dark}
+                //userPlan={userPlan}
+                //requiredPlan="PRO"
+                //label="Improve"
+                //loading={aiLoadingKey === 'improveDesc'}
+                //onAction={() => handleAI('improveDesc')}
+                ///>
+                //}
+                >
+                  <div style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
+                    <input
+                      id="desc"
+                      type="teEditorxt"
+                      placeholder="A short summary shown in previews"
+                      value={desc}
+                      onChange={e => { setDesc(e.target.value); if (errors.desc) setErrors(p => ({ ...p, desc: '' })) }}
+                      className={inputCls(dark, !!errors.desc)}
+                      style={{ paddingRight: '2.5rem' }}
+                    />
+                    <Tooltip text={flagCount ? 'Generate a Description with IA' : 'Write more than 500 characters to generate a Description with IA'}>
+                      <button
+                        type="button"
+                        onClick={handleGenerateDescIA}
+                        className='text-white'
+                        style={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          background: 'none',
+                          border: 'none',
+                          cursor: 'pointer',
+                          padding: '0.25rem',
+                          opacity: flagCount ? 1 : 0.4,
+                        }}
+                        disabled={!flagCount}
+                      >
+                        {loadingType === 'description'
+                          ? <span className={`w-3 h-3 border-2 rounded-full animate-spin
+                              ${dark ? 'border-white/30 border-t-white' : 'border-black/20 border-t-black'}`}
+                          />
+                          : <FontAwesomeIcon icon={faMagic} style={{ color: dark ? '#fff' : '#000' }} />
+                        }
+                      </button>
+                    </Tooltip>
+                  </div>
                 </Field>
                 <Field label="Categories — up to 4" htmlFor="categories" error={errors.categories} dark={dark}>
                   <CategorySelect
@@ -497,25 +652,94 @@ const NewPost = () => {
             </motion.div>
 
             {/* ── Content editor */}
-            <motion.div
-              variants={fadeUp} custom={3}
-              className="py-7"
-            >
-              <p className={`text-xs font-semibold uppercase tracking-widest mb-0 ${dark ? 'text-gray-500' : 'text-gray-400'}`}>
-                Content
-              </p>
-              <div className="rounded-xl overflow-hidden ">
-              <TipTapEditor
-                content={content}
-                onContent={onContent}
-                error={errors.content}
-                onClearError={() => setErrors(p => ({ ...p, content: '' }))}
+            <p className={`text-xs font-semibold uppercase tracking-widest my-4 ${dark ? 'text-gray-500' : 'text-gray-400'}`}>
+              Content
+            </p>
+            <motion.div variants={fadeUp} custom={3} className="py-3">
+
+              {
+                flagCount && (
+                  <motion.div
+                    initial={{ opacity: 0, y: 16 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.4, ease: [0.25, 0.46, 0.45, 0.94] }}
+                    className={`rounded-xl border p-4 ${dark ? 'border-gray-800 bg-[#1a1a1a]' : 'border-gray-100 bg-gray-50'}`}>
+                    <p className={`text-xs font-medium uppercase tracking-widest mb-3 ${dark ? 'text-gray-500' : 'text-gray-400'}`}>
+                      Rewrite tone
+                    </p>
+                    <div className="flex flex-wrap gap-2">
+                      {toneOptions.map(({ key, label, icon }) => (
+                        <button
+                          key={key}
+                          type="button"
+                          disabled={loadingType === `tone_${key}`}
+                          onClick={async () => {
+                            await requestIA(`tone_${key}` as PromptType, content)
+                            setActiveTool('custom')
+                          }}
+                          className={`flex items-center gap-2 px-3 py-2 rounded-lg border text-xs font-medium transition-colors
+                            ${dark
+                              ? 'border-gray-700 hover:bg-gray-800 text-gray-300'
+                              : 'border-gray-200 hover:bg-white text-gray-700'
+                            } bg-transparent`}
+                        >
+                          <i className={`ti ${icon}`} style={{ fontSize: 13, color: '#2563EB' }} aria-hidden />
+                          {label}
+                          {loadingType === `tone_${key}`
+                            ? <span className="w-3 h-3 border-2 rounded-full animate-spin border-blue-300 border-t-blue-600" />
+                            : null
+                          }
+                        </button>
+                      ))}
+                    </div>
+                  </motion.div>
+                )
+              }
+
+              <AIAssistModal
+                toolKey={activeTool}
+                result={response}
+                dark={dark}
+                onClose={() => setActiveTool(null)}
+                onApply={(result) => {
+                  const clean = result
+                    .replace(/^```html\n?/, '')
+                    .replace(/^```\n?/, '')
+                    .replace(/```$/, '')
+                    .trim()
+                  setContent(clean)
+                  setActiveTool(null)
+                }}
               />
+
+              <div className="rounded-xl overflow-hidden">
+                {/*<AIContentToolbar
+                  dark={dark}
+                  userPlan={userPlan}
+                  onAction={handleAI}
+                  loadingKey={aiLoadingKey}
+                /> */}
+                <TipTapEditor
+                  content={content}
+                  onContent={onContent}
+                  error={errors.content}
+                  onClearError={() => setErrors(p => ({ ...p, content: '' }))}
+                />
+                {errors.content && (
+                  <motion.p
+                    initial={{ opacity: 0, y: -4 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -4 }}
+                    transition={{ duration: 0.2 }}
+                    className="mt-1.5 text-xs text-red-500"
+                  >
+                    {errors.content}
+                  </motion.p>
+                )}
               </div>
             </motion.div>
 
           </div>
-
           {/* ── Footer actions ─*/}
           <motion.div
             variants={fadeUp} custom={4}

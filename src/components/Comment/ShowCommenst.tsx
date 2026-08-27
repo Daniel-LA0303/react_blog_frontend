@@ -236,6 +236,7 @@ const ShowCommenst = ({
 
   const handleReplyComment = () => setReplyActive(v => !v)
 
+  const isLoggedIn = !!userAuth.userId
   const isOwner = userAuth.userId === comment.userID._id
 
   return (
@@ -318,7 +319,7 @@ const ShowCommenst = ({
 
         {/* Footer actions */}
         <div className="flex items-center gap-4 mt-4">
-          {Object.keys(userAuth).length !== 0 && (
+          {isLoggedIn && (
             <motion.button
               type="button"
               onClick={handleReplyComment}

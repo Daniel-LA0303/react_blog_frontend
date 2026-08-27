@@ -23,6 +23,15 @@ const menuItems = [
     ),
   },
   {
+    to: () => '/new-post',
+    label: 'New Post',
+    icon: (
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.7} strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4">
+        <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" /><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
+      </svg>
+    ),
+  },
+  {
     to: (id: string) => `/edit-profile/${id}`,
     label: 'Settings',
     icon: (
@@ -31,6 +40,39 @@ const menuItems = [
       </svg>
     ),
   },
+  /*{
+    to: (id: string) => `/plans`,
+    label: 'Plans',
+    icon: (
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.7} strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5">
+        <path d="M2 20h20M5 20V10l7-6 7 6v10" />
+        <path d="M2 10l3 2M22 10l-3 2" />
+        <circle cx="12" cy="4" r="1" fill="currentColor" />
+        <circle cx="5" cy="12" r="1" fill="currentColor" />
+        <circle cx="19" cy="12" r="1" fill="currentColor" />
+      </svg>
+    ),
+  },
+  {
+    to: (id: string) => `/payment-methods/${id}`,
+    label: 'Payments Methods',
+    icon: (
+      <svg
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth={1.7}
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        className="w-4 h-4"
+      >
+        <rect x="2" y="5" width="20" height="14" rx="2" />
+        <path d="M2 10h20" />
+        <rect x="5" y="13" width="3" height="2" rx="0.5" />
+        <path d="M11 15h6" />
+      </svg>
+    ),
+  },*/
   {
     to: (id: string) => `/dashboard/${id}`,
     label: 'Dashboard',
@@ -40,15 +82,7 @@ const menuItems = [
       </svg>
     ),
   },
-  {
-    to: () => '/new-post',
-    label: 'New Post',
-    icon: (
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.7} strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4">
-        <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" /><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
-      </svg>
-    ),
-  },
+
 ]
 
 const ProfileButton = () => {
@@ -59,7 +93,7 @@ const ProfileButton = () => {
   const [open, setOpen] = useState(false)
 
   const handleLogOut = () => {
-    ['token', 'tokenAuthUser', 'email', 'username', 'userId', 'profileImage']
+    ['token', 'tokenAuthUser', 'email', 'username', 'userId', 'profileImage', 'expiresAt', 'isFree', 'plan']
       .forEach(k => localStorage.removeItem(k))
     document.location.href = '/'
   }
@@ -132,6 +166,15 @@ const ProfileButton = () => {
             </div>
           </div>
 
+          {/*<div className='py-1.5 pl-3'>
+            <p className={`inline-block text-xs font-medium px-2.5 py-0.5 rounded-full
+                ${userAuth.plan?.name === 'PRO' ? 'bg-blue-50 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300' :
+                userAuth.plan?.name === 'PREMIUM' ? 'bg-purple-50 text-purple-700 dark:bg-purple-900/30 dark:text-purple-300' :
+                  'bg-gray-100 text-gray-500 dark:bg-gray-800 dark:text-gray-400'}
+                `}>
+              {userAuth.plan?.name}
+            </p>
+          </div>*/}
           {/* Nav items */}
           <div className="py-1.5">
             {menuItems.map((item) => (

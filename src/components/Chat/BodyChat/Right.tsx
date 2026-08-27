@@ -3,7 +3,6 @@ import { useEffect } from 'react'
 import { motion } from 'framer-motion'
 
 import useConversation from '../../../context/hooks/useConversation'
-import useGetAllUsers from '../../../context/hooks/useGetAllUsers'
 import useGlobalDataContext from '../../../context/hooks/useGlobalDataContext'
 import { useAuth } from '../../../context/UserAuthContex'
 
@@ -13,17 +12,24 @@ import Typesend from './Typesend'
 
 function Right({ openSidebar }: any) {
   const { id } = useParams()
-  const { selectedConversation, setSelectedConversation } = useConversation()
+  const { selectedConversation, setSelectedConversation, conversations, setMessage } = useConversation()
   const { globalData } = useGlobalDataContext()
-  const dark = !globalData.themeGlobal
-  const [allUsers] = useGetAllUsers()
+  const dark = !globalData.themeGlobal;
+
+  useEffect(() => {
+  return () => {
+    setSelectedConversation(null)
+    setMessage([])
+  }
+}, [])
 
   useEffect(() => {
     if (id && !selectedConversation) {
-      const user = allUsers.find((u: any) => u._id === id)
-      if (user) setSelectedConversation(user)
+      // look in conversations store instead of allUsers
+      const conv = conversations.find((c: any) => c._id === id)
+      if (conv) setSelectedConversation(conv)
     }
-  }, [id, allUsers, selectedConversation, setSelectedConversation])
+  }, [id, conversations, selectedConversation, setSelectedConversation])
 
   if (!selectedConversation) {
     return <NoChatSelected openSidebar={openSidebar} dark={dark} />
@@ -32,17 +38,12 @@ function Right({ openSidebar }: any) {
   return (
     <div className={`w-full h-screen flex flex-col ${dark ? 'bg-[#0f0f0f]' : 'bg-[#f9f9f9]'}`}>
       <Chatuser openSidebar={openSidebar} />
-
-      {/* Messages owns its own scroll — no wrapper overflow here */}
       <Messages />
-
       <Typesend />
     </div>
   )
 }
-
-export default Right
-
+export default Right;
 
 const NoChatSelected = ({ openSidebar, dark }: { openSidebar: () => void; dark: boolean }) => (
   <div className={`relative flex h-screen flex-col items-center justify-center gap-4

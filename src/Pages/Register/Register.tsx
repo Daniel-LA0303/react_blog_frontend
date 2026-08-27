@@ -27,6 +27,40 @@ const EyeIcon = ({ visible }: { visible: boolean }) => visible ? (
   </svg>
 )
 
+// ✅ All outside Register
+const inputBase = `w-full bg-transparent border-b text-sm py-3 pr-10 outline-none transition-colors duration-200 placeholder-transparent peer`
+
+const inputTheme = (hasErr: boolean, dark: boolean) => hasErr
+  ? 'border-red-400 text-red-400'
+  : dark
+    ? 'border-gray-700 text-white focus:border-white'
+    : 'border-gray-300 text-gray-900 focus:border-gray-900'
+
+const labelBase = `absolute left-0 text-xs font-medium uppercase tracking-widest transition-all duration-200 pointer-events-none
+  peer-placeholder-shown:text-sm peer-placeholder-shown:normal-case peer-placeholder-shown:tracking-normal peer-placeholder-shown:top-3
+  top-0`
+
+const Field = ({ id, label, name: fname, type = 'text', value, onChange, hasError, error, rightEl, dark }: any) => (
+  <div className="relative">
+    <input
+      type={type} name={fname} id={id}
+      placeholder={label} value={value} onChange={onChange}
+      autoComplete={fname}
+      className={`peer ${inputBase} ${inputTheme(hasError, dark)}`}
+    />
+    <label htmlFor={id}
+      className={`${labelBase} ${hasError ? 'text-red-400' : dark ? 'text-gray-500 peer-focus:text-gray-300' : 'text-gray-400 peer-focus:text-gray-700'}`}>
+      {label}
+    </label>
+    {rightEl}
+    <AnimatePresence>
+      {error && (
+        <motion.p initial={{ opacity: 0, y: -4 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}
+          className="mt-1.5 text-xs text-red-400">{error}</motion.p>
+      )}
+    </AnimatePresence>
+  </div>
+)
 const StrengthBar = ({ password }: { password: string }) => {
   if (!password) return null
   const score = [password.length >= 8, /[A-Z]/.test(password), /[0-9]/.test(password), /[^A-Za-z0-9]/.test(password)].filter(Boolean).length
@@ -72,7 +106,7 @@ const Register = () => {
   /**
    * functions
    */
-  const getData = (e: any) => {
+  const getData = (e: any) => {  
     const { name, value } = e.target
     setData(prev => ({ ...prev, [name]: value }))
     if (errors[name]) setErrors(prev => ({ ...prev, [name]: '' }))
@@ -83,7 +117,7 @@ const Register = () => {
     if (!name.trim()) e.name = 'Name is required'
     if (!email.trim()) e.email = 'Email is required'
     if (!password) e.password = 'Password is required'
-    else if (password.length < 6) e.password = 'Minimum 6 characters'
+    else if (password.length < 4) e.password = 'Minimum 4 characters'
     if (!password2) e.password2 = 'Please confirm your password'
     else if (password !== password2) e.password2 = 'Passwords do not match'
     setErrors(e)
@@ -105,37 +139,7 @@ const Register = () => {
     }
   }
 
-  const inputBase = `w-full bg-transparent border-b text-sm py-3 pr-10 outline-none transition-colors duration-200 placeholder-transparent peer`
-  const inputTheme = (hasErr: boolean) => hasErr
-    ? 'border-red-400 text-red-400'
-    : dark
-      ? 'border-gray-700 text-white focus:border-white'
-      : 'border-gray-300 text-gray-900 focus:border-gray-900'
-  const labelBase = `absolute left-0 text-xs font-medium uppercase tracking-widest transition-all duration-200 pointer-events-none
-    peer-placeholder-shown:text-sm peer-placeholder-shown:normal-case peer-placeholder-shown:tracking-normal peer-placeholder-shown:top-3
-    top-0`
 
-  const Field = ({ id, label, name: fname, type = 'text', value, onChange, hasError, error, rightEl }: any) => (
-    <div className="relative">
-      <input
-        type={type} name={fname} id={id}
-        placeholder={label} value={value} onChange={onChange}
-        autoComplete={fname}
-        className={`${inputBase} ${inputTheme(hasError)}`}
-      />
-      <label htmlFor={id}
-        className={`${labelBase} ${hasError ? 'text-red-400' : dark ? 'text-gray-500 peer-focus:text-gray-300' : 'text-gray-400 peer-focus:text-gray-700'}`}>
-        {label}
-      </label>
-      {rightEl}
-      <AnimatePresence>
-        {error && (
-          <motion.p initial={{ opacity: 0, y: -4 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}
-            className="mt-1.5 text-xs text-red-400">{error}</motion.p>
-        )}
-      </AnimatePresence>
-    </div>
-  )
 
   return (
     <section className={`min-h-screen flex items-stretch transition-colors duration-300 ${dark ? 'bg-[#0a0a0a]' : 'bg-[#f5f4f0]'}`}>
@@ -214,13 +218,24 @@ const Register = () => {
 
             {/* Name */}
             <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.26 }}>
-              <Field id="reg-name" label="Full name" name="name" value={name} onChange={getData}
+              <Field 
+                id="reg-name" 
+                label="Full name" 
+                name="name" 
+                value={data.name} 
+                onChange={getData}
                 hasError={!!errors.name} error={errors.name} />
             </motion.div>
 
             {/* Email */}
             <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.31 }}>
-              <Field id="reg-email" label="Email address" name="email" type="email" value={email} onChange={getData}
+              <Field 
+                id="reg-email" 
+                label="Email address" 
+                name="email" 
+                type="email" 
+                value={data.email} 
+                onChange={getData}
                 hasError={!!errors.email} error={errors.email} />
             </motion.div>
 
@@ -229,10 +244,13 @@ const Register = () => {
               <div className="relative">
                 <input
                   type={showPass ? 'text' : 'password'}
-                  name="password" id="reg-password"
-                  placeholder="Password" value={password} onChange={getData}
+                  name="password" 
+                  id="reg-password"
+                  placeholder="Password" 
+                  value={data.password} 
+                  onChange={getData}
                   autoComplete="new-password"
-                  className={`${inputBase} ${inputTheme(!!errors.password)}`}
+                  className={`${inputBase} ${inputTheme(!!errors.password, dark)}`}
                 />
                 <label htmlFor="reg-password"
                   className={`${labelBase} ${errors.password ? 'text-red-400' : dark ? 'text-gray-500 peer-focus:text-gray-300' : 'text-gray-400 peer-focus:text-gray-700'}`}>
@@ -262,7 +280,7 @@ const Register = () => {
                   value={password2}
                   onChange={e => { setPassword2(e.target.value); if (errors.password2) setErrors(p => ({ ...p, password2: '' })) }}
                   autoComplete="new-password"
-                  className={`${inputBase} ${inputTheme(!!errors.password2)}`}
+                  className={`${inputBase} ${inputTheme(!!errors.password2, dark)}`}
                 />
                 <label htmlFor="reg-password2"
                   className={`${labelBase} ${errors.password2 ? 'text-red-400' : dark ? 'text-gray-500 peer-focus:text-gray-300' : 'text-gray-400 peer-focus:text-gray-700'}`}>

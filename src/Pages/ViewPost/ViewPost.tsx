@@ -52,6 +52,13 @@ import userUserAuthContext from '../../context/hooks/useUserAuthContext'
 import useGlobalDataContext from '../../context/hooks/useGlobalDataContext'
 import Spinner from '../../components/Spinner/Spinner'
 import PostContent from '../../components/EditorToolBar/PostContent'
+import AIToolsPanel from '../../components/IA/ViewPost/AIToolsPanel'
+import AIResponseModal from '../../components/IA/ViewPost/IAResponseModal'
+import BlogRecommendedCard from '../../components/Post/BlogRecommendedCard'
+import useIA from '../../context/hooks/useIA'
+import { AIAssistModal } from '../../components/IA/NewPost/AIAssistModal'
+import { Divider } from '@mui/material'
+import { Question, QuizModal } from '../../components/IA/ViewPost/QuizModal'
 
 
 const ViewPost = () => {
@@ -91,8 +98,25 @@ const ViewPost = () => {
   const [like, setLike] = useState(false)
   const [save, setSave] = useState(false)
   const [post, setPost] = useState<any>(null)
-  const [commentsState, setCommentsState] = useState<any[]>([])
-  const [loading, setLoading] = useState(false)
+  const [commentsState, setCommentsState] = useState<any[]>([]);
+  const [loading, setLoading] = useState(false);
+
+  const [recommendedMoreFromAuthor, setRecommendedMoreFromAuthor] = useState<any[]>([]);
+  const [recommendedBlogs, setRecommendedBlogs] = useState<any[]>([]);
+  const [shuffledBlogs, setShuffledBlogs] = useState<any[]>([]);
+  const [blogsLoading, setBlogsLoading] = useState(false);
+
+  const [activateCustom, setActivateCustom] = useState<boolean>(false);
+  const [customPromt, setCustomPromt] = useState<string>('');
+
+  const [quizQuestions, setQuizQuestions] = useState<Question[]>([]);
+  const [showQuiz, setShowQuiz] = useState(false);
+
+  const [countContent, setCountContent] = useState<boolean>(false);
+
+  const [activeTool, setActiveTool] = useState<'summary' | 'custom' | null>(null) // to show modal
+  const { loadingType, errorIA, response, requestIA } = useIA();
+
 
   /**
    * states redux
@@ -106,10 +130,14 @@ const ViewPost = () => {
   // useeffect to get one post or blog
   useEffect(() => {
     setPost(null)
+    setLoading(true);
     axios.get(`${globalData.link}/pages/page-view-post/${params.id}`)
       .then(response => {
-        console.log(response)
-        setPost(response.data.data.post)
+
+        setPost(response.data.data.post);
+
+        const plain = response.data.data.post.content.replace(/<[^>]*>/g, '').trim()
+        setCountContent(plain.length > 500 ? true : false);
 
         const newEngagement = {
           numberLikes: response.data.data.post.likePost.users.length,
@@ -129,14 +157,25 @@ const ViewPost = () => {
           total: response.data.data.totalComments,
           totalPages: Math.ceil(response.data.data.totalComments / 5),
           hasMore: response.data.data.totalComments > 5,
-        })
+        });
+
+        setRecommendedMoreFromAuthor(response.data.data.blogsUserSuggestion);
+
+        if (userAuth.userId) {
+          setBlogsLoading(true);
+          clientAuthAxios.get(`${globalData.link}/users/get-blogs-recommended`)
+            .then((res) => {
+              setRecommendedBlogs(res.data.data.recomended.recommendedBlogs);
+            })
+            .catch(console.error)
+            .finally(() => setBlogsLoading(false));
+        }
       })
       .catch(error => {
         console.log(error)
         if (error.code === 'ERR_NETWORK') {
           route('/error', { state: { error: true, message: { status: null, message: 'Network Error', desc: null } } })
         } else {
-          setLoading(false)
           Swal.fire({
             title: error.response.data.message,
             text: 'Status ' + error.response?.status,
@@ -146,8 +185,20 @@ const ViewPost = () => {
             buttonsStyling: false,
           }).then(() => route('/'))
         }
-      })
-  }, [params.id])
+      }).finally(() => setLoading(false))
+  }, [params.id]);
+
+
+  useEffect(() => {
+    if (recommendedBlogs.length > 0) {
+      setShuffledBlogs(
+        [...recommendedBlogs]
+          .filter((b: any) => b._id !== params.id) // exclude current post
+          .sort(() => Math.random() - 0.5)
+          .slice(0, 3)
+      );
+    }
+  }, [recommendedBlogs]);
 
   // dont delete this, if fail paint btns retake this
   // check this
@@ -218,9 +269,6 @@ const ViewPost = () => {
       const res = await clientAuthAxios.post(`/posts/like-post/${id}?userId=${userAuth.userId}`)
       setLike(true)
       setEngagementPost(prev => ({ ...prev, numberLikes: prev.numberLikes + 1 }))
-      // dont delete this, if fail paint btns retake this
-      // addPostToLikes(id);
-      console.log(res)
     } catch (error: any) {
       console.log(error)
       showConfirmSwal({ message: error.response.data.message, status: 'error', confirmButton: true })
@@ -276,10 +324,36 @@ const ViewPost = () => {
     }
   }
 
-  const isOwner = userAuth.userId === post?.user?._id
-  const isLoggedIn = Object.keys(userAuth).length !== 0
+  const handleSummaryIA = async () => {
+    const plain = post.content.replace(/<[^>]*>/g, '').trim()
+    await requestIA('summary', plain);
+    setActiveTool('summary')
+  }
 
-  if (!post) return <Spinner />
+  const hanndleActivateCustom = () => setActivateCustom(!activateCustom);
+
+
+  const handleCustomIA = async () => {
+    const plain = post.content.replace(/<[^>]*>/g, '').trim()
+    await requestIA('custom', `${customPromt}\n\nPost content:\n${plain}`)
+    setActiveTool('custom')
+  }
+
+  const handleQuizIA = async () => {
+    const plain = post.content.replace(/<[^>]*>/g, '').trim()
+    const result = await requestIA('quiz', plain);
+
+    if (result) {
+      const parsed = JSON.parse(result)
+      setQuizQuestions(parsed.questions)
+      setShowQuiz(true)
+    }
+  }
+
+  const isOwner = userAuth.userId === post?.user?._id
+  const isLoggedIn = !!userAuth.userId
+
+  if (loading || !post) return <Spinner />
 
   return (
     <div className={`min-h-screen transition-colors duration-300 ${dark ? 'bg-[#0f0f0f]' : 'bgt-white'}`}>
@@ -289,8 +363,8 @@ const ViewPost = () => {
       <div className="max-w-screen-xl mx-auto px-4 sm:px-6 lg:px-8 pb-32">
         <div className="flex gap-8 mt-6">
 
-          {/* ── Left sticky actions — desktop ─────────────────────────── */}
-          <div className="hidden sm:flex flex-col items-center sticky top-20 h-fit pt-10">
+          {/* Left sticky actions — desktop */}
+          <div className="hidden lg:flex flex-col items-center sticky top-20 h-fit pt-10">
             {isLoggedIn && (
               <motion.div
                 initial={{ opacity: 0, x: -12 }}
@@ -417,12 +491,156 @@ const ViewPost = () => {
                   className={`post-content ${dark ? "post-content--dark text-white" : "post-content--light"}`}
                   dangerouslySetInnerHTML={{ __html: post.content }}
                 />
+
+                {
+                  countContent && (
+                    <>
+                      <div>
+                        <hr />
+                        <p className={`${dark ? 'text-white' : 'text-black'} mt-5 font-semibold text-base md:text-xl`}>IA Tools</p>
+                      </div>
+
+                      <div>
+                        <button
+                          onClick={handleSummaryIA}
+                          disabled={loadingType === 'summary'}
+                          className="rounded-xl py-2 px-3 mt-10 text-xs font-semibold text-white transition-colors"
+                          style={{ backgroundColor: '#2563EB' }}
+                        >
+                          {loadingType === 'summary'
+                            ? <span className="w-3 h-3 border-2 rounded-fiull animate-spin border-white/30 border-t-white inline-block" />
+                            : 'Summary'
+                          }
+                        </button>
+
+                        <button
+                          onClick={handleQuizIA}
+                          disabled={loadingType === 'quiz'}
+                          className="rounded-xl ml-2 py-2 px-3 mt-10 text-xs font-semibold text-white transition-colors"
+                          style={{ backgroundColor: '#2563EB' }}
+                        >
+                          {loadingType === 'quiz'
+                            ? <span className="w-3 h-3 border-2 rounded-fiull animate-spin border-white/30 border-t-white inline-block" />
+                            : 'Generate a Quiz'
+                          }
+                        </button>
+
+
+                        <button
+                          onClick={hanndleActivateCustom}
+                          disabled={loadingType === 'custom'}
+                          className="rounded-xl ml-2 py-2 px-3 mt-10 text-xs font-semibold text-white transition-colors"
+                          style={{ backgroundColor: '#2563EB' }}
+                        >
+                          {activateCustom ? 'Close' : 'Ask about this Blog'}
+                        </button>
+                      </div>
+                    </>
+                  )
+                }
+                <div className='mt-3'>
+                  {activateCustom && (
+                    <motion.div
+                      initial={{ opacity: 0, y: 16 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ duration: 0.4, ease: [0.25, 0.46, 0.45, 0.94] }}
+                      className="mt-3"
+                    >
+                      <input
+                        type="text"
+                        name='custompromt'
+                        value={customPromt}
+                        onChange={(e) => setCustomPromt(e.target.value)}
+                        placeholder="Ask anything about this post..."
+                        className={`w-full text-sm px-4 py-2.5 rounded-xl border outline-none transition-colors
+                          focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500
+                          ${dark
+                            ? 'bg-[#1a1a1a] border-gray-700 text-white placeholder:text-gray-600'
+                            : 'bg-gray-50 border-gray-200 text-gray-900 placeholder:text-gray-400'
+                          }`}
+                      />
+                      <button
+                        type="button"
+                        onClick={handleCustomIA}
+                        disabled={loadingType === 'custom' || !customPromt.trim()}
+                        className="flex-shrink-0 mt-3 rounded-xl py-2.5 px-3 text-xs font-semibold text-white transition-colors disabled:opacity-50"
+                        style={{ backgroundColor: '#2563EB' }}
+                      >
+                        {loadingType === 'custom'
+                          ? <span className="w-3 h-3 border-2 rounded-full animate-spin border-white/30 border-t-white inline-block" />
+                          : 'Send'
+                        }
+                      </button>
+                    </motion.div>
+                  )}
+                </div>
               </div>
             </article>
+            {
+
+              /*<motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.45, ease: [0.25, 0.46, 0.45, 0.94] }}
+                className="block lg:hidden"
+              >
+                <AIToolsPanel
+                  onToolClick={handleAITool}
+                  userPlan="FREE" // pass from userAuth
+                />
+              </motion.div>*/
+
+            }
 
             {/* Mobile user card */}
             <div className="block lg:hidden mt-6">
               <UserCard user={post.user} />
+            </div>
+
+            <motion.div
+              className='block lg:hidden mt-6'
+              initial={{ opacity: 0, y: 12 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.4, delay: 0.25 }}
+            >
+              <p className={`font-semibold mb-2 ${dark ? 'text-white' : 'text-black'}`}>More from {post.user.name}</p>
+              <div className='flex flex-col gap-2'>
+                {
+                  recommendedMoreFromAuthor.map((b => (
+                    <BlogRecommendedCard key={b._id} blog={b} />
+                  )))
+                }
+
+              </div>
+            </motion.div>
+
+            <div className='block lg:hidden mt-6'>
+              {userAuth.userId && shuffledBlogs.length > 0 && (
+                <div className="mt-4">
+                  <p className={`font-semibold mb-2 ${dark ? 'text-white' : 'text-black'}`}>
+                    Recommended for you
+                  </p>
+                  <div className="flex flex-col gap-2">
+                    {blogsLoading
+                      ? Array.from({ length: 3 }).map((_, i) => (
+                        <div key={i} className={`flex gap-3 p-3 rounded-xl border animate-pulse
+                          ${dark ? 'bg-[#27272A] border-gray-800' : 'bg-white border-gray-100'}`}
+                        >
+                          <div className={`h-16 w-16 rounded-lg flex-shrink-0 ${dark ? 'bg-gray-700' : 'bg-gray-200'}`} />
+                          <div className="flex flex-col gap-2 flex-1 justify-center">
+                            <div className={`h-3 w-full rounded-full ${dark ? 'bg-gray-700' : 'bg-gray-200'}`} />
+                            <div className={`h-3 w-3/4 rounded-full ${dark ? 'bg-gray-700' : 'bg-gray-200'}`} />
+                            <div className={`h-2 w-16 rounded-full ${dark ? 'bg-gray-800' : 'bg-gray-100'}`} />
+                          </div>
+                        </div>
+                      ))
+                      : shuffledBlogs.map((blog: any) => (
+                        <BlogRecommendedCard key={blog._id} blog={blog} />
+                      ))
+                    }
+                  </div>
+                </div>
+              )}
             </div>
 
             {/* Comments section */}
@@ -480,6 +698,26 @@ const ViewPost = () => {
 
           <aside className="hidden lg:block w-64 flex-shrink-0">
             <div className="sticky top-20 space-y-4">
+              {/*<button
+                className='w-full py-1.5 rounded-lg bg-[#2563EB] text-white text-xs font-medium hover:bg-blue-700 transition-colors'
+                onClick={() => setShowIAOptions(!showIAOptions)}
+              >
+                {showIAOptions ? 'Show IA Options ' : 'Hidden IA Options'}
+              </button>*/}
+              {
+                //showIAOptions && (
+                //<motion.div
+                //initial={{ opacity: 0, y: 20 }}
+                //animate={{ opacity: 1, y: 0 }}
+                //transition={{ duration: 0.45, ease: [0.25, 0.46, 0.45, 0.94] }}
+                //>
+                //<AIToolsPanel
+                //onToolClick={handleAITool}
+                //userPlan="FREE" // pass from userAuth
+                //</div>/>
+                //</aside></motion.div>
+                //)
+              }
               <p className={`text-xs font-semibold uppercase tracking-widest ${dark ? 'text-gray-500' : 'text-gray-400'}`}>
                 About the author
               </p>
@@ -490,20 +728,79 @@ const ViewPost = () => {
               >
                 <UserCard user={post.user} />
               </motion.div>
+
+              <motion.div
+                className='mt-4'
+                initial={{ opacity: 0, y: 12 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.4, delay: 0.25 }}
+              >
+                <p className={`font-semibold mb-2 ${dark ? 'text-white' : 'text-black'}`}>More from {post.user.name}</p>
+                <div className='flex flex-col gap-2'>
+                  {
+                    recommendedMoreFromAuthor.map((b => (
+                      <BlogRecommendedCard key={b._id} blog={b} />
+                    )))
+                  }
+
+                </div>
+              </motion.div>
+
+              {userAuth.userId && (
+                <div className="mt-4">
+                  <p className={`font-semibold mb-2 ${dark ? 'text-white' : 'text-black'}`}>
+                    Recommended for you
+                  </p>
+                  <div className="flex flex-col gap-2">
+                    {blogsLoading
+                      ? Array.from({ length: 3 }).map((_, i) => (
+                        <div key={i} className={`flex gap-3 p-3 rounded-xl border animate-pulse
+                          ${dark ? 'bg-[#27272A] border-gray-800' : 'bg-white border-gray-100'}`}
+                        >
+                          <div className={`h-16 w-16 rounded-lg flex-shrink-0 ${dark ? 'bg-gray-700' : 'bg-gray-200'}`} />
+                          <div className="flex flex-col gap-2 flex-1 justify-center">
+                            <div className={`h-3 w-full rounded-full ${dark ? 'bg-gray-700' : 'bg-gray-200'}`} />
+                            <div className={`h-3 w-3/4 rounded-full ${dark ? 'bg-gray-700' : 'bg-gray-200'}`} />
+                            <div className={`h-2 w-16 rounded-full ${dark ? 'bg-gray-800' : 'bg-gray-100'}`} />
+                          </div>
+                        </div>
+                      ))
+                      : shuffledBlogs.map((blog: any) => (
+                        <BlogRecommendedCard key={blog._id} blog={blog} />
+                      ))
+                    }
+                  </div>
+                </div>
+              )}
             </div>
           </aside>
         </div>
       </div>
+
+      {showQuiz && (
+        <QuizModal
+          questions={quizQuestions}
+          dark={dark}
+          onClose={() => setShowQuiz(false)}
+        />
+      )}
+
+      <AIAssistModal
+        toolKey={activeTool}
+        result={response}
+        dark={dark}
+        onClose={() => setActiveTool(null)}
+      />
 
       {isLoggedIn && (
         <motion.div
           initial={{ y: 80 }}
           animate={{ y: 0 }}
           transition={{ duration: 0.35, delay: 0.4, ease: [0.25, 0.46, 0.45, 0.94] }}
-          className={`fixed bottom-0 left-0 right-0 z-40 block sm:hidden border-t
+          className={`fixed bottom-0 left-0 right-0 z-40 block lg:hidden border-t
             ${dark ? 'bg-[#27272A]/95 border-gray-800 backdrop-blur-md' : 'bg-white/95 border-gray-100 backdrop-blur-md'}`}
         >
-          <div className="flex justify-center py-2 px-4">
+          <div className="flex justify-center py-0 px-4">
             <ActionsPost
               user={userAuth}
               id={params.id}

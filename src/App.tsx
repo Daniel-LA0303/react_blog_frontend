@@ -34,11 +34,23 @@ import WrappedCategoryPost from "./Pages/CategoryPost/WrappedCategoryPost";
 import useGlobalDataContext from "./context/hooks/useGlobalDataContext";
 import userUserAuthContext from "./context/hooks/useUserAuthContext";
 import ChatLayout from "./components/Chat/ChatLayout";
+
 import AdminUserManagement from "./Pages/Admin/AdminUserManagement";
 import AdminPostModeration from "./Pages/Admin/AdminPostModeration";
 import AdminCats from "./Pages/Admin/AdminCats";
 import AdminDashboard from "./Pages/Admin/AdminDashboard";
 import AdminPanel from "./Pages/Admin/AdminPanel";
+
+import Pricing from "./Pages/Pricing/Princing";
+import AddPaymentMethod from "./Pages/Payment/AddPaymentMethod";
+import Plans from "./Pages/Payment/Plans";
+import PaymentFlow from "./Pages/Payment/PaymentFlow";
+import TestIA from "./Pages/Test/TestIA";
+import ScrollToTop from "./components/Global/ScrollToTop";
+import CodeOfConduct from "./Pages/About/CodeOfConduct";
+import PrivacyPolicy from "./Pages/About/PrivacyPolicy";
+import TermsOfUse from "./Pages/About/TermsOfUse";
+
 
 
 /**
@@ -64,16 +76,24 @@ function App() {
 
   return (
     <BrowserRouter>
+      <ScrollToTop />
       <PagesProvider>
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
+          
           <Route path="/forget-password" element={<ForgetPassword />} />
           <Route path="/forget-password/:id" element={<NewPassword />} />
           <Route path="/user-confirmed/:id" element={<UserConfirmed />} />
+          <Route path="/pricing" element={<Pricing />} />
+          <Route path="/plans" element={<Plans />} />
+          <Route path="/payment-flow/:id" element={userAuth.userId ? <PaymentFlow /> : <Login />} />
 
           <Route path="/about" element={<About />} />
+          <Route path="/code-conduct" element={<CodeOfConduct />} />
+          <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+          <Route path="/terms-use" element={<TermsOfUse />} />
 
           <Route path="/new-post" element={userAuth.userId ? <NewPost /> : <Login />} />
           <Route path="/edit-post/:id" element={userAuth.userId ? <EditPost /> : <Login />} />
@@ -82,6 +102,8 @@ function App() {
 
           <Route path="/categories/" element={<Categories />} />
           {/* <Route path="/dashboard/:id" element={<DashBoardProfile />} /> */}
+
+          <Route path="/test-ia" element={userAuth.userId ? <TestIA /> : <Login />} />
 
           {/* DashBoard */}
           <Route path="/dashboard/:id" element={userAuth.userId ? <DashBoardProfile /> : <Login />} />
@@ -92,12 +114,13 @@ function App() {
           <Route path="/user-likes-posts/:id" element={userAuth.userId ? <LikesPosts /> : <Login />} />
           <Route path="/followed-users/:id" element={userAuth.userId ? <FollowedUsers /> : <Login />} />
           <Route path="/followers-users/:id" element={userAuth.userId ? <FollowersUsers /> : <Login />} />
-
+          <Route path="/payment-methods/:id" element={userAuth.userId ? <AddPaymentMethod /> : <Login />} />
 
           <Route path="/profile/:id" element={<Profile />} />
           <Route path="/edit-profile/:id" element={userAuth.userId ? <EditProfile /> : <Login />} />
           <Route path="/search/:id" element={<Search />} />
           <Route path="/notifications/:id" element={userAuth.userId ? <Notifications /> : <Login />} />
+          
 
 
           {/* MESSAGES */}
@@ -130,3 +153,4 @@ function App() {
 }
 
 export default App
+

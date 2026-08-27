@@ -14,6 +14,7 @@ import { useNavigate, useParams } from 'react-router-dom'
 
 import axios from 'axios'
 import useGlobalDataContext from '../../context/hooks/useGlobalDataContext'
+import clientAuthAxios from '../../services/clientAuthAxios'
 
 const Search = () => {
 
@@ -39,7 +40,7 @@ const Search = () => {
 
   useEffect(() => {
     setLoading(true);
-    axios.get(`${globalData.link}/pages/global/${params.id}`)
+    clientAuthAxios.get(`${globalData.link}/pages/global/${params.id}`)
       .then((response) => {
         // first info
         setCatFilter(response.data.categories.data);
