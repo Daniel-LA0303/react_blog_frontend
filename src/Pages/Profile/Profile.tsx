@@ -2,12 +2,6 @@ import React, { useEffect, useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 
 /**
- * icons
- */
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faCake } from '@fortawesome/free-solid-svg-icons';
-
-/**
  * components
  */
 import Sidebar from '../../components/Sidebar/Sidebar';
@@ -28,7 +22,6 @@ import useGlobalDataContext from '../../context/hooks/useGlobalDataContext';
 import clientAuthAxios from '../../services/clientAuthAxios';
 import useConversation from '../../context/hooks/useConversation';
 import UserRecommendedCard from '../../components/UserCard/UserRecommendedCard';
-import SkeletonPulse from '../../components/Spinner/Skeletons/SkeletonPulse';
 import { fadeIn, fadeUp, scaleIn, staggerContainer } from '../../utils/animationsUtils';
 import AnimatedPost from '../../components/ProfileButton/AnimatedPost';
 import PostSkeleton from '../../components/Spinner/Skeletons/PostSkeleton';
@@ -36,6 +29,7 @@ import SidebarContent from '../../components/ProfileButton/SidebarContent';
 import ActionButton from '../../components/ProfileButton/ActionButton';
 import SmallSpinner from '../../components/Spinner/SmallSpinner';
 import ProfileSkeleton from '../../components/Spinner/Skeletons/ProfileSkeleton';
+import { CakeIcon } from '../../utils/iconsUtils';
 
 const Profile = () => {
   const { setErrorPage } = usePages();
@@ -90,7 +84,6 @@ const Profile = () => {
 
         if (recommendedRes) {
           const { recommendedUsers } = recommendedRes.data.data.recomended;
-          console.log(recommendedUsers);
 
           setRecommendedUsers(recommendedUsers);
         }
@@ -238,7 +231,7 @@ const Profile = () => {
                         )}
 
                         <motion.div variants={fadeUp} custom={4} className="mt-2 flex items-center justify-center sm:justify-start gap-1.5">
-                          <FontAwesomeIcon icon={faCake} className="text-gray-300 dark:text-gray-600 text-xs" />
+                          <CakeIcon isDark={globalData.themeGlobal}/>
                           <p className="text-xs text-gray-400 dark:text-gray-500">
                             Joined{' '}
                             <span className="font-medium text-gray-500 dark:text-gray-400">

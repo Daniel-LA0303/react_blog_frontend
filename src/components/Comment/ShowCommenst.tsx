@@ -3,14 +3,11 @@ import { useEffect, useState } from 'react'
 /**
  * icons
  */
-import { faPen, faTrash } from '@fortawesome/free-solid-svg-icons'
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 
 /**
  * libraries
  */
 import axios from 'axios'
-import { toast } from 'react-hot-toast'
 import { motion, AnimatePresence } from 'framer-motion'
 
 /**
@@ -38,8 +35,7 @@ import useGlobalDataContext from '../../context/hooks/useGlobalDataContext'
  * services
  */
 import clientAuthAxios from '../../services/clientAuthAxios'
-
-const notify = () => toast('Comment saved.', { duration: 1500, icon: '👌' })
+import { PenIcon, TrashIcon } from '../../utils/iconsUtils'
 
 const ShowCommenst = ({
   comment,
@@ -194,7 +190,6 @@ const ShowCommenst = ({
       setCommentsState((prevComments: any) =>
         prevComments.map((c: any) => c._id === comment._id ? { ...c, comment: newComment } : c)
       )
-      notify()
     } catch (error: any) {
       console.log(error)
       showConfirmSwal({ message: error.response.data.message, status: 'error', confirmButton: true })
@@ -274,7 +269,7 @@ const ShowCommenst = ({
                 className={`h-7 w-7 flex items-center justify-center rounded-lg text-xs transition-colors
                   ${dark ? 'text-gray-600 hover:bg-red-900/30 hover:text-red-400' : 'text-gray-400 hover:bg-red-50 hover:text-red-500'}`}
               >
-                <FontAwesomeIcon icon={faTrash} />
+                <PenIcon isDark={dark} />
               </motion.button>
               {!editActive && (
                 <motion.button
@@ -284,7 +279,7 @@ const ShowCommenst = ({
                   className={`h-7 w-7 flex items-center justify-center rounded-lg text-xs transition-colors
                     ${dark ? 'text-gray-600 hover:bg-gray-800 hover:text-gray-300' : 'text-gray-400 hover:bg-gray-100 hover:text-gray-600'}`}
                 >
-                  <FontAwesomeIcon icon={faPen} />
+                  <TrashIcon isDark={dark} />
                 </motion.button>
               )}
             </div>

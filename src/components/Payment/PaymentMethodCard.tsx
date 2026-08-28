@@ -1,7 +1,6 @@
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import useGlobalDataContext from '../../context/hooks/useGlobalDataContext';
-import { faCreditCard, faTrash } from '@fortawesome/free-solid-svg-icons';
 import { PaymentMenthodResponseI } from '../../interfaces/payment.interfaces';
+import { CreditCardIcon, TrashIcon } from '../../utils/iconsUtils';
 
 
 interface PaymentMethodCardProps {
@@ -22,7 +21,7 @@ const PaymentMethodCard = ({ paymentMethod, changeDefault, deleteMethod }: Payme
             <div className="flex w-80 items-center justify-between">
                 <div className="flex items-center gap-3">
                     <div className={`w-10 h-7 rounded-md flex items-center justify-center ${dark ? 'bg-gray-800' : 'bg-gray-100'}`}>
-                        <FontAwesomeIcon icon={faCreditCard} className={`text-sm ${dark ? 'text-gray-500' : 'text-gray-400'}`} />
+                        <CreditCardIcon isDark={dark}/>
                     </div>
                     <div>
                         <p className={`text-sm font-medium ${dark ? 'text-gray-300' : 'text-gray-700'}`}>•••• •••• •••• {paymentMethod.last4}</p>
@@ -56,7 +55,7 @@ const PaymentMethodCard = ({ paymentMethod, changeDefault, deleteMethod }: Payme
                             "
                         aria-label="Delete payment method"
                     >
-                        <FontAwesomeIcon icon={faTrash} className="text-[11px]" />
+                        <TrashIcon isDark={dark} />
                     </button>
                     )}
                 </div>

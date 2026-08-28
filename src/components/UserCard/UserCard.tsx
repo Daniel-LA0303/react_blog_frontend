@@ -22,8 +22,7 @@ import useConversation from '../../context/hooks/useConversation'
  * libraries
  */
 import { motion, AnimatePresence } from 'framer-motion'
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faCake } from '@fortawesome/free-solid-svg-icons'
+import { CakeIcon } from '../../utils/iconsUtils'
 
 const UserCard = ({ user }: any) => {
 
@@ -80,7 +79,6 @@ const UserCard = ({ user }: any) => {
       email: user.email,
       profilePicture: user.profilePicture,
     }
-    console.log('Click en el botón de Chat', user)
     setSelectedConversation(userChat)
     navigate(`/chat/${user._id}`)
   }
@@ -115,7 +113,7 @@ const UserCard = ({ user }: any) => {
             </p>
             
             <p className={`text-sm text-justify mt-2 ${dark ? 'text-white' : 'text-gray-400'}`}>
-              <FontAwesomeIcon icon={faCake} />
+              <CakeIcon isDark={dark}/>
               <span className='ml-2'>{new Date(user.createdAt).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}</span>
             </p>
           </div>

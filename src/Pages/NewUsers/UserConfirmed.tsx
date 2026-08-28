@@ -3,17 +3,12 @@ import { useEffect } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 
 /**
- * icons
- */
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faUserCheck } from '@fortawesome/free-solid-svg-icons';
-
-/**
  * hooks
  */
 import userUserAuthContext from '../../context/hooks/useUserAuthContext';
 import useGlobalDataContext from '../../context/hooks/useGlobalDataContext';
 import { useSwal } from '../../hooks/useSwal';
+import { UserCheckIcon } from '../../utils/iconsUtils';
 
 const UserConfirmed = () => {
 
@@ -44,7 +39,6 @@ const UserConfirmed = () => {
             try {
                 const { data } = await axios.get(`${globalData.link}/users/confirm/${params.id}`);
 
-                console.log(data);
                 showAutoSwal({
                     message: data.message,
                     status: "success",
@@ -80,10 +74,7 @@ const UserConfirmed = () => {
                         : "bgt-dark hover:bg-zinc-700 text-white"
                         } shadow-lg rounded-xl p-8 sm:p-10 text-center`}>
 
-                        <FontAwesomeIcon
-                            icon={faUserCheck}
-                            className="mx-auto h-16 w-16 text-blue-600 dark:text-blue-400"
-                        />
+                        <UserCheckIcon isDark={globalData.themeGlobal}/>
 
                         <h1 className="mt-6 text-3xl font-extrabold text-gray-900 dark:text-white">
                             User confirmed!

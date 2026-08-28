@@ -37,11 +37,6 @@ const PaymentFlow = () => {
 
     useEffect(() => {
 
-        if (!userAuth.plan?.isFree) {
-            console.log("This user has a suscription");
-
-        }
-
         const getPlan = async () => {
             try {
                 const res = await clientAuthAxios.get(`/payment/get-plan-by-name/${params.id}`)
@@ -76,12 +71,9 @@ const PaymentFlow = () => {
 
         try {
             setPaying(true)
-            const res = await clientAuthAxios.post('/payment/subscribe', body)
-            console.log(res.data)
-            console.log(body);
-
-            ['expiresAt', 'isFree', 'plan']
-                .forEach(k => localStorage.removeItem(k));
+            const res = await clientAuthAxios.post('/payment/subscribe', body);
+ 
+            ['expiresAt', 'isFree', 'plan'].forEach(k => localStorage.removeItem(k));
 
             localStorage.setItem('isFree', res.data.data.isFree)
             localStorage.setItem('expiresAt', res.data.data.expiresAt)

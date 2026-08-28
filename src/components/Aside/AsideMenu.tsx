@@ -4,22 +4,10 @@
 import { Link } from 'react-router-dom'
 
 /**
- * icons
- */
-import BookmarkBorderOutlinedIcon from '@mui/icons-material/BookmarkBorderOutlined'; // save
-import HomeOutlinedIcon from '@mui/icons-material/HomeOutlined';
-import LocalOfferOutlinedIcon from '@mui/icons-material/LocalOfferOutlined'; // tag
-import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
-import AddCircleOutlineOutlinedIcon from '@mui/icons-material/AddCircleOutlineOutlined';
-import ChatBubbleOutlineOutlinedIcon from '@mui/icons-material/ChatBubbleOutlineOutlined';
-
-import EmailOutlinedIcon from '@mui/icons-material/EmailOutlined';              // Contact
-import PrivacyTipOutlinedIcon from '@mui/icons-material/PrivacyTipOutlined';    // Privacy Policy
-import GavelOutlinedIcon from '@mui/icons-material/GavelOutlined';              // Terms of Use
-/**
  * context
  */
 import useGlobalDataContext from '../../context/hooks/useGlobalDataContext';
+import { AddCircleIcon, BookmarkIcon, ChatBubbleIcon, EmailIcon, GavelIcon, HomeIcon, InfoIcon, NoteStickyIcon, PrivacyTipIcon } from '../../utils/iconsUtils';
 
 const AsideMenu = ({ user }: any) => {
     const { globalData } = useGlobalDataContext();
@@ -43,7 +31,7 @@ const AsideMenu = ({ user }: any) => {
             <p className={labelClass}>Navigation</p>
             <div className="px-2">
                 <Link to="/" className={itemClass}>
-                    <HomeOutlinedIcon sx={{ fontSize: 16 }} />
+                    <HomeIcon isDark={dark}/>
                     <span>Home</span>
                 </Link>
             </div>
@@ -56,16 +44,16 @@ const AsideMenu = ({ user }: any) => {
                     <p className={labelClass}>Workspace</p>
                     <div className="px-2">
                         <Link to="/chat" className={itemClass}>
-                            <ChatBubbleOutlineOutlinedIcon sx={{ fontSize: 16 }} />
+                            <ChatBubbleIcon isDark={dark}/>
                             <span className="flex-1">My Chats</span>
                             <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 flex-shrink-0" />
                         </Link>
                         <Link to="/new-post" className={itemClass}>
-                            <AddCircleOutlineOutlinedIcon sx={{ fontSize: 16 }} />
+                           <AddCircleIcon isDark={dark}/>
                             <span>New Post</span>
                         </Link>
                         <Link to={`/save-posts/${user.userId}`} className={itemClass}>
-                            <BookmarkBorderOutlinedIcon sx={{ fontSize: 16 }} />
+                            <BookmarkIcon isDark={dark}/>
                             <span>Saved</span>
                         </Link>
                     </div>
@@ -77,11 +65,11 @@ const AsideMenu = ({ user }: any) => {
             <p className={labelClass}>Explore</p>
             <div className="px-2">
                 <Link to="/categories" className={itemClass}>
-                    <LocalOfferOutlinedIcon sx={{ fontSize: 16 }} />
+                    <NoteStickyIcon isDark={dark}/>
                     <span>Categories</span>
                 </Link>
                 <Link to="/about" className={itemClass}>
-                    <InfoOutlinedIcon sx={{ fontSize: 16 }} />
+                    <InfoIcon isDark={dark} />
                     <span>About</span>
                 </Link>
             </div>
@@ -89,15 +77,15 @@ const AsideMenu = ({ user }: any) => {
             <p className={labelClass}>Other</p>
             <div className="px-2">
                 <Link to="/code-conduct" className={itemClass}>
-                    <EmailOutlinedIcon sx={{ fontSize: 16 }} />
+                    <EmailIcon isDark={dark} />
                     <span>Code of Conduct</span>
                 </Link>
                 <Link to="/privacy-policy" className={itemClass}>
-                    <PrivacyTipOutlinedIcon sx={{ fontSize: 16 }} />
+                    <PrivacyTipIcon isDark={dark} />
                     <span>Privacy Policy</span>
                 </Link>
                 <Link to="/terms-use" className={itemClass}>
-                    <GavelOutlinedIcon sx={{ fontSize: 16 }} />
+                    <GavelIcon isDark={dark} />
                     <span>Privacy Policy</span>
                 </Link>
             </div>

@@ -1,7 +1,4 @@
-import {
-    faBell,
-} from '@fortawesome/free-solid-svg-icons'
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+
 import { useEffect, useRef, useState } from 'react'
 import useGetSocketNotification from '../../context/hooks/useGetSocketNotification'
 import { useAuth } from '../../context/UserAuthContex'
@@ -11,9 +8,9 @@ import usePages from '../../context/hooks/usePages'
 import { NotificationI, NotificationType } from '../../interfaces/notification.interface'
 import { Link, useNavigate } from 'react-router-dom'
 import { typeNotificationConfig } from '../../utils/notificationUtils'
+import { BellIcon } from '../../utils/iconsUtils'
 
 const getConfig = (type: NotificationType) => typeNotificationConfig[type] ?? typeNotificationConfig.DEFAULT;
-
 const relativeTime = (iso: string) => {
     const diff = Date.now() - new Date(iso).getTime()
     const m = Math.floor(diff / 60000)
@@ -102,7 +99,7 @@ const Notifications = () => {
                 `}
                 aria-label="Notifications"
             >
-                <FontAwesomeIcon icon={faBell} className="text-base" />
+                <BellIcon isDark={globalData.themeGlobal}/>
 
                 {unread > 0 && (
                     <span className="
@@ -163,7 +160,7 @@ const Notifications = () => {
                         {/* empty */}
                         {!loading && (!notifications || notifications.length === 0) && (
                             <div className="flex flex-col items-center gap-2 py-12 text-slate-600">
-                                <FontAwesomeIcon icon={faBell} className="text-3xl opacity-30" />
+                                <BellIcon isDark={globalData.themeGlobal}/>
                                 <p className="text-xs">No notifications yet</p>
                             </div>
                         )}
@@ -218,10 +215,7 @@ const Notifications = () => {
                                             absolute -bottom-1 -right-1 w-[18px] h-[18px] rounded-md  border border-white/[0.08] flex items-center justify-center
                                             ${!globalData.themeGlobal ? 'bg-[#13131f]' : 'bg-slate-200'}`}
                                         >
-                                            <FontAwesomeIcon
-                                                icon={cfg.icon}
-                                                className={`text-[8px] ${cfg.iconClass}`}
-                                            />
+                                           <BellIcon isDark={globalData.themeGlobal}/>
                                         </div>
                                     </div>
 

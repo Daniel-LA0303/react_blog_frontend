@@ -72,8 +72,6 @@ const NewPassword = () => {
         }
         try {
             const res = await axios.post(`${globalData.link}/users/new-password/${params.id}`, { password });
-
-            console.log(res);
             setNewPassword(true);
         } catch (error) {
 

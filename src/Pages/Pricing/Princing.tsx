@@ -1,6 +1,4 @@
 import React, { useState } from 'react'
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faFeather, faRocket, faCheck, faXmark } from '@fortawesome/free-solid-svg-icons'
 import useGlobalDataContext from '../../context/hooks/useGlobalDataContext'
 import Sidebar from '../../components/Sidebar/Sidebar'
 
@@ -39,14 +37,7 @@ type Billing = 'monthly' | 'yearly'
 
 const FeatureRow = ({ label, included, dark }: { label: string; included: boolean; dark: boolean }) => (
     <div className="flex items-start gap-2.5">
-        <FontAwesomeIcon
-            icon={included ? faCheck : faXmark}
-            className={`mt-0.5 text-sm flex-shrink-0 ${
-                included
-                    ? 'text-emerald-500'
-                    : dark ? 'text-gray-600' : 'text-gray-300'
-            }`}
-        />
+
         <span className={`text-[13px] ${
             included
                 ? dark ? 'text-gray-300' : 'text-gray-600'
@@ -134,7 +125,7 @@ const Pricing = () => {
                             <div className={`w-9 h-9 rounded-xl flex items-center justify-center ${
                                 dark ? 'bg-gray-700' : 'bg-gray-100'
                             }`}>
-                                <FontAwesomeIcon icon={faFeather} className={`text-base ${dark ? 'text-gray-400' : 'text-gray-500'}`} />
+                                
                             </div>
                             <div>
                                 <p className={`text-[15px] font-semibold ${dark ? 'text-white' : 'text-gray-900'}`}>Basic</p>
@@ -179,7 +170,7 @@ const Pricing = () => {
 
                         <div className="flex items-center gap-3 mb-5 mt-2">
                             <div className="w-9 h-9 rounded-xl bg-blue-500/15 flex items-center justify-center">
-                                <FontAwesomeIcon icon={faRocket} className="text-base text-blue-500" />
+                                
                             </div>
                             <div>
                                 <p className={`text-[15px] font-semibold ${dark ? 'text-white' : 'text-gray-900'}`}>Pro</p>

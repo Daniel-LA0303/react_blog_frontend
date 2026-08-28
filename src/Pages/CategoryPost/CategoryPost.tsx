@@ -98,8 +98,6 @@ const CategoryPost = () => {
     setTagsLoading(true);
     clientAuthAxios.get(`${globalData.link}/users/get-tags-recommended`)
       .then((res) => {
-        console.log(res.data.data.recomended.recommendedTags);
-
         setRecommendedTags(res.data.data.recomended.recommendedTags);
       })
       .catch(console.error)

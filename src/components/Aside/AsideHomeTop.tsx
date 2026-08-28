@@ -1,10 +1,3 @@
-
-/**
- * icons
- */
-import { faUser } from '@fortawesome/free-solid-svg-icons';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-
 /**
  * router
  */
@@ -14,6 +7,7 @@ import { Link } from 'react-router-dom';
  * context
  */
 import useGlobalDataContext from '../../context/hooks/useGlobalDataContext';
+import { UserIcon } from '../../utils/iconsUtils';
 
 const AsideHomeTop = ({ topInfo }: any) => {
 
@@ -75,10 +69,7 @@ const AsideHomeTop = ({ topInfo }: any) => {
                 <span className={`text-sm md:text-xs ${globalData.themeGlobal ? 'text-gray-500' : 'text-gray-400'}`}>
                   {cat.follows.countFollows}
                 </span>
-                <FontAwesomeIcon
-                  icon={faUser}
-                  className={`text-sm ${globalData.themeGlobal ? 'text-gray-500' : 'text-gray-400'}`}
-                />
+                <UserIcon isDark={globalData.themeGlobal}/>
               </div>
             </div>
           </Link>

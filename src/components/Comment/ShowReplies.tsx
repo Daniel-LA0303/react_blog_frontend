@@ -3,8 +3,6 @@ import { useState } from 'react'
 /**
  * icons
  */
-import { faPen, faTrash } from '@fortawesome/free-solid-svg-icons'
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 
 /**
  * hooks
@@ -22,6 +20,7 @@ import { motion, AnimatePresence } from 'framer-motion'
  * services
  */
 import clientAuthAxios from '../../services/clientAuthAxios'
+import { PenIcon, TrashIcon } from '../../utils/iconsUtils'
 
 const ShowReplies = ({ reply, onUpdateReply, onDeleteReply }: any) => {
 
@@ -143,7 +142,7 @@ const ShowReplies = ({ reply, onUpdateReply, onDeleteReply }: any) => {
               className={`h-6 w-6 flex items-center justify-center rounded-lg text-[10px] transition-colors
                 ${dark ? 'text-gray-700 hover:bg-red-900/30 hover:text-red-400' : 'text-gray-400 hover:bg-red-50 hover:text-red-500'}`}
             >
-              <FontAwesomeIcon icon={faTrash} />
+              <TrashIcon isDark={dark} />
             </motion.button>
             <motion.button
               type="button"
@@ -152,7 +151,7 @@ const ShowReplies = ({ reply, onUpdateReply, onDeleteReply }: any) => {
               className={`h-6 w-6 flex items-center justify-center rounded-lg text-[10px] transition-colors
                 ${dark ? 'text-gray-700 hover:bg-gray-800 hover:text-gray-300' : 'text-gray-400 hover:bg-gray-200 hover:text-gray-600'}`}
             >
-              <FontAwesomeIcon icon={faPen} />
+              <PenIcon isDark={dark} />
             </motion.button>
           </div>
         )}

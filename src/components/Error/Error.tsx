@@ -4,10 +4,6 @@ import { useSelector } from 'react-redux';
 const Error = ({message}: any) => {
 
     const theme = useSelector((state: any) => state.posts.themeW);
-
-    useEffect(() => {
-        console.log(message);
-    } ,[])
     
   return (
     <div className="w-full px-0 sm:px-16 md:px-0 h-screen flex items-center justify-center">

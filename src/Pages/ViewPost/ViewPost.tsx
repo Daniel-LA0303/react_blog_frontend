@@ -6,11 +6,6 @@ import Sidebar from '../../components/Sidebar/Sidebar'
  */
 import { Link, useParams, useNavigate } from 'react-router-dom'
 
-/**
- * icons
- */
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faTrash, faPen } from '@fortawesome/free-solid-svg-icons'
 
 /**
  * redux
@@ -27,7 +22,6 @@ import clientAuthAxios from '../../services/clientAuthAxios'
 /**
  * libraries
  */
-import { toast, Toaster } from 'react-hot-toast'
 import { motion, AnimatePresence } from 'framer-motion'
 
 /**
@@ -54,6 +48,7 @@ import BlogRecommendedCard from '../../components/Post/BlogRecommendedCard'
 import useIA from '../../context/hooks/useIA'
 import { AIAssistModal } from '../../components/IA/NewPost/AIAssistModal'
 import { Question, QuizModal } from '../../components/IA/ViewPost/QuizModal'
+import { PenIcon, TrashIcon } from '../../utils/iconsUtils'
 
 
 const ViewPost = () => {
@@ -339,7 +334,6 @@ const ViewPost = () => {
   return (
     <div className={`min-h-screen transition-colors duration-300 ${dark ? 'bg-[#0f0f0f]' : 'bgt-white'}`}>
       <Sidebar />
-      <Toaster position="bottom-right" reverseOrder={false} />
 
       <div className="max-w-screen-xl mx-auto px-4 sm:px-6 lg:px-8 pb-32">
         <div className="flex gap-8 mt-6">
@@ -427,7 +421,7 @@ const ViewPost = () => {
                         className={`flex items-center justify-center h-8 w-8 rounded-lg transition-colors
                           ${dark ? 'text-gray-400 hover:bg-gray-800 hover:text-white' : 'text-gray-400 hover:bg-gray-100 hover:text-gray-700'}`}
                       >
-                        <FontAwesomeIcon icon={faPen} className="text-xs" />
+                        <PenIcon isDark={dark} />
                       </Link>
                       <motion.button
                         type="button"
@@ -436,7 +430,7 @@ const ViewPost = () => {
                         className={`flex items-center justify-center h-8 w-8 rounded-lg transition-colors
                           ${dark ? 'text-gray-500 hover:bg-red-900/30 hover:text-red-400' : 'text-gray-400 hover:bg-red-50 hover:text-red-500'}`}
                       >
-                        <FontAwesomeIcon icon={faTrash} className="text-xs" />
+                        <TrashIcon isDark={dark} />
                       </motion.button>
                     </motion.div>
                   )}

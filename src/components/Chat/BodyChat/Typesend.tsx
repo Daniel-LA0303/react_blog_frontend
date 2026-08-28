@@ -29,7 +29,6 @@ function Typesend() {
       formData.append('image', file)
       try {
         const res = await clientAuthAxios.post('/posts/image-post', formData)
-        console.log(res);
         setImageLink(res.data.secure_url);
       } catch (error) {
         console.log(error)

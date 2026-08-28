@@ -41,21 +41,15 @@ import useGlobalDataContext from '../../context/hooks/useGlobalDataContext.js'
 import userUserAuthContext from '../../context/hooks/useUserAuthContext.js'
 import { NewPostI } from '../../interfaces/post.interfaces'
 import Spinner from '../../components/Spinner/Spinner'
-import EditorWithPreview from '../../components/EditorToolBar/EditorWithPreview'
 import TipTapEditor from '../../components/EditorTipTap/TipTapEditor'
-import { AIWordSuggest } from '../../components/IA/NewPost/AIWordSuggest'
-import { AIContentToolbar } from '../../components/IA/NewPost/AIContentToolbar'
 import { AIAssistModal } from '../../components/IA/NewPost/AIAssistModal'
-import { AIFieldAssist } from '../../components/IA/NewPost/AIFieldAssist'
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faMagic } from '@fortawesome/free-solid-svg-icons'
-import { Tiptap } from '@tiptap/react'
 import Tooltip from '../../components/Global/TooTip'
 import useIA, { PromptType } from '../../context/hooks/useIA'
 import { fadeUp, stagger } from '../../utils/animationsUtils'
 import Field from '../../components/Global/Field'
 import CategorySelect from '../../components/Post/CategorySelect'
 import { inputCls, toneOptions } from '../../utils/postUtils'
+import { MagicIcon } from '../../utils/iconsUtils'
 
 
 const NewPost = () => {
@@ -287,7 +281,7 @@ const NewPost = () => {
                           ? <span className={`w-3 h-3 border-2 rounded-full animate-spin
                             ${dark ? 'border-white/30 border-t-white' : 'border-black/20 border-t-black'}`}
                           />
-                          : <FontAwesomeIcon icon={faMagic} style={{ color: dark ? '#fff' : '#000' }} />
+                          : <MagicIcon isDark={globalData.themeGlobal}/>
                         }
                       </button>
                     </Tooltip>
@@ -352,7 +346,7 @@ const NewPost = () => {
                           ? <span className={`w-3 h-3 border-2 rounded-full animate-spin
                               ${dark ? 'border-white/30 border-t-white' : 'border-black/20 border-t-black'}`}
                           />
-                          : <FontAwesomeIcon icon={faMagic} style={{ color: dark ? '#fff' : '#000' }} />
+                          : <MagicIcon isDark={globalData.themeGlobal}/>
                         }
                       </button>
                     </Tooltip>

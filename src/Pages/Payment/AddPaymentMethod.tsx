@@ -6,15 +6,6 @@ import {
     useStripe,
     useElements,
 } from '@stripe/react-stripe-js'
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import {
-    faLock,
-    faCreditCard,
-    faCircleCheck,
-    faSpinner,
-    faTriangleExclamation,
-    faShield,
-} from '@fortawesome/free-solid-svg-icons'
 import useGlobalDataContext from '../../context/hooks/useGlobalDataContext'
 import Sidebar from '../../components/Sidebar/Sidebar'
 import clientAuthAxios from '../../services/clientAuthAxios'
@@ -58,10 +49,6 @@ const CardForm = ({ dark, onSuccess, onCancel }: CardFormProps) => {
         const res = await stripe.createPaymentMethod({
             elements,
         })
-        console.log("response: ", res);
-
-        console.log('Stripe paymentMethod:', res.paymentMethod)
-        //console.log('paymentMethod.id ready to send:', res.paymentMethod.id)
 
         setLoading(false)
         onSuccess(res.paymentMethod)
@@ -105,7 +92,7 @@ const CardForm = ({ dark, onSuccess, onCancel }: CardFormProps) => {
 
             {error && (
                 <div className="flex items-center gap-2 px-3 py-2.5 rounded-xl bg-red-500/10 border border-red-500/20">
-                    <FontAwesomeIcon icon={faTriangleExclamation} className="text-red-400 text-sm flex-shrink-0" />
+                    
                     <p className="text-xs text-red-400">{error}</p>
                 </div>
             )}
@@ -126,15 +113,12 @@ const CardForm = ({ dark, onSuccess, onCancel }: CardFormProps) => {
                     disabled={loading || !stripe || !ready}
                     className="flex-1 py-3 rounded-xl text-sm font-medium bg-blue-600 text-white hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center justify-center gap-2"
                 >
-                    {loading
-                        ? <><FontAwesomeIcon icon={faSpinner} className="animate-spin text-sm" /> Saving...</>
-                        : <><FontAwesomeIcon icon={faLock} className="text-sm" /> Add card</>
-                    }
+
                 </button>
             </div>
 
             <div className="flex items-center justify-center gap-1.5">
-                <FontAwesomeIcon icon={faShield} className={`text-xs ${dark ? 'text-gray-600' : 'text-gray-300'}`} />
+                
                 <p className={`text-[11px] ${dark ? 'text-gray-600' : 'text-gray-400'}`}>
                     Secured by Stripe · Your card data never touches our servers
                 </p>
@@ -187,7 +171,6 @@ const AddPaymentMethod = () => {
     const handleSuccess = async (paymentMethod: any) => {
         setSuccess(true)
         setPaymentResult(paymentMethod)
-        console.log("here", paymentMethod);
 
         const request: PaymentMenthodRequestI = {
             user: userAuth.userId as string,
@@ -202,7 +185,6 @@ const AddPaymentMethod = () => {
         }
         const res = await clientAuthAxios.post<{ data: PaymentMenthodResponseI }>(`/payment/new-payment-method`, request);
         // TODO: call backend and save the response like
-        console.log(res);
 
         const newMethod = res.data.data;
         setMethods(prev => [res.data.data, ...prev])
@@ -291,14 +273,14 @@ const AddPaymentMethod = () => {
                         {open && (
                             <div className={`rounded-2xl border transition-colors ${dark ? 'bg-[#27272A] border-gray-800' : 'bg-white border-gray-100'} p-6`}>
                                 <div className="flex items-center gap-2 mb-5">
-                                    <FontAwesomeIcon icon={faCreditCard} className={`text-sm ${dark ? 'text-gray-400' : 'text-gray-500'}`} />
+
                                     <p className={`text-sm font-semibold ${dark ? 'text-white' : 'text-gray-900'}`}>New payment method</p>
                                 </div>
 
                                 {success && paymentResult ? (
                                     <div className="space-y-4">
                                         <div className="flex flex-col items-center gap-2 py-4">
-                                            <FontAwesomeIcon icon={faCircleCheck} className="text-emerald-500 text-3xl" />
+                                            
                                             <p className={`text-sm font-medium ${dark ? 'text-gray-300' : 'text-gray-700'}`}>
                                                 PaymentMethod created
                                             </p>
@@ -370,7 +352,7 @@ const AddPaymentMethod = () => {
                                 methods.map(c => (
                                     <motion.div
                                         key={c._id}
-                                        variants={item}
+                                        //variants={item}
                                         exit={item.exit}
                                         layout
                                     >

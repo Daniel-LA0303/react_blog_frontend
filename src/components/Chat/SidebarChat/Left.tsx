@@ -1,13 +1,14 @@
-import { useState } from "react";
+import useGlobalDataContext from "../../../context/hooks/useGlobalDataContext";
 import { useAuth } from "../../../context/UserAuthContex";
-import { useNavigate } from "react-router-dom";
+import { LogoutIcon } from "../../../utils/iconsUtils";
 import Search from "./Search";
 import Users from "./Users";
-import LogoutOutlinedIcon from '@mui/icons-material/LogoutOutlined';
+
 
 function Left() {
 
   const { userAuth } = useAuth();
+  const { globalData } = useGlobalDataContext();
 
   // log out
   const handleLogout = async () => {
@@ -34,7 +35,7 @@ function Left() {
         </div>
         <div className="flex items-center">
           <button onClick={handleLogout}>
-            <LogoutOutlinedIcon />
+            <LogoutIcon isDark={globalData.themeGlobal}/>
           </button>
         </div>
       </div>
