@@ -1,11 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react'
-import { motion, useInView } from 'framer-motion'
-import { Box, Typography, Select, MenuItem, FormControl } from '@mui/material'
-import {
-  PeopleOutlined, ArticleOutlined, TrendingUp,
-  AttachMoney, FavoriteOutlined, Loop,
-  ArrowUpward, ArrowDownward,
-} from '@mui/icons-material'
+import { motion, AnimatePresence } from 'framer-motion'
 import useGlobalDataContext from '../../context/hooks/useGlobalDataContext'
 
 /*
@@ -26,8 +20,6 @@ import {
 } from 'recharts'
 import { DAYS, MONTHS } from '../../utils/adminUtils'
 import { fadeUp, stagger } from '../../utils/animationsUtils'
-
-
 
 function rand(min: number, max: number) {
   return Math.floor(Math.random() * (max - min + 1)) + min
@@ -164,6 +156,155 @@ function lgStyle(dark: boolean) {
   }
 }
 
+/* ============================================================
+   Icons (replacing @mui/icons-material)
+   ============================================================ */
+const IconBase = ({ children, size = 20 }: { children: React.ReactNode; size?: number }) => (
+  <svg
+    viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}
+    strokeLinecap="round" strokeLinejoin="round"
+    style={{ width: size, height: size, display: 'block', flexShrink: 0 }}
+  >
+    {children}
+  </svg>
+)
+const PeopleIcon = ({ size }: { size?: number }) => (
+  <IconBase size={size}>
+    <path d="M17 21v-2a4 4 0 0 0-4-4H7a4 4 0 0 0-4 4v2" />
+    <circle cx="9" cy="7" r="4" />
+    <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
+    <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+  </IconBase>
+)
+const ArticleIcon = ({ size }: { size?: number }) => (
+  <IconBase size={size}>
+    <rect x="4" y="4" width="16" height="16" rx="2" />
+    <line x1="8" y1="9" x2="16" y2="9" />
+    <line x1="8" y1="13" x2="16" y2="13" />
+    <line x1="8" y1="17" x2="12" y2="17" />
+  </IconBase>
+)
+const TrendingUpIcon = ({ size }: { size?: number }) => (
+  <IconBase size={size}>
+    <polyline points="23 6 13.5 15.5 8.5 10.5 1 18" />
+    <polyline points="17 6 23 6 23 12" />
+  </IconBase>
+)
+const AttachMoneyIcon = ({ size }: { size?: number }) => (
+  <IconBase size={size}>
+    <line x1="12" y1="1" x2="12" y2="23" />
+    <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
+  </IconBase>
+)
+const FavoriteIcon = ({ size }: { size?: number }) => (
+  <IconBase size={size}>
+    <path
+      d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"
+      fill="currentColor" stroke="none"
+    />
+  </IconBase>
+)
+const LoopIcon = ({ size }: { size?: number }) => (
+  <IconBase size={size}>
+    <path d="M17 1l4 4-4 4" />
+    <path d="M3 11V9a4 4 0 0 1 4-4h14" />
+    <path d="M7 23l-4-4 4-4" />
+    <path d="M21 13v2a4 4 0 0 1-4 4H3" />
+  </IconBase>
+)
+const ArrowUpIcon = ({ size }: { size?: number }) => (
+  <IconBase size={size}><line x1="12" y1="19" x2="12" y2="5" /><polyline points="5 12 12 5 19 12" /></IconBase>
+)
+const ArrowDownIcon = ({ size }: { size?: number }) => (
+  <IconBase size={size}><line x1="12" y1="5" x2="12" y2="19" /><polyline points="19 12 12 19 5 12" /></IconBase>
+)
+const ChevronDownIcon = ({ size }: { size?: number }) => (
+  <IconBase size={size}><polyline points="6 9 12 15 18 9" /></IconBase>
+)
+
+/* ============================================================
+   Small reusable UI primitives (replacing @mui/material)
+   ============================================================ */
+const useClickOutside = (ref: React.RefObject<HTMLElement>, onOutside: () => void) => {
+  useEffect(() => {
+    const handler = (e: MouseEvent) => {
+      if (ref.current && !ref.current.contains(e.target as Node)) onOutside()
+    }
+    document.addEventListener('mousedown', handler)
+    return () => document.removeEventListener('mousedown', handler)
+  }, [ref, onOutside])
+}
+
+const UISelect = <T extends string>({
+  value, options, labels, onChange, dark,
+}: {
+  value: T; options: T[]; labels: Record<T, string>; onChange: (v: T) => void; dark: boolean
+}) => {
+  const [open, setOpen] = useState(false)
+  const ref = useRef<HTMLDivElement>(null)
+  useClickOutside(ref, () => setOpen(false))
+  return (
+    <div ref={ref} style={{ position: 'relative', display: 'inline-block' }}>
+      <button
+        type="button"
+        onClick={() => setOpen(o => !o)}
+        style={{
+          display: 'flex', alignItems: 'center', gap: 6,
+          fontSize: 12, borderRadius: 8, padding: '7px 12px',
+          color: dark ? 'rgba(255,255,255,0.6)' : 'rgba(0,0,0,0.55)',
+          border: dark ? '0.5px solid rgba(255,255,255,0.12)' : '0.5px solid rgba(0,0,0,0.12)',
+          background: dark ? 'rgba(255,255,255,0.04)' : 'rgba(0,0,0,0.03)',
+          cursor: 'pointer',
+        }}
+      >
+        {labels[value]}
+        <span style={{ color: dark ? 'rgba(255,255,255,0.4)' : 'rgba(0,0,0,0.4)', display: 'flex' }}>
+          <ChevronDownIcon size={14} />
+        </span>
+      </button>
+      <AnimatePresence>
+        {open && (
+          <motion.div
+            initial={{ opacity: 0, scale: 0.96, y: -4 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 0.96, y: -4 }}
+            transition={{ duration: 0.12 }}
+            style={{
+              position: 'absolute', top: 'calc(100% + 4px)', right: 0, zIndex: 20,
+              minWidth: 170, borderRadius: 10, overflow: 'hidden',
+              border: dark ? '0.5px solid rgba(255,255,255,0.08)' : '0.5px solid rgba(0,0,0,0.08)',
+              background: dark ? '#1f1f1f' : '#fff',
+              boxShadow: '0 12px 32px rgba(0,0,0,0.2)',
+              padding: '4px 0',
+            }}
+          >
+            {options.map(opt => (
+              <button
+                key={opt}
+                type="button"
+                onClick={() => { onChange(opt); setOpen(false) }}
+                onMouseEnter={e => { e.currentTarget.style.background = dark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.04)' }}
+                onMouseLeave={e => { e.currentTarget.style.background = 'transparent' }}
+                style={{
+                  width: '100%', textAlign: 'left', padding: '8px 12px', fontSize: 12,
+                  border: 'none', background: 'transparent', cursor: 'pointer',
+                  color: opt === value ? '#2563EB' : (dark ? 'rgba(255,255,255,0.7)' : 'rgba(0,0,0,0.7)'),
+                  fontWeight: opt === value ? 600 : 400,
+                }}
+              >
+                {labels[opt]}
+              </button>
+            ))}
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
+  )
+}
+
+/* ============================================================
+   Feature components
+   ============================================================ */
 interface KPI {
   label: string
   value: string
@@ -182,39 +323,38 @@ const KPICard = ({ kpi, dark, delay }: { kpi: KPI; dark: boolean; delay: number 
         dark ? 'bg-[#27272A] border-gray-800' : 'bg-white border-gray-100'
       }`}
     >
-      <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-        <Box sx={{
-          width: 40, height: 40, borderRadius: '11px',
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+        <div style={{
+          width: 40, height: 40, borderRadius: 11,
           display: 'flex', alignItems: 'center', justifyContent: 'center',
           background: `${kpi.color}18`, color: kpi.color,
         }}>
           {kpi.icon}
-        </Box>
-        <Box sx={{
-          display: 'inline-flex', alignItems: 'center', gap: 0.4,
-          borderRadius: 99, px: 1, py: 0.3,
+        </div>
+        <div style={{
+          display: 'inline-flex', alignItems: 'center', gap: 3,
+          borderRadius: 99, padding: '3px 8px',
           background: up ? 'rgba(16,185,129,0.12)' : 'rgba(239,68,68,0.1)',
         }}>
-          {up
-            ? <ArrowUpward   sx={{ fontSize: 12, color: '#10b981' }} />
-            : <ArrowDownward sx={{ fontSize: 12, color: '#ef4444' }} />
-          }
-          <Typography sx={{ fontSize: 11, fontWeight: 500, color: up ? '#059669' : '#dc2626' }}>
+          <span style={{ color: up ? '#10b981' : '#ef4444', display: 'flex' }}>
+            {up ? <ArrowUpIcon size={12} /> : <ArrowDownIcon size={12} />}
+          </span>
+          <span style={{ fontSize: 11, fontWeight: 500, color: up ? '#059669' : '#dc2626' }}>
             {Math.abs(kpi.delta)}%
-          </Typography>
-        </Box>
-      </Box>
-      <Box>
-        <Typography sx={{ fontSize: 24, fontWeight: 500, color: dark ? '#fff' : '#111', lineHeight: 1.2 }}>
+          </span>
+        </div>
+      </div>
+      <div>
+        <p style={{ margin: 0, fontSize: 24, fontWeight: 500, color: dark ? '#fff' : '#111', lineHeight: 1.2 }}>
           {kpi.value}
-        </Typography>
-        <Typography sx={{ fontSize: 12, color: dark ? 'rgba(255,255,255,0.4)' : 'rgba(0,0,0,0.45)', mt: 0.4, fontWeight: 500 }}>
+        </p>
+        <p style={{ margin: '4px 0 0', fontSize: 12, color: dark ? 'rgba(255,255,255,0.4)' : 'rgba(0,0,0,0.45)', fontWeight: 500 }}>
           {kpi.label}
-        </Typography>
-      </Box>
-      <Box sx={{ height: 3, borderRadius: 99, background: dark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.06)', overflow: 'hidden' }}>
-        <Box sx={{ height: '100%', width: `${Math.min(100, 40 + kpi.delta * 2)}%`, background: kpi.color, borderRadius: 99 }} />
-      </Box>
+        </p>
+      </div>
+      <div style={{ height: 3, borderRadius: 99, background: dark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.06)', overflow: 'hidden' }}>
+        <div style={{ height: '100%', width: `${Math.min(100, 40 + kpi.delta * 2)}%`, background: kpi.color, borderRadius: 99 }} />
+      </div>
     </motion.div>
   )
 }
@@ -234,71 +374,24 @@ const ChartCard = ({
     custom={delay}
     className={`rounded-2xl border overflow-hidden ${dark ? 'bg-[#27272A] border-gray-800' : 'bg-white border-gray-100'}`}
   >
-    <Box sx={{
-      px: 3, pt: 2.5, pb: 2,
+    <div style={{
+      padding: '20px 24px 16px',
       display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-      gap: 1, flexWrap: 'wrap',
+      gap: 8, flexWrap: 'wrap',
       borderBottom: dark ? '0.5px solid rgba(255,255,255,0.06)' : '0.5px solid rgba(0,0,0,0.06)',
     }}>
-      <Box>
-        <Typography sx={{ fontSize: 14, fontWeight: 500, color: dark ? '#fff' : '#111' }}>{title}</Typography>
+      <div>
+        <p style={{ margin: 0, fontSize: 14, fontWeight: 500, color: dark ? '#fff' : '#111' }}>{title}</p>
         {subtitle && (
-          <Typography sx={{ fontSize: 12, color: dark ? 'rgba(255,255,255,0.35)' : 'rgba(0,0,0,0.4)', mt: 0.3 }}>
+          <p style={{ margin: '3px 0 0', fontSize: 12, color: dark ? 'rgba(255,255,255,0.35)' : 'rgba(0,0,0,0.4)' }}>
             {subtitle}
-          </Typography>
+          </p>
         )}
-      </Box>
+      </div>
       {action}
-    </Box>
-    <Box sx={{ p: 3 }}>{children}</Box>
+    </div>
+    <div style={{ padding: 24 }}>{children}</div>
   </motion.div>
-)
-
-const PeriodSelect = ({ value, onChange, dark }: {
-  value: Period; onChange: (p: Period) => void; dark: boolean
-}) => (
-  <FormControl size="small">
-    <Select
-      value={value}
-      onChange={e => onChange(e.target.value as Period)}
-      sx={{
-        fontSize: 12, borderRadius: '8px',
-        color: dark ? 'rgba(255,255,255,0.6)' : 'rgba(0,0,0,0.55)',
-        '& .MuiOutlinedInput-notchedOutline': {
-          border: dark ? '0.5px solid rgba(255,255,255,0.12)' : '0.5px solid rgba(0,0,0,0.12)',
-        },
-        '&:hover .MuiOutlinedInput-notchedOutline': {
-          border: dark ? '0.5px solid rgba(255,255,255,0.25)' : '0.5px solid rgba(0,0,0,0.25)',
-        },
-        '& .MuiSelect-icon': { color: dark ? 'rgba(255,255,255,0.4)' : 'rgba(0,0,0,0.4)' },
-        background: dark ? 'rgba(255,255,255,0.04)' : 'rgba(0,0,0,0.03)',
-      }}
-      MenuProps={{
-        PaperProps: {
-          sx: {
-            borderRadius: '10px',
-            background: dark ? '#1f1f1f' : '#fff',
-            border: dark ? '0.5px solid rgba(255,255,255,0.08)' : '0.5px solid rgba(0,0,0,0.08)',
-            boxShadow: 'none',
-            mt: 0.5,
-          },
-        },
-      }}
-    >
-      {(Object.keys(PERIOD_LABELS) as Period[]).map(p => (
-        <MenuItem
-          key={p} value={p}
-          sx={{
-            fontSize: 12,
-            color: dark ? 'rgba(255,255,255,0.7)' : 'rgba(0,0,0,0.7)',
-            '&:hover': { background: dark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.04)' },
-          }}
-        >
-          {PERIOD_LABELS[p]}
-        </MenuItem>
-      ))}
-    </Select>
-  </FormControl>
 )
 
 const AdminDashboard = () => {
@@ -307,12 +400,12 @@ const AdminDashboard = () => {
   const [period, setPeriod] = useState<Period>('12m')
 
   const kpis: KPI[] = [
-    { label: 'Active users (DAU)', value: '2,841',  delta:  12, icon: <PeopleOutlined />,   color: CHART_COLORS.blue   },
-    { label: 'Daily posts',        value: '184',     delta:   8, icon: <ArticleOutlined />,  color: CHART_COLORS.teal   },
-    { label: 'Monthly growth',     value: '18.4%',   delta:   3, icon: <TrendingUp />,       color: CHART_COLORS.violet },
-    { label: 'MRR',                value: '$11,200', delta:   7, icon: <AttachMoney />,      color: CHART_COLORS.amber  },
-    { label: 'Engagement rate',    value: '64.2%',   delta:  -2, icon: <FavoriteOutlined />, color: CHART_COLORS.pink   },
-    { label: 'Day-30 retention',   value: '44%',     delta:   4, icon: <Loop />,             color: CHART_COLORS.coral  },
+    { label: 'Active users (DAU)', value: '2,841',  delta:  12, icon: <PeopleIcon size={20} />,      color: CHART_COLORS.blue   },
+    { label: 'Daily posts',        value: '184',     delta:   8, icon: <ArticleIcon size={20} />,     color: CHART_COLORS.teal   },
+    { label: 'Monthly growth',     value: '18.4%',   delta:   3, icon: <TrendingUpIcon size={20} />,  color: CHART_COLORS.violet },
+    { label: 'MRR',                value: '$11,200', delta:   7, icon: <AttachMoneyIcon size={20} />, color: CHART_COLORS.amber  },
+    { label: 'Engagement rate',    value: '64.2%',   delta:  -2, icon: <FavoriteIcon size={20} />,    color: CHART_COLORS.pink   },
+    { label: 'Day-30 retention',   value: '44%',     delta:   4, icon: <LoopIcon size={20} />,        color: CHART_COLORS.coral  },
   ]
 
   const lastStripe   = STRIPE_MONTHLY[STRIPE_MONTHLY.length - 1]
@@ -329,15 +422,15 @@ const AdminDashboard = () => {
           initial="hidden" animate="visible" variants={fadeUp} custom={0}
           style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 12, flexWrap: 'wrap' }}
         >
-          <Box>
-            <Typography sx={{ fontSize: 20, fontWeight: 500, color: dark ? '#fff' : '#111' }}>
+          <div>
+            <p style={{ margin: 0, fontSize: 20, fontWeight: 500, color: dark ? '#fff' : '#111' }}>
               Dashboard
-            </Typography>
-            <Typography sx={{ fontSize: 13, color: dark ? 'rgba(255,255,255,0.35)' : 'rgba(0,0,0,0.4)', mt: 0.5 }}>
+            </p>
+            <p style={{ margin: '4px 0 0', fontSize: 13, color: dark ? 'rgba(255,255,255,0.35)' : 'rgba(0,0,0,0.4)' }}>
               Platform overview — users, revenue, engagement and retention.
-            </Typography>
-          </Box>
-          <PeriodSelect value={period} onChange={setPeriod} dark={dark} />
+            </p>
+          </div>
+          <UISelect value={period} options={Object.keys(PERIOD_LABELS) as Period[]} labels={PERIOD_LABELS} onChange={setPeriod} dark={dark} />
         </motion.div>
 
         <motion.div
@@ -399,22 +492,22 @@ const AdminDashboard = () => {
             dark={dark}
             delay={0}
             action={
-              <Box sx={{ display: 'flex', gap: 2 }}>
+              <div style={{ display: 'flex', gap: 16 }}>
                 {[
                   { label: 'MRR',   value: fmtMoney(lastStripe.mrr),    color: CHART_COLORS.blue  },
                   { label: 'New',   value: fmtMoney(lastStripe.newRev), color: CHART_COLORS.teal  },
                   { label: 'Churn', value: fmtMoney(lastStripe.churn),  color: CHART_COLORS.coral },
                 ].map(s => (
-                  <Box key={s.label} sx={{ textAlign: 'right' }}>
-                    <Typography sx={{ fontSize: 11, color: dark ? 'rgba(255,255,255,0.35)' : 'rgba(0,0,0,0.4)', textTransform: 'uppercase', letterSpacing: '0.06em', fontWeight: 500 }}>
+                  <div key={s.label} style={{ textAlign: 'right' }}>
+                    <p style={{ margin: 0, fontSize: 11, color: dark ? 'rgba(255,255,255,0.35)' : 'rgba(0,0,0,0.4)', textTransform: 'uppercase', letterSpacing: '0.06em', fontWeight: 500 }}>
                       {s.label}
-                    </Typography>
-                    <Typography sx={{ fontSize: 15, fontWeight: 500, color: s.color }}>
+                    </p>
+                    <p style={{ margin: 0, fontSize: 15, fontWeight: 500, color: s.color }}>
                       {s.value}
-                    </Typography>
-                  </Box>
+                    </p>
+                  </div>
                 ))}
-              </Box>
+              </div>
             }
           >
             <ResponsiveContainer width="100%" height={240}>
@@ -444,7 +537,7 @@ const AdminDashboard = () => {
 
         <motion.div initial="hidden" animate="visible" variants={stagger} className="grid grid-cols-1 lg:grid-cols-3 gap-6">
 
-          <Box className="lg:col-span-2">
+          <div className="lg:col-span-2">
             <ChartCard title="User growth" subtitle="New signups and retention %" dark={dark} delay={0}>
               <ResponsiveContainer width="100%" height={220}>
                 <LineChart data={GROWTH_DATA} margin={{ top: 4, right: 0, left: -20, bottom: 0 }}>
@@ -459,7 +552,7 @@ const AdminDashboard = () => {
                 </LineChart>
               </ResponsiveContainer>
             </ChartCard>
-          </Box>
+          </div>
 
           <ChartCard title="Plan distribution" subtitle="Subscribers by tier" dark={dark} delay={1}>
             <ResponsiveContainer width="100%" height={160}>
@@ -472,26 +565,26 @@ const AdminDashboard = () => {
                 <Tooltip {...ttStyle(dark)} formatter={(v: number) => [v.toLocaleString(), 'users']} />
               </PieChart>
             </ResponsiveContainer>
-            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1, mt: 1 }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginTop: 8 }}>
               {PLAN_DIST.map(p => {
                 const total = PLAN_DIST.reduce((s, x) => s + x.value, 0)
                 const pct   = Math.round((p.value / total) * 100)
                 return (
-                  <Box key={p.name} sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
-                    <Box sx={{ width: 8, height: 8, borderRadius: '50%', background: p.color, flexShrink: 0 }} />
-                    <Typography sx={{ fontSize: 12, color: dark ? 'rgba(255,255,255,0.6)' : 'rgba(0,0,0,0.6)', flex: 1 }}>
+                  <div key={p.name} style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                    <span style={{ width: 8, height: 8, borderRadius: '50%', background: p.color, flexShrink: 0 }} />
+                    <span style={{ fontSize: 12, color: dark ? 'rgba(255,255,255,0.6)' : 'rgba(0,0,0,0.6)', flex: 1 }}>
                       {p.name}
-                    </Typography>
-                    <Typography sx={{ fontSize: 12, fontWeight: 500, color: dark ? '#fff' : '#111' }}>
+                    </span>
+                    <span style={{ fontSize: 12, fontWeight: 500, color: dark ? '#fff' : '#111' }}>
                       {p.value.toLocaleString()}
-                    </Typography>
-                    <Typography sx={{ fontSize: 11, color: dark ? 'rgba(255,255,255,0.3)' : 'rgba(0,0,0,0.35)', width: 32, textAlign: 'right' }}>
+                    </span>
+                    <span style={{ fontSize: 11, color: dark ? 'rgba(255,255,255,0.3)' : 'rgba(0,0,0,0.35)', width: 32, textAlign: 'right' }}>
                       {pct}%
-                    </Typography>
-                  </Box>
+                    </span>
+                  </div>
                 )
               })}
-            </Box>
+            </div>
           </ChartCard>
 
         </motion.div>
@@ -538,33 +631,33 @@ const AdminDashboard = () => {
           </ChartCard>
 
           <ChartCard title="Top categories" subtitle="By number of posts" dark={dark} delay={2}>
-            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2.5, pt: 1 }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 20, paddingTop: 4 }}>
               {TOP_CATS.map((cat, i) => (
-                <Box key={cat.name}>
-                  <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 0.8 }}>
-                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                      <Typography sx={{ fontSize: 11, fontWeight: 500, color: dark ? 'rgba(255,255,255,0.3)' : 'rgba(0,0,0,0.3)', width: 16 }}>
+                <div key={cat.name}>
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 6 }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                      <span style={{ fontSize: 11, fontWeight: 500, color: dark ? 'rgba(255,255,255,0.3)' : 'rgba(0,0,0,0.3)', width: 16 }}>
                         #{i + 1}
-                      </Typography>
-                      <Typography sx={{ fontSize: 13, color: dark ? 'rgba(255,255,255,0.75)' : 'rgba(0,0,0,0.7)' }}>
+                      </span>
+                      <span style={{ fontSize: 13, color: dark ? 'rgba(255,255,255,0.75)' : 'rgba(0,0,0,0.7)' }}>
                         {cat.name}
-                      </Typography>
-                    </Box>
-                    <Typography sx={{ fontSize: 12, fontWeight: 500, color: dark ? '#fff' : '#111' }}>
+                      </span>
+                    </div>
+                    <span style={{ fontSize: 12, fontWeight: 500, color: dark ? '#fff' : '#111' }}>
                       {cat.posts}
-                    </Typography>
-                  </Box>
-                  <Box sx={{ height: 4, borderRadius: 99, background: dark ? 'rgba(255,255,255,0.07)' : 'rgba(0,0,0,0.07)', overflow: 'hidden' }}>
+                    </span>
+                  </div>
+                  <div style={{ height: 4, borderRadius: 99, background: dark ? 'rgba(255,255,255,0.07)' : 'rgba(0,0,0,0.07)', overflow: 'hidden' }}>
                     <motion.div
                       initial={{ width: 0 }}
                       animate={{ width: `${cat.pct}%` }}
                       transition={{ duration: 0.7, delay: 0.3 + i * 0.1, ease: [0.25, 0.46, 0.45, 0.94] }}
                       style={{ height: '100%', background: CAT_COLORS[i], borderRadius: 99 }}
                     />
-                  </Box>
-                </Box>
+                  </div>
+                </div>
               ))}
-            </Box>
+            </div>
           </ChartCard>
 
         </motion.div>

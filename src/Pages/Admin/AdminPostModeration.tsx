@@ -1,36 +1,14 @@
-import React, { useEffect, useState, useRef, useCallback } from 'react'
+import React, { useEffect, useState, useRef } from 'react'
 import { motion, AnimatePresence, useInView } from 'framer-motion'
-
-import {
-  Table, TableBody, TableCell, TableContainer, TableHead, TableRow,
-  TablePagination, Chip, Avatar, IconButton, Menu, MenuItem,
-  InputAdornment, TextField, Tooltip, Skeleton, Box, Typography,
-  Dialog, DialogTitle, DialogContent, DialogActions, Button,
-  Select, FormControl, InputLabel, SelectChangeEvent,
-} from '@mui/material'
-
-import {
-  MoreVert,
-  Search,
-  Article,
-  VisibilityOff,
-  DeleteOutline,
-  Star,
-  RateReview,
-  Flag,
-  CheckCircleOutline,
-  WarningAmberOutlined,
-  NewReleasesOutlined,
-  FilterListOutlined,
-  CloseOutlined,
-  OpenInNew,
-} from '@mui/icons-material'
 
 import useGlobalDataContext from '../../context/hooks/useGlobalDataContext'
 import { useSwal } from '../../hooks/useSwal'
 import clientAuthAxios from '../../services/clientAuthAxios'
 import { fadeUp, stagger } from '../../utils/animationsUtils'
 
+/* ============================================================
+   Types
+   ============================================================ */
 type PostStatus = 'published' | 'hidden' | 'featured' | 'under_review' | 'deleted'
 type ReportReason = 'spam' | 'prohibited_content' | 'harassment' | 'misinformation' | 'copyright'
 
@@ -212,7 +190,6 @@ const REPORT_LABELS: Record<ReportReason, string> = {
   misinformation: 'Misinformation',
   copyright: 'Copyright',
 }
-
 const REPORT_CHIP_STYLE: Record<ReportReason, { bg: string; color: string; border: string }> = {
   spam:               { bg: 'rgba(245,158,11,0.08)',  color: '#b45309', border: 'rgba(245,158,11,0.3)' },
   prohibited_content: { bg: 'rgba(239,68,68,0.08)',   color: '#dc2626', border: 'rgba(239,68,68,0.3)' },
@@ -220,7 +197,6 @@ const REPORT_CHIP_STYLE: Record<ReportReason, { bg: string; color: string; borde
   misinformation:     { bg: 'rgba(109,40,217,0.08)',  color: '#6d28d9', border: 'rgba(109,40,217,0.3)' },
   copyright:          { bg: 'rgba(0,0,0,0.05)',       color: 'rgba(0,0,0,0.55)', border: 'rgba(0,0,0,0.15)' },
 }
-
 const STATUS_CONFIG: Record<PostStatus, { label: string; bg: string; color: string; dot: string }> = {
   published:    { label: 'Published',    bg: 'rgba(16,185,129,0.1)',  color: '#059669', dot: '#10b981' },
   hidden:       { label: 'Hidden',       bg: 'rgba(245,158,11,0.1)', color: '#b45309', dot: '#f59e0b' },
@@ -228,24 +204,332 @@ const STATUS_CONFIG: Record<PostStatus, { label: string; bg: string; color: stri
   under_review: { label: 'Under review', bg: 'rgba(109,40,217,0.1)', color: '#6d28d9', dot: '#7c3aed' },
   deleted:      { label: 'Deleted',      bg: 'rgba(239,68,68,0.1)',  color: '#dc2626', dot: '#ef4444' },
 }
-
 const BGCOLORS = ['#378ADD', '#1D9E75', '#D85A30', '#7F77DD', '#D4537E', '#BA7517']
 
 function getInitials(name: string) {
   return name.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase()
 }
-
 function avatarBg(name: string) {
   let hash = 0
   for (let i = 0; i < name.length; i++) hash = name.charCodeAt(i) + ((hash << 5) - hash)
   return BGCOLORS[Math.abs(hash) % BGCOLORS.length]
 }
-
 function formatCount(n: number) {
   if (n >= 1000) return `${(n / 1000).toFixed(1)}k`
   return String(n)
 }
 
+/* ============================================================
+   Icons (replacing @mui/icons-material)
+   ============================================================ */
+const IconBase = ({ children, size = 20 }: { children: React.ReactNode; size?: number }) => (
+  <svg
+    viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}
+    strokeLinecap="round" strokeLinejoin="round"
+    style={{ width: size, height: size, display: 'block', flexShrink: 0 }}
+  >
+    {children}
+  </svg>
+)
+const SearchIcon = ({ size }: { size?: number }) => (
+  <IconBase size={size}><circle cx="11" cy="11" r="7" /><line x1="21" y1="21" x2="16.65" y2="16.65" /></IconBase>
+)
+const MoreVertIcon = ({ size }: { size?: number }) => (
+  <IconBase size={size}>
+    <circle cx="12" cy="5" r="1.4" fill="currentColor" stroke="none" />
+    <circle cx="12" cy="12" r="1.4" fill="currentColor" stroke="none" />
+    <circle cx="12" cy="19" r="1.4" fill="currentColor" stroke="none" />
+  </IconBase>
+)
+const CloseIcon = ({ size }: { size?: number }) => (
+  <IconBase size={size}><line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" /></IconBase>
+)
+const FlagIcon = ({ size }: { size?: number }) => (
+  <IconBase size={size}>
+    <path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z" />
+    <line x1="4" y1="22" x2="4" y2="15" />
+  </IconBase>
+)
+const ArticleIcon = ({ size }: { size?: number }) => (
+  <IconBase size={size}>
+    <rect x="4" y="4" width="16" height="16" rx="2" />
+    <line x1="8" y1="9" x2="16" y2="9" />
+    <line x1="8" y1="13" x2="16" y2="13" />
+    <line x1="8" y1="17" x2="12" y2="17" />
+  </IconBase>
+)
+const VisibilityOffIcon = ({ size }: { size?: number }) => (
+  <IconBase size={size}>
+    <path d="M17.94 17.94A10.94 10.94 0 0 1 12 20c-7 0-11-8-11-8a21.8 21.8 0 0 1 5.06-6.06" />
+    <path d="M9.9 4.24A10.94 10.94 0 0 1 12 4c7 0 11 8 11 8a21.8 21.8 0 0 1-2.16 3.19" />
+    <path d="M14.12 14.12a3 3 0 1 1-4.24-4.24" />
+    <line x1="1" y1="1" x2="23" y2="23" />
+  </IconBase>
+)
+const CheckCircleIcon = ({ size }: { size?: number }) => (
+  <IconBase size={size}><circle cx="12" cy="12" r="10" /><polyline points="9 12 11 14 15 10" /></IconBase>
+)
+const StarIcon = ({ size }: { size?: number }) => (
+  <IconBase size={size}>
+    <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+  </IconBase>
+)
+const RateReviewIcon = ({ size }: { size?: number }) => (
+  <IconBase size={size}>
+    <path d="M4 21h16" />
+    <path d="M4 17h6" />
+    <path d="M13.5 3.5a2.12 2.12 0 0 1 3 3L9 14l-4 1 1-4Z" />
+  </IconBase>
+)
+const DeleteIcon = ({ size }: { size?: number }) => (
+  <IconBase size={size}>
+    <polyline points="3 6 5 6 21 6" />
+    <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6" />
+    <path d="M10 11v6" /><path d="M14 11v6" />
+    <path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2" />
+  </IconBase>
+)
+const ChevronLeftIcon = ({ size }: { size?: number }) => (
+  <IconBase size={size}><polyline points="15 18 9 12 15 6" /></IconBase>
+)
+const ChevronRightIcon = ({ size }: { size?: number }) => (
+  <IconBase size={size}><polyline points="9 18 15 12 9 6" /></IconBase>
+)
+
+/* ============================================================
+   Small reusable UI primitives (replacing @mui/material)
+   ============================================================ */
+const useClickOutside = (ref: React.RefObject<HTMLElement>, onOutside: () => void) => {
+  useEffect(() => {
+    const handler = (e: MouseEvent) => {
+      if (ref.current && !ref.current.contains(e.target as Node)) onOutside()
+    }
+    document.addEventListener('mousedown', handler)
+    return () => document.removeEventListener('mousedown', handler)
+  }, [ref, onOutside])
+}
+
+const UITooltip = ({ title, children }: { title: string; children: React.ReactNode }) => {
+  const [show, setShow] = useState(false)
+  return (
+    <span
+      style={{ position: 'relative', display: 'inline-flex' }}
+      onMouseEnter={() => setShow(true)}
+      onMouseLeave={() => setShow(false)}
+    >
+      {children}
+      <AnimatePresence>
+        {show && (
+          <motion.span
+            initial={{ opacity: 0, y: 4 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 4 }}
+            transition={{ duration: 0.12 }}
+            style={{
+              position: 'absolute', bottom: '100%', right: 0,
+              marginBottom: 6, padding: '4px 8px', borderRadius: 6,
+              background: '#111', color: '#fff', fontSize: 11, fontWeight: 500,
+              whiteSpace: 'nowrap', pointerEvents: 'none', zIndex: 10,
+            }}
+          >
+            {title}
+          </motion.span>
+        )}
+      </AnimatePresence>
+    </span>
+  )
+}
+
+const UIIconButton = ({
+  onClick, children, color, hoverBg, hoverColor, disabled,
+}: {
+  onClick?: (e: React.MouseEvent) => void; children: React.ReactNode
+  color?: string; hoverBg?: string; hoverColor?: string; disabled?: boolean
+}) => {
+  const [hover, setHover] = useState(false)
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      disabled={disabled}
+      onMouseEnter={() => setHover(true)}
+      onMouseLeave={() => setHover(false)}
+      style={{
+        width: 28, height: 28, borderRadius: 8, border: 'none',
+        cursor: disabled ? 'default' : 'pointer', padding: 0,
+        display: 'flex', alignItems: 'center', justifyContent: 'center',
+        opacity: disabled ? 0.3 : 1,
+        background: hover && !disabled ? (hoverBg ?? 'rgba(0,0,0,0.05)') : 'transparent',
+        color: hover && !disabled ? (hoverColor ?? color) : color,
+        transition: 'background 0.15s, color 0.15s',
+      }}
+    >
+      {children}
+    </button>
+  )
+}
+
+const UITextField = ({
+  value, onChange, dark, placeholder, startAdornment,
+}: {
+  value: string; onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void; dark: boolean
+  placeholder?: string; startAdornment?: React.ReactNode
+}) => {
+  const [focused, setFocused] = useState(false)
+  const borderColor = focused ? '#2563EB' : (dark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.12)')
+  return (
+    <div
+      style={{
+        display: 'flex', alignItems: 'center', gap: 8,
+        borderRadius: 10, padding: '0 10px',
+        background: dark ? 'rgba(255,255,255,0.04)' : 'rgba(0,0,0,0.03)',
+        border: `${focused ? 1 : 0.5}px solid ${borderColor}`,
+        transition: 'border-color 0.15s',
+      }}
+    >
+      {startAdornment}
+      <input
+        value={value}
+        onChange={onChange}
+        placeholder={placeholder}
+        onFocus={() => setFocused(true)}
+        onBlur={() => setFocused(false)}
+        style={{
+          flex: 1, border: 'none', outline: 'none', background: 'transparent', width: '100%',
+          fontSize: 13, padding: '9px 0', color: dark ? '#fff' : '#111',
+        }}
+      />
+    </div>
+  )
+}
+
+const UIAvatar = ({ src, name, bg, size = 32, fontSize = 13 }: { src?: string; name: string; bg: string; size?: number; fontSize?: number }) => (
+  <div
+    style={{
+      width: size, height: size, borderRadius: '50%', flexShrink: 0, overflow: 'hidden',
+      display: 'flex', alignItems: 'center', justifyContent: 'center',
+      background: bg, color: '#fff', fontSize, fontWeight: 500,
+    }}
+  >
+    {src ? <img src={src} alt={name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} /> : getInitials(name)}
+  </div>
+)
+
+const UISkeleton = ({ width, height, dark }: { width: number; height: number; dark: boolean }) => (
+  <motion.div
+    animate={{ opacity: [0.5, 1, 0.5] }}
+    transition={{ duration: 1.4, repeat: Infinity, ease: 'easeInOut' }}
+    style={{ width, height, borderRadius: 6, background: dark ? 'rgba(255,255,255,0.07)' : 'rgba(0,0,0,0.07)' }}
+  />
+)
+
+const UITablePagination = ({
+  count, page, rowsPerPage, onPageChange, dark,
+}: {
+  count: number; page: number; rowsPerPage: number; onPageChange: (p: number) => void; dark: boolean
+}) => {
+  const totalPages = Math.max(1, Math.ceil(count / rowsPerPage))
+  const from = count === 0 ? 0 : page * rowsPerPage + 1
+  const to = Math.min(count, (page + 1) * rowsPerPage)
+  return (
+    <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+      <span style={{ fontSize: 12, color: dark ? 'rgba(255,255,255,0.4)' : 'rgba(0,0,0,0.45)' }}>
+        {from}–{to} of {count}
+      </span>
+      <UIIconButton
+        onClick={() => onPageChange(page - 1)}
+        disabled={page === 0}
+        color={dark ? 'rgba(255,255,255,0.35)' : 'rgba(0,0,0,0.35)'}
+        hoverBg={dark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.05)'}
+      >
+        <ChevronLeftIcon size={18} />
+      </UIIconButton>
+      <UIIconButton
+        onClick={() => onPageChange(page + 1)}
+        disabled={page >= totalPages - 1}
+        color={dark ? 'rgba(255,255,255,0.35)' : 'rgba(0,0,0,0.35)'}
+        hoverBg={dark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.05)'}
+      >
+        <ChevronRightIcon size={18} />
+      </UIIconButton>
+    </div>
+  )
+}
+
+const UIActionButton = ({
+  icon, label, onClick, danger, dark,
+}: {
+  icon: React.ReactNode; label: string; onClick: () => void; danger?: boolean; dark: boolean
+}) => {
+  const [hover, setHover] = useState(false)
+  const borderColor = danger ? 'rgba(239,68,68,0.3)' : (dark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)')
+  const color = danger ? '#ef4444' : (dark ? 'rgba(255,255,255,0.7)' : 'rgba(0,0,0,0.65)')
+  const hoverBg = danger ? 'rgba(239,68,68,0.08)' : (dark ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.04)')
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      onMouseEnter={() => setHover(true)}
+      onMouseLeave={() => setHover(false)}
+      style={{
+        display: 'flex', alignItems: 'center', gap: 6,
+        borderRadius: 8, fontSize: 12, fontWeight: 500,
+        padding: '6px 12px', cursor: 'pointer',
+        border: `0.5px solid ${borderColor}`,
+        color, background: hover ? hoverBg : 'transparent',
+        transition: 'background 0.15s',
+      }}
+    >
+      {icon}
+      {label}
+    </button>
+  )
+}
+
+const UIModal = ({
+  open, onClose, dark, maxWidth = 480, children,
+}: {
+  open: boolean; onClose: () => void; dark: boolean; maxWidth?: number; children: React.ReactNode
+}) => (
+  <AnimatePresence>
+    {open && (
+      <motion.div
+        key="backdrop"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        transition={{ duration: 0.18 }}
+        onClick={onClose}
+        style={{
+          position: 'fixed', inset: 0, zIndex: 1300,
+          background: 'rgba(0,0,0,0.45)', backdropFilter: 'blur(4px)',
+          display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 16,
+        }}
+      >
+        <motion.div
+          key="panel"
+          initial={{ opacity: 0, scale: 0.92, y: 12 }}
+          animate={{ opacity: 1, scale: 1, y: 0 }}
+          exit={{ opacity: 0, scale: 0.92, y: 12 }}
+          transition={{ type: 'spring', stiffness: 400, damping: 28 }}
+          onClick={(e: React.MouseEvent) => e.stopPropagation()}
+          style={{
+            width: '100%', maxWidth, borderRadius: 16, overflow: 'hidden',
+            background: dark ? '#1c1c1e' : '#fff',
+            border: dark ? '0.5px solid rgba(255,255,255,0.08)' : '0.5px solid rgba(0,0,0,0.08)',
+            boxShadow: '0 24px 64px rgba(0,0,0,0.18)',
+          }}
+        >
+          {children}
+        </motion.div>
+      </motion.div>
+    )}
+  </AnimatePresence>
+)
+
+/* ============================================================
+   Feature components
+   ============================================================ */
 const StatCard = ({
   label, value, icon, dark, delay,
 }: {
@@ -255,7 +539,6 @@ const StatCard = ({
   const inView = useInView(ref, { once: true })
   const numVal = typeof value === 'number' ? value : 0
   const [count, setCount] = useState(0)
-
   useEffect(() => {
     if (!inView || numVal === 0) return
     let v = 0
@@ -267,7 +550,6 @@ const StatCard = ({
     }, 20)
     return () => clearInterval(t)
   }, [inView, numVal])
-
   return (
     <motion.div
       ref={ref}
@@ -277,22 +559,22 @@ const StatCard = ({
         dark ? 'bg-[#27272A] border-gray-800' : 'bg-white border-gray-100'
       }`}
     >
-      <Box sx={{
-        width: 44, height: 44, borderRadius: '12px', display: 'flex',
+      <div style={{
+        width: 44, height: 44, borderRadius: 12, display: 'flex',
         alignItems: 'center', justifyContent: 'center', flexShrink: 0,
         background: dark ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.04)',
         color: dark ? 'rgba(255,255,255,0.4)' : 'rgba(0,0,0,0.35)',
       }}>
         {icon}
-      </Box>
-      <Box>
-        <Typography sx={{ fontSize: 11, fontWeight: 500, letterSpacing: '0.07em', textTransform: 'uppercase', color: dark ? 'rgba(255,255,255,0.35)' : 'rgba(0,0,0,0.4)' }}>
+      </div>
+      <div>
+        <p style={{ margin: 0, fontSize: 11, fontWeight: 500, letterSpacing: '0.07em', textTransform: 'uppercase', color: dark ? 'rgba(255,255,255,0.35)' : 'rgba(0,0,0,0.4)' }}>
           {label}
-        </Typography>
-        <Typography sx={{ fontSize: 22, fontWeight: 500, lineHeight: 1.2, color: dark ? '#fff' : '#111' }}>
+        </p>
+        <p style={{ margin: 0, fontSize: 22, fontWeight: 500, lineHeight: 1.2, color: dark ? '#fff' : '#111' }}>
           {typeof value === 'string' ? value : count}
-        </Typography>
-      </Box>
+        </p>
+      </div>
     </motion.div>
   )
 }
@@ -318,82 +600,97 @@ const Pill = ({
 )
 
 type ActionKey = 'hide' | 'unhide' | 'feature' | 'unfeature' | 'review' | 'delete' | 'restore'
-
 const ACTIONS: { key: ActionKey; label: string; icon: React.ReactNode; disabled: (p: AdminPost) => boolean; danger?: boolean }[] = [
-  { key: 'hide',      label: 'Hide post',       icon: <VisibilityOff fontSize="small" />,        disabled: p => p.status === 'hidden' || p.status === 'deleted' },
-  { key: 'unhide',    label: 'Make visible',     icon: <CheckCircleOutline fontSize="small" />,   disabled: p => p.status !== 'hidden' },
-  { key: 'feature',   label: 'Feature post',     icon: <Star fontSize="small" />,                 disabled: p => p.status === 'featured' || p.status === 'deleted' },
-  { key: 'unfeature', label: 'Remove feature',   icon: <CheckCircleOutline fontSize="small" />,   disabled: p => p.status !== 'featured' },
-  { key: 'review',    label: 'Mark for review',  icon: <RateReview fontSize="small" />,           disabled: p => p.status === 'under_review' || p.status === 'deleted' },
-  { key: 'delete',    label: 'Delete post',      icon: <DeleteOutline fontSize="small" />,        disabled: p => p.status === 'deleted', danger: true },
-  { key: 'restore',   label: 'Restore post',     icon: <CheckCircleOutline fontSize="small" />,   disabled: p => p.status !== 'deleted' },
+  { key: 'hide',      label: 'Hide post',      icon: <VisibilityOffIcon size={16} />, disabled: p => p.status === 'hidden' || p.status === 'deleted' },
+  { key: 'unhide',    label: 'Make visible',   icon: <CheckCircleIcon size={16} />,   disabled: p => p.status !== 'hidden' },
+  { key: 'feature',   label: 'Feature post',   icon: <StarIcon size={16} />,          disabled: p => p.status === 'featured' || p.status === 'deleted' },
+  { key: 'unfeature', label: 'Remove feature', icon: <CheckCircleIcon size={16} />,   disabled: p => p.status !== 'featured' },
+  { key: 'review',    label: 'Mark for review', icon: <RateReviewIcon size={16} />,   disabled: p => p.status === 'under_review' || p.status === 'deleted' },
+  { key: 'delete',    label: 'Delete post',    icon: <DeleteIcon size={16} />,        disabled: p => p.status === 'deleted', danger: true },
+  { key: 'restore',   label: 'Restore post',   icon: <CheckCircleIcon size={16} />,   disabled: p => p.status !== 'deleted' },
 ]
 
+/* --- Action menu: kept exactly as before, just rebuilt without MUI --- */
 const ActionMenu = ({
   post, dark, onAction,
 }: {
   post: AdminPost; dark: boolean; onAction: (key: ActionKey, postId: string) => void
 }) => {
-  const [anchor, setAnchor] = useState<null | HTMLElement>(null)
+  const [open, setOpen] = useState(false)
+  const wrapperRef = useRef<HTMLDivElement>(null)
+  useClickOutside(wrapperRef, () => setOpen(false))
+
   return (
-    <>
-      <Tooltip title="Actions" placement="left">
-        <IconButton
-          size="small"
-          onClick={e => setAnchor(e.currentTarget)}
-          sx={{
-            color: dark ? 'rgba(255,255,255,0.3)' : 'rgba(0,0,0,0.3)',
-            '&:hover': { background: dark ? 'rgba(255,255,255,0.07)' : 'rgba(0,0,0,0.05)', color: dark ? '#fff' : '#111' },
-          }}
+    <div ref={wrapperRef} style={{ position: 'relative', display: 'inline-block' }}>
+      <UITooltip title="Actions">
+        <UIIconButton
+          onClick={() => setOpen(o => !o)}
+          color={dark ? 'rgba(255,255,255,0.3)' : 'rgba(0,0,0,0.3)'}
+          hoverBg={dark ? 'rgba(255,255,255,0.07)' : 'rgba(0,0,0,0.05)'}
+          hoverColor={dark ? '#fff' : '#111'}
         >
-          <MoreVert fontSize="small" />
-        </IconButton>
-      </Tooltip>
-      <Menu
-        anchorEl={anchor}
-        open={Boolean(anchor)}
-        onClose={() => setAnchor(null)}
-        PaperProps={{
-          sx: {
-            borderRadius: '12px',
-            border: dark ? '0.5px solid rgba(255,255,255,0.08)' : '0.5px solid rgba(0,0,0,0.08)',
-            background: dark ? '#1f1f1f' : '#fff',
-            boxShadow: 'none',
-            minWidth: 180,
-            mt: 0.5,
-          },
-        }}
-        transformOrigin={{ horizontal: 'right', vertical: 'top' }}
-        anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
-      >
-        {ACTIONS.map(a => (
-          <MenuItem
-            key={a.key}
-            disabled={a.disabled(post)}
-            onClick={() => { onAction(a.key, post._id); setAnchor(null) }}
-            sx={{
-              fontSize: 13, gap: 1.5, py: 1, px: 2,
-              color: a.danger ? '#ef4444' : dark ? 'rgba(255,255,255,0.75)' : 'rgba(0,0,0,0.75)',
-              '&:hover': { background: a.danger ? 'rgba(239,68,68,0.08)' : dark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.04)' },
-              '&.Mui-disabled': { opacity: 0.28 },
+          <MoreVertIcon size={18} />
+        </UIIconButton>
+      </UITooltip>
+      <AnimatePresence>
+        {open && (
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95, y: -4 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 0.95, y: -4 }}
+            transition={{ duration: 0.12 }}
+            style={{
+              position: 'absolute', top: 'calc(100% + 4px)', right: 0, zIndex: 20,
+              minWidth: 180, borderRadius: 12, overflow: 'hidden',
+              border: dark ? '0.5px solid rgba(255,255,255,0.08)' : '0.5px solid rgba(0,0,0,0.08)',
+              background: dark ? '#1f1f1f' : '#fff',
+              boxShadow: '0 12px 32px rgba(0,0,0,0.2)',
+              padding: '4px 0',
             }}
           >
-            {a.icon}
-            {a.label}
-          </MenuItem>
-        ))}
-      </Menu>
-    </>
+            {ACTIONS.map(a => {
+              const disabled = a.disabled(post)
+              return (
+                <button
+                  key={a.key}
+                  type="button"
+                  disabled={disabled}
+                  onClick={() => { onAction(a.key, post._id); setOpen(false) }}
+                  onMouseEnter={e => {
+                    if (disabled) return
+                    e.currentTarget.style.background = a.danger
+                      ? 'rgba(239,68,68,0.08)'
+                      : (dark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.04)')
+                  }}
+                  onMouseLeave={e => { e.currentTarget.style.background = 'transparent' }}
+                  style={{
+                    width: '100%', display: 'flex', alignItems: 'center', gap: 10,
+                    padding: '8px 16px', fontSize: 13, border: 'none', background: 'transparent',
+                    cursor: disabled ? 'default' : 'pointer', textAlign: 'left',
+                    opacity: disabled ? 0.28 : 1,
+                    color: a.danger ? '#ef4444' : (dark ? 'rgba(255,255,255,0.75)' : 'rgba(0,0,0,0.75)'),
+                    transition: 'background 0.12s',
+                  }}
+                >
+                  {a.icon}
+                  {a.label}
+                </button>
+              )
+            })}
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
   )
 }
 
 const StatusBadge = ({ status }: { status: PostStatus }) => {
   const s = STATUS_CONFIG[status]
   return (
-    <Box sx={{ display: 'inline-flex', alignItems: 'center', gap: 0.7, borderRadius: 99, px: 1.2, py: 0.3, background: s.bg }}>
-      <Box sx={{ width: 6, height: 6, borderRadius: '50%', background: s.dot, flexShrink: 0 }} />
-      <Typography sx={{ fontSize: 12, fontWeight: 500, color: s.color, lineHeight: 1 }}>{s.label}</Typography>
-    </Box>
+    <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6, borderRadius: 99, padding: '3px 10px', background: s.bg }}>
+      <span style={{ width: 6, height: 6, borderRadius: '50%', background: s.dot, flexShrink: 0 }} />
+      <span style={{ fontSize: 12, fontWeight: 500, color: s.color, lineHeight: 1 }}>{s.label}</span>
+    </span>
   )
 }
 
@@ -404,122 +701,104 @@ const PostDetailDialog = ({
   onAction: (key: ActionKey, postId: string) => void
 }) => {
   if (!post) return null
+  const totalReports = post.reports.reduce((s, r) => s + r.count, 0)
   return (
-    <Dialog
-      open={open}
-      onClose={onClose}
-      maxWidth="sm"
-      fullWidth
-      PaperProps={{
-        sx: {
-          borderRadius: '16px',
-          background: dark ? '#1c1c1e' : '#fff',
-          border: dark ? '0.5px solid rgba(255,255,255,0.08)' : '0.5px solid rgba(0,0,0,0.08)',
-          boxShadow: 'none',
-        },
-      }}
-    >
-      <DialogTitle sx={{ pb: 0, pt: 2.5, px: 3, display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 1 }}>
-        <Box sx={{ flex: 1, minWidth: 0 }}>
-          <Typography sx={{ fontSize: 15, fontWeight: 500, color: dark ? '#fff' : '#111', lineHeight: 1.4 }}>
+    <UIModal open={open} onClose={onClose} dark={dark} maxWidth={480}>
+      <div style={{ padding: '20px 24px 0', display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 8 }}>
+        <div style={{ flex: 1, minWidth: 0 }}>
+          <p style={{ margin: 0, fontSize: 15, fontWeight: 500, color: dark ? '#fff' : '#111', lineHeight: 1.4 }}>
             {post.title}
-          </Typography>
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mt: 1, flexWrap: 'wrap' }}>
+          </p>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: 8, flexWrap: 'wrap' }}>
             <StatusBadge status={post.status} />
             {post.flagged && (
-              <Box sx={{ display: 'inline-flex', alignItems: 'center', gap: 0.5, borderRadius: 99, px: 1.2, py: 0.3, background: 'rgba(239,68,68,0.1)' }}>
-                <Flag sx={{ fontSize: 11, color: '#dc2626' }} />
-                <Typography sx={{ fontSize: 12, fontWeight: 500, color: '#dc2626', lineHeight: 1 }}>Flagged</Typography>
-              </Box>
+              <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4, borderRadius: 99, padding: '3px 10px', background: 'rgba(239,68,68,0.1)' }}>
+                <span style={{ color: '#dc2626', display: 'flex' }}><FlagIcon size={11} /></span>
+                <span style={{ fontSize: 12, fontWeight: 500, color: '#dc2626', lineHeight: 1 }}>Flagged</span>
+              </span>
             )}
-          </Box>
-        </Box>
-        <IconButton size="small" onClick={onClose} sx={{ color: dark ? 'rgba(255,255,255,0.4)' : 'rgba(0,0,0,0.35)', flexShrink: 0 }}>
-          <CloseOutlined fontSize="small" />
-        </IconButton>
-      </DialogTitle>
+          </div>
+        </div>
+        <UIIconButton onClick={onClose} color={dark ? 'rgba(255,255,255,0.4)' : 'rgba(0,0,0,0.35)'}>
+          <CloseIcon size={18} />
+        </UIIconButton>
+      </div>
 
-      <DialogContent sx={{ px: 3, pt: 2, pb: 1 }}>
-        <Box sx={{ display: 'flex', gap: 2, mb: 2 }}>
+      <div style={{ padding: '16px 24px 8px' }}>
+        <div style={{ display: 'flex', gap: 8, marginBottom: 16 }}>
           {(['views', 'likes'] as const).map(k => (
-            <Box key={k} sx={{ flex: 1, borderRadius: '10px', background: dark ? 'rgba(255,255,255,0.04)' : 'rgba(0,0,0,0.03)', p: 1.5, textAlign: 'center' }}>
-              <Typography sx={{ fontSize: 11, color: dark ? 'rgba(255,255,255,0.3)' : 'rgba(0,0,0,0.35)', textTransform: 'uppercase', letterSpacing: '0.06em', fontWeight: 500 }}>{k}</Typography>
-              <Typography sx={{ fontSize: 18, fontWeight: 500, color: dark ? '#fff' : '#111' }}>{formatCount(post[k])}</Typography>
-            </Box>
+            <div key={k} style={{ flex: 1, borderRadius: 10, background: dark ? 'rgba(255,255,255,0.04)' : 'rgba(0,0,0,0.03)', padding: 12, textAlign: 'center' }}>
+              <p style={{ margin: 0, fontSize: 11, color: dark ? 'rgba(255,255,255,0.3)' : 'rgba(0,0,0,0.35)', textTransform: 'uppercase', letterSpacing: '0.06em', fontWeight: 500 }}>{k}</p>
+              <p style={{ margin: 0, fontSize: 18, fontWeight: 500, color: dark ? '#fff' : '#111' }}>{formatCount(post[k])}</p>
+            </div>
           ))}
-          <Box sx={{ flex: 1, borderRadius: '10px', background: dark ? 'rgba(255,255,255,0.04)' : 'rgba(0,0,0,0.03)', p: 1.5, textAlign: 'center' }}>
-            <Typography sx={{ fontSize: 11, color: dark ? 'rgba(255,255,255,0.3)' : 'rgba(0,0,0,0.35)', textTransform: 'uppercase', letterSpacing: '0.06em', fontWeight: 500 }}>Reports</Typography>
-            <Typography sx={{ fontSize: 18, fontWeight: 500, color: post.reports.length > 0 ? '#dc2626' : dark ? '#fff' : '#111' }}>
-              {post.reports.reduce((s, r) => s + r.count, 0)}
-            </Typography>
-          </Box>
-        </Box>
+          <div style={{ flex: 1, borderRadius: 10, background: dark ? 'rgba(255,255,255,0.04)' : 'rgba(0,0,0,0.03)', padding: 12, textAlign: 'center' }}>
+            <p style={{ margin: 0, fontSize: 11, color: dark ? 'rgba(255,255,255,0.3)' : 'rgba(0,0,0,0.35)', textTransform: 'uppercase', letterSpacing: '0.06em', fontWeight: 500 }}>Reports</p>
+            <p style={{ margin: 0, fontSize: 18, fontWeight: 500, color: totalReports > 0 ? '#dc2626' : (dark ? '#fff' : '#111') }}>
+              {totalReports}
+            </p>
+          </div>
+        </div>
 
-        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1.5 }}>
-          <Box sx={{ display: 'flex', gap: 1, alignItems: 'center' }}>
-            <Avatar sx={{ width: 28, height: 28, fontSize: 12, fontWeight: 500, bgcolor: avatarBg(post.author.name), flexShrink: 0 }}>
-              {getInitials(post.author.name)}
-            </Avatar>
-            <Box>
-              <Typography sx={{ fontSize: 13, fontWeight: 500, color: dark ? '#fff' : '#111' }}>{post.author.name}</Typography>
-              <Typography sx={{ fontSize: 11, color: dark ? 'rgba(255,255,255,0.35)' : 'rgba(0,0,0,0.4)' }}>Author</Typography>
-            </Box>
-          </Box>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+          <div style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
+            <UIAvatar name={post.author.name} bg={avatarBg(post.author.name)} size={28} fontSize={12} />
+            <div>
+              <p style={{ margin: 0, fontSize: 13, fontWeight: 500, color: dark ? '#fff' : '#111' }}>{post.author.name}</p>
+              <p style={{ margin: 0, fontSize: 11, color: dark ? 'rgba(255,255,255,0.35)' : 'rgba(0,0,0,0.4)' }}>Author</p>
+            </div>
+          </div>
 
           {post.reports.length > 0 && (
-            <Box sx={{ borderRadius: '10px', border: '0.5px solid rgba(239,68,68,0.2)', background: 'rgba(239,68,68,0.05)', p: 1.5 }}>
-              <Typography sx={{ fontSize: 12, fontWeight: 500, color: '#dc2626', mb: 1 }}>Reports received</Typography>
-              <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.8 }}>
+            <div style={{ borderRadius: 10, border: '0.5px solid rgba(239,68,68,0.2)', background: 'rgba(239,68,68,0.05)', padding: 12 }}>
+              <p style={{ margin: '0 0 8px', fontSize: 12, fontWeight: 500, color: '#dc2626' }}>Reports received</p>
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
                 {post.reports.map(r => {
                   const s = REPORT_CHIP_STYLE[r.reason]
                   return (
-                    <Box key={r.reason} sx={{ display: 'inline-flex', borderRadius: 99, px: 1.2, py: 0.4, background: s.bg, border: `0.5px solid ${s.border}` }}>
-                      <Typography sx={{ fontSize: 12, fontWeight: 500, color: s.color }}>{REPORT_LABELS[r.reason]} · {r.count}</Typography>
-                    </Box>
+                    <span key={r.reason} style={{ display: 'inline-flex', borderRadius: 99, padding: '4px 10px', background: s.bg, border: `0.5px solid ${s.border}` }}>
+                      <span style={{ fontSize: 12, fontWeight: 500, color: s.color }}>{REPORT_LABELS[r.reason]} · {r.count}</span>
+                    </span>
                   )
                 })}
-              </Box>
-            </Box>
+              </div>
+            </div>
           )}
-        </Box>
-      </DialogContent>
+        </div>
+      </div>
 
-      <DialogActions sx={{ px: 3, py: 2, gap: 1, flexWrap: 'wrap', justifyContent: 'flex-end' }}>
+      <div style={{ padding: '16px 24px', display: 'flex', flexWrap: 'wrap', gap: 8, justifyContent: 'flex-end' }}>
         {ACTIONS.filter(a => !a.disabled(post)).map(a => (
-          <Button
+          <UIActionButton
             key={a.key}
-            size="small"
-            startIcon={a.icon}
+            icon={a.icon}
+            label={a.label}
+            danger={a.danger}
+            dark={dark}
             onClick={() => { onAction(a.key, post._id); onClose() }}
-            sx={{
-              borderRadius: '8px',
-              fontSize: 12,
-              fontWeight: 500,
-              px: 1.5,
-              py: 0.6,
-              textTransform: 'none',
-              border: a.danger ? '0.5px solid rgba(239,68,68,0.3)' : dark ? '0.5px solid rgba(255,255,255,0.1)' : '0.5px solid rgba(0,0,0,0.1)',
-              color: a.danger ? '#ef4444' : dark ? 'rgba(255,255,255,0.7)' : 'rgba(0,0,0,0.65)',
-              background: 'transparent',
-              '&:hover': { background: a.danger ? 'rgba(239,68,68,0.08)' : dark ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.04)' },
-            }}
-          >
-            {a.label}
-          </Button>
+          />
         ))}
-      </DialogActions>
-    </Dialog>
+      </div>
+    </UIModal>
   )
 }
 
+const cellStyle = (dark: boolean): React.CSSProperties => ({
+  padding: '11px 16px',
+  borderBottom: dark ? '0.5px solid rgba(255,255,255,0.06)' : '0.5px solid rgba(0,0,0,0.05)',
+  fontSize: 13,
+  color: dark ? 'rgba(255,255,255,0.75)' : 'rgba(0,0,0,0.7)',
+  verticalAlign: 'middle',
+})
+
 const RowSkeleton = ({ dark }: { dark: boolean }) => (
-  <TableRow sx={{ borderBottom: dark ? '0.5px solid rgba(255,255,255,0.06)' : '0.5px solid rgba(0,0,0,0.05)' }}>
+  <tr style={{ borderBottom: dark ? '0.5px solid rgba(255,255,255,0.06)' : '0.5px solid rgba(0,0,0,0.06)' }}>
     {[200, 80, 80, 120, 50, 60].map((w, i) => (
-      <TableCell key={i} sx={{ py: 1.8, px: 2 }}>
-        <Skeleton variant="text" width={w} height={16} sx={{ bgcolor: dark ? 'rgba(255,255,255,0.07)' : 'rgba(0,0,0,0.07)' }} />
-      </TableCell>
+      <td key={i} style={{ padding: '14px 16px' }}>
+        <UISkeleton width={w} height={16} dark={dark} />
+      </td>
     ))}
-  </TableRow>
+  </tr>
 )
 
 const AnimatedRow = ({
@@ -531,15 +810,9 @@ const AnimatedRow = ({
 }) => {
   const ref = useRef(null)
   const inView = useInView(ref, { once: true, margin: '-40px' })
-
-  const cellSx = {
-    py: 1.4, px: 2,
-    borderBottom: dark ? '0.5px solid rgba(255,255,255,0.06)' : '0.5px solid rgba(0,0,0,0.05)',
-    fontSize: 13,
-    color: dark ? 'rgba(255,255,255,0.75)' : 'rgba(0,0,0,0.7)',
-  }
-
+  const cellSx = cellStyle(dark)
   const totalReports = post.reports.reduce((s, r) => s + r.count, 0)
+  const [titleHover, setTitleHover] = useState(false)
 
   return (
     <motion.tr
@@ -550,85 +823,91 @@ const AnimatedRow = ({
       custom={index % 5}
       style={{ display: 'table-row' }}
     >
-      <TableCell sx={{ ...cellSx, minWidth: 220 }}>
-        <Box sx={{ display: 'flex', alignItems: 'flex-start', gap: 1.5 }}>
+      <td style={{ ...cellSx, minWidth: 220 }}>
+        <div style={{ display: 'flex', alignItems: 'flex-start', gap: 10 }}>
           {post.flagged && (
-            <Tooltip title="Flagged for review">
-              <Flag sx={{ fontSize: 14, color: '#ef4444', mt: 0.3, flexShrink: 0 }} />
-            </Tooltip>
+            <UITooltip title="Flagged for review">
+              <span style={{ color: '#ef4444', display: 'flex', marginTop: 3 }}>
+                <FlagIcon size={14} />
+              </span>
+            </UITooltip>
           )}
-          <Box sx={{ minWidth: 0 }}>
-            <Typography
-              sx={{ fontSize: 13, fontWeight: 500, color: dark ? '#fff' : '#111', lineHeight: 1.35, cursor: 'pointer', '&:hover': { color: '#2563EB' }, transition: 'color .15s' }}
+          <div style={{ minWidth: 0 }}>
+            <p
               onClick={() => onPreview(post)}
+              onMouseEnter={() => setTitleHover(true)}
+              onMouseLeave={() => setTitleHover(false)}
+              style={{
+                margin: 0, fontSize: 13, fontWeight: 500, lineHeight: 1.35, cursor: 'pointer',
+                color: titleHover ? '#2563EB' : (dark ? '#fff' : '#111'), transition: 'color 0.15s',
+              }}
             >
               {post.title}
-            </Typography>
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.8, mt: 0.3 }}>
-              <Avatar sx={{ width: 16, height: 16, fontSize: 9, fontWeight: 500, bgcolor: avatarBg(post.author.name) }}>
-                {getInitials(post.author.name)}
-              </Avatar>
-              <Typography sx={{ fontSize: 11, color: dark ? 'rgba(255,255,255,0.35)' : 'rgba(0,0,0,0.4)' }}>
+            </p>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginTop: 3 }}>
+              <UIAvatar name={post.author.name} bg={avatarBg(post.author.name)} size={16} fontSize={9} />
+              <span style={{ fontSize: 11, color: dark ? 'rgba(255,255,255,0.35)' : 'rgba(0,0,0,0.4)' }}>
                 {post.author.name}
-              </Typography>
-            </Box>
-          </Box>
-        </Box>
-      </TableCell>
+              </span>
+            </div>
+          </div>
+        </div>
+      </td>
 
-      <TableCell sx={cellSx}>
-        <StatusBadge status={post.status} />
-      </TableCell>
+      <td style={cellSx}><StatusBadge status={post.status} /></td>
 
-      <TableCell sx={cellSx}>
-        <Typography sx={{ fontSize: 12, color: dark ? 'rgba(255,255,255,0.35)' : 'rgba(0,0,0,0.4)' }}>
+      <td style={cellSx}>
+        <span style={{ fontSize: 12, color: dark ? 'rgba(255,255,255,0.35)' : 'rgba(0,0,0,0.4)' }}>
           {post.category}
-        </Typography>
-      </TableCell>
+        </span>
+      </td>
 
-      <TableCell sx={{ ...cellSx, minWidth: 160 }}>
+      <td style={{ ...cellSx, minWidth: 160 }}>
         {post.reports.length === 0 ? (
-          <Typography sx={{ fontSize: 12, color: dark ? 'rgba(255,255,255,0.2)' : 'rgba(0,0,0,0.25)' }}>—</Typography>
+          <span style={{ fontSize: 12, color: dark ? 'rgba(255,255,255,0.2)' : 'rgba(0,0,0,0.25)' }}>—</span>
         ) : (
-          <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4 }}>
             {post.reports.map(r => {
               const s = REPORT_CHIP_STYLE[r.reason]
               return (
-                <Box key={r.reason} sx={{ display: 'inline-flex', borderRadius: 99, px: 1, py: 0.3, background: s.bg, border: `0.5px solid ${s.border}` }}>
-                  <Typography sx={{ fontSize: 11, fontWeight: 500, color: s.color }}>{REPORT_LABELS[r.reason]} · {r.count}</Typography>
-                </Box>
+                <span key={r.reason} style={{ display: 'inline-flex', borderRadius: 99, padding: '3px 8px', background: s.bg, border: `0.5px solid ${s.border}` }}>
+                  <span style={{ fontSize: 11, fontWeight: 500, color: s.color }}>{REPORT_LABELS[r.reason]} · {r.count}</span>
+                </span>
               )
             })}
-          </Box>
+          </div>
         )}
-      </TableCell>
+      </td>
 
-      <TableCell sx={{ ...cellSx, textAlign: 'center' }}>
+      <td style={{ ...cellSx, textAlign: 'center' }}>
         {totalReports > 0 ? (
-          <Typography sx={{ fontSize: 13, fontWeight: 500, color: totalReports > 10 ? '#dc2626' : '#b45309' }}>{totalReports}</Typography>
+          <span style={{ fontSize: 13, fontWeight: 500, color: totalReports > 10 ? '#dc2626' : '#b45309' }}>{totalReports}</span>
         ) : (
-          <Typography sx={{ fontSize: 12, color: dark ? 'rgba(255,255,255,0.2)' : 'rgba(0,0,0,0.25)' }}>0</Typography>
+          <span style={{ fontSize: 12, color: dark ? 'rgba(255,255,255,0.2)' : 'rgba(0,0,0,0.25)' }}>0</span>
         )}
-      </TableCell>
+      </td>
 
-      <TableCell sx={{ ...cellSx, fontSize: 12, color: dark ? 'rgba(255,255,255,0.3)' : 'rgba(0,0,0,0.35)', whiteSpace: 'nowrap' }}>
+      <td style={{ ...cellSx, fontSize: 12, color: dark ? 'rgba(255,255,255,0.3)' : 'rgba(0,0,0,0.35)', whiteSpace: 'nowrap' }}>
         {new Date(post.createdAt).toLocaleDateString('en-US', { day: '2-digit', month: 'short', year: 'numeric' })}
-      </TableCell>
+      </td>
 
-      <TableCell sx={{ ...cellSx, textAlign: 'right', width: 48 }}>
+      <td style={{ ...cellSx, textAlign: 'right', width: 48 }}>
         <ActionMenu post={post} dark={dark} onAction={onAction} />
-      </TableCell>
+      </td>
     </motion.tr>
   )
 }
 
+/* ============================================================
+   Page
+   ============================================================ */
 const AdminPostModeration = () => {
   const { globalData } = useGlobalDataContext()
   const { showConfirmSwal } = useSwal()
   const dark = !globalData.themeGlobal
 
   const [posts, setPosts] = useState<AdminPost[]>(FAKE_POSTS)
-  const [loading, setLoading] = useState(false)
+  const [loading] = useState(false)
   const [search, setSearch] = useState('')
   const [statusFilter, setStatusFilter] = useState<PostStatus | 'all'>('all')
   const [flaggedOnly, setFlaggedOnly] = useState(false)
@@ -668,76 +947,59 @@ const AdminPostModeration = () => {
     }))
   }
 
-  const surface = dark
-    ? { background: '#27272A', border: '0.5px solid rgba(255,255,255,0.08)' }
-    : { background: '#fff', border: '0.5px solid rgba(0,0,0,0.07)' }
+  const surfaceClass = dark ? 'bg-[#27272A] border-gray-800' : 'bg-white border-gray-100'
 
-  const headSx = {
-    fontSize: 11, fontWeight: 500, letterSpacing: '0.07em', textTransform: 'uppercase' as const,
+  const headCellStyle: React.CSSProperties = {
+    fontSize: 11, fontWeight: 500, letterSpacing: '0.07em', textTransform: 'uppercase',
     color: dark ? 'rgba(255,255,255,0.3)' : 'rgba(0,0,0,0.35)',
     borderBottom: dark ? '0.5px solid rgba(255,255,255,0.08)' : '0.5px solid rgba(0,0,0,0.07)',
-    py: 1.5, px: 2, background: 'transparent',
+    padding: '12px 16px', background: 'transparent', textAlign: 'left',
   }
 
   return (
     <div className={`min-h-screen transition-colors duration-300 ${dark ? 'bg-[#0f0f0f]' : 'bg-gray-50'}`}>
-
       <main className="max-w-screen-xl mx-auto px-4 py-10 sm:px-6 lg:px-10 space-y-7">
 
         <motion.div initial="hidden" animate="visible" variants={fadeUp} custom={0}>
-          <Typography sx={{ fontSize: 20, fontWeight: 500, color: dark ? '#fff' : '#111' }}>
+          <p style={{ margin: 0, fontSize: 20, fontWeight: 500, color: dark ? '#fff' : '#111' }}>
             Post moderation
-          </Typography>
-          <Typography sx={{ fontSize: 13, color: dark ? 'rgba(255,255,255,0.35)' : 'rgba(0,0,0,0.4)', mt: 0.5 }}>
+          </p>
+          <p style={{ margin: '4px 0 0', fontSize: 13, color: dark ? 'rgba(255,255,255,0.35)' : 'rgba(0,0,0,0.4)' }}>
             Hide, delete, feature or send posts to review. Manage reports and prohibited content.
-          </Typography>
+          </p>
         </motion.div>
 
         <motion.div
           initial="hidden" animate="visible" variants={stagger}
           className="grid grid-cols-2 lg:grid-cols-4 gap-4"
         >
-          <StatCard label="Total posts"    value={stats.total}       icon={<Article />}               dark={dark} delay={0} />
-          <StatCard label="Flagged"        value={stats.flagged}     icon={<Flag />}                  dark={dark} delay={1} />
-          <StatCard label="Under review"   value={stats.underReview} icon={<RateReview />}            dark={dark} delay={2} />
-          <StatCard label="Deleted"        value={stats.deleted}     icon={<DeleteOutline />}         dark={dark} delay={3} />
+          <StatCard label="Total posts"  value={stats.total}       icon={<ArticleIcon size={20} />}    dark={dark} delay={0} />
+          <StatCard label="Flagged"      value={stats.flagged}     icon={<FlagIcon size={20} />}       dark={dark} delay={1} />
+          <StatCard label="Under review" value={stats.underReview} icon={<RateReviewIcon size={20} />} dark={dark} delay={2} />
+          <StatCard label="Deleted"      value={stats.deleted}     icon={<DeleteIcon size={20} />}     dark={dark} delay={3} />
         </motion.div>
 
         <motion.div
           initial="hidden" animate="visible" variants={fadeUp} custom={1}
-          style={{ borderRadius: 16, ...surface, padding: '16px 20px' }}
-          className="space-y-3"
+          className={`rounded-2xl border ${surfaceClass}`}
+          style={{ padding: '16px 20px', display: 'flex', flexDirection: 'column', gap: 12 }}
         >
-          <TextField
-            fullWidth
-            size="small"
-            placeholder="Search by title or author…"
+          <UITextField
             value={search}
             onChange={e => { setSearch(e.target.value); setPage(0) }}
-            InputProps={{
-              startAdornment: (
-                <InputAdornment position="start">
-                  <Search sx={{ fontSize: 18, color: dark ? 'rgba(255,255,255,0.3)' : 'rgba(0,0,0,0.3)' }} />
-                </InputAdornment>
-              ),
-            }}
-            sx={{
-              '& .MuiOutlinedInput-root': {
-                borderRadius: '10px', fontSize: 13,
-                background: dark ? 'rgba(255,255,255,0.04)' : 'rgba(0,0,0,0.03)',
-                color: dark ? '#fff' : '#111',
-                '& fieldset': { border: dark ? '0.5px solid rgba(255,255,255,0.1)' : '0.5px solid rgba(0,0,0,0.12)' },
-                '&:hover fieldset': { border: dark ? '0.5px solid rgba(255,255,255,0.2)' : '0.5px solid rgba(0,0,0,0.22)' },
-                '&.Mui-focused fieldset': { border: '1px solid #2563EB' },
-              },
-              '& input::placeholder': { color: dark ? 'rgba(255,255,255,0.3)' : 'rgba(0,0,0,0.35)', opacity: 1 },
-            }}
+            dark={dark}
+            placeholder="Search by title or author…"
+            startAdornment={
+              <span style={{ color: dark ? 'rgba(255,255,255,0.3)' : 'rgba(0,0,0,0.3)', display: 'flex' }}>
+                <SearchIcon size={18} />
+              </span>
+            }
           />
 
-          <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.8, alignItems: 'center' }}>
-            <Typography sx={{ fontSize: 11, fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.06em', color: dark ? 'rgba(255,255,255,0.3)' : 'rgba(0,0,0,0.35)', mr: 0.5 }}>
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, alignItems: 'center' }}>
+            <span style={{ fontSize: 11, fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.06em', color: dark ? 'rgba(255,255,255,0.3)' : 'rgba(0,0,0,0.35)', marginRight: 4 }}>
               Status:
-            </Typography>
+            </span>
             {(['all', 'published', 'hidden', 'featured', 'under_review', 'deleted'] as (PostStatus | 'all')[]).map(s => (
               <Pill
                 key={s}
@@ -747,46 +1009,51 @@ const AdminPostModeration = () => {
                 onClick={() => { setStatusFilter(s); setPage(0) }}
               />
             ))}
-            <Box sx={{ width: '1px', height: 16, background: dark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)', mx: 1 }} />
+            <span style={{ width: 1, height: 16, background: dark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)', margin: '0 8px' }} />
             <Pill
               label="Flagged only"
               active={flaggedOnly}
               dark={dark}
               onClick={() => { setFlaggedOnly(p => !p); setPage(0) }}
             />
-          </Box>
+          </div>
         </motion.div>
 
         <motion.div
           initial="hidden" animate="visible" variants={fadeUp} custom={2}
-          style={{ borderRadius: 16, overflow: 'hidden', ...surface }}
+          className={`rounded-2xl border ${surfaceClass}`}
+          style={{ overflow: 'hidden' }}
         >
-          <TableContainer sx={{ background: 'transparent' }}>
-            <Table sx={{ tableLayout: 'fixed' }}>
-              <TableHead>
-                <TableRow>
-                  <TableCell sx={{ ...headSx, width: '28%' }}>Post</TableCell>
-                  <TableCell sx={{ ...headSx, width: '13%' }}>Status</TableCell>
-                  <TableCell sx={{ ...headSx, width: '12%' }}>Category</TableCell>
-                  <TableCell sx={{ ...headSx, width: '26%' }}>Reports</TableCell>
-                  <TableCell sx={{ ...headSx, width: '8%', textAlign: 'center' }}>Total</TableCell>
-                  <TableCell sx={{ ...headSx, width: '9%' }}>Date</TableCell>
-                  <TableCell sx={{ ...headSx, width: '4%' }} />
-                </TableRow>
-              </TableHead>
-              <TableBody>
+          <div style={{ overflowX: 'auto' }}>
+            <table style={{ width: '100%', borderCollapse: 'collapse', tableLayout: 'fixed' }}>
+              <thead>
+                <tr>
+                  <th style={{ ...headCellStyle, width: '28%' }}>Post</th>
+                  <th style={{ ...headCellStyle, width: '13%' }}>Status</th>
+                  <th style={{ ...headCellStyle, width: '12%' }}>Category</th>
+                  <th style={{ ...headCellStyle, width: '26%' }}>Reports</th>
+                  <th style={{ ...headCellStyle, width: '8%', textAlign: 'center' }}>Total</th>
+                  <th style={{ ...headCellStyle, width: '9%' }}>Date</th>
+                  <th style={{ ...headCellStyle, width: '4%' }} />
+                </tr>
+              </thead>
+              <tbody>
                 {loading
                   ? Array.from({ length: 5 }).map((_, i) => <RowSkeleton key={i} dark={dark} />)
                   : paginated.length === 0
                     ? (
-                      <TableRow>
-                        <TableCell colSpan={7} sx={{ textAlign: 'center', py: 8, border: 'none' }}>
-                          <Search sx={{ fontSize: 32, color: dark ? 'rgba(255,255,255,0.15)' : 'rgba(0,0,0,0.15)', mb: 1 }} />
-                          <Typography sx={{ fontSize: 13, color: dark ? 'rgba(255,255,255,0.3)' : 'rgba(0,0,0,0.35)' }}>
-                            No posts found
-                          </Typography>
-                        </TableCell>
-                      </TableRow>
+                      <tr>
+                        <td colSpan={7} style={{ textAlign: 'center', padding: '48px 16px', border: 'none' }}>
+                          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 8 }}>
+                            <span style={{ color: dark ? 'rgba(255,255,255,0.15)' : 'rgba(0,0,0,0.15)' }}>
+                              <SearchIcon size={32} />
+                            </span>
+                            <span style={{ fontSize: 13, color: dark ? 'rgba(255,255,255,0.3)' : 'rgba(0,0,0,0.35)' }}>
+                              No posts found
+                            </span>
+                          </div>
+                        </td>
+                      </tr>
                     )
                     : paginated.map((p, i) => (
                       <AnimatedRow
@@ -799,38 +1066,28 @@ const AdminPostModeration = () => {
                       />
                     ))
                 }
-              </TableBody>
-            </Table>
-          </TableContainer>
+              </tbody>
+            </table>
+          </div>
 
-          <Box sx={{
-            borderTop: dark ? '0.5px solid rgba(255,255,255,0.06)' : '0.5px solid rgba(0,0,0,0.06)',
-            display: 'flex', alignItems: 'center', justifyContent: 'space-between', px: 2, py: 1,
-          }}>
-            <Typography sx={{ fontSize: 12, color: dark ? 'rgba(255,255,255,0.3)' : 'rgba(0,0,0,0.35)' }}>
+          <div
+            style={{
+              borderTop: dark ? '0.5px solid rgba(255,255,255,0.06)' : '0.5px solid rgba(0,0,0,0.06)',
+              display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+              padding: '8px 16px',
+            }}
+          >
+            <span style={{ fontSize: 12, color: dark ? 'rgba(255,255,255,0.3)' : 'rgba(0,0,0,0.35)' }}>
               {filtered.length} post{filtered.length !== 1 ? 's' : ''}
-            </Typography>
-            <TablePagination
-              component="div"
+            </span>
+            <UITablePagination
               count={filtered.length}
               page={page}
-              onPageChange={(_, p) => setPage(p)}
               rowsPerPage={rowsPerPage}
-              rowsPerPageOptions={[]}
-              sx={{
-                color: dark ? 'rgba(255,255,255,0.4)' : 'rgba(0,0,0,0.45)',
-                fontSize: 12, border: 'none',
-                '& .MuiTablePagination-toolbar': { minHeight: 36, padding: 0 },
-                '& .MuiTablePagination-displayedRows': { fontSize: 12, margin: 0 },
-                '& .MuiIconButton-root': {
-                  color: dark ? 'rgba(255,255,255,0.35)' : 'rgba(0,0,0,0.35)',
-                  padding: '4px', borderRadius: '8px',
-                  '&:hover': { background: dark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.05)' },
-                  '&.Mui-disabled': { opacity: 0.2 },
-                },
-              }}
+              onPageChange={setPage}
+              dark={dark}
             />
-          </Box>
+          </div>
         </motion.div>
 
         <PostDetailDialog
@@ -840,7 +1097,6 @@ const AdminPostModeration = () => {
           onClose={() => setPreview(null)}
           onAction={handleAction}
         />
-
       </main>
     </div>
   )

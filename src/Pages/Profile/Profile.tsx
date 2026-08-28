@@ -48,7 +48,6 @@ const Profile = () => {
   const [loading, setLoading] = useState(false);
   const [profileLoading, setProfileLoading] = useState(true);
   const [recommendedUsers, setRecommendedUsers] = useState<any[]>([]);
-  const [usersLoading, setUsersLoading] = useState(false);
   const [shuffledUsers, setShuffledUsers] = useState<any[]>([]);
   const [page, setPage] = useState(0);
   const [hasMore, setHasMore] = useState(true);

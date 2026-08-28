@@ -1,23 +1,5 @@
 import React, { useState, useRef } from 'react'
 import { motion, AnimatePresence, useInView } from 'framer-motion'
-
-import {
-  Box, Typography, TextField, IconButton, Tooltip,
-  Dialog, DialogTitle, DialogContent, DialogActions,
-  Button, InputAdornment, Skeleton,
-} from '@mui/material'
-
-import {
-  Add,
-  Search,
-  EditOutlined,
-  DeleteOutline,
-  CloseOutlined,
-  Category,
-  CheckOutlined,
-  ArticleOutlined,
-} from '@mui/icons-material'
-
 import useGlobalDataContext from '../../context/hooks/useGlobalDataContext'
 import { useSwal } from '../../hooks/useSwal'
 import { AdminCategory, DialogMode, FormState } from '../../interfaces/admin.interfaces'
@@ -26,12 +8,262 @@ import { fadeUp, stagger } from '../../utils/animationsUtils'
 
 const EMPTY_FORM: FormState = { name: '', description: '', color: PALETTE[0] }
 
+/* ============================================================
+   Icons (replacing @mui/icons-material)
+   ============================================================ */
+const IconBase = ({ children, size = 20 }: { children: React.ReactNode; size?: number }) => (
+  <svg
+    viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}
+    strokeLinecap="round" strokeLinejoin="round"
+    style={{ width: size, height: size, display: 'block', flexShrink: 0 }}
+  >
+    {children}
+  </svg>
+)
+const AddIcon = ({ size }: { size?: number }) => (
+  <IconBase size={size}><line x1="12" y1="5" x2="12" y2="19" /><line x1="5" y1="12" x2="19" y2="12" /></IconBase>
+)
+const SearchIcon = ({ size }: { size?: number }) => (
+  <IconBase size={size}><circle cx="11" cy="11" r="7" /><line x1="21" y1="21" x2="16.65" y2="16.65" /></IconBase>
+)
+const EditIcon = ({ size }: { size?: number }) => (
+  <IconBase size={size}>
+    <path d="M12 20h9" />
+    <path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z" />
+  </IconBase>
+)
+const DeleteIcon = ({ size }: { size?: number }) => (
+  <IconBase size={size}>
+    <polyline points="3 6 5 6 21 6" />
+    <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6" />
+    <path d="M10 11v6" /><path d="M14 11v6" />
+    <path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2" />
+  </IconBase>
+)
+const CloseIcon = ({ size }: { size?: number }) => (
+  <IconBase size={size}><line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" /></IconBase>
+)
+const CategoryIcon = ({ size }: { size?: number }) => (
+  <IconBase size={size}>
+    <path d="M20.59 13.41 12 22l-9-9V3h10l7.59 10.41Z" />
+    <circle cx="7" cy="7.5" r="1.1" fill="currentColor" stroke="none" />
+  </IconBase>
+)
+const CheckIcon = ({ size }: { size?: number }) => (
+  <IconBase size={size}><polyline points="20 6 9 17 4 12" /></IconBase>
+)
+const ArticleIcon = ({ size }: { size?: number }) => (
+  <IconBase size={size}>
+    <rect x="4" y="4" width="16" height="16" rx="2" />
+    <line x1="8" y1="9" x2="16" y2="9" />
+    <line x1="8" y1="13" x2="16" y2="13" />
+    <line x1="8" y1="17" x2="12" y2="17" />
+  </IconBase>
+)
+
+/* ============================================================
+   Small reusable UI primitives (replacing @mui/material)
+   ============================================================ */
+const UITooltip = ({ title, children }: { title: string; children: React.ReactNode }) => {
+  const [show, setShow] = useState(false)
+  return (
+    <span
+      style={{ position: 'relative', display: 'inline-flex' }}
+      onMouseEnter={() => setShow(true)}
+      onMouseLeave={() => setShow(false)}
+    >
+      {children}
+      <AnimatePresence>
+        {show && (
+          <motion.span
+            initial={{ opacity: 0, y: 4 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 4 }}
+            transition={{ duration: 0.12 }}
+            style={{
+              position: 'absolute', bottom: '100%', left: '50%', transform: 'translateX(-50%)',
+              marginBottom: 6, padding: '4px 8px', borderRadius: 6,
+              background: '#111', color: '#fff', fontSize: 11, fontWeight: 500,
+              whiteSpace: 'nowrap', pointerEvents: 'none', zIndex: 10,
+            }}
+          >
+            {title}
+          </motion.span>
+        )}
+      </AnimatePresence>
+    </span>
+  )
+}
+
+const UIIconButton = ({
+  onClick, children, color, hoverBg, hoverColor,
+}: {
+  onClick?: (e: React.MouseEvent) => void; children: React.ReactNode
+  color?: string; hoverBg?: string; hoverColor?: string
+}) => {
+  const [hover, setHover] = useState(false)
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      onMouseEnter={() => setHover(true)}
+      onMouseLeave={() => setHover(false)}
+      style={{
+        width: 28, height: 28, borderRadius: 8, border: 'none', cursor: 'pointer',
+        display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 0,
+        background: hover ? (hoverBg ?? 'rgba(0,0,0,0.05)') : 'transparent',
+        color: hover ? (hoverColor ?? color) : color,
+        transition: 'background 0.15s, color 0.15s',
+      }}
+    >
+      {children}
+    </button>
+  )
+}
+
+type UIButtonVariant = 'primary' | 'outline' | 'danger'
+const UIButton = ({
+  onClick, children, variant = 'primary', dark, disabled, fullWidth, size = 'small',
+}: {
+  onClick?: () => void; children: React.ReactNode; variant?: UIButtonVariant
+  dark: boolean; disabled?: boolean; fullWidth?: boolean; size?: 'small' | 'medium'
+}) => {
+  const [hover, setHover] = useState(false)
+  const styles: Record<UIButtonVariant, { bg: string; bgHover: string; color: string; border?: string }> = {
+    primary: { bg: '#2563EB', bgHover: '#1d4ed8', color: '#fff' },
+    danger: { bg: '#ef4444', bgHover: '#dc2626', color: '#fff' },
+    outline: {
+      bg: 'transparent',
+      bgHover: dark ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.04)',
+      color: dark ? 'rgba(255,255,255,0.5)' : 'rgba(0,0,0,0.5)',
+      border: dark ? '0.5px solid rgba(255,255,255,0.1)' : '0.5px solid rgba(0,0,0,0.1)',
+    },
+  }
+  const s = styles[variant]
+  const disabledBg = variant === 'primary' ? 'rgba(37,99,235,0.3)' : s.bg
+  const disabledColor = variant === 'primary' ? 'rgba(255,255,255,0.4)' : s.color
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      disabled={disabled}
+      onMouseEnter={() => setHover(true)}
+      onMouseLeave={() => setHover(false)}
+      style={{
+        borderRadius: 8, fontSize: 13, fontWeight: 500, textTransform: 'none',
+        cursor: disabled ? 'default' : 'pointer',
+        padding: size === 'small' ? '6px 14px' : '8px 16px',
+        border: s.border ?? 'none',
+        background: disabled ? disabledBg : (hover ? s.bgHover : s.bg),
+        color: disabled ? disabledColor : s.color,
+        width: fullWidth ? '100%' : undefined,
+        transition: 'background 0.15s',
+      }}
+    >
+      {children}
+    </button>
+  )
+}
+
+const UITextField = ({
+  label, value, onChange, dark, placeholder, multiline, rows, disabled, startAdornment, mono,
+}: {
+  label?: string; value: string; onChange?: (e: React.ChangeEvent<any>) => void; dark: boolean
+  placeholder?: string; multiline?: boolean; rows?: number; disabled?: boolean
+  startAdornment?: React.ReactNode; mono?: boolean
+}) => {
+  const [focused, setFocused] = useState(false)
+  const borderColor = focused ? '#2563EB' : (dark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.12)')
+  const Tag: any = multiline ? 'textarea' : 'input'
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+      {label && (
+        <label style={{ fontSize: 13, color: focused ? '#2563EB' : (dark ? 'rgba(255,255,255,0.4)' : 'rgba(0,0,0,0.45)') }}>
+          {label}
+        </label>
+      )}
+      <div
+        style={{
+          display: 'flex', alignItems: multiline ? 'flex-start' : 'center', gap: 8,
+          borderRadius: 10, padding: startAdornment ? '0 10px' : '0 12px',
+          background: disabled
+            ? (dark ? 'rgba(255,255,255,0.02)' : 'rgba(0,0,0,0.02)')
+            : (dark ? 'rgba(255,255,255,0.04)' : 'rgba(0,0,0,0.03)'),
+          border: `${focused ? 1 : 0.5}px solid ${borderColor}`,
+          transition: 'border-color 0.15s',
+        }}
+      >
+        {startAdornment}
+        <Tag
+          value={value}
+          onChange={onChange}
+          placeholder={placeholder}
+          disabled={disabled}
+          rows={multiline ? (rows ?? 2) : undefined}
+          onFocus={() => setFocused(true)}
+          onBlur={() => setFocused(false)}
+          style={{
+            flex: 1, border: 'none', outline: 'none', background: 'transparent', width: '100%',
+            fontSize: mono ? 12 : 13, fontFamily: mono ? 'monospace' : 'inherit',
+            padding: '9px 0', resize: multiline ? 'none' : undefined,
+            color: disabled ? (dark ? 'rgba(255,255,255,0.35)' : 'rgba(0,0,0,0.45)') : (dark ? '#fff' : '#111'),
+          }}
+        />
+      </div>
+    </div>
+  )
+}
+
+const UIModal = ({
+  open, onClose, dark, maxWidth = 400, children,
+}: {
+  open: boolean; onClose: () => void; dark: boolean; maxWidth?: number; children: React.ReactNode
+}) => (
+  <AnimatePresence>
+    {open && (
+      <motion.div
+        key="backdrop"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        transition={{ duration: 0.18 }}
+        onClick={onClose}
+        style={{
+          position: 'fixed', inset: 0, zIndex: 1300,
+          background: 'rgba(0,0,0,0.45)', backdropFilter: 'blur(4px)',
+          display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 16,
+        }}
+      >
+        <motion.div
+          key="panel"
+          initial={{ opacity: 0, scale: 0.92, y: 12 }}
+          animate={{ opacity: 1, scale: 1, y: 0 }}
+          exit={{ opacity: 0, scale: 0.92, y: 12 }}
+          transition={{ type: 'spring', stiffness: 400, damping: 28 }}
+          onClick={(e: React.MouseEvent) => e.stopPropagation()}
+          style={{
+            width: '100%', maxWidth, borderRadius: 16, overflow: 'hidden',
+            background: dark ? '#1c1c1e' : '#fff',
+            border: dark ? '0.5px solid rgba(255,255,255,0.08)' : '0.5px solid rgba(0,0,0,0.08)',
+            boxShadow: '0 24px 64px rgba(0,0,0,0.18)',
+          }}
+        >
+          {children}
+        </motion.div>
+      </motion.div>
+    )}
+  </AnimatePresence>
+)
+
+/* ============================================================
+   Feature components
+   ============================================================ */
 const ColorPicker = ({
   value, onChange, dark,
 }: {
   value: string; onChange: (c: string) => void; dark: boolean
 }) => (
-  <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap' }}>
+  <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
     {PALETTE.map(c => (
       <motion.button
         key={c}
@@ -46,10 +278,10 @@ const ColorPicker = ({
           display: 'flex', alignItems: 'center', justifyContent: 'center',
         }}
       >
-        {value === c && <CheckOutlined sx={{ fontSize: 14, color: '#fff' }} />}
+        {value === c && <span style={{ color: '#fff', display: 'flex' }}><CheckIcon size={14} /></span>}
       </motion.button>
     ))}
-  </Box>
+  </div>
 )
 
 const StatCard = ({
@@ -60,7 +292,6 @@ const StatCard = ({
   const ref = useRef(null)
   const inView = useInView(ref, { once: true })
   const [count, setCount] = useState(0)
-
   React.useEffect(() => {
     if (!inView || value === 0) return
     let v = 0
@@ -72,7 +303,6 @@ const StatCard = ({
     }, 20)
     return () => clearInterval(t)
   }, [inView, value])
-
   return (
     <motion.div
       ref={ref}
@@ -82,22 +312,22 @@ const StatCard = ({
         dark ? 'bg-[#27272A] border-gray-800' : 'bg-white border-gray-100'
       }`}
     >
-      <Box sx={{
-        width: 44, height: 44, borderRadius: '12px', display: 'flex',
+      <div style={{
+        width: 44, height: 44, borderRadius: 12, display: 'flex',
         alignItems: 'center', justifyContent: 'center', flexShrink: 0,
         background: dark ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.04)',
         color: dark ? 'rgba(255,255,255,0.4)' : 'rgba(0,0,0,0.35)',
       }}>
         {icon}
-      </Box>
-      <Box>
-        <Typography sx={{ fontSize: 11, fontWeight: 500, letterSpacing: '0.07em', textTransform: 'uppercase', color: dark ? 'rgba(255,255,255,0.35)' : 'rgba(0,0,0,0.4)' }}>
+      </div>
+      <div>
+        <p style={{ margin: 0, fontSize: 11, fontWeight: 500, letterSpacing: '0.07em', textTransform: 'uppercase', color: dark ? 'rgba(255,255,255,0.35)' : 'rgba(0,0,0,0.4)' }}>
           {label}
-        </Typography>
-        <Typography sx={{ fontSize: 22, fontWeight: 500, lineHeight: 1.2, color: dark ? '#fff' : '#111' }}>
+        </p>
+        <p style={{ margin: 0, fontSize: 22, fontWeight: 500, lineHeight: 1.2, color: dark ? '#fff' : '#111' }}>
           {count}
-        </Typography>
-      </Box>
+        </p>
+      </div>
     </motion.div>
   )
 }
@@ -111,7 +341,6 @@ const CategoryCard = ({
 }) => {
   const ref = useRef(null)
   const inView = useInView(ref, { once: true, margin: '-30px' })
-
   return (
     <motion.div
       ref={ref}
@@ -124,69 +353,68 @@ const CategoryCard = ({
       }`}
       style={{ borderTop: `3px solid ${cat.color}` }}
     >
-      <Box sx={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 1 }}>
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, minWidth: 0 }}>
-          <Box sx={{
-            width: 36, height: 36, borderRadius: '10px', flexShrink: 0,
+      <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 8 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 12, minWidth: 0 }}>
+          <div style={{
+            width: 36, height: 36, borderRadius: 10, flexShrink: 0,
             background: `${cat.color}18`, display: 'flex', alignItems: 'center', justifyContent: 'center',
+            color: cat.color,
           }}>
-            <Category sx={{ fontSize: 18, color: cat.color }} />
-          </Box>
-          <Box sx={{ minWidth: 0 }}>
-            <Typography sx={{ fontSize: 14, fontWeight: 500, color: dark ? '#fff' : '#111', lineHeight: 1.3 }} noWrap>
+            <CategoryIcon size={18} />
+          </div>
+          <div style={{ minWidth: 0 }}>
+            <p style={{
+              margin: 0, fontSize: 14, fontWeight: 500, color: dark ? '#fff' : '#111', lineHeight: 1.3,
+              whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis',
+            }}>
               {cat.name}
-            </Typography>
-            <Typography sx={{ fontSize: 11, color: dark ? 'rgba(255,255,255,0.35)' : 'rgba(0,0,0,0.4)', fontFamily: 'monospace' }}>
+            </p>
+            <p style={{ margin: 0, fontSize: 11, color: dark ? 'rgba(255,255,255,0.35)' : 'rgba(0,0,0,0.4)', fontFamily: 'monospace' }}>
               /{cat.slug}
-            </Typography>
-          </Box>
-        </Box>
-
-        <Box sx={{ display: 'flex', gap: 0.5, flexShrink: 0 }}>
-          <Tooltip title="Edit">
-            <IconButton
-              size="small"
+            </p>
+          </div>
+        </div>
+        <div style={{ display: 'flex', gap: 4, flexShrink: 0 }}>
+          <UITooltip title="Edit">
+            <UIIconButton
               onClick={() => onEdit(cat)}
-              sx={{
-                color: dark ? 'rgba(255,255,255,0.3)' : 'rgba(0,0,0,0.3)',
-                '&:hover': { background: dark ? 'rgba(255,255,255,0.07)' : 'rgba(0,0,0,0.05)', color: dark ? '#fff' : '#111' },
-              }}
+              color={dark ? 'rgba(255,255,255,0.3)' : 'rgba(0,0,0,0.3)'}
+              hoverBg={dark ? 'rgba(255,255,255,0.07)' : 'rgba(0,0,0,0.05)'}
+              hoverColor={dark ? '#fff' : '#111'}
             >
-              <EditOutlined sx={{ fontSize: 16 }} />
-            </IconButton>
-          </Tooltip>
-          <Tooltip title="Delete">
-            <IconButton
-              size="small"
+              <EditIcon size={16} />
+            </UIIconButton>
+          </UITooltip>
+          <UITooltip title="Delete">
+            <UIIconButton
               onClick={() => onDelete(cat)}
-              sx={{
-                color: dark ? 'rgba(255,255,255,0.3)' : 'rgba(0,0,0,0.3)',
-                '&:hover': { background: 'rgba(239,68,68,0.08)', color: '#ef4444' },
-              }}
+              color={dark ? 'rgba(255,255,255,0.3)' : 'rgba(0,0,0,0.3)'}
+              hoverBg="rgba(239,68,68,0.08)"
+              hoverColor="#ef4444"
             >
-              <DeleteOutline sx={{ fontSize: 16 }} />
-            </IconButton>
-          </Tooltip>
-        </Box>
-      </Box>
-
-      <Typography sx={{ fontSize: 13, color: dark ? 'rgba(255,255,255,0.45)' : 'rgba(0,0,0,0.5)', lineHeight: 1.5, minHeight: 38 }}>
+              <DeleteIcon size={16} />
+            </UIIconButton>
+          </UITooltip>
+        </div>
+      </div>
+      <p style={{ margin: 0, fontSize: 13, color: dark ? 'rgba(255,255,255,0.45)' : 'rgba(0,0,0,0.5)', lineHeight: 1.5, minHeight: 38 }}>
         {cat.description || <span style={{ opacity: 0.4 }}>No description</span>}
-      </Typography>
-
-      <Box sx={{
-        display: 'flex', alignItems: 'center', gap: 0.8,
-        pt: 1.5, borderTop: dark ? '0.5px solid rgba(255,255,255,0.06)' : '0.5px solid rgba(0,0,0,0.06)',
+      </p>
+      <div style={{
+        display: 'flex', alignItems: 'center', gap: 6,
+        paddingTop: 12, borderTop: dark ? '0.5px solid rgba(255,255,255,0.06)' : '0.5px solid rgba(0,0,0,0.06)',
       }}>
-        <ArticleOutlined sx={{ fontSize: 14, color: dark ? 'rgba(255,255,255,0.25)' : 'rgba(0,0,0,0.3)' }} />
-        <Typography sx={{ fontSize: 12, color: dark ? 'rgba(255,255,255,0.35)' : 'rgba(0,0,0,0.4)' }}>
+        <span style={{ color: dark ? 'rgba(255,255,255,0.25)' : 'rgba(0,0,0,0.3)', display: 'flex' }}>
+          <ArticleIcon size={14} />
+        </span>
+        <p style={{ margin: 0, fontSize: 12, color: dark ? 'rgba(255,255,255,0.35)' : 'rgba(0,0,0,0.4)' }}>
           {cat.postCount} post{cat.postCount !== 1 ? 's' : ''}
-        </Typography>
-        <Box sx={{ flex: 1 }} />
-        <Typography sx={{ fontSize: 11, color: dark ? 'rgba(255,255,255,0.2)' : 'rgba(0,0,0,0.3)' }}>
+        </p>
+        <div style={{ flex: 1 }} />
+        <p style={{ margin: 0, fontSize: 11, color: dark ? 'rgba(255,255,255,0.2)' : 'rgba(0,0,0,0.3)' }}>
           {new Date(cat.createdAt).toLocaleDateString('en-US', { month: 'short', day: '2-digit', year: 'numeric' })}
-        </Typography>
-      </Box>
+        </p>
+      </div>
     </motion.div>
   )
 }
@@ -198,147 +426,68 @@ const CategoryDialog = ({
   onClose: () => void; onSave: (form: FormState) => void
 }) => {
   const [form, setForm] = useState<FormState>(initial)
-
   React.useEffect(() => { setForm(initial) }, [initial, open])
-
   const set = (key: keyof FormState) => (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) =>
     setForm(prev => ({
       ...prev,
       [key]: e.target.value,
       ...(key === 'name' ? { slug: toSlug(e.target.value) } : {}),
     }))
-
-  const inputSx = {
-    '& .MuiOutlinedInput-root': {
-      borderRadius: '10px', fontSize: 13,
-      background: dark ? 'rgba(255,255,255,0.04)' : 'rgba(0,0,0,0.03)',
-      color: dark ? '#fff' : '#111',
-      '& fieldset': { border: dark ? '0.5px solid rgba(255,255,255,0.1)' : '0.5px solid rgba(0,0,0,0.12)' },
-      '&:hover fieldset': { border: dark ? '0.5px solid rgba(255,255,255,0.2)' : '0.5px solid rgba(0,0,0,0.22)' },
-      '&.Mui-focused fieldset': { border: '1px solid #2563EB' },
-    },
-    '& label': { fontSize: 13, color: dark ? 'rgba(255,255,255,0.4)' : 'rgba(0,0,0,0.45)' },
-    '& label.Mui-focused': { color: '#2563EB' },
-    '& input, & textarea': { color: dark ? '#fff' : '#111' },
-  }
-
   return (
-    <Dialog
-      open={open}
-      onClose={onClose}
-      maxWidth="xs"
-      fullWidth
-      PaperProps={{
-        sx: {
-          borderRadius: '16px',
-          background: dark ? '#1c1c1e' : '#fff',
-          border: dark ? '0.5px solid rgba(255,255,255,0.08)' : '0.5px solid rgba(0,0,0,0.08)',
-          boxShadow: 'none',
-        },
-      }}
-    >
-      <DialogTitle sx={{ pt: 2.5, px: 3, pb: 0, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-        <Typography sx={{ fontSize: 15, fontWeight: 500, color: dark ? '#fff' : '#111' }}>
+    <UIModal open={open} onClose={onClose} dark={dark} maxWidth={400}>
+      <div style={{ paddingTop: 20, paddingLeft: 24, paddingRight: 24, paddingBottom: 0, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+        <p style={{ margin: 0, fontSize: 15, fontWeight: 500, color: dark ? '#fff' : '#111' }}>
           {mode === 'create' ? 'New category' : 'Edit category'}
-        </Typography>
-        <IconButton size="small" onClick={onClose} sx={{ color: dark ? 'rgba(255,255,255,0.4)' : 'rgba(0,0,0,0.35)' }}>
-          <CloseOutlined fontSize="small" />
-        </IconButton>
-      </DialogTitle>
-
-      <DialogContent sx={{ px: 3, pt: 2.5, pb: 1, display: 'flex', flexDirection: 'column', gap: 2 }}>
-        <TextField
-          label="Name"
-          fullWidth
-          size="small"
-          value={form.name}
-          onChange={set('name')}
-          sx={inputSx}
+        </p>
+        <UIIconButton onClick={onClose} color={dark ? 'rgba(255,255,255,0.4)' : 'rgba(0,0,0,0.35)'}>
+          <CloseIcon size={18} />
+        </UIIconButton>
+      </div>
+      <div style={{ padding: '20px 24px 8px', display: 'flex', flexDirection: 'column', gap: 16 }}>
+        <UITextField label="Name" value={form.name} onChange={set('name')} dark={dark} />
+        <UITextField label="Slug" value={toSlug(form.name)} dark={dark} disabled mono />
+        <UITextField
+          label="Description" value={form.description} onChange={set('description')}
+          dark={dark} multiline rows={2}
         />
-
-        <TextField
-          label="Slug"
-          fullWidth
-          size="small"
-          value={toSlug(form.name)}
-          disabled
-          sx={{
-            ...inputSx,
-            '& .MuiOutlinedInput-root': {
-              ...inputSx['& .MuiOutlinedInput-root'],
-              background: dark ? 'rgba(255,255,255,0.02)' : 'rgba(0,0,0,0.02)',
-            },
-            '& input': { fontFamily: 'monospace', fontSize: 12, color: dark ? 'rgba(255,255,255,0.35)' : 'rgba(0,0,0,0.45)' },
-          }}
-        />
-
-        <TextField
-          label="Description"
-          fullWidth
-          size="small"
-          multiline
-          rows={2}
-          value={form.description}
-          onChange={set('description')}
-          sx={inputSx}
-        />
-
-        <Box>
-          <Typography sx={{ fontSize: 12, fontWeight: 500, color: dark ? 'rgba(255,255,255,0.4)' : 'rgba(0,0,0,0.45)', mb: 1 }}>
+        <div>
+          <p style={{ margin: '0 0 8px', fontSize: 12, fontWeight: 500, color: dark ? 'rgba(255,255,255,0.4)' : 'rgba(0,0,0,0.45)' }}>
             Color
-          </Typography>
+          </p>
           <ColorPicker value={form.color} onChange={c => setForm(p => ({ ...p, color: c }))} dark={dark} />
-        </Box>
-
-        <Box sx={{
-          display: 'flex', alignItems: 'center', gap: 1.5, p: 1.5, borderRadius: '10px',
+        </div>
+        <div style={{
+          display: 'flex', alignItems: 'center', gap: 12, padding: 12, borderRadius: 10,
           background: dark ? 'rgba(255,255,255,0.03)' : 'rgba(0,0,0,0.03)',
           border: dark ? '0.5px solid rgba(255,255,255,0.06)' : '0.5px solid rgba(0,0,0,0.06)',
           borderTop: `3px solid ${form.color}`,
         }}>
-          <Box sx={{ width: 28, height: 28, borderRadius: '8px', background: `${form.color}20`, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-            <Category sx={{ fontSize: 16, color: form.color }} />
-          </Box>
-          <Box sx={{ minWidth: 0 }}>
-            <Typography sx={{ fontSize: 13, fontWeight: 500, color: dark ? '#fff' : '#111' }} noWrap>
+          <div style={{
+            width: 28, height: 28, borderRadius: 8, background: `${form.color}20`,
+            display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, color: form.color,
+          }}>
+            <CategoryIcon size={16} />
+          </div>
+          <div style={{ minWidth: 0 }}>
+            <p style={{
+              margin: 0, fontSize: 13, fontWeight: 500, color: dark ? '#fff' : '#111',
+              whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis',
+            }}>
               {form.name || 'Category name'}
-            </Typography>
-            <Typography sx={{ fontSize: 11, fontFamily: 'monospace', color: dark ? 'rgba(255,255,255,0.3)' : 'rgba(0,0,0,0.4)' }}>
+            </p>
+            <p style={{ margin: 0, fontSize: 11, fontFamily: 'monospace', color: dark ? 'rgba(255,255,255,0.3)' : 'rgba(0,0,0,0.4)' }}>
               /{toSlug(form.name) || 'slug'}
-            </Typography>
-          </Box>
-        </Box>
-      </DialogContent>
-
-      <DialogActions sx={{ px: 3, py: 2, gap: 1 }}>
-        <Button
-          onClick={onClose}
-          size="small"
-          sx={{
-            borderRadius: '8px', fontSize: 13, textTransform: 'none', fontWeight: 500,
-            border: dark ? '0.5px solid rgba(255,255,255,0.1)' : '0.5px solid rgba(0,0,0,0.1)',
-            color: dark ? 'rgba(255,255,255,0.5)' : 'rgba(0,0,0,0.5)',
-            background: 'transparent',
-            '&:hover': { background: dark ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.04)' },
-          }}
-        >
-          Cancel
-        </Button>
-        <Button
-          onClick={() => onSave(form)}
-          disabled={!form.name.trim()}
-          size="small"
-          sx={{
-            borderRadius: '8px', fontSize: 13, textTransform: 'none', fontWeight: 500,
-            background: '#2563EB', color: '#fff',
-            '&:hover': { background: '#1d4ed8' },
-            '&.Mui-disabled': { background: 'rgba(37,99,235,0.3)', color: 'rgba(255,255,255,0.4)' },
-          }}
-        >
+            </p>
+          </div>
+        </div>
+      </div>
+      <div style={{ padding: '16px 24px', display: 'flex', justifyContent: 'flex-end', gap: 8 }}>
+        <UIButton onClick={onClose} variant="outline" dark={dark}>Cancel</UIButton>
+        <UIButton onClick={() => onSave(form)} disabled={!form.name.trim()} dark={dark}>
           {mode === 'create' ? 'Create category' : 'Save changes'}
-        </Button>
-      </DialogActions>
-    </Dialog>
+        </UIButton>
+      </div>
+    </UIModal>
   )
 }
 
@@ -347,65 +496,33 @@ const DeleteDialog = ({
 }: {
   cat: AdminCategory | null; dark: boolean; open: boolean; onClose: () => void; onConfirm: () => void
 }) => (
-  <Dialog
-    open={open}
-    onClose={onClose}
-    maxWidth="xs"
-    fullWidth
-    PaperProps={{
-      sx: {
-        borderRadius: '16px',
-        background: dark ? '#1c1c1e' : '#fff',
-        border: dark ? '0.5px solid rgba(255,255,255,0.08)' : '0.5px solid rgba(0,0,0,0.08)',
-        boxShadow: 'none',
-      },
-    }}
-  >
-    <DialogTitle sx={{ pt: 2.5, px: 3, pb: 0 }}>
-      <Typography sx={{ fontSize: 15, fontWeight: 500, color: dark ? '#fff' : '#111' }}>
+  <UIModal open={open} onClose={onClose} dark={dark} maxWidth={400}>
+    <div style={{ paddingTop: 20, paddingLeft: 24, paddingRight: 24, paddingBottom: 0 }}>
+      <p style={{ margin: 0, fontSize: 15, fontWeight: 500, color: dark ? '#fff' : '#111' }}>
         Delete category
-      </Typography>
-    </DialogTitle>
-    <DialogContent sx={{ px: 3, pt: 1.5, pb: 1 }}>
-      <Typography sx={{ fontSize: 13, color: dark ? 'rgba(255,255,255,0.55)' : 'rgba(0,0,0,0.55)', lineHeight: 1.6 }}>
+      </p>
+    </div>
+    <div style={{ padding: '12px 24px 8px' }}>
+      <p style={{ margin: 0, fontSize: 13, color: dark ? 'rgba(255,255,255,0.55)' : 'rgba(0,0,0,0.55)', lineHeight: 1.6 }}>
         Are you sure you want to delete <strong style={{ color: dark ? '#fff' : '#111' }}>{cat?.name}</strong>?
         This will remove the category from all {cat?.postCount} associated post{cat?.postCount !== 1 ? 's' : ''}.
         This action cannot be undone.
-      </Typography>
-    </DialogContent>
-    <DialogActions sx={{ px: 3, py: 2, gap: 1 }}>
-      <Button
-        onClick={onClose}
-        size="small"
-        sx={{
-          borderRadius: '8px', fontSize: 13, textTransform: 'none', fontWeight: 500,
-          border: dark ? '0.5px solid rgba(255,255,255,0.1)' : '0.5px solid rgba(0,0,0,0.1)',
-          color: dark ? 'rgba(255,255,255,0.5)' : 'rgba(0,0,0,0.5)', background: 'transparent',
-          '&:hover': { background: dark ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.04)' },
-        }}
-      >
-        Cancel
-      </Button>
-      <Button
-        onClick={onConfirm}
-        size="small"
-        sx={{
-          borderRadius: '8px', fontSize: 13, textTransform: 'none', fontWeight: 500,
-          background: '#ef4444', color: '#fff',
-          '&:hover': { background: '#dc2626' },
-        }}
-      >
-        Delete
-      </Button>
-    </DialogActions>
-  </Dialog>
+      </p>
+    </div>
+    <div style={{ padding: '16px 24px', display: 'flex', justifyContent: 'flex-end', gap: 8 }}>
+      <UIButton onClick={onClose} variant="outline" dark={dark}>Cancel</UIButton>
+      <UIButton onClick={onConfirm} variant="danger" dark={dark}>Delete</UIButton>
+    </div>
+  </UIModal>
 )
 
+/* ============================================================
+   Page
+   ============================================================ */
 const AdminCats = () => {
   const { globalData } = useGlobalDataContext()
   const { showConfirmSwal } = useSwal()
   const dark = !globalData.themeGlobal
-
   const [cats, setCats] = useState<AdminCategory[]>(FAKE_CATS)
   const [search, setSearch] = useState('')
   const [dialogMode, setDialogMode] = useState<DialogMode>(null)
@@ -417,7 +534,6 @@ const AdminCats = () => {
     c.name.toLowerCase().includes(search.toLowerCase()) ||
     c.slug.includes(search.toLowerCase())
   )
-
   const stats = {
     total: cats.length,
     totalPosts: cats.reduce((s, c) => s + c.postCount, 0),
@@ -428,13 +544,11 @@ const AdminCats = () => {
     setEditTarget(null)
     setDialogMode('create')
   }
-
   const openEdit = (cat: AdminCategory) => {
     setForm({ name: cat.name, description: cat.description, color: cat.color })
     setEditTarget(cat)
     setDialogMode('edit')
   }
-
   const handleSave = async (f: FormState) => {
     if (dialogMode === 'create') {
       const newCat: AdminCategory = {
@@ -456,34 +570,29 @@ const AdminCats = () => {
     }
     setDialogMode(null)
   }
-
   const handleDelete = () => {
     if (!deleteTarget) return
     setCats(prev => prev.filter(c => c._id !== deleteTarget._id))
     setDeleteTarget(null)
   }
 
-  const surface = dark
-    ? { background: '#27272A', border: '0.5px solid rgba(255,255,255,0.08)' }
-    : { background: '#fff', border: '0.5px solid rgba(0,0,0,0.07)' }
+  const surfaceClass = dark ? 'bg-[#27272A] border-gray-800' : 'bg-white border-gray-100'
 
   return (
     <div className={`min-h-screen transition-colors duration-300 ${dark ? 'bg-[#0f0f0f]' : 'bg-gray-50'}`}>
-
       <main className="max-w-screen-xl mx-auto px-4 py-10 sm:px-6 lg:px-10 space-y-7">
-
         <motion.div
           initial="hidden" animate="visible" variants={fadeUp} custom={0}
           style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 16, flexWrap: 'wrap' }}
         >
-          <Box>
-            <Typography sx={{ fontSize: 20, fontWeight: 500, color: dark ? '#fff' : '#111' }}>
+          <div>
+            <p style={{ margin: 0, fontSize: 20, fontWeight: 500, color: dark ? '#fff' : '#111' }}>
               Categories
-            </Typography>
-            <Typography sx={{ fontSize: 13, color: dark ? 'rgba(255,255,255,0.35)' : 'rgba(0,0,0,0.4)', mt: 0.5 }}>
+            </p>
+            <p style={{ margin: '4px 0 0', fontSize: 13, color: dark ? 'rgba(255,255,255,0.35)' : 'rgba(0,0,0,0.4)' }}>
               Create, edit and delete post categories.
-            </Typography>
-          </Box>
+            </p>
+          </div>
           <motion.button
             onClick={openCreate}
             whileTap={{ scale: 0.96 }}
@@ -494,7 +603,7 @@ const AdminCats = () => {
               cursor: 'pointer',
             }}
           >
-            <Add sx={{ fontSize: 18 }} />
+            <AddIcon size={18} />
             New category
           </motion.button>
         </motion.div>
@@ -503,38 +612,25 @@ const AdminCats = () => {
           initial="hidden" animate="visible" variants={stagger}
           className="grid grid-cols-2 lg:grid-cols-4 gap-4"
         >
-          <StatCard label="Total categories" value={stats.total}      icon={<Category />}       dark={dark} delay={0} />
-          <StatCard label="Total posts"       value={stats.totalPosts} icon={<ArticleOutlined />} dark={dark} delay={1} />
+          <StatCard label="Total categories" value={stats.total}       icon={<CategoryIcon size={20} />} dark={dark} delay={0} />
+          <StatCard label="Total posts"       value={stats.totalPosts} icon={<ArticleIcon size={20} />}  dark={dark} delay={1} />
         </motion.div>
 
         <motion.div
           initial="hidden" animate="visible" variants={fadeUp} custom={1}
-          style={{ borderRadius: 16, ...surface, padding: '14px 16px' }}
+          className={`rounded-2xl border ${surfaceClass}`}
+          style={{ padding: '14px 16px' }}
         >
-          <TextField
-            fullWidth
-            size="small"
-            placeholder="Search categories…"
+          <UITextField
             value={search}
             onChange={e => setSearch(e.target.value)}
-            InputProps={{
-              startAdornment: (
-                <InputAdornment position="start">
-                  <Search sx={{ fontSize: 18, color: dark ? 'rgba(255,255,255,0.3)' : 'rgba(0,0,0,0.3)' }} />
-                </InputAdornment>
-              ),
-            }}
-            sx={{
-              '& .MuiOutlinedInput-root': {
-                borderRadius: '10px', fontSize: 13,
-                background: dark ? 'rgba(255,255,255,0.04)' : 'rgba(0,0,0,0.03)',
-                color: dark ? '#fff' : '#111',
-                '& fieldset': { border: dark ? '0.5px solid rgba(255,255,255,0.1)' : '0.5px solid rgba(0,0,0,0.12)' },
-                '&:hover fieldset': { border: dark ? '0.5px solid rgba(255,255,255,0.2)' : '0.5px solid rgba(0,0,0,0.22)' },
-                '&.Mui-focused fieldset': { border: '1px solid #2563EB' },
-              },
-              '& input::placeholder': { color: dark ? 'rgba(255,255,255,0.3)' : 'rgba(0,0,0,0.35)', opacity: 1 },
-            }}
+            dark={dark}
+            placeholder="Search categories…"
+            startAdornment={
+              <span style={{ color: dark ? 'rgba(255,255,255,0.3)' : 'rgba(0,0,0,0.3)', display: 'flex' }}>
+                <SearchIcon size={18} />
+              </span>
+            }
           />
         </motion.div>
 
@@ -545,14 +641,14 @@ const AdminCats = () => {
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0 }}
-              className={`rounded-2xl border flex flex-col items-center py-16 gap-3 ${
-                dark ? 'bg-[#27272A] border-gray-800' : 'bg-white border-gray-100'
-              }`}
+              className={`rounded-2xl border flex flex-col items-center py-16 gap-3 ${surfaceClass}`}
             >
-              <Search sx={{ fontSize: 36, color: dark ? 'rgba(255,255,255,0.15)' : 'rgba(0,0,0,0.15)' }} />
-              <Typography sx={{ fontSize: 13, color: dark ? 'rgba(255,255,255,0.3)' : 'rgba(0,0,0,0.4)' }}>
+              <span style={{ color: dark ? 'rgba(255,255,255,0.15)' : 'rgba(0,0,0,0.15)' }}>
+                <SearchIcon size={36} />
+              </span>
+              <p style={{ margin: 0, fontSize: 13, color: dark ? 'rgba(255,255,255,0.3)' : 'rgba(0,0,0,0.4)' }}>
                 No categories found
-              </Typography>
+              </p>
               <motion.button
                 onClick={openCreate}
                 whileTap={{ scale: 0.96 }}
@@ -562,7 +658,7 @@ const AdminCats = () => {
                   borderRadius: 8, padding: '6px 14px', fontSize: 13, fontWeight: 500, cursor: 'pointer',
                 }}
               >
-                <Add sx={{ fontSize: 16 }} />
+                <AddIcon size={16} />
                 Create one
               </motion.button>
             </motion.div>
@@ -596,7 +692,6 @@ const AdminCats = () => {
           onClose={() => setDialogMode(null)}
           onSave={handleSave}
         />
-
         <DeleteDialog
           cat={deleteTarget}
           dark={dark}
@@ -604,7 +699,6 @@ const AdminCats = () => {
           onClose={() => setDeleteTarget(null)}
           onConfirm={handleDelete}
         />
-
       </main>
     </div>
   )
