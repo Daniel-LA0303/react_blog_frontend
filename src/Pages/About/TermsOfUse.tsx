@@ -2,71 +2,9 @@ import { useRef } from 'react'
 import { motion, useInView } from 'framer-motion'
 import Sidebar from '../../components/Sidebar/Sidebar'
 import useGlobalDataContext from '../../context/hooks/useGlobalDataContext'
-
-const fadeUp = {
-  hidden: { opacity: 0, y: 24 },
-  visible: (i = 0) => ({
-    opacity: 1, y: 0,
-    transition: { duration: 0.5, delay: i * 0.08, ease: [0.25, 0.46, 0.45, 0.94] },
-  }),
-}
-
-const stagger = { hidden: {}, visible: { transition: { staggerChildren: 0.08 } } }
-
-const Section = ({ children, className = '' }: { children: React.ReactNode; className?: string }) => {
-  const ref = useRef(null)
-  const inView = useInView(ref, { once: true, margin: '-80px' })
-  return (
-    <motion.div ref={ref} initial="hidden" animate={inView ? 'visible' : 'hidden'} variants={stagger} className={className}>
-      {children}
-    </motion.div>
-  )
-}
-
-const terms = [
-  {
-    badge: 'Eligibility',
-    icon: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.7} strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>,
-    title: 'Who can use DLTechBlog',
-    items: [
-      'The platform is primarily intended for BUAP students, faculty, and the wider developer community.',
-      'You must provide a valid email address to register.',
-      'One account per person. Duplicate or impersonation accounts will be removed.',
-    ],
-  },
-  {
-    badge: 'Content',
-    icon: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.7} strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>,
-    title: 'Your content',
-    items: [
-      'You retain ownership of content you publish on DLTechBlog.',
-      'By posting, you grant DLTechBlog a non-exclusive licence to display your content on the platform.',
-      'You are solely responsible for the accuracy and legality of what you post.',
-      'We reserve the right to remove content that violates these terms.',
-    ],
-  },
-  {
-    badge: 'Prohibited',
-    icon: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.7} strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5"><circle cx="12" cy="12" r="10"/><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/></svg>,
-    title: 'Prohibited use',
-    items: [
-      'Do not use the platform to distribute malware, phishing links, or harmful code.',
-      'Do not attempt to reverse-engineer, scrape, or abuse the API.',
-      'Do not use automated bots or scripts to interact with the platform.',
-      'Commercial advertising without permission is not allowed.',
-    ],
-  },
-  {
-    badge: 'Service',
-    icon: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.7} strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>,
-    title: 'Service availability',
-    items: [
-      'DLTechBlog is provided as-is as a social service academic project.',
-      'We do not guarantee 100% uptime or uninterrupted access.',
-      'We may update features, suspend accounts, or discontinue the service at any time.',
-    ],
-  },
-]
+import Section from '../../components/Global/Section'
+import { fadeUp } from '../../utils/animationsUtils'
+import { termsOfUse } from '../../utils/aboutUtils'
 
 const TermsOfUse = () => {
   const { globalData } = useGlobalDataContext()
@@ -100,7 +38,7 @@ const TermsOfUse = () => {
       </section>
 
       <section className="max-w-3xl mx-auto px-4 sm:px-6 pb-16 space-y-4">
-        {terms.map((t, i) => (
+        {termsOfUse.map((t, i) => (
           <motion.div
             key={t.title}
             initial={{ opacity: 0, y: 20 }}

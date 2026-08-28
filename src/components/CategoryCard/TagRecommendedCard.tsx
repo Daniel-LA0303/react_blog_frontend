@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom'
 import useGlobalDataContext from '../../context/hooks/useGlobalDataContext'
 
 const TagRecommendedCard = ({ tag }: { tag: any }) => {
+  
   const { globalData } = useGlobalDataContext();
   const dark = !globalData.themeGlobal;
 

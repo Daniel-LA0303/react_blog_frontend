@@ -1,25 +1,16 @@
 import { useState } from "react";
 import { useAuth } from "../../../context/UserAuthContex";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
 import Search from "./Search";
 import Users from "./Users";
 import LogoutOutlinedIcon from '@mui/icons-material/LogoutOutlined';
 
-
-
 function Left() {
 
-  const [loading, setLoading] = useState(false);
-  const { userAuth, setUserAuth } = useAuth();
-  // console.log(authUser);
-
-  const navigate = useNavigate();
-
+  const { userAuth } = useAuth();
 
   // log out
   const handleLogout = async () => {
-    setLoading(true);
     localStorage.removeItem('token');
     localStorage.removeItem("tokenAuthUser");
     localStorage.removeItem("email");
@@ -56,8 +47,6 @@ function Left() {
         <Users />
       </div>
     </div>
-
-
   );
 }
 

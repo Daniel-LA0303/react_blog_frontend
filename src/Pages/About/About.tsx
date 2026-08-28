@@ -3,36 +3,15 @@ import { motion, useInView } from 'framer-motion'
 import { Link } from 'react-router-dom'
 import Sidebar from '../../components/Sidebar/Sidebar'
 import useGlobalDataContext from '../../context/hooks/useGlobalDataContext'
-
-const fadeUp = {
-  hidden: { opacity: 0, y: 24 },
-  visible: (i = 0) => ({
-    opacity: 1, y: 0,
-    transition: { duration: 0.5, delay: i * 0.08, ease: [0.25, 0.46, 0.45, 0.94] },
-  }),
-}
-
-const stagger = { hidden: {}, visible: { transition: { staggerChildren: 0.08 } } }
-
-const Section = ({ children, className = '' }: { children: React.ReactNode; className?: string }) => {
-  const ref = useRef(null)
-  const inView = useInView(ref, { once: true, margin: '-80px' })
-  return (
-    <motion.div
-      ref={ref}
-      initial="hidden"
-      animate={inView ? 'visible' : 'hidden'}
-      variants={stagger}
-      className={className}
-    >
-      {children}
-    </motion.div>
-  )
-}
+import { fadeUp } from '../../utils/animationsUtils'
+import Section from '../../components/Global/Section'
+import { features, stack } from '../../utils/aboutUtils'
 
 const TechBadge = ({ name, index }: { name: string; index: number }) => {
+
   const ref = useRef(null)
   const inView = useInView(ref, { once: true })
+
   return (
     <motion.span
       ref={ref}
@@ -62,8 +41,10 @@ const FeatureCard = ({
   dark: boolean
   index: number
 }) => {
+
   const ref = useRef(null)
   const inView = useInView(ref, { once: true, margin: '-60px' })
+
   return (
     <motion.div
       ref={ref}
@@ -85,7 +66,7 @@ const FeatureCard = ({
   )
 }
 
-const StatItem = ({ value, label, dark }: { value: string; label: string; dark: boolean }) => (
+const StatItemAbout = ({ value, label, dark }: { value: string; label: string; dark: boolean }) => (
   <div className="text-center">
     <motion.p
       className={`text-3xl font-bold tracking-tight ${dark ? 'text-white' : 'text-gray-900'}`}
@@ -101,35 +82,6 @@ const StatItem = ({ value, label, dark }: { value: string; label: string; dark: 
     </p>
   </div>
 )
-
-const icons = {
-  blog: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.7} strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>,
-  users: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.7} strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>,
-  chat: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.7} strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>,
-  auth: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.7} strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>,
-  image: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.7} strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>,
-  search: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.7} strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>,
-  cloud: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.7} strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5"><polyline points="16 16 12 12 8 16"/><line x1="12" y1="12" x2="12" y2="21"/><path d="M20.39 18.39A5 5 0 0 0 18 9h-1.26A8 8 0 1 0 3 16.3"/></svg>,
-  tag: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.7} strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg>,
-  dashboard: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.7} strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>,
-}
-
-const features = [
-  { icon: icons.blog,      title: 'Full blog CRUD',           desc: 'Create, edit, delete and browse posts with rich content via React Quill editor.' },
-  { icon: icons.users,     title: 'Social layer',             desc: 'Follow users, like posts, save articles, and comment with threaded replies.' },
-  { icon: icons.chat,      title: 'Real-time chat',           desc: 'WebSocket-powered DMs via Socket.IO with online presence and unread badges.' },
-  { icon: icons.auth,      title: 'JWT authentication',       desc: 'Secure register/login flow with email verification through Mailtrap.' },
-  { icon: icons.image,     title: 'Cloudinary uploads',       desc: 'Profile photos and post cover images stored and served via Cloudinary CDN.' },
-  { icon: icons.search,    title: 'Search engine',            desc: 'Search posts, users, and categories with paginated results.' },
-  { icon: icons.tag,       title: 'Category system',          desc: 'Follow categories and filter your feed by tags that interest you.' },
-  { icon: icons.dashboard, title: 'User dashboard',           desc: 'Stats, saved posts, liked posts, followers, and following in one place.' },
-]
-
-const stack = [
-  'ReactJS', 'TypeScript', 'Redux', 'Framer Motion', 'TailwindCSS',
-  'NodeJS', 'ExpressJS', 'MongoDB', 'Socket.IO', 'JWT',
-  'Cloudinary', 'AWS EC2', 'Mailtrap', 'React Quill', 'Zustand',
-]
 
 const About = () => {
   const { globalData } = useGlobalDataContext()
@@ -194,10 +146,10 @@ const About = () => {
       <section className={`border-y ${dark ? 'border-gray-800 bg-[#27272A]' : 'border-gray-100 bg-white'}`}>
         <div className="max-w-3xl mx-auto px-4 sm:px-6 py-10">
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-8">
-            <StatItem value="8+" label="Core features"   dark={dark} />
-            <StatItem value="15+" label="Tech tools"     dark={dark} />
-            <StatItem value="REST" label="API style"     dark={dark} />
-            <StatItem value="AWS" label="Deployed on"    dark={dark} />
+            <StatItemAbout value="8+" label="Core features"   dark={dark} />
+            <StatItemAbout value="15+" label="Tech tools"     dark={dark} />
+            <StatItemAbout value="REST" label="API style"     dark={dark} />
+            <StatItemAbout value="AWS" label="Deployed on"    dark={dark} />
           </div>
         </div>
       </section>

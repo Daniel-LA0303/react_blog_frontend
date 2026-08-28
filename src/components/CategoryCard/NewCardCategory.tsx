@@ -6,6 +6,7 @@ import useGlobalDataContext from '../../context/hooks/useGlobalDataContext'
 import { useSwal } from '../../hooks/useSwal'
 
 const NewCardCategory = ({ category, userAuth }: any) => {
+  
   const [isFollow, setIsFollow] = useState(false)
   const { showConfirmSwal } = useSwal()
   const { globalData } = useGlobalDataContext()

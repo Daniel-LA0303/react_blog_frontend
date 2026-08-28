@@ -4,7 +4,6 @@ import { motion } from 'framer-motion'
 
 import useConversation from '../../../context/hooks/useConversation'
 import useGlobalDataContext from '../../../context/hooks/useGlobalDataContext'
-import { useAuth } from '../../../context/UserAuthContex'
 
 import Chatuser from './ChatUser'
 import Messages from './Messages'

@@ -5,22 +5,11 @@ import useGlobalDataContext from "../../context/hooks/useGlobalDataContext";
 import { useAuth } from "../../context/UserAuthContex";
 import clientAuthAxios from "../../services/clientAuthAxios";
 import { NotificationI } from "../../interfaces/notification.interface";
-import axios from "axios";
 import { useParams } from "react-router-dom";
 import Spinner from "../../components/Spinner/Spinner";
 
 import { AnimatePresence, motion } from 'framer-motion'
-
-const LoadingSpinner = () => (
-  <div className="flex justify-center py-10">
-    <motion.div
-      className="h-20 w-20 rounded-full border-2 border-gray-300 border-t-gray-700 dark:border-gray-600 dark:border-t-gray-200"
-      animate={{ rotate: 360 }}
-      transition={{ duration: 0.8, repeat: Infinity, ease: 'linear' }}
-    />
-  </div>
-);
-
+import SmallSpinner from "../../components/Spinner/SmallSpinner";
 
 const Notifications = () => {
 
@@ -118,7 +107,7 @@ const Notifications = () => {
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
               >
-                <LoadingSpinner />
+                <SmallSpinner/>
               </motion.div>
             )}
           </AnimatePresence>

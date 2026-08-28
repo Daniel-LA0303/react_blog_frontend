@@ -1,11 +1,5 @@
 import {
     faBell,
-    faHeart,
-    faComment,
-    faMessage,
-    faNoteSticky,
-    faCheckDouble,
-    faUser,
 } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { useEffect, useRef, useState } from 'react'
@@ -16,59 +10,9 @@ import clientAuthAxios from '../../services/clientAuthAxios'
 import usePages from '../../context/hooks/usePages'
 import { NotificationI, NotificationType } from '../../interfaces/notification.interface'
 import { Link, useNavigate } from 'react-router-dom'
+import { typeNotificationConfig } from '../../utils/notificationUtils'
 
-/* Helpers */
-const typeConfig: Record<string, {
-    icon: any;
-    iconClass: string;
-    dotClass: string;
-    route: string;
-}> = {
-    LIKE_POST: {
-        icon: faHeart,
-        iconClass: "text-rose-400",
-        dotClass: "bg-rose-400",
-        route: "/view-post/"
-    },
-    FOLLOW_USER: {
-        icon: faUser,
-        iconClass: "text-blue-400",
-        dotClass: "bg-blue-400",
-        route: "/profile/"
-    },
-    COMMENT_POST: {
-        icon: faComment,
-        iconClass: "text-sky-400",
-        dotClass: "bg-sky-400",
-        route: "/view-post/"
-    },
-    REPLY_COMMENT: {
-        icon: faComment,
-        iconClass: "text-violet-400",
-        dotClass: "bg-violet-400",
-        route: "/view-post/"
-    },
-    MESSAGE: {
-        icon: faMessage,
-        iconClass: "text-purple-400",
-        dotClass: "bg-purple-400",
-        route: "/view-post/"
-    },
-    NOTE: {
-        icon: faNoteSticky,
-        iconClass: "text-amber-400",
-        dotClass: "bg-amber-400",
-        route: "/view-post/"
-    },
-    DEFAULT: {
-        icon: faBell,
-        iconClass: "text-slate-400",
-        dotClass: "bg-slate-400",
-        route: "/view-post/"
-    },
-}
-
-const getConfig = (type: NotificationType) => typeConfig[type] ?? typeConfig.DEFAULT;
+const getConfig = (type: NotificationType) => typeNotificationConfig[type] ?? typeNotificationConfig.DEFAULT;
 
 const relativeTime = (iso: string) => {
     const diff = Date.now() - new Date(iso).getTime()
@@ -118,10 +62,6 @@ const Notifications = () => {
         document.addEventListener('mousedown', handler)
         return () => document.removeEventListener('mousedown', handler)
     }, [])
-
-    const markAll = () => setNotifications(
-        notifications.map(n => ({ ...n, isRead: true }))
-    );
 
     const markOne = async (notification: any, config: any) => {
 
@@ -202,19 +142,6 @@ const Notifications = () => {
                                 </span>
                             )}
                         </div>
-
-                        {/*{unread > 0 && (
-                            <button
-                                onClick={markAll}
-                                className={`
-                                    flex items-center gap-1.5 text-[11px] font-semibold px-2 py-1 rounded-lg transition-colors duration-150
-                                    ${!globalData.themeGlobal ? 'text-white hover:bg-black/30' : 'text-black hover:bg-slate-200'}
-                                `}
-                            >
-                                <FontAwesomeIcon icon={faCheckDouble} className="text-[9px]" />
-                                Mark all read
-                            </button>
-                        )}*/}
                     </div>
 
                     {/* body */}

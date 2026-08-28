@@ -1,7 +1,5 @@
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import React from 'react'
 import useGlobalDataContext from '../../context/hooks/useGlobalDataContext';
-import { useAuth } from '../../context/UserAuthContex';
 import { faCreditCard, faTrash } from '@fortawesome/free-solid-svg-icons';
 import { PaymentMenthodResponseI } from '../../interfaces/payment.interfaces';
 
@@ -15,7 +13,6 @@ interface PaymentMethodCardProps {
 const PaymentMethodCard = ({ paymentMethod, changeDefault, deleteMethod }: PaymentMethodCardProps) => {
 
     const { globalData } = useGlobalDataContext();
-    const { userAuth } = useAuth()
     const dark = !globalData.themeGlobal;
 
     const card = `rounded-2xl border transition-colors ${dark ? 'bg-[#27272A] border-gray-800' : 'bg-white border-gray-100'}`

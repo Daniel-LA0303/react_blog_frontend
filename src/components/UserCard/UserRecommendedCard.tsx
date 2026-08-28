@@ -1,14 +1,9 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
-import clientAuthAxios from '../../services/clientAuthAxios'
 import useGlobalDataContext from '../../context/hooks/useGlobalDataContext'
-import userUserAuthContext from '../../context/hooks/useUserAuthContext'
-import { useSwal } from '../../hooks/useSwal'
 
 const UserRecommendedCard = ({ user }: { user: any }) => {
   const { globalData } = useGlobalDataContext();
-  const { userAuth } = userUserAuthContext();
-  const { showConfirmSwal } = useSwal();
   const dark = !globalData.themeGlobal;
 
   const [followerCount, setFollowerCount] = useState(

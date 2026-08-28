@@ -11,6 +11,7 @@ interface Props {
 type Tab = "url" | "upload";
 
 const ImageInsertModal = ({ onInsert, onClose }: Props) => {
+
   const { globalData } = useGlobalDataContext();
   const dark = !globalData.themeGlobal;
   const [tab,       setTab]       = useState<Tab>("upload");
@@ -53,17 +54,11 @@ const ImageInsertModal = ({ onInsert, onClose }: Props) => {
   const close   = dark ? "text-gray-500 hover:text-gray-300"           : "text-gray-400 hover:text-gray-600";
   const tabBar  = dark ? "border-gray-700"                             : "border-gray-100";
   const tabInactive = dark ? "text-gray-500 hover:text-gray-300"       : "text-gray-400 hover:text-gray-600";
-  const dropzone = dark
-    ? "border-gray-600 hover:border-[#2563EB] hover:bg-[#1e2a45]"
-    : "border-gray-200 hover:border-[#2563EB] hover:bg-blue-50";
+  const dropzone = dark ? "border-gray-600 hover:border-[#2563EB] hover:bg-[#1e2a45]" : "border-gray-200 hover:border-[#2563EB] hover:bg-blue-50";
   const dropText  = dark ? "text-gray-300"  : "text-gray-600";
   const dropSub   = dark ? "text-gray-500"  : "text-gray-400";
-  const inputCls  = dark
-    ? "bg-gray-800 border-gray-600 text-gray-100 placeholder:text-gray-600 focus:ring-[#2563EB]"
-    : "bg-white border-gray-200 text-gray-900 placeholder:text-gray-300 focus:ring-[#2563EB]";
-  const cancelBtn = dark
-    ? "border-gray-600 text-gray-300 hover:bg-gray-700"
-    : "border-gray-200 text-gray-600 hover:bg-gray-50";
+  const inputCls  = dark ? "bg-gray-800 border-gray-600 text-gray-100 placeholder:text-gray-600 focus:ring-[#2563EB]" : "bg-white border-gray-200 text-gray-900 placeholder:text-gray-300 focus:ring-[#2563EB]";
+  const cancelBtn = dark ? "border-gray-600 text-gray-300 hover:bg-gray-700" : "border-gray-200 text-gray-600 hover:bg-gray-50";
 
   return (
     <div

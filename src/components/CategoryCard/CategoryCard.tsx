@@ -6,6 +6,7 @@ import userUserAuthContext from '../../context/hooks/useUserAuthContext'
 import { useSwal } from '../../hooks/useSwal'
 
 const CategoryCard = ({ category }: any) => {
+  
   const { userAuth } = userUserAuthContext()
   const { globalData } = useGlobalDataContext()
   const { showConfirmSwal } = useSwal()

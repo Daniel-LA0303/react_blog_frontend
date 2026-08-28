@@ -25,7 +25,7 @@ import useGlobalDataContext from '../../context/hooks/useGlobalDataContext'
  * services
  */
 import clientAuthAxios from '../../services/clientAuthAxios'
-import { PostImage, PostUpdate } from '../../interfaces/post.interfaces'
+import { PostUpdate } from '../../interfaces/post.interfaces'
 import Spinner from '../../components/Spinner/Spinner'
 import TipTapEditor from '../../components/EditorTipTap/TipTapEditor'
 import { AIAssistModal } from '../../components/IA/NewPost/AIAssistModal'
@@ -33,189 +33,10 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faMagic } from '@fortawesome/free-solid-svg-icons'
 import Tooltip from '../../components/Global/TooTip'
 import useIA, { PromptType } from '../../context/hooks/useIA'
-
-export const toneOptions = [
-  { key: 'technical',     label: 'Technical',        icon: 'ti-code',        desc: 'Precise and detailed' },
-  { key: 'professional',  label: 'Professional',     icon: 'ti-briefcase',   desc: 'Formal and polished' },
-  { key: 'casual',        label: 'Casual',           icon: 'ti-mood-smile',  desc: 'Friendly and relaxed' },
-  { key: 'educational',   label: 'Educational',      icon: 'ti-school',      desc: 'Clear and instructive' },
-  { key: 'senior',        label: 'Senior Engineer',  icon: 'ti-terminal-2',  desc: 'Opinionated and sharp' },
-]
-
-const fadeUp = {
-  hidden: { opacity: 0, y: 16 },
-  visible: (i = 0) => ({
-    opacity: 1, y: 0,
-    transition: { duration: 0.4, delay: i * 0.07, ease: [0.25, 0.46, 0.45, 0.94] },
-  }),
-}
-
-const stagger = { hidden: {}, visible: { transition: { staggerChildren: 0.07 } } }
-
-const inputCls = (dark: boolean, hasError = false) =>
-  `w-full rounded-xl border px-3.5 py-2.5 text-sm outline-none transition-colors duration-150
-  focus:ring-2 focus:ring-offset-0
-  ${hasError
-    ? 'border-red-400 focus:border-red-400 focus:ring-red-400/20'
-    : dark
-      ? 'bg-[#1e1e1e] border-gray-700 text-white placeholder-gray-600 focus:border-[#2563EB] focus:ring-[#2563EB]/20'
-      : 'bg-white border-gray-200 text-gray-900 placeholder-gray-400 focus:border-[#2563EB] focus:ring-[#2563EB]/20'
-  }`
-
-const Field = ({
-  label, htmlFor, error, dark, children,
-}: {
-  label: string; htmlFor?: string; error?: string; dark: boolean; children: React.ReactNode
-}) => (
-  <div>
-    <div className="flex items-center justify-between mb-1.5">
-      <label
-        htmlFor={htmlFor}
-        className={`block text-xs font-medium ${dark ? 'text-gray-400' : 'text-gray-500'}`}
-      >
-        {label}
-      </label>
-    </div>
-    {children}
-    <AnimatePresence>
-      {error && (
-        <motion.p
-          initial={{ opacity: 0, y: -4 }}
-          animate={{ opacity: 1, y: 0 }}
-          exit={{ opacity: 0, y: -4 }}
-          transition={{ duration: 0.2 }}
-          className="mt-1.5 text-xs text-red-500"
-        >
-          {error}
-        </motion.p>
-      )}
-    </AnimatePresence>
-  </div>
-)
-
-const CategorySelect = ({
-  options, selected, onChange, dark, hasError,
-}: {
-  options: any[]; selected: any[]; onChange: (cats: any[]) => void; dark: boolean; hasError: boolean
-}) => {
-  const [open, setOpen] = useState(false)
-  const [search, setSearch] = useState('')
-  const ref = useRef<HTMLDivElement>(null)
-
-  useEffect(() => {
-    const handler = (e: MouseEvent) => {
-      if (!ref.current?.contains(e.target as Node)) setOpen(false)
-    }
-    document.addEventListener('mousedown', handler)
-    return () => document.removeEventListener('mousedown', handler)
-  }, [])
-
-  const filtered = options.filter(
-    o => o.name?.toLowerCase().includes(search.toLowerCase()) &&
-      !selected.find(s => s._id === o._id || s.value === o.value)
-  )
-
-  const toggle = (cat: any) => {
-    if (selected.find(s => s._id === cat._id || s.value === cat.value)) {
-      onChange(selected.filter(s => s._id !== cat._id && s.value !== cat.value))
-    } else if (selected.length < 4) {
-      onChange([...selected, cat])
-    }
-  }
-
-  const remove = (cat: any) =>
-    onChange(selected.filter(s => s._id !== cat._id && s.value !== cat.value))
-
-  const getName = (cat: any) => cat.name || cat.label || cat.value || ''
-
-  return (
-    <div ref={ref} className="relative">
-      <div
-        onClick={() => setOpen(v => !v)}
-        className={`min-h-[42px] w-full rounded-xl border px-3 py-2 cursor-pointer flex flex-wrap gap-1.5 items-center transition-colors duration-150
-          ${open ? 'ring-2 ring-offset-0 ring-[#2563EB]/20 border-[#2563EB]' : hasError ? 'border-red-400' : dark ? 'border-gray-700' : 'border-gray-200'}
-          ${dark ? 'bg-[#1e1e1e]' : 'bg-white'}`}
-      >
-        <AnimatePresence initial={false}>
-          {selected.map(cat => (
-            <motion.span
-              key={cat._id || cat.value}
-              initial={{ opacity: 0, scale: 0.8 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.7 }}
-              transition={{ type: 'spring', stiffness: 400, damping: 20 }}
-              className="inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-xs font-medium bg-[#2563EB]/10 text-[#2563EB]"
-              onClick={(e: any) => { e.stopPropagation(); remove(cat) }}
-            >
-              {getName(cat)}
-              <span className="opacity-60 hover:opacity-100 cursor-pointer">✕</span>
-            </motion.span>
-          ))}
-        </AnimatePresence>
-
-        {selected.length === 0 && (
-          <span className={`text-sm ${dark ? 'text-gray-600' : 'text-gray-400'}`}>
-            Select up to 4 categories…
-          </span>
-        )}
-        {selected.length > 0 && (
-          <span className={`ml-auto text-xs flex-shrink-0 ${dark ? 'text-gray-500' : 'text-gray-400'}`}>
-            {selected.length}/4
-          </span>
-        )}
-      </div>
-
-      <AnimatePresence>
-        {open && (
-          <motion.div
-            initial={{ opacity: 0, y: -6, scaleY: 0.95 }}
-            animate={{ opacity: 1, y: 0, scaleY: 1 }}
-            exit={{ opacity: 0, y: -6, scaleY: 0.95 }}
-            transition={{ duration: 0.16, ease: [0.25, 0.46, 0.45, 0.94] }}
-            style={{ transformOrigin: 'top' }}
-            className={`absolute top-full left-0 right-0 mt-1.5 rounded-xl border shadow-xl z-50 overflow-hidden
-              ${dark ? 'bg-[#1e1e1e] border-gray-700' : 'bg-white border-gray-200'}`}
-          >
-            <div className={`px-3 py-2 border-b ${dark ? 'border-gray-800' : 'border-gray-100'}`}>
-              <input
-                type="text"
-                placeholder="Filter categories…"
-                value={search}
-                onChange={e => setSearch(e.target.value)}
-                onClick={e => e.stopPropagation()}
-                autoFocus
-                className={`w-full bg-transparent text-sm outline-none ${dark ? 'text-white placeholder-gray-600' : 'text-gray-900 placeholder-gray-400'}`}
-              />
-            </div>
-            <ul className="max-h-52 overflow-y-auto py-1">
-              {filtered.length === 0 ? (
-                <li className={`px-4 py-3 text-xs text-center ${dark ? 'text-gray-600' : 'text-gray-400'}`}>
-                  {selected.length >= 4 ? 'Maximum 4 categories reached' : 'No categories found'}
-                </li>
-              ) : (
-                filtered.map(cat => (
-                  <li
-                    key={cat._id || cat.value}
-                    onClick={e => { e.stopPropagation(); toggle(cat) }}
-                    className={`flex items-center gap-3 px-4 py-2.5 text-sm cursor-pointer transition-colors duration-100
-                      ${dark ? 'hover:bg-gray-800 text-gray-300' : 'hover:bg-gray-50 text-gray-700'}
-                      ${selected.length >= 4 ? 'opacity-40 cursor-not-allowed pointer-events-none' : ''}`}
-                  >
-                    <span
-                      className="h-2 w-2 rounded-full flex-shrink-0"
-                      style={{ backgroundColor: cat.color || '#888' }}
-                    />
-                    {getName(cat)}
-                  </li>
-                ))
-              )}
-            </ul>
-          </motion.div>
-        )}
-      </AnimatePresence>
-    </div>
-  )
-}
+import { fadeUp, stagger } from '../../utils/animationsUtils'
+import Field from '../../components/Global/Field'
+import CategorySelect from '../../components/Post/CategorySelect'
+import { inputCls, toneOptions } from '../../utils/postUtils'
 
 const EditPost = () => {
 
@@ -240,19 +61,19 @@ const EditPost = () => {
   /**
    * states
    */
-  const [title, setTitle]                       = useState('')
-  const [desc, setDesc]                         = useState('')
+  const [title, setTitle] = useState('')
+  const [desc, setDesc] = useState('')
   const [categoriesSelect, setCategoriesSelect] = useState<any[]>([])
-  const [content, setContent]                   = useState('')
-  const [image, setImage]                       = useState<any>('')
-  const [file, setFile]                         = useState<File | null>(null)
-  const [newImage, setNewImage]                 = useState(false)
-  const [categories, setCategories]             = useState([])
-  const [loading, setLoading]                   = useState(false)
-  const [saving, setSaving]                     = useState(false)
+  const [content, setContent] = useState('')
+  const [image, setImage] = useState<any>('')
+  const [file, setFile] = useState<File | null>(null)
+  const [newImage, setNewImage] = useState(false)
+  const [categories, setCategories] = useState([])
+  const [loading, setLoading] = useState(false)
+  const [saving, setSaving] = useState(false)
   const [prevImagePublicId, setPrevImagePublicId] = useState<string | null>(null)
-  const [removeImage, setRemoveImage]           = useState(false)
-  const [errors, setErrors]                     = useState<Record<string, string>>({})
+  const [removeImage, setRemoveImage] = useState(false)
+  const [errors, setErrors] = useState<Record<string, string>>({})
 
   // AI states
   const [flagCount, setFlagCount]   = useState(false)

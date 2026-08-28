@@ -12,9 +12,7 @@ import LocalOfferOutlinedIcon from '@mui/icons-material/LocalOfferOutlined'; // 
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
 import AddCircleOutlineOutlinedIcon from '@mui/icons-material/AddCircleOutlineOutlined';
 import ChatBubbleOutlineOutlinedIcon from '@mui/icons-material/ChatBubbleOutlineOutlined';
-import HelpOutlineOutlinedIcon from '@mui/icons-material/HelpOutlineOutlined';       // ? circle
-import LiveHelpOutlinedIcon from '@mui/icons-material/LiveHelpOutlined';               // ? with chat bubble
-import ContactSupportOutlinedIcon from '@mui/icons-material/ContactSupportOutlined';   // headset + ?
+
 import EmailOutlinedIcon from '@mui/icons-material/EmailOutlined';              // Contact
 import PrivacyTipOutlinedIcon from '@mui/icons-material/PrivacyTipOutlined';    // Privacy Policy
 import GavelOutlinedIcon from '@mui/icons-material/GavelOutlined';              // Terms of Use
@@ -48,16 +46,6 @@ const AsideMenu = ({ user }: any) => {
                     <HomeOutlinedIcon sx={{ fontSize: 16 }} />
                     <span>Home</span>
                 </Link>
-                {/*<Link to="/plans" className={itemClass}>
-          <svg viewBox="0 0 22 22" fill="none" stroke="currentColor" strokeWidth={1.7} strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4 flex-shrink-0">
-            <path d="M2 20h20M5 20V10l7-6 7 6v10" />
-            <path d="M2 10l3 2M22 10l-3 2" />
-            <circle cx="12" cy="4" r="1" fill="currentColor" />
-            <circle cx="5" cy="12" r="1" fill="currentColor" />
-            <circle cx="19" cy="12" r="1" fill="currentColor" />
-          </svg>
-          <span>Plans</span>
-        </Link>*/}
             </div>
 
             {divider}
@@ -92,14 +80,6 @@ const AsideMenu = ({ user }: any) => {
                     <LocalOfferOutlinedIcon sx={{ fontSize: 16 }} />
                     <span>Categories</span>
                 </Link>
-                {/*<Link to="/about" className={itemClass}>
-                    <HelpOutlineOutlinedIcon sx={{ fontSize: 18 }} />
-                    <span>Help</span>
-                </Link>
-                <Link to="/about" className={itemClass}>
-                    <ContactSupportOutlinedIcon sx={{ fontSize: 18 }} />
-                    <span>Contact</span>
-                </Link>*/}
                 <Link to="/about" className={itemClass}>
                     <InfoOutlinedIcon sx={{ fontSize: 16 }} />
                     <span>About</span>

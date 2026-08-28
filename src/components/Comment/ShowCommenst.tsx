@@ -17,7 +17,7 @@ import { motion, AnimatePresence } from 'framer-motion'
  * router
  */
 import { Link } from 'react-router-dom'
-import Swal from 'sweetalert2'
+
 
 /**
  * components
@@ -203,35 +203,33 @@ const ShowCommenst = ({
 
   // to delete a comment
   const handleDeleteComment = async (idComment: any) => {
-    Swal.fire({
-      title: 'Are you sure you want to remove this comment?',
-      text: 'Deleted comment cannot be recovered',
-      icon: 'warning',
-      showCancelButton: true,
-      confirmButtonText: 'Yes, Delete',
-      cancelButtonText: 'No, Cancel',
-      customClass: {
-        popup: 'swal-popup-warning',
-        title: 'swal-title-warning',
-        confirmButton: 'swal-btn-warning',
-        cancelButton: 'swal-btn-error',
-      },
-      buttonsStyling: false,
-    }).then(async result => {
-      if (result.isConfirmed) {
-        try {
-          await clientAuthAxios.delete(
-            `/comments/delete-comment/${idComment}?user=${userAuth.userId}&post=${idPost}`
-          )
-          // update state
-          setCommentsState((prev: any) => prev.filter((c: any) => c._id !== idComment))
-          setEngagementPost((prev: any) => ({ ...prev, numberComments: prev.numberComments - 1 }))
-        } catch (error: any) {
-          console.error(error)
-          showConfirmSwal({ message: error.response.data.message, status: 'error', confirmButton: true })
-        }
-      }
+
+    const { isConfirmed } = await showConfirmSwal({
+      message: 'Are you sure you want to remove this comment?',
+      status: 'warning',
+      confirmButton: true,
+      cancelButton: true,
+      confirmText: 'Yes, Delete',
+      cancelText: 'No, Cancel',
     })
+
+    if (!isConfirmed) return
+
+    try {
+      await clientAuthAxios.delete(
+        `/comments/delete-comment/${idComment}?user=${userAuth.userId}&post=${idPost}`
+      )
+      setCommentsState((prev: any) => prev.filter((c: any) => c._id !== idComment))
+      setEngagementPost((prev: any) => ({ ...prev, numberComments: prev.numberComments - 1 }))
+    } catch (error: any) {
+      console.error(error)
+      showConfirmSwal({
+        message: error.response?.data?.message ?? 'Something went wrong',
+        status: 'error',
+        confirmButton: true,
+        cancelButton: false,
+      })
+    }
   }
 
   const handleReplyComment = () => setReplyActive(v => !v)
@@ -372,7 +370,7 @@ const ShowCommenst = ({
             />
           ))}
 
-          {/* Botón para cargar más replies si aún hay */}
+          {/* load more replies */}
           {repliesMeta.hasMore && (
             <LoadMoreRepliesButton
               loading={loadingMoreReplies}

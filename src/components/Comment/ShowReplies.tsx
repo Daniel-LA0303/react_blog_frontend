@@ -16,7 +16,6 @@ import useGlobalDataContext from '../../context/hooks/useGlobalDataContext'
 /**
  * libraries
  */
-import Swal from 'sweetalert2'
 import { motion, AnimatePresence } from 'framer-motion'
 
 /**
@@ -24,7 +23,7 @@ import { motion, AnimatePresence } from 'framer-motion'
  */
 import clientAuthAxios from '../../services/clientAuthAxios'
 
-const ShowReplies = ({ reply, userP, onUpdateReply, onDeleteReply }: any) => {
+const ShowReplies = ({ reply, onUpdateReply, onDeleteReply }: any) => {
 
   /**
    * hooks
@@ -41,39 +40,34 @@ const ShowReplies = ({ reply, userP, onUpdateReply, onDeleteReply }: any) => {
 
   // Función para eliminar reply
   const handleDeleteReply = async (replyId: any) => {
-    Swal.fire({
-      title: 'Delete reply?',
-      text: 'This action cannot be undone',
-      icon: 'warning',
-      showCancelButton: true,
-      confirmButtonText: 'Yes, delete',
-      cancelButtonText: 'Cancel',
-      confirmButtonColor: '#d33',
-      cancelButtonColor: '#3085d6',
-      customClass: {
-        popup: 'swal-popup-warning',
-        title: 'swal-title-warning',
-        confirmButton: 'swal-btn-warning',
-        cancelButton: 'swal-btn-cancel',
-      },
-    }).then(async result => {
-      if (result.isConfirmed) {
-        try {
-          const res = await clientAuthAxios.post(`/replies/delete-reply/${replyId}?user=${userAuth.userId}`, {
-            commentID: reply.commentID,
-          })
-          if (onDeleteReply) onDeleteReply(replyId)
-          showAutoSwal({ message: res.data.message, status: 'success', timer: 1500 })
-        } catch (error: any) {
-          console.error('Error deleting reply:', error)
-          showConfirmSwal({
-            message: error.response?.data?.message || 'Error deleting the reply',
-            status: 'error',
-            confirmButton: true,
-          })
-        }
-      }
-    })
+
+    const { isConfirmed } = await showConfirmSwal({
+      message: 'Are you sure you want to remove this reply?',
+      status: 'warning',
+      confirmButton: true,
+      cancelButton: true,
+      confirmText: 'Yes, Delete',
+      cancelText: 'No, Cancel',
+    });
+
+    if (!isConfirmed) return
+
+    try {
+      const res = await clientAuthAxios.post(`/replies/delete-reply/${replyId}?user=${userAuth.userId}`, {
+        commentID: reply.commentID,
+      })
+      if (onDeleteReply) onDeleteReply(replyId)
+      showAutoSwal({ message: res.data.message, status: 'success', timer: 1500 })
+    } catch (error: any) {
+      console.error('Error deleting reply:', error)
+      showConfirmSwal({
+        message: error.response?.data?.message || 'Error deleting the reply',
+        status: 'error',
+        confirmButton: true,
+      })
+    }
+
+
   }
 
   // Función para editar reply

@@ -1,6 +1,5 @@
 import { Link } from 'react-router-dom'
 import { motion } from 'framer-motion'
-import { useAuth } from '../../../context/UserAuthContex'
 import useConversation from '../../../context/hooks/useConversation'
 import useGlobalDataContext from '../../../context/hooks/useGlobalDataContext'
 import { useState } from 'react'
@@ -13,8 +12,8 @@ type MessageProps = {
 }
 
 function Message({ message, isFirst, isLast, isMine }: MessageProps) {
+  
   const { setReplyTo } = useConversation()
-  const { globalData } = useGlobalDataContext()
   const [modalOpen, setModalOpen] = useState(false)
 
   const formattedTime = new Date(message.createdAt)

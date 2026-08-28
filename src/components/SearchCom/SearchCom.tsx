@@ -7,15 +7,9 @@ import CardCategoryDashboard from '../CategoryCard/CardCategoryDashboard'
 import Post from '../Post/Post'
 import userUserAuthContext from '../../context/hooks/useUserAuthContext'
 import useGlobalDataContext from '../../context/hooks/useGlobalDataContext'
+import { fadeUp } from '../../utils/animationsUtils'
 
-const fadeUp = {
-  hidden: { opacity: 0, y: 14 },
-  visible: (i = 0) => ({
-    opacity: 1, y: 0,
-    transition: { duration: 0.38, delay: i * 0.06, ease: [0.25, 0.46, 0.45, 0.94] },
-  }),
-}
-
+/// show users - cats - post in page search
 const SearchCom = ({
   cats,
   posts,

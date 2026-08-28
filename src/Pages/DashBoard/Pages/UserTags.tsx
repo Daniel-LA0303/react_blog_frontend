@@ -1,8 +1,6 @@
 import { useEffect, useState } from 'react'
 
-import { useNavigate, useParams } from 'react-router-dom'
-import { useSelector } from 'react-redux'
-import axios from 'axios'
+import { useParams } from 'react-router-dom'
 
 /**
  * hooks context
@@ -13,7 +11,6 @@ import useGlobalDataContext from '../../../context/hooks/useGlobalDataContext'
 /**
  * components
  */
-import Spinner from '../../../components/Spinner/Spinner'
 import AsideDashboard from '../../../components/Aside/AsideDashboard'
 import CardCategoryDashboard from '../../../components/CategoryCard/CardCategoryDashboard'
 import Sidebar from '../../../components/Sidebar/Sidebar'

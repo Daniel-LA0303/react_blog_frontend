@@ -2,26 +2,10 @@ import { useRef } from 'react'
 import { motion, useInView } from 'framer-motion'
 import Sidebar from '../../components/Sidebar/Sidebar'
 import useGlobalDataContext from '../../context/hooks/useGlobalDataContext'
+import Section from '../../components/Global/Section'
+import { fadeUp } from '../../utils/animationsUtils'
 
-const fadeUp = {
-  hidden: { opacity: 0, y: 24 },
-  visible: (i = 0) => ({
-    opacity: 1, y: 0,
-    transition: { duration: 0.5, delay: i * 0.08, ease: [0.25, 0.46, 0.45, 0.94] },
-  }),
-}
 
-const stagger = { hidden: {}, visible: { transition: { staggerChildren: 0.08 } } }
-
-const Section = ({ children, className = '' }: { children: React.ReactNode; className?: string }) => {
-  const ref = useRef(null)
-  const inView = useInView(ref, { once: true, margin: '-80px' })
-  return (
-    <motion.div ref={ref} initial="hidden" animate={inView ? 'visible' : 'hidden'} variants={stagger} className={className}>
-      {children}
-    </motion.div>
-  )
-}
 
 const rules = [
   {

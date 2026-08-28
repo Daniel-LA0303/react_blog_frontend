@@ -10,7 +10,6 @@ import axios from 'axios'
  * components
  */
 import AsideDashboard from '../../../components/Aside/AsideDashboard'
-import Spinner from '../../../components/Spinner/Spinner'
 import Post from '../../../components/Post/Post'
 import Sidebar from '../../../components/Sidebar/Sidebar'
 import useGlobalDataContext from '../../../context/hooks/useGlobalDataContext'

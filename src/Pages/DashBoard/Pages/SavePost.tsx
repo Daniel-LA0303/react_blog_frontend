@@ -5,7 +5,6 @@ import { useParams } from 'react-router-dom'
 /**
  * components
  */
-import Spinner from '../../../components/Spinner/Spinner'
 import AsideDashboard from '../../../components/Aside/AsideDashboard'
 import Sidebar from '../../../components/Sidebar/Sidebar'
 import Post from '../../../components/Post/Post'
@@ -134,4 +133,4 @@ const SavePost = () => {
   )
 }
 
-export default SavePost
+export default SavePost;

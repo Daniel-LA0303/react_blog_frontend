@@ -25,6 +25,7 @@ import {
 import useGlobalDataContext from '../../context/hooks/useGlobalDataContext'
 import { useSwal } from '../../hooks/useSwal'
 import clientAuthAxios from '../../services/clientAuthAxios'
+import { fadeUp, stagger } from '../../utils/animationsUtils'
 
 type Role = 'user' | 'moderator' | 'admin'
 type UserStatus = 'active' | 'suspended' | 'banned'
@@ -87,19 +88,6 @@ const ROLE_LABELS: Record<Role, string> = {
   user: 'User',
   moderator: 'Moderator',
   admin: 'Admin',
-}
-
-const fadeUp = {
-  hidden: { opacity: 0, y: 16 },
-  visible: (i = 0) => ({
-    opacity: 1, y: 0,
-    transition: { duration: 0.4, delay: i * 0.07, ease: [0.25, 0.46, 0.45, 0.94] },
-  }),
-}
-
-const stagger = {
-  hidden: {},
-  visible: { transition: { staggerChildren: 0.07 } },
 }
 
 function getInitials(name: string) {

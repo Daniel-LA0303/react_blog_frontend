@@ -10,7 +10,6 @@ import {useParams } from 'react-router-dom';
  * components
  */
 import UserCardLong from '../../../components/UserCard/UseCardLong';
-import Spinner from '../../../components/Spinner/Spinner';
 import AsideDashboard from '../../../components/Aside/AsideDashboard';
 import useGlobalDataContext from '../../../context/hooks/useGlobalDataContext';
 

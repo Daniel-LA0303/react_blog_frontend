@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom'
 import useGlobalDataContext from '../../context/hooks/useGlobalDataContext'
 
 const BlogRecommendedCard = ({ blog }: { blog: any }) => {
+  
   const { globalData } = useGlobalDataContext();
   const dark = !globalData.themeGlobal;
   const hasImage = !!blog?.linkImage?.secure_url;

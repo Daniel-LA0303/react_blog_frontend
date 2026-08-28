@@ -9,7 +9,9 @@ interface Props {
 
 const MIN_WIDTH = 60;
 
+// resizable image in insert
 const ResizableImageComponent = ({ node, updateAttributes, selected }: Props) => {
+
   const { src, alt, title, width, style } = node.attrs;
   const containerRef  = useRef<HTMLDivElement>(null);
   const startX        = useRef(0);

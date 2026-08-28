@@ -1,4 +1,4 @@
-import axios, { AxiosRequestConfig } from "axios";
+import axios, { InternalAxiosRequestConfig } from "axios";
 
 const clientAuthAxios = axios.create({
   baseURL: import.meta.env.VITE_API_URL_BACKEND as string,
@@ -6,7 +6,7 @@ const clientAuthAxios = axios.create({
 });
 
 clientAuthAxios.interceptors.request.use(
-  (config: AxiosRequestConfig) => {
+  (config: InternalAxiosRequestConfig) => {
     const token = localStorage.getItem("tokenAuthUser");
 
     if (token && config.headers) {

@@ -1,6 +1,7 @@
 import { motion } from 'framer-motion'
 
 const LoadMoreRepliesButton = ({ loading, onClick, theme, hasMore }: any) => {
+  
   const dark = !theme
 
   if (!hasMore) return null

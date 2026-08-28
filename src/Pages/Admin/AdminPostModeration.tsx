@@ -29,6 +29,7 @@ import {
 import useGlobalDataContext from '../../context/hooks/useGlobalDataContext'
 import { useSwal } from '../../hooks/useSwal'
 import clientAuthAxios from '../../services/clientAuthAxios'
+import { fadeUp, stagger } from '../../utils/animationsUtils'
 
 type PostStatus = 'published' | 'hidden' | 'featured' | 'under_review' | 'deleted'
 type ReportReason = 'spam' | 'prohibited_content' | 'harassment' | 'misinformation' | 'copyright'
@@ -243,19 +244,6 @@ function avatarBg(name: string) {
 function formatCount(n: number) {
   if (n >= 1000) return `${(n / 1000).toFixed(1)}k`
   return String(n)
-}
-
-const fadeUp = {
-  hidden: { opacity: 0, y: 16 },
-  visible: (i = 0) => ({
-    opacity: 1, y: 0,
-    transition: { duration: 0.4, delay: i * 0.07, ease: [0.25, 0.46, 0.45, 0.94] },
-  }),
-}
-
-const stagger = {
-  hidden: {},
-  visible: { transition: { staggerChildren: 0.07 } },
 }
 
 const StatCard = ({

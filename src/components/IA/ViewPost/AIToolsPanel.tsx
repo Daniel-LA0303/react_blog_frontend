@@ -28,14 +28,6 @@ interface AIToolsPanelProps {
     userPlan?: 'FREE' | 'PRO' | 'PREMIUM'
 }
 
-// PanelContent props too
-interface PanelContentProps {
-    dark: boolean
-    onToolClick: (toolKey: string, customPrompt?: string) => void
-    userPlan?: 'FREE' | 'PRO' | 'PREMIUM'
-    onClose?: () => void
-}
-
 const LG_BREAKPOINT = 1024 // tailwind lg
 
 const useIsMobile = () => {
@@ -241,6 +233,7 @@ const PanelContent = ({
 }
 
 const AIToolsPanel = ({ onToolClick, userPlan = 'FREE' }: AIToolsPanelProps) => {
+    
     const { globalData } = useGlobalDataContext()
     const dark = !globalData.themeGlobal
     const isMobile = useIsMobile()

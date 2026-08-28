@@ -1,5 +1,5 @@
-import React, { useEffect, useState, useRef } from 'react'
-import { motion, AnimatePresence, useInView, useScroll, useTransform } from 'framer-motion'
+import React, { useEffect, useState } from 'react'
+import { motion, AnimatePresence } from 'framer-motion'
 
 /**
  * icons
@@ -11,7 +11,6 @@ import { faCake } from '@fortawesome/free-solid-svg-icons';
  * components
  */
 import Sidebar from '../../components/Sidebar/Sidebar';
-import Post from '../../components/Post/Post';
 
 /**
  * route
@@ -29,281 +28,14 @@ import useGlobalDataContext from '../../context/hooks/useGlobalDataContext';
 import clientAuthAxios from '../../services/clientAuthAxios';
 import useConversation from '../../context/hooks/useConversation';
 import UserRecommendedCard from '../../components/UserCard/UserRecommendedCard';
-
-const fadeUp = {
-  hidden: { opacity: 0, y: 24 },
-  visible: (i = 0) => ({
-    opacity: 1,
-    y: 0,
-    transition: { duration: 0.5, delay: i * 0.08, ease: [0.25, 0.46, 0.45, 0.94] },
-  }),
-};
-
-const fadeIn = {
-  hidden: { opacity: 0 },
-  visible: { opacity: 1, transition: { duration: 0.4, ease: 'easeOut' } },
-};
-
-const scaleIn = {
-  hidden: { opacity: 0, scale: 0.92 },
-  visible: (i = 0) => ({
-    opacity: 1,
-    scale: 1,
-    transition: { duration: 0.45, delay: i * 0.06, ease: [0.34, 1.56, 0.64, 1] },
-  }),
-};
-
-const slideRight = {
-  hidden: { opacity: 0, x: -20 },
-  visible: (i = 0) => ({
-    opacity: 1,
-    x: 0,
-    transition: { duration: 0.4, delay: i * 0.07, ease: [0.25, 0.46, 0.45, 0.94] },
-  }),
-};
-
-const staggerContainer = {
-  hidden: {},
-  visible: { transition: { staggerChildren: 0.07 } },
-};
-
-const SkeletonPulse = ({ className = '' }: { className?: string }) => (
-  <motion.div
-    className={`rounded-md bg-gray-200 dark:bg-gray-700 ${className}`}
-    animate={{ opacity: [0.5, 1, 0.5] }}
-    transition={{ duration: 1.6, repeat: Infinity, ease: 'easeInOut' }}
-  />
-);
-
-const ProfileSkeleton = ({ dark }: { dark: boolean }) => (
-  <div className={`overflow-hidden rounded-2xl shadow-sm border ${dark ? 'bg-[#27272A] border-gray-800' : 'bg-white border-gray-100'} p-8`}>
-    <div className="flex flex-col sm:flex-row gap-6 items-center sm:items-start">
-      <SkeletonPulse className="h-24 w-24 rounded-full flex-shrink-0" />
-      <div className="flex-1 space-y-3 w-full">
-        <SkeletonPulse className="h-6 w-48" />
-        <SkeletonPulse className="h-4 w-36" />
-        <SkeletonPulse className="h-4 w-28" />
-      </div>
-    </div>
-  </div>
-);
-
-const PostSkeleton = ({ dark }: { dark: boolean }) => (
-  <div className={`rounded-2xl border ${dark ? 'bg-[#27272A] border-gray-800' : 'bg-white border-gray-100'} p-6 space-y-3`}>
-    <SkeletonPulse className="h-5 w-3/4" />
-    <SkeletonPulse className="h-4 w-full" />
-    <SkeletonPulse className="h-4 w-2/3" />
-    <div className="flex gap-3 pt-2">
-      <SkeletonPulse className="h-3 w-16" />
-      <SkeletonPulse className="h-3 w-20" />
-    </div>
-  </div>
-);
-
-const StatItem = ({
-  label,
-  value,
-  delay,
-  dark,
-}: {
-  label: string;
-  value: number;
-  delay: number;
-  dark: boolean;
-}) => {
-  const ref = useRef(null);
-  const inView = useInView(ref, { once: true });
-  const [count, setCount] = useState(0);
-
-  useEffect(() => {
-    if (!inView) return;
-    let start = 0;
-    const end = value;
-    if (end === 0) return;
-    const duration = 900;
-    const step = Math.ceil(end / (duration / 16));
-    const timer = setInterval(() => {
-      start += step;
-      if (start >= end) { setCount(end); clearInterval(timer); }
-      else setCount(start);
-    }, 16);
-    return () => clearInterval(timer);
-  }, [inView, value]);
-
-  return (
-    <motion.li
-      ref={ref}
-      variants={fadeUp}
-      custom={delay}
-      className={`flex justify-between items-center py-3.5 border-t ${dark ? 'border-gray-800' : 'border-gray-100'}`}
-    >
-      <span className={`text-sm font-medium tracking-wide ${dark ? 'text-gray-400' : 'text-gray-500'}`}>{label}</span>
-      <motion.span
-        className={`text-sm font-semibold tabular-nums ${dark ? 'text-white' : 'text-gray-900'}`}
-        initial={{ opacity: 0 }}
-        animate={inView ? { opacity: 1 } : {}}
-        transition={{ duration: 0.3, delay: delay * 0.08 }}
-      >
-        {count}
-      </motion.span>
-    </motion.li>
-  );
-};
-
-const SkillBadge = ({ skill, index }: { skill: string; index: number }) => (
-  <motion.span
-    variants={scaleIn}
-    custom={index}
-    whileHover={{ scale: 1.05, y: -2 }}
-    whileTap={{ scale: 0.97 }}
-    className="inline-block rounded-full px-4 py-1.5 text-xs font-medium tracking-wide bg-blue-50 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300 border border-blue-100 dark:border-blue-800 cursor-default select-none"
-  >
-    {skill}
-  </motion.span>
-);
-
-const ActionButton = ({
-  onClick,
-  variant,
-  children,
-}: {
-  onClick: () => void;
-  variant: 'primary' | 'outline' | 'success';
-  children: React.ReactNode;
-}) => {
-  const base =
-    'relative overflow-hidden flex items-center justify-center rounded-full px-6 py-2 text-sm font-medium transition-all duration-200 select-none focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2';
-  const styles = {
-    primary: 'bg-[#2563EB] text-white hover:bg-[#2563EB] dark:bg-[#2563EB] dark:hover:bg-[#2563EB] ',
-    outline: 'bg-gray-100 text-gray-500 border border-gray-200 hover:bg-red-50 hover:text-red-500 hover:border-red-200 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-700 dark:hover:bg-red-900/30 dark:hover:text-red-400 dark:hover:border-red-800 focus-visible:ring-gray-400',
-    success: 'bg-slate-800 text-white hover:bg-slate-700 dark:bg-slate-600 dark:hover:bg-slate-500 focus-visible:ring-slate-500',
-  };
-
-  return (
-    <motion.button
-      type="button"
-      onClick={onClick}
-      className={`${base} ${styles[variant]}`}
-      whileHover={{ scale: 1.03 }}
-      whileTap={{ scale: 0.96, transition: { duration: 0.1 } }}
-    >
-      {children}
-    </motion.button>
-  );
-};
-
-const ContactRow = ({ icon, value, delay }: { icon: string; value: string; delay: number }) => (
-  <motion.div
-    variants={slideRight}
-    custom={delay}
-    className="flex items-center gap-3 group"
-  >
-    <i className={`${icon} text-gray-400 group-hover:text-gray-600 dark:group-hover:text-gray-300 transition-colors text-base`} />
-    <span className="text-sm text-gray-600 dark:text-gray-300 truncate">{value}</span>
-  </motion.div>
-);
-
-const AnimatedPost = ({ post, index }: { post: any; index: number }) => {
-  const ref = useRef(null);
-  const inView = useInView(ref, { once: true, margin: '-60px' });
-
-  return (
-    <motion.div
-      ref={ref}
-      initial="hidden"
-      animate={inView ? 'visible' : 'hidden'}
-      variants={fadeUp}
-      custom={index % 3}
-    >
-      <Post post={post} />
-    </motion.div>
-  );
-};
-
-const SideCard = ({
-  title,
-  dark,
-  delay,
-  children,
-}: {
-  title: string;
-  dark: boolean;
-  delay: number;
-  children: React.ReactNode;
-}) => (
-  <motion.div
-    variants={fadeUp}
-    custom={delay}
-    className={`rounded-2xl border ${dark ? 'bg-[#27272A] border-gray-800' : 'bg-white border-gray-100'} overflow-hidden`}
-  >
-    <div className="p-6">
-      <h3 className={`text-sm font-semibold uppercase tracking-widest mb-4 ${dark ? 'text-gray-400' : 'text-gray-400'}`}>
-        {title}
-      </h3>
-      {children}
-    </div>
-  </motion.div>
-);
-
-
-const LoadingSpinner = () => (
-  <div className="flex justify-center py-10">
-    <motion.div
-      className="h-6 w-6 rounded-full border-2 border-gray-300 border-t-gray-700 dark:border-gray-600 dark:border-t-gray-200"
-      animate={{ rotate: 360 }}
-      transition={{ duration: 0.8, repeat: Infinity, ease: 'linear' }}
-    />
-  </div>
-);
-
-
-const SidebarContent = ({
-  user,
-  dark,
-  animated = true,
-}: {
-  user: any;
-  dark: boolean;
-  animated?: boolean;
-}) => {
-  const hasSocial = user?.info?.social;
-  const hasSkills = user?.info?.skills?.length > 0;
-  return (
-    <>
-      <SideCard title="Contact" dark={dark} delay={animated ? 1 : 0}>
-        <motion.div variants={staggerContainer} initial="hidden" animate="visible" className="space-y-3">
-          {user?.email && <ContactRow icon="fa-solid fa-envelope" value={user.email} delay={0} />}
-          {hasSocial?.facebook && <ContactRow icon="fa-brands fa-facebook" value={hasSocial.facebook} delay={1} />}
-          {hasSocial?.instagram && <ContactRow icon="fa-brands fa-instagram" value={hasSocial.instagram} delay={2} />}
-          {hasSocial?.twitter && <ContactRow icon="fa-brands fa-twitter" value={hasSocial.twitter} delay={3} />}
-          {hasSocial?.youtube && <ContactRow icon="fa-brands fa-youtube" value={hasSocial.youtube} delay={4} />}
-          {hasSocial?.linkedin && <ContactRow icon="fa-brands fa-linkedin" value={hasSocial.linkedin} delay={5} />}
-        </motion.div>
-      </SideCard>
-
-      <AnimatePresence>
-        {hasSkills && (
-          <SideCard title="Skills" dark={dark} delay={animated ? 1.5 : 0}>
-            <motion.div variants={staggerContainer} initial="hidden" animate="visible" className="flex flex-wrap gap-2">
-              {user.info.skills.map((skill: string, i: number) => (
-                <SkillBadge key={i} skill={skill} index={i} />
-              ))}
-            </motion.div>
-          </SideCard>
-        )}
-      </AnimatePresence>
-
-      <SideCard title="Activity" dark={dark} delay={animated ? 2 : 0}>
-        <motion.ul variants={staggerContainer} initial="hidden" animate="visible">
-          <StatItem label="Blogs Published" value={user?.numberPost || 0} delay={0} dark={dark} />
-          <StatItem label="Likes Given" value={user?.likePost?.posts?.length || 0} delay={1} dark={dark} />
-          <StatItem label="Followers" value={user?.followersUsers?.followers?.length || 0} delay={2} dark={dark} />
-        </motion.ul>
-      </SideCard>
-    </>
-  );
-};
-
+import SkeletonPulse from '../../components/Spinner/Skeletons/SkeletonPulse';
+import { fadeIn, fadeUp, scaleIn, staggerContainer } from '../../utils/animationsUtils';
+import AnimatedPost from '../../components/ProfileButton/AnimatedPost';
+import PostSkeleton from '../../components/Spinner/Skeletons/PostSkeleton';
+import SidebarContent from '../../components/ProfileButton/SidebarContent';
+import ActionButton from '../../components/ProfileButton/ActionButton';
+import SmallSpinner from '../../components/Spinner/SmallSpinner';
+import ProfileSkeleton from '../../components/Spinner/Skeletons/ProfileSkeleton';
 
 const Profile = () => {
   const { setErrorPage } = usePages();
@@ -646,7 +378,7 @@ const Profile = () => {
                     animate={{ opacity: 1 }}
                     exit={{ opacity: 0 }}
                   >
-                    <LoadingSpinner />
+                  <SmallSpinner />
                   </motion.div>
                 )}
               </AnimatePresence>

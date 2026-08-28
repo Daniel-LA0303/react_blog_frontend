@@ -1,4 +1,3 @@
-import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 
@@ -11,7 +10,6 @@ import Right from './BodyChat/Right'
 import useConversation from '../../context/hooks/useConversation'
 
 function ChatLayout() {
-  //const [sidebarOpen, setSidebarOpen] = useState(false);
 
   const { sidebarOpen, setSidebarOpen } = useConversation()
 

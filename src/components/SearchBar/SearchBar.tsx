@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import useGlobalDataContext from '../../context/hooks/useGlobalDataContext'
 
 const SearchBar = () => {
+
   const route = useNavigate()
   const { globalData } = useGlobalDataContext()
   const dark = !globalData.themeGlobal
@@ -91,7 +92,7 @@ const SearchBar = () => {
         )}
       </AnimatePresence>
 
-      {/* ── Desktop inline expand (>= md) + mobile trigger button ── */}
+      {/*  Desktop inline expand (>= md) + mobile trigger button */}
       <div className="flex items-center">
         {/* Mobile: just the icon button, overlay handles the rest */}
         <button

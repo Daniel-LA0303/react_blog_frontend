@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react'
+import { useEffect } from 'react'
 import { createRoot } from 'react-dom/client'
 import { motion, AnimatePresence } from 'framer-motion'
 
@@ -14,7 +14,12 @@ type ConfirmSwalOptions = {
   message: string
   status?: Status
   confirmButton?: boolean
+  cancelButton?: boolean
+  confirmText?: string
+  cancelText?: string
 }
+
+
 
 const CheckIcon = () => (
   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5}
@@ -69,7 +74,7 @@ const getDark = () => {
   try {
     const stored = localStorage.getItem('theme')
     if (stored !== null) return JSON.parse(stored) === false
-  } catch {}
+  } catch { }
   return window.matchMedia('(prefers-color-scheme: dark)').matches
 }
 
@@ -77,13 +82,16 @@ type ModalProps = {
   message: string
   status: Status
   confirmButton: boolean
+  cancelButton?: boolean
+  confirmText?: string
+  cancelText?: string
   timer?: number
   onConfirm: () => void
   onClose: () => void
   dark: boolean
 }
 
-const Modal = ({ message, status, confirmButton, timer, onConfirm, onClose, dark }: ModalProps) => {
+const Modal = ({ message, status, confirmButton, cancelButton, confirmText, cancelText, timer, onConfirm, onClose, dark }: ModalProps) => {
   const c = cfg[status]
 
   // timer auto-close
@@ -115,7 +123,7 @@ const Modal = ({ message, status, confirmButton, timer, onConfirm, onClose, dark
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
         transition={{ duration: 0.2 }}
-        onClick={!confirmButton ? onClose : undefined}
+        onClick={(!confirmButton || cancelButton) ? onClose : undefined}
         style={{
           position: 'fixed', inset: 0, zIndex: 99998,
           background: 'rgba(0,0,0,0.45)',
@@ -178,26 +186,48 @@ const Modal = ({ message, status, confirmButton, timer, onConfirm, onClose, dark
 
             {/* Confirm button */}
             {confirmButton && (
-              <motion.button
-                type="button"
-                onClick={onConfirm}
+              <motion.div
                 initial={{ opacity: 0, y: 6 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.22, delay: 0.15 }}
-                whileTap={{ scale: 0.97 }}
-                style={{
-                  width: '100%', padding: '0.65rem 0',
-                  borderRadius: 12, border: 'none', cursor: 'pointer',
-                  fontSize: '0.82rem', fontWeight: 600,
-                  color: '#fff', background: c.btn,
-                  letterSpacing: '0.01em',
-                  transition: 'background 0.15s',
-                }}
-                onMouseEnter={(e: any) => (e.currentTarget.style.background = c.btnHover)}
-                onMouseLeave={(e: any) => (e.currentTarget.style.background = c.btn)}
+                style={{ display: 'flex', gap: '0.6rem', width: '100%' }}
               >
-                {c.label}
-              </motion.button>
+                {cancelButton && (
+                  <motion.button
+                    type="button"
+                    onClick={onClose}
+                    whileTap={{ scale: 0.97 }}
+                    style={{
+                      flex: 1, padding: '0.65rem 0',
+                      borderRadius: 12, cursor: 'pointer',
+                      fontSize: '0.82rem', fontWeight: 600,
+                      color: dark ? '#e5e7eb' : '#374151',
+                      background: dark ? 'rgba(255,255,255,0.06)' : '#f3f4f6',
+                      border: dark ? '1px solid rgba(255,255,255,0.08)' : '1px solid rgba(0,0,0,0.06)',
+                      letterSpacing: '0.01em',
+                    }}
+                  >
+                    {cancelText ?? 'Cancel'}
+                  </motion.button>
+                )}
+                <motion.button
+                  type="button"
+                  onClick={onConfirm}
+                  whileTap={{ scale: 0.97 }}
+                  style={{
+                    flex: 1, padding: '0.65rem 0',
+                    borderRadius: 12, border: 'none', cursor: 'pointer',
+                    fontSize: '0.82rem', fontWeight: 600,
+                    color: '#fff', background: c.btn,
+                    letterSpacing: '0.01em',
+                    transition: 'background 0.15s',
+                  }}
+                  onMouseEnter={(e: any) => (e.currentTarget.style.background = c.btnHover)}
+                  onMouseLeave={(e: any) => (e.currentTarget.style.background = c.btn)}
+                >
+                  {confirmText ?? c.label}
+                </motion.button>
+              </motion.div>
             )}
           </div>
 
@@ -228,7 +258,7 @@ const destroyModal = () => {
   if (container) { document.body.removeChild(container); container = null }
 }
 
-const renderModal = (props: Omit<ModalProps, 'onClose'>) => {
+const renderModal = (props: Omit<ModalProps, 'onClose'> & { onCancel?: () => void }) => {
   // Remove any existing modal first
   destroyModal()
 
@@ -253,7 +283,7 @@ export const useSwal = () => {
       confirmButton: false,
       timer,
       dark: getDark(),
-      onConfirm: () => {},
+      onConfirm: () => { },
     })
   }
 
@@ -261,17 +291,30 @@ export const useSwal = () => {
     message,
     status = 'warning',
     confirmButton = true,
+    cancelButton = true,
+    confirmText,
+    cancelText,
   }: ConfirmSwalOptions): Promise<{ isConfirmed: boolean }> => {
     return new Promise(resolve => {
+      let resolved = false
+      const resolveOnce = (val: boolean) => {
+        if (!resolved) {
+          resolved = true
+          resolve({ isConfirmed: val })
+        }
+      }
       renderModal({
         message,
         status,
         confirmButton,
+        cancelButton,
+        confirmText,
+        cancelText,
         dark: getDark(),
-        onConfirm: () => resolve({ isConfirmed: true }),
+        onConfirm: () => resolveOnce(true),
       })
+      // patch close to resolve false — see note below
     })
   }
-
   return { showAutoSwal, showConfirmSwal }
 }

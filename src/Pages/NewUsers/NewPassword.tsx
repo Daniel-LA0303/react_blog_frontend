@@ -11,7 +11,6 @@ import { useParams, useNavigate, Link } from 'react-router-dom'
  */
 import userUserAuthContext from '../../context/hooks/useUserAuthContext';
 import useGlobalDataContext from '../../context/hooks/useGlobalDataContext';
-import { useSwal } from '../../hooks/useSwal';
 
 const NewPassword = () => {
 

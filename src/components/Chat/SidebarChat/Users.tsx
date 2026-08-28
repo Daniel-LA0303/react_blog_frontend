@@ -7,20 +7,11 @@ import clientAuthAxios from '../../../services/clientAuthAxios'
 import { useAuth } from '../../../context/UserAuthContex'
 import useConversation from '../../../context/hooks/useConversation'
 import useGetSocketNewChat from '../../../context/hooks/useGetSocketNewChat'
-
-const LoadingSpinner = () => (
-  <div className="flex justify-center py-10">
-    <motion.div
-      className="h-16 w-16 rounded-full border-2 border-gray-300 border-t-gray-700"
-      animate={{ rotate: 360 }}
-      transition={{ duration: 0.8, repeat: Infinity, ease: 'linear' }}
-    />
-  </div>
-)
+import SmallSpinner from '../../Spinner/SmallSpinner'
 
 function Users({ onSelect }: any) {
 
-  useGetSocketNewChat() 
+  useGetSocketNewChat() ;
 
   const { conversations, setConversations, prependConversation } = useConversation()
 
@@ -114,13 +105,13 @@ const fetchConversations = async (pageToFetch = pageRef.current) => {
       <AnimatePresence>
         {loadingConversations && conversations.length > 0 && (
           <motion.div key="spinner" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
-            <LoadingSpinner />
+            <SmallSpinner />
           </motion.div>
         )}
       </AnimatePresence>
 
       {loadingConversations && conversations.length === 0 && (
-        <LoadingSpinner />
+        <SmallSpinner />
       )}
     </div>
   )

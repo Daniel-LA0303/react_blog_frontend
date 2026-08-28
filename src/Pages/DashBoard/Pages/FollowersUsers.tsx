@@ -11,7 +11,6 @@ import { useParams } from 'react-router-dom';
 import Sidebar from '../../../components/Sidebar/Sidebar'
 import UserCardLong from '../../../components/UserCard/UseCardLong';
 import AsideDashboard from '../../../components/Aside/AsideDashboard';
-import Spinner from '../../../components/Spinner/Spinner';
 import useGlobalDataContext from '../../../context/hooks/useGlobalDataContext';
 import clientAuthAxios from '../../../services/clientAuthAxios';
 import SmallSpinner from '../../../components/Spinner/SmallSpinner';

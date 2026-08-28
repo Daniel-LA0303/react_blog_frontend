@@ -8,6 +8,7 @@ interface Props {
 }
 
 const VideoInsertModal = ({ onInsert, onClose }: Props) => {
+
   const { globalData } = useGlobalDataContext();
   const dark = !globalData.themeGlobal;
 

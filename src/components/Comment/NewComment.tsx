@@ -25,7 +25,6 @@ import { motion } from 'framer-motion'
 const NewComment = ({
   user,
   idPost,
-  comments,
   setCommentsState,
   setEngagementPost,
 }: any) => {

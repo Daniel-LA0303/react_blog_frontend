@@ -52,7 +52,7 @@ const Ico = ({ d, size = 14 }: { d: string | string[]; size?: number }) => (
     </svg>
 );
 
-/* ─── Color picker ──*/
+/* Color picker */
 const ColorBtn = ({
     title, value, onChange, children, dark = false,
 }: {
@@ -87,8 +87,8 @@ const ColorBtn = ({
                         initial={{ opacity: 0, y: 4 }} animate={{ opacity: 1, y: 0 }}
                         exit={{ opacity: 0, y: 4 }} transition={{ duration: 0.12 }}
                         className={`absolute top-9 left-0 z-30 border rounded-xl shadow-xl p-3
-              flex flex-col gap-2 min-w-[140px]
-              ${dark ? "bg-gray-800 border-gray-700" : "bg-white border-gray-200"}`}
+                            flex flex-col gap-2 min-w-[140px]
+                            ${dark ? "bg-gray-800 border-gray-700" : "bg-white border-gray-200"}`}
                     >
                         <p className={`text-xs font-medium ${dark ? "text-gray-400" : "text-gray-500"}`}>{title}</p>
                         <input
@@ -125,7 +125,7 @@ const ColorBtn = ({
     );
 };
 
-/* ─── Props ─────────*/
+/* Props */
 interface TipTapEditorProps {
     content: string;
     onContent: (val: string) => void;
@@ -136,6 +136,7 @@ interface TipTapEditorProps {
 type Tab = "Write" | "Preview";
 
 const TipTapEditor = ({ content, onContent, error, onClearError }: TipTapEditorProps) => {
+
     const { globalData } = useGlobalDataContext();
     const dark = !globalData.themeGlobal;
 
@@ -223,7 +224,7 @@ const TipTapEditor = ({ content, onContent, error, onClearError }: TipTapEditorP
     return (
         <>
             <div className="py-1">
-                {/* ── Tab bar */}
+                {/* Tab bar */}
                 <div className={`flex items-center gap-1 px-1 pt-1 w-fit border-b
                     ${dark ? "border-gray-700 bg-[#0f0f0f]" : "border-gray-200 bg-transparent"}`}>
                     {(["Write", "Preview"] as Tab[]).map((t) => (
@@ -255,7 +256,7 @@ const TipTapEditor = ({ content, onContent, error, onClearError }: TipTapEditorP
                             <div className={`tiptap-wrapper rounded-b-xl rounded-tr-xl border-2 overflow-hidden
                                 ${dark ? "border-gray-700 bg-[#27272A] text-white" : "border-gray-300 bg-white"}`}>
 
-                                {/* ── Toolbar */}
+                                {/* Toolbar */}
                                 <div className={`flex flex-wrap items-center gap-0.5 px-3 py-2
                                     border-b sticky top-0 z-10
                                     ${dark ? "bg-[#27272A] border-gray-700" : "bg-gray-50 border-gray-100"}`}>

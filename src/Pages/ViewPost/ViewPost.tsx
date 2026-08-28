@@ -27,7 +27,6 @@ import clientAuthAxios from '../../services/clientAuthAxios'
 /**
  * libraries
  */
-import Swal from 'sweetalert2'
 import { toast, Toaster } from 'react-hot-toast'
 import { motion, AnimatePresence } from 'framer-motion'
 
@@ -51,13 +50,9 @@ import { useSwal } from '../../hooks/useSwal'
 import userUserAuthContext from '../../context/hooks/useUserAuthContext'
 import useGlobalDataContext from '../../context/hooks/useGlobalDataContext'
 import Spinner from '../../components/Spinner/Spinner'
-import PostContent from '../../components/EditorToolBar/PostContent'
-import AIToolsPanel from '../../components/IA/ViewPost/AIToolsPanel'
-import AIResponseModal from '../../components/IA/ViewPost/IAResponseModal'
 import BlogRecommendedCard from '../../components/Post/BlogRecommendedCard'
 import useIA from '../../context/hooks/useIA'
 import { AIAssistModal } from '../../components/IA/NewPost/AIAssistModal'
-import { Divider } from '@mui/material'
 import { Question, QuizModal } from '../../components/IA/ViewPost/QuizModal'
 
 
@@ -176,14 +171,8 @@ const ViewPost = () => {
         if (error.code === 'ERR_NETWORK') {
           route('/error', { state: { error: true, message: { status: null, message: 'Network Error', desc: null } } })
         } else {
-          Swal.fire({
-            title: error.response.data.message,
-            text: 'Status ' + error.response?.status,
-            icon: 'error',
-            confirmButtonText: 'Go Home',
-            customClass: { popup: 'swal-popup-error', title: 'swal-title-error', confirmButton: 'swal-btn-error' },
-            buttonsStyling: false,
-          }).then(() => route('/'))
+            showConfirmSwal({ message: error.response.data.message, status: 'error', confirmButton: true })
+            route('/')
         }
       }).finally(() => setLoading(false))
   }, [params.id]);
@@ -218,35 +207,27 @@ const ViewPost = () => {
    * functions
    */
   const deletePostComponent = async (id: any) => {
+
+
+
     // 1. Show confirmation dialog
-    const result = await Swal.fire({
-      title: 'Are you sure you want to remove this Post?',
-      text: 'Deleted post cannot be recovered',
-      icon: 'warning',
-      showCancelButton: true,
-      confirmButtonText: 'Yes, Delete',
-      cancelButtonText: 'No, Cancel',
-      buttonsStyling: false,
-      customClass: {
-        popup: 'swal-popup-warning',
-        title: 'swal-title-warning',
-        confirmButton: 'swal-btn-warning',
-        cancelButton: 'swal-btn-error',
-      },
+    const { isConfirmed } = await showConfirmSwal({
+      message: 'Are you sure you want to remove this Post?',
+      status: 'warning',
+      confirmButton: true,
+      cancelButton: true,
+      confirmText: 'Yes, Delete',
+      cancelText: 'No, Cancel',
     })
 
     // 2. If confirmed, delete post
-    if (result.isConfirmed) {
+    if (isConfirmed) {
       try {
         await deletePostRedux(id, userAuth.userId)
         showAutoSwal({ message: 'Post deleted successfully', status: 'success', timer: 2000 })
         setTimeout(() => route('/'), 2000)
       } catch (error: any) {
-        Swal.fire({
-          title: 'Error deleting the post',
-          text: `Status ${error.response?.status || ''} - ${error.response?.data?.msg || error.message}`,
-          icon: 'error',
-        })
+          showConfirmSwal({ message: error.response.data.message, status: 'error', confirmButton: true })
       }
     }
   }

@@ -7,6 +7,7 @@ import clientAuthAxios from '../../../services/clientAuthAxios'
 import { SendNewMessageI } from '../../../interfaces/message.interfaces'
 
 function Typesend() {
+  
   const [message, setMessage] = useState('')
   const [sending, setSending] = useState(false)
   const [emojiOpen, setEmojiOpen] = useState(false)

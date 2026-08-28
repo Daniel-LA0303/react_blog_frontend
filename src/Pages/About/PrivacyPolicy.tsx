@@ -2,72 +2,10 @@ import { useRef } from 'react'
 import { motion, useInView } from 'framer-motion'
 import Sidebar from '../../components/Sidebar/Sidebar'
 import useGlobalDataContext from '../../context/hooks/useGlobalDataContext'
+import Section from '../../components/Global/Section'
+import { fadeUp } from '../../utils/animationsUtils'
+import { sectionsPolicy } from '../../utils/aboutUtils'
 
-const fadeUp = {
-  hidden: { opacity: 0, y: 24 },
-  visible: (i = 0) => ({
-    opacity: 1, y: 0,
-    transition: { duration: 0.5, delay: i * 0.08, ease: [0.25, 0.46, 0.45, 0.94] },
-  }),
-}
-
-const stagger = { hidden: {}, visible: { transition: { staggerChildren: 0.08 } } }
-
-const Section = ({ children, className = '' }: { children: React.ReactNode; className?: string }) => {
-  const ref = useRef(null)
-  const inView = useInView(ref, { once: true, margin: '-80px' })
-  return (
-    <motion.div ref={ref} initial="hidden" animate={inView ? 'visible' : 'hidden'} variants={stagger} className={className}>
-      {children}
-    </motion.div>
-  )
-}
-
-const sections = [
-  {
-    badge: 'Collection',
-    icon: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.7} strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>,
-    title: 'What we collect',
-    items: [
-      'Name, email address, and password (hashed) on registration.',
-      'Profile picture uploaded to Cloudinary CDN.',
-      'Posts, comments, likes, saves, and follow relationships you create.',
-      'Basic usage data such as last login time.',
-    ],
-  },
-  {
-    badge: 'Usage',
-    icon: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.7} strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>,
-    title: 'How we use it',
-    items: [
-      'To authenticate you and personalise your feed and recommendations.',
-      'To deliver email verification and password-reset messages via Mailtrap.',
-      'To display your public profile, posts, and social activity to other users.',
-      'We do not sell your data to third parties.',
-    ],
-  },
-  {
-    badge: 'Storage',
-    icon: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.7} strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5"><polyline points="16 16 12 12 8 16"/><line x1="12" y1="12" x2="12" y2="21"/><path d="M20.39 18.39A5 5 0 0 0 18 9h-1.26A8 8 0 1 0 3 16.3"/></svg>,
-    title: 'Where data lives',
-    items: [
-      'User data and posts are stored in MongoDB Atlas.',
-      'Images are hosted on Cloudinary CDN.',
-      'The server runs on an AWS EC2 instance.',
-      'Data is not transferred outside these services.',
-    ],
-  },
-  {
-    badge: 'Rights',
-    icon: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.7} strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>,
-    title: 'Your rights',
-    items: [
-      'You can update or delete your account at any time from settings.',
-      'Deleting your account removes your posts, comments, and profile data.',
-      'You can request a copy of your data by contacting us.',
-    ],
-  },
-]
 
 const PrivacyPolicy = () => {
   const { globalData } = useGlobalDataContext()
@@ -101,7 +39,7 @@ const PrivacyPolicy = () => {
       </section>
 
       <section className="max-w-3xl mx-auto px-4 sm:px-6 pb-16 space-y-4">
-        {sections.map((s, i) => (
+        {sectionsPolicy.map((s, i) => (
           <motion.div
             key={s.title}
             initial={{ opacity: 0, y: 20 }}

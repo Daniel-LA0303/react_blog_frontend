@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
-import { useDispatch, useSelector } from 'react-redux'
+import { useDispatch } from 'react-redux'
 import { motion, AnimatePresence } from 'framer-motion'
 
 import Sidebar from '../../components/Sidebar/Sidebar'
@@ -10,136 +10,13 @@ import { useSwal } from '../../hooks/useSwal'
 import useGlobalDataContext from '../../context/hooks/useGlobalDataContext'
 import userUserAuthContext from '../../context/hooks/useUserAuthContext'
 import Spinner from '../../components/Spinner/Spinner'
+import { fadeUp, stagger } from '../../utils/animationsUtils'
+import SectionEditProfile from '../../components/ProfileButton/SectionEditProfile'
+import FieldWithOutError from '../../components/Global/FieldWithOutError'
+import { SocialIcons } from '../../utils/iconsUtils'
+import { inputCls } from '../../utils/postUtils'
+import SocialField from '../../components/ProfileButton/SocialField'
 
-const fadeUp = {
-  hidden: { opacity: 0, y: 18 },
-  visible: (i = 0) => ({
-    opacity: 1, y: 0,
-    transition: { duration: 0.42, delay: i * 0.06, ease: [0.25, 0.46, 0.45, 0.94] },
-  }),
-}
-
-const stagger = { hidden: {}, visible: { transition: { staggerChildren: 0.06 } } }
-
-const Section = ({
-  index,
-  label,
-  hint,
-  children,
-  dark,
-}: {
-  index: number
-  label: string
-  hint: string
-  children: React.ReactNode
-  dark: boolean
-}) => (
-  <motion.div
-    variants={fadeUp}
-    custom={index}
-    className={`grid grid-cols-1 md:grid-cols-3 gap-6 py-8 border-b
-      ${dark ? 'border-gray-800' : 'border-gray-100'}`}
-  >
-    <div className="md:col-span-1">
-      <p className={`text-sm font-semibold ${dark ? 'text-gray-200' : 'text-gray-800'}`}>{label}</p>
-      <p className={`mt-1 text-xs leading-relaxed ${dark ? 'text-gray-500' : 'text-gray-400'}`}>{hint}</p>
-    </div>
-    <div className="md:col-span-2 space-y-4">{children}</div>
-  </motion.div>
-)
-
-const Field = ({
-  label,
-  htmlFor,
-  children,
-  dark,
-}: {
-  label: string
-  htmlFor?: string
-  children: React.ReactNode
-  dark: boolean
-}) => (
-  <div>
-    <label
-      htmlFor={htmlFor}
-      className={`block text-xs font-medium mb-1.5 ${dark ? 'text-gray-400' : 'text-gray-500'}`}
-    >
-      {label}
-    </label>
-    {children}
-  </div>
-)
-
-const inputCls = (dark: boolean) =>
-  `w-full rounded-xl border px-3.5 py-2.5 text-sm outline-none transition-colors duration-150
-  focus:ring-2 focus:ring-offset-0
-  ${dark
-    ? 'bg-[#1e1e1e] border-gray-700 text-white placeholder-gray-600 focus:border-blue-600 focus:ring-blue-600/20'
-    : 'bg-white border-gray-200 text-gray-900 placeholder-gray-400 focus:border-blue-600 focus:ring-blue-600/20'
-  }`
-
-const SocialField = ({
-  name,
-  label,
-  icon,
-  value,
-  onChange,
-  dark,
-}: {
-  name: string
-  label: string
-  icon: React.ReactNode
-  value: string
-  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void
-  dark: boolean
-}) => (
-  <div className={`flex items-center gap-3 rounded-xl border px-3.5 py-2.5 transition-colors duration-150
-    focus-within:ring-2 focus-within:ring-offset-0
-    ${dark
-      ? 'bg-[#1e1e1e] border-gray-700 focus-within:border-blue-600 focus-within:ring-blue-600/20'
-      : 'bg-white border-gray-200 focus-within:border-blue-600 focus-within:ring-blue-600/20'
-    }`}
-  >
-    <span className={`flex-shrink-0 ${dark ? 'text-gray-500' : 'text-gray-400'}`}>{icon}</span>
-    <input
-      type="text"
-      name={name}
-      placeholder={label}
-      value={value}
-      onChange={onChange}
-      className={`flex-1 bg-transparent text-sm outline-none
-        ${dark ? 'text-white placeholder-gray-600' : 'text-gray-900 placeholder-gray-400'}`}
-    />
-  </div>
-)
-
-const SocialIcons: Record<string, React.ReactNode> = {
-  facebook: (
-    <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
-      <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z" />
-    </svg>
-  ),
-  youtube: (
-    <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
-      <path d="M22.54 6.42a2.78 2.78 0 0 0-1.94-1.96C18.88 4 12 4 12 4s-6.88 0-8.6.46A2.78 2.78 0 0 0 1.46 6.42 29 29 0 0 0 1 12a29 29 0 0 0 .46 5.58 2.78 2.78 0 0 0 1.94 1.94C5.12 20 12 20 12 20s6.88 0 8.6-.48a2.78 2.78 0 0 0 1.94-1.94A29 29 0 0 0 23 12a29 29 0 0 0-.46-5.58z"/><polygon points="9.75 15.02 15.5 12 9.75 8.98 9.75 15.02" fill="white"/>
-    </svg>
-  ),
-  twitter: (
-    <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
-      <path d="M23 3a10.9 10.9 0 0 1-3.14 1.53 4.48 4.48 0 0 0-7.86 3v1A10.66 10.66 0 0 1 3 4s-4 9 5 13a11.64 11.64 0 0 1-7 2c9 5 20 0 20-11.5a4.5 4.5 0 0 0-.08-.83A7.72 7.72 0 0 0 23 3z" />
-    </svg>
-  ),
-  instagram: (
-    <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24">
-      <rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/>
-    </svg>
-  ),
-  linkedin: (
-    <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
-      <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/><rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/>
-    </svg>
-  ),
-}
 
 const EditProfile = () => {
   const params = useParams()
@@ -166,7 +43,8 @@ const EditProfile = () => {
   const inputRef = useRef<HTMLInputElement>(null)
   const [socialMedia, setSocialMedia] = useState({
     facebook: '', youtube: '', twitter: '', instagram: '', linkedin: '',
-  })
+  });
+
 
   useEffect(() => {
     setLoading(true)
@@ -261,8 +139,8 @@ const EditProfile = () => {
           >
             <div className="px-7 pt-7">
 
-              {/* ── Avatar ──────────────────────────────────────────────── */}
-              <Section index={0} label="Profile picture" hint="Recommended size: 300×300px. JPG or PNG." dark={dark}>
+              {/* Avatar  */}
+              <SectionEditProfile index={0} label="Profile picture" hint="Recommended size: 300×300px. JPG or PNG." dark={dark}>
                 <div className="flex items-center gap-5">
 
                   {/* Preview */}
@@ -312,11 +190,11 @@ const EditProfile = () => {
                     <p className={`text-[11px] ${dark ? 'text-gray-600' : 'text-gray-400'}`}>JPG, PNG up to 5MB</p>
                   </div>
                 </div>
-              </Section>
+              </SectionEditProfile>
 
               {/* ── Personal info ────────────────────────────────────────── */}
-              <Section index={1} label="Personal information" hint="Shown publicly on your profile page." dark={dark}>
-                <Field label="Bio" htmlFor="desc" dark={dark}>
+              <SectionEditProfile index={1} label="Personal information" hint="Shown publicly on your profile page." dark={dark}>
+                <FieldWithOutError label="Bio" htmlFor="desc" dark={dark}>
                   <textarea
                     id="desc"
                     rows={4}
@@ -325,10 +203,10 @@ const EditProfile = () => {
                     onChange={e => setDesc(e.target.value)}
                     className={`${inputCls(dark)} resize-none`}
                   />
-                </Field>
+                </FieldWithOutError>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <Field label="Work" htmlFor="work" dark={dark}>
+                  <FieldWithOutError label="Work" htmlFor="work" dark={dark}>
                     <input
                       id="work"
                       type="text"
@@ -337,8 +215,8 @@ const EditProfile = () => {
                       onChange={e => setWork(e.target.value)}
                       className={inputCls(dark)}
                     />
-                  </Field>
-                  <Field label="Education" htmlFor="education" dark={dark}>
+                  </FieldWithOutError>
+                  <FieldWithOutError label="Education" htmlFor="education" dark={dark}>
                     <input
                       id="education"
                       type="text"
@@ -347,12 +225,12 @@ const EditProfile = () => {
                       onChange={e => setEducation(e.target.value)}
                       className={inputCls(dark)}
                     />
-                  </Field>
+                  </FieldWithOutError>
                 </div>
-              </Section>
+              </SectionEditProfile>
 
-              {/* ── Skills ───────────────────────────────────────────────── */}
-              <Section index={2} label="Skills" hint="Press Enter to add. Maximum 10 skills." dark={dark}>
+              {/*  Skills  */}
+              <SectionEditProfile index={2} label="Skills" hint="Press Enter to add. Maximum 10 skills." dark={dark}>
                 <div className={`min-h-[48px] flex flex-wrap gap-2 rounded-xl border px-3 py-2.5 transition-colors
                   focus-within:ring-2 focus-within:ring-offset-0
                   ${dark
@@ -395,10 +273,10 @@ const EditProfile = () => {
                 <p className={`text-[11px] mt-1 ${dark ? 'text-gray-600' : 'text-gray-400'}`}>
                   {skills.length}/10 skills added
                 </p>
-              </Section>
+              </SectionEditProfile>
 
-              {/* ── Social ───────────────────────────────────────────────── */}
-              <Section index={3} label="Social media" hint="Add your public profiles. Include the full URL or handle." dark={dark}>
+              {/* Social */}
+              <SectionEditProfile index={3} label="Social media" hint="Add your public profiles. Include the full URL or handle." dark={dark}>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   {(['facebook', 'youtube', 'twitter', 'instagram', 'linkedin'] as const).map(net => (
                     <SocialField
@@ -412,11 +290,11 @@ const EditProfile = () => {
                     />
                   ))}
                 </div>
-              </Section>
+              </SectionEditProfile>
 
             </div>
 
-            {/* ── Footer actions ────────────────────────────────────────── */}
+            {/*  Footer actions */}
             <motion.div
               variants={fadeUp} custom={5}
               className={`flex justify-end items-center gap-3 px-7 py-5 border-t rounded-b-2xl

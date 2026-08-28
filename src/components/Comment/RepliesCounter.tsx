@@ -1,5 +1,3 @@
-
-
 const RepliesCounter = ({ count, theme }: any) => {
     return (
         <span className={`text-sm ${theme ? 'text-gray-600' : 'text-gray-400'}`}>
