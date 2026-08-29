@@ -49,6 +49,8 @@ import ScrollToTop from "./components/Global/ScrollToTop";
 import CodeOfConduct from "./Pages/About/CodeOfConduct";
 import PrivacyPolicy from "./Pages/About/PrivacyPolicy";
 import TermsOfUse from "./Pages/About/TermsOfUse";
+import { RequireRole } from "./components/Global/RequireRole";
+import UnauthorizedPage from "./components/Global/UnauthorizedPage";
 
 
 
@@ -81,7 +83,7 @@ function App() {
           <Route path="/" element={<Home />} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
-          
+
           <Route path="/forget-password" element={<ForgetPassword />} />
           <Route path="/forget-password/:id" element={<NewPassword />} />
           <Route path="/user-confirmed/:id" element={<UserConfirmed />} />
@@ -117,7 +119,7 @@ function App() {
           <Route path="/edit-profile/:id" element={userAuth.userId ? <EditProfile /> : <Login />} />
           <Route path="/search/:id" element={<Search />} />
           <Route path="/notifications/:id" element={userAuth.userId ? <Notifications /> : <Login />} />
-          
+
 
 
           {/* MESSAGES */}
@@ -136,12 +138,16 @@ function App() {
           <Route path="/error" element={<ErrorPage />} />
 
           {/* ADMIN PANEL */}
-          <Route path="/admin" element={<AdminPanel />}>
-            <Route path="dashboard" element={<AdminDashboard />} />
-            <Route path="user-management" element={<AdminUserManagement />} />
-            <Route path="post-moderation" element={<AdminPostModeration />} />
-            <Route path="categories" element={<AdminCats />} />
+          <Route element={<RequireRole allowedRoles={["ROLE_ADMIN"]} />}>
+            <Route path="/admin" element={<AdminPanel />}>
+              <Route path="dashboard" element={<AdminDashboard />} />
+              <Route path="user-management" element={<AdminUserManagement />} />
+              <Route path="post-moderation" element={<AdminPostModeration />} />
+              <Route path="categories" element={<AdminCats />} />
+            </Route>
           </Route>
+
+          <Route path="/unauthorized" element={<UnauthorizedPage />} />
 
         </Routes>
       </PagesProvider>

@@ -11,13 +11,14 @@ type User = {
 type UserAuth = {
   userAuthToken: string | null;
   refreshToken: string | null;
+  roles: any | null;
   username: string | null;
   profileImage: string | null;
   email: string | null;
   userId: string | null;
   isFree: boolean | null;
   expiresAt: string | null;
-  plan: PlanI | null
+  plan: PlanI | null;
 };
 
 type UserAuthContextType = {
@@ -43,6 +44,7 @@ const UserAuthProvider = ({ children }: Props) => {
     return {
       userAuthToken: localStorage.getItem("tokenAuthUser"),
       refreshToken: localStorage.getItem("refreshToken"),
+      roles: getStoredRoles(),
       username: localStorage.getItem("username"),
       profileImage: localStorage.getItem("profileImage"),
       email: localStorage.getItem("email"),
@@ -64,6 +66,16 @@ const UserAuthProvider = ({ children }: Props) => {
       return prev
     })
   }
+
+  function getStoredRoles(): string[] {
+    try {
+        const raw = localStorage.getItem("roles");
+        return raw ? JSON.parse(raw) : [];
+    } catch {
+        localStorage.removeItem("roles"); // limpia el valor corrupto
+        return [];
+    }
+}
 
   const prependUser = (user: User) => {
     if (!user) return

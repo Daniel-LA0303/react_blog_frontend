@@ -41,9 +41,9 @@ clientAuthAxios.interceptors.response.use(
   async (error) => {
     const originalRequest = error.config;
 
-    // Handle 429 status code and ensure we do not infinitely loop on /refresh-token
+    // Handle 401 status code and ensure we do not infinitely loop on /refresh-token
     if (
-      error.response?.status === 429 &&
+      error.response?.status === 401 &&
       !originalRequest._retry &&
       !originalRequest.url?.includes('/refresh-token')
     ) {
