@@ -1,4 +1,4 @@
-import { createContext, useState, useContext, ReactNode } from "react";
+import { createContext, useState, useContext, ReactNode, useEffect } from "react";
 import { PlanI } from "../interfaces/payment.interfaces";
 
 type User = {
@@ -10,6 +10,7 @@ type User = {
 
 type UserAuth = {
   userAuthToken: string | null;
+  refreshToken: string | null;
   username: string | null;
   profileImage: string | null;
   email: string | null;
@@ -28,6 +29,7 @@ type UserAuthContextType = {
 
   addUser: (user: User) => void;
   prependUser: (user: User) => void;
+  updateTokens: (access: any, refresh: any) => void;
 };
 
 const UserAuthContext = createContext<UserAuthContextType | undefined>(undefined);
@@ -40,6 +42,7 @@ const UserAuthProvider = ({ children }: Props) => {
   const [userAuth, setUserAuth] = useState<UserAuth>(() => {
     return {
       userAuthToken: localStorage.getItem("tokenAuthUser"),
+      refreshToken: localStorage.getItem("refreshToken"),
       username: localStorage.getItem("username"),
       profileImage: localStorage.getItem("profileImage"),
       email: localStorage.getItem("email"),
@@ -72,6 +75,30 @@ const UserAuthProvider = ({ children }: Props) => {
     })
   }
 
+  const updateTokens = (accessToken: string, refreshToken: string) => {
+    localStorage.setItem("tokenAuthUser", accessToken);
+    localStorage.setItem("refreshToken", refreshToken);
+
+    setUserAuth((prev) => ({
+      ...prev,
+      userAuthToken: accessToken,
+      refreshToken: refreshToken,
+    }));
+  };
+
+  useEffect(() => {
+    const handleTokensRefreshed = (event: Event) => {
+      const customEvent = event as CustomEvent<{ accessToken: string; refreshToken: string }>;
+      const { accessToken, refreshToken } = customEvent.detail;
+      updateTokens(accessToken, refreshToken);
+    };
+
+    window.addEventListener('onTokensRefreshed', handleTokensRefreshed);
+    return () => {
+      window.removeEventListener('onTokensRefreshed', handleTokensRefreshed);
+    };
+  }, [updateTokens]);
+
   return (
     <UserAuthContext.Provider
       value={{
@@ -81,6 +108,7 @@ const UserAuthProvider = ({ children }: Props) => {
         setAllUsers,
         addUser,
         prependUser,
+        updateTokens,
       }}
     >
       {children}

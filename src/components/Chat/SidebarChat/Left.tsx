@@ -14,10 +14,15 @@ function Left() {
   const handleLogout = async () => {
     localStorage.removeItem('token');
     localStorage.removeItem("tokenAuthUser");
+    localStorage.removeItem("refreshToken");
     localStorage.removeItem("email");
     localStorage.removeItem("username");
     localStorage.removeItem("userId");
     localStorage.removeItem("profileImage");
+    localStorage.removeItem("isFree");
+    localStorage.removeItem("expiresAt");
+    localStorage.removeItem("plan");
+
 
     document.location.reload();
     document.location = '/'

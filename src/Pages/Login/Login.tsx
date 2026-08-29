@@ -66,8 +66,9 @@ const Login = () => {
     setLoading(true)
     try {
       const res = await axios.post(`${globalData.link}/users/login`, data);
-      localStorage.setItem('token', JSON.stringify(res.data.data.token))
-      localStorage.setItem('tokenAuthUser', res.data.data.token)
+      localStorage.setItem('token', JSON.stringify(res.data.data.accessToken))
+      localStorage.setItem('tokenAuthUser', res.data.data.accessToken)
+      localStorage.setItem('refreshToken', res.data.data.refreshToken)
       localStorage.setItem('email', res.data.data.email)
       localStorage.setItem('username', res.data.data.name)
       localStorage.setItem('userId', res.data.data._id)
@@ -76,7 +77,8 @@ const Login = () => {
       localStorage.setItem('expiresAt', res.data.data.expiresAt)
       localStorage.setItem('plan', JSON.stringify(res.data.data.plan))
       setUserAuth({
-        userAuthToken: res.data.data.token,
+        userAuthToken: res.data.data.accessToken,
+        refreshToken: res.data.data.refreshToken,
         username: res.data.data.name,
         profileImage: res.data.data.profileImage,
         email: res.data.data.email,
