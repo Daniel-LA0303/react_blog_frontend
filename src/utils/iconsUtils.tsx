@@ -430,3 +430,179 @@ export const LinkedInIcon = ({ size = 16, className = '' }: IconProps) => (
     />
   </svg>
 );
+
+
+export const IconBase = ({ children, size = 20 }: { children: React.ReactNode; size?: number }) => (
+  <svg
+    viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}
+    strokeLinecap="round" strokeLinejoin="round"
+    style={{ width: size, height: size, display: 'block', flexShrink: 0 }}
+  >
+    {children}
+  </svg>
+)
+
+export const AddIcon = ({ size }: { size?: number }) => (
+  <IconBase size={size}><line x1="12" y1="5" x2="12" y2="19" /><line x1="5" y1="12" x2="19" y2="12" /></IconBase>
+)
+
+export const SearchIcon = ({ size }: { size?: number }) => (
+  <IconBase size={size}><circle cx="11" cy="11" r="7" /><line x1="21" y1="21" x2="16.65" y2="16.65" /></IconBase>
+)
+
+export const EditIcon = ({ size }: { size?: number }) => (
+  <IconBase size={size}>
+    <path d="M12 20h9" />
+    <path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z" />
+  </IconBase>
+)
+
+export const DeleteIcon = ({ size }: { size?: number }) => (
+  <IconBase size={size}>
+    <polyline points="3 6 5 6 21 6" />
+    <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6" />
+    <path d="M10 11v6" /><path d="M14 11v6" />
+    <path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2" />
+  </IconBase>
+)
+
+export const CloseIcon = ({ size }: { size?: number }) => (
+  <IconBase size={size}><line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" /></IconBase>
+)
+
+export const CategoryIcon = ({ size }: { size?: number }) => (
+  <IconBase size={size}>
+    <path d="M20.59 13.41 12 22l-9-9V3h10l7.59 10.41Z" />
+    <circle cx="7" cy="7.5" r="1.1" fill="currentColor" stroke="none" />
+  </IconBase>
+)
+
+export const CheckIcon = ({ size }: { size?: number }) => (
+  <IconBase size={size}><polyline points="20 6 9 17 4 12" /></IconBase>
+)
+
+export const ArticleIcon = ({ size }: { size?: number }) => (
+  <IconBase size={size}>
+    <rect x="4" y="4" width="16" height="16" rx="2" />
+    <line x1="8" y1="9" x2="16" y2="9" />
+    <line x1="8" y1="13" x2="16" y2="13" />
+    <line x1="8" y1="17" x2="12" y2="17" />
+  </IconBase>
+)
+
+export const MoreVertIcon = ({ size }: { size?: number }) => (
+  <IconBase size={size}>
+    <circle cx="12" cy="5" r="1.4" fill="currentColor" stroke="none" />
+    <circle cx="12" cy="12" r="1.4" fill="currentColor" stroke="none" />
+    <circle cx="12" cy="19" r="1.4" fill="currentColor" stroke="none" />
+  </IconBase>
+)
+
+export const PeopleIcon = ({ size }: { size?: number }) => (
+  <IconBase size={size}>
+    <path d="M17 21v-2a4 4 0 0 0-4-4H7a4 4 0 0 0-4 4v2" />
+    <circle cx="9" cy="7" r="4" />
+    <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
+    <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+  </IconBase>
+)
+
+export const ShieldIcon = ({ size }: { size?: number }) => (
+  <IconBase size={size}><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10Z" /></IconBase>
+)
+
+export const PauseCircleIcon = ({ size }: { size?: number }) => (
+  <IconBase size={size}>
+    <circle cx="12" cy="12" r="10" />
+    <line x1="10" y1="9" x2="10" y2="15" />
+    <line x1="14" y1="9" x2="14" y2="15" />
+  </IconBase>
+)
+
+export const BlockIcon = ({ size }: { size?: number }) => (
+  <IconBase size={size}><circle cx="12" cy="12" r="10" /><line x1="4.93" y1="4.93" x2="19.07" y2="19.07" /></IconBase>
+)
+
+export const VerifiedUserIcon = ({ size }: { size?: number }) => (
+  <IconBase size={size}>
+    <path d="M12 22s7-3.5 7-10V5l-7-3-7 3v7c0 6.5 7 10 7 10Z" />
+    <polyline points="9 12 11 14 15 10" />
+  </IconBase>
+)
+
+export const PersonOffIcon = ({ size }: { size?: number }) => (
+  <IconBase size={size}>
+    <path d="M17 21v-2a4 4 0 0 0-4-4H7a4 4 0 0 0-4 4v2" />
+    <circle cx="9" cy="7" r="4" />
+    <line x1="2" y1="2" x2="22" y2="22" />
+  </IconBase>
+)
+
+export const CheckCircleIcon = ({ size }: { size?: number }) => (
+  <IconBase size={size}><circle cx="12" cy="12" r="10" /><polyline points="9 12 11 14 15 10" /></IconBase>
+)
+
+export const PlayCircleIcon = ({ size }: { size?: number }) => (
+  <IconBase size={size}>
+    <circle cx="12" cy="12" r="10" />
+    <polygon points="10 8 16 12 10 16 10 8" fill="currentColor" stroke="none" />
+  </IconBase>
+)
+
+export const ManageAccountsIcon = ({ size }: { size?: number }) => (
+  <IconBase size={size}>
+    <circle cx="9" cy="8" r="3.5" />
+    <path d="M3 21v-1a5 5 0 0 1 5-5h1.5" />
+    <circle cx="18" cy="16" r="3" />
+    <line x1="18" y1="11.5" x2="18" y2="13" />
+    <line x1="18" y1="19" x2="18" y2="20.5" />
+    <line x1="13.5" y1="16" x2="15" y2="16" />
+    <line x1="21" y1="16" x2="22.5" y2="16" />
+  </IconBase>
+)
+
+export const PersonRemoveIcon = ({ size }: { size?: number }) => (
+  <IconBase size={size}>
+    <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
+    <circle cx="9" cy="7" r="4" />
+    <line x1="17" y1="11" x2="23" y2="11" />
+  </IconBase>
+)
+
+export const FlagIcon = ({ size }: { size?: number }) => (
+  <IconBase size={size}>
+    <path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z" />
+    <line x1="4" y1="22" x2="4" y2="15" />
+  </IconBase>
+)
+
+export const VisibilityOffIcon = ({ size }: { size?: number }) => (
+  <IconBase size={size}>
+    <path d="M17.94 17.94A10.94 10.94 0 0 1 12 20c-7 0-11-8-11-8a21.8 21.8 0 0 1 5.06-6.06" />
+    <path d="M9.9 4.24A10.94 10.94 0 0 1 12 4c7 0 11 8 11 8a21.8 21.8 0 0 1-2.16 3.19" />
+    <path d="M14.12 14.12a3 3 0 1 1-4.24-4.24" />
+    <line x1="1" y1="1" x2="23" y2="23" />
+  </IconBase>
+)
+
+export const StarIcon = ({ size }: { size?: number }) => (
+  <IconBase size={size}>
+    <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+  </IconBase>
+)
+
+export const RateReviewIcon = ({ size }: { size?: number }) => (
+  <IconBase size={size}>
+    <path d="M4 21h16" />
+    <path d="M4 17h6" />
+    <path d="M13.5 3.5a2.12 2.12 0 0 1 3 3L9 14l-4 1 1-4Z" />
+  </IconBase>
+)
+
+export const ChevronLeftIcon = ({ size }: { size?: number }) => (
+  <IconBase size={size}><polyline points="15 18 9 12 15 6" /></IconBase>
+)
+
+export const ChevronRightIcon = ({ size }: { size?: number }) => (
+  <IconBase size={size}><polyline points="9 18 15 12 9 6" /></IconBase>
+)

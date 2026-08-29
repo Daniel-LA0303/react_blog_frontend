@@ -1,77 +1,20 @@
-import React, { useEffect, useState, useRef } from 'react'
-import { motion, AnimatePresence, useInView } from 'framer-motion'
+import React, { useState, useRef } from 'react'
+import { motion, useInView } from 'framer-motion'
 
 import useGlobalDataContext from '../../context/hooks/useGlobalDataContext'
 import { useSwal } from '../../hooks/useSwal'
 import clientAuthAxios from '../../services/clientAuthAxios'
 import { fadeUp, stagger } from '../../utils/animationsUtils'
-
-type Role = 'user' | 'moderator' | 'admin'
-type UserStatus = 'active' | 'suspended' | 'banned'
-type ReportType = 'spam' | 'harassment' | 'offensive' | 'scam'
-
-interface ReportItem {
-  type: ReportType
-  count: number
-}
-
-interface AdminUser {
-  _id: string
-  name: string
-  email: string
-  profilePicture?: { secure_url: string }
-  role: Role
-  status: UserStatus
-  verified: boolean
-  createdAt: string
-  numberPost: number
-  reports: ReportItem[]
-}
-
-const FAKE_USERS: AdminUser[] = [
-  { _id: '1', name: 'Ana García', email: 'ana@mail.com', role: 'admin', status: 'active', verified: true, createdAt: '2024-01-12', numberPost: 34, reports: [] },
-  { _id: '2', name: 'Carlos López', email: 'carlos@mail.com', role: 'moderator', status: 'active', verified: true, createdAt: '2024-02-05', numberPost: 21, reports: [{ type: 'spam', count: 2 }] },
-  { _id: '3', name: 'María Soto', email: 'maria@mail.com', role: 'user', status: 'active', verified: false, createdAt: '2024-03-18', numberPost: 8, reports: [] },
-  { _id: '4', name: 'Pedro Ruiz', email: 'pedro@mail.com', role: 'user', status: 'suspended', verified: false, createdAt: '2024-04-01', numberPost: 2, reports: [{ type: 'harassment', count: 3 }, { type: 'spam', count: 1 }] },
-  { _id: '5', name: 'Lucía Mora', email: 'lucia@mail.com', role: 'user', status: 'banned', verified: false, createdAt: '2024-04-22', numberPost: 0, reports: [{ type: 'scam', count: 5 }, { type: 'offensive', count: 2 }] },
-  { _id: '6', name: 'Diego Torres', email: 'diego@mail.com', role: 'moderator', status: 'active', verified: true, createdAt: '2024-05-10', numberPost: 15, reports: [] },
-  { _id: '7', name: 'Sofía Reyes', email: 'sofia@mail.com', role: 'user', status: 'active', verified: true, createdAt: '2024-05-30', numberPost: 42, reports: [] },
-  { _id: '8', name: 'Andrés Vega', email: 'andres@mail.com', role: 'user', status: 'suspended', verified: false, createdAt: '2024-06-15', numberPost: 1, reports: [{ type: 'offensive', count: 1 }] },
-  { _id: '9', name: 'Valeria Cruz', email: 'valeria@mail.com', role: 'user', status: 'active', verified: false, createdAt: '2024-07-02', numberPost: 5, reports: [] },
-  { _id: '10', name: 'Mateo Jiménez', email: 'mateo@mail.com', role: 'user', status: 'active', verified: true, createdAt: '2024-07-20', numberPost: 18, reports: [{ type: 'spam', count: 1 }] },
-  { _id: '11', name: 'Camila Herrera', email: 'camila@mail.com', role: 'user', status: 'banned', verified: false, createdAt: '2024-08-01', numberPost: 0, reports: [{ type: 'harassment', count: 6 }] },
-  { _id: '12', name: 'Sebastián Ríos', email: 'seba@mail.com', role: 'moderator', status: 'active', verified: true, createdAt: '2024-08-15', numberPost: 9, reports: [] },
-]
-
-const REPORT_LABELS: Record<ReportType, string> = {
-  spam: 'Spam',
-  harassment: 'Harassment',
-  offensive: 'Offensive',
-  scam: 'Scam',
-}
-
-const REPORT_COLORS: Record<ReportType, 'warning' | 'error' | 'default' | 'primary'> = {
-  spam: 'warning',
-  harassment: 'error',
-  offensive: 'default',
-  scam: 'primary',
-}
-
-const STATUS_LABELS: Record<UserStatus, string> = {
-  active: 'Active',
-  suspended: 'Suspended',
-  banned: 'Banned',
-}
-
-const ROLE_LABELS: Record<Role, string> = {
-  user: 'User',
-  moderator: 'Moderator',
-  admin: 'Admin',
-}
-
-function getInitials(name: string) {
-  return name.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase()
-}
+import { AdminUser, FilterRole, FilterStatus, Role, UserStatus } from '../../interfaces/admin.interfaces'
+import {  PauseCircleIcon, PeopleIcon, PersonOffIcon, SearchIcon, ShieldIcon, VerifiedUserIcon } from '../../utils/iconsUtils'
+import UITextField from '../../components/Admin/UITextField'
+import { cellStyle, FAKE_USERS, REPORT_COLORS, REPORT_LABELS, ROLE_LABELS, STATUS_LABELS } from '../../utils/adminUtils'
+import ActionMenu from '../../components/Admin/ActionMenuUsers'
+import UITablePagination from '../../components/Admin/UITablePagination'
+import StatCard from '../../components/Admin/StatCard'
+import Pill from '../../components/Admin/Pill'
+import RowSkeleton from '../../components/Admin/RowSkeleton'
+import UIAvatar from '../../components/Admin/UIAvatar'
 
 function avatarBg(name: string) {
   const palette = ['#378ADD', '#1D9E75', '#D85A30', '#7F77DD', '#D4537E', '#BA7517']
@@ -80,202 +23,6 @@ function avatarBg(name: string) {
   return palette[Math.abs(hash) % palette.length]
 }
 
-/* ============================================================
-   Icons (replacing @mui/icons-material)
-   ============================================================ */
-const IconBase = ({ children, size = 20 }: { children: React.ReactNode; size?: number }) => (
-  <svg
-    viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}
-    strokeLinecap="round" strokeLinejoin="round"
-    style={{ width: size, height: size, display: 'block', flexShrink: 0 }}
-  >
-    {children}
-  </svg>
-)
-const MoreVertIcon = ({ size }: { size?: number }) => (
-  <IconBase size={size}>
-    <circle cx="12" cy="5" r="1.4" fill="currentColor" stroke="none" />
-    <circle cx="12" cy="12" r="1.4" fill="currentColor" stroke="none" />
-    <circle cx="12" cy="19" r="1.4" fill="currentColor" stroke="none" />
-  </IconBase>
-)
-const SearchIcon = ({ size }: { size?: number }) => (
-  <IconBase size={size}><circle cx="11" cy="11" r="7" /><line x1="21" y1="21" x2="16.65" y2="16.65" /></IconBase>
-)
-const PeopleIcon = ({ size }: { size?: number }) => (
-  <IconBase size={size}>
-    <path d="M17 21v-2a4 4 0 0 0-4-4H7a4 4 0 0 0-4 4v2" />
-    <circle cx="9" cy="7" r="4" />
-    <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
-    <path d="M16 3.13a4 4 0 0 1 0 7.75" />
-  </IconBase>
-)
-const ShieldIcon = ({ size }: { size?: number }) => (
-  <IconBase size={size}><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10Z" /></IconBase>
-)
-const PauseCircleIcon = ({ size }: { size?: number }) => (
-  <IconBase size={size}>
-    <circle cx="12" cy="12" r="10" />
-    <line x1="10" y1="9" x2="10" y2="15" />
-    <line x1="14" y1="9" x2="14" y2="15" />
-  </IconBase>
-)
-const BlockIcon = ({ size }: { size?: number }) => (
-  <IconBase size={size}><circle cx="12" cy="12" r="10" /><line x1="4.93" y1="4.93" x2="19.07" y2="19.07" /></IconBase>
-)
-const VerifiedUserIcon = ({ size }: { size?: number }) => (
-  <IconBase size={size}>
-    <path d="M12 22s7-3.5 7-10V5l-7-3-7 3v7c0 6.5 7 10 7 10Z" />
-    <polyline points="9 12 11 14 15 10" />
-  </IconBase>
-)
-const PersonOffIcon = ({ size }: { size?: number }) => (
-  <IconBase size={size}>
-    <path d="M17 21v-2a4 4 0 0 0-4-4H7a4 4 0 0 0-4 4v2" />
-    <circle cx="9" cy="7" r="4" />
-    <line x1="2" y1="2" x2="22" y2="22" />
-  </IconBase>
-)
-const CheckCircleIcon = ({ size }: { size?: number }) => (
-  <IconBase size={size}><circle cx="12" cy="12" r="10" /><polyline points="9 12 11 14 15 10" /></IconBase>
-)
-const PlayCircleIcon = ({ size }: { size?: number }) => (
-  <IconBase size={size}>
-    <circle cx="12" cy="12" r="10" />
-    <polygon points="10 8 16 12 10 16 10 8" fill="currentColor" stroke="none" />
-  </IconBase>
-)
-const ManageAccountsIcon = ({ size }: { size?: number }) => (
-  <IconBase size={size}>
-    <circle cx="9" cy="8" r="3.5" />
-    <path d="M3 21v-1a5 5 0 0 1 5-5h1.5" />
-    <circle cx="18" cy="16" r="3" />
-    <line x1="18" y1="11.5" x2="18" y2="13" />
-    <line x1="18" y1="19" x2="18" y2="20.5" />
-    <line x1="13.5" y1="16" x2="15" y2="16" />
-    <line x1="21" y1="16" x2="22.5" y2="16" />
-  </IconBase>
-)
-const PersonRemoveIcon = ({ size }: { size?: number }) => (
-  <IconBase size={size}>
-    <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
-    <circle cx="9" cy="7" r="4" />
-    <line x1="17" y1="11" x2="23" y2="11" />
-  </IconBase>
-)
-const ChevronLeftIcon = ({ size }: { size?: number }) => (
-  <IconBase size={size}><polyline points="15 18 9 12 15 6" /></IconBase>
-)
-const ChevronRightIcon = ({ size }: { size?: number }) => (
-  <IconBase size={size}><polyline points="9 18 15 12 9 6" /></IconBase>
-)
-
-/* ============================================================
-   Small reusable UI primitives (replacing @mui/material)
-   ============================================================ */
-const useClickOutside = (ref: React.RefObject<HTMLElement>, onOutside: () => void) => {
-  useEffect(() => {
-    const handler = (e: MouseEvent) => {
-      if (ref.current && !ref.current.contains(e.target as Node)) onOutside()
-    }
-    document.addEventListener('mousedown', handler)
-    return () => document.removeEventListener('mousedown', handler)
-  }, [ref, onOutside])
-}
-
-const UITooltip = ({ title, children }: { title: string; children: React.ReactNode }) => {
-  const [show, setShow] = useState(false)
-  return (
-    <span
-      style={{ position: 'relative', display: 'inline-flex' }}
-      onMouseEnter={() => setShow(true)}
-      onMouseLeave={() => setShow(false)}
-    >
-      {children}
-      <AnimatePresence>
-        {show && (
-          <motion.span
-            initial={{ opacity: 0, y: 4 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: 4 }}
-            transition={{ duration: 0.12 }}
-            style={{
-              position: 'absolute', bottom: '100%', right: 0,
-              marginBottom: 6, padding: '4px 8px', borderRadius: 6,
-              background: '#111', color: '#fff', fontSize: 11, fontWeight: 500,
-              whiteSpace: 'nowrap', pointerEvents: 'none', zIndex: 10,
-            }}
-          >
-            {title}
-          </motion.span>
-        )}
-      </AnimatePresence>
-    </span>
-  )
-}
-
-const UIIconButton = ({
-  onClick, children, color, hoverBg, hoverColor, disabled,
-}: {
-  onClick?: (e: React.MouseEvent) => void; children: React.ReactNode
-  color?: string; hoverBg?: string; hoverColor?: string; disabled?: boolean
-}) => {
-  const [hover, setHover] = useState(false)
-  return (
-    <button
-      type="button"
-      onClick={onClick}
-      disabled={disabled}
-      onMouseEnter={() => setHover(true)}
-      onMouseLeave={() => setHover(false)}
-      style={{
-        width: 28, height: 28, borderRadius: 8, border: 'none',
-        cursor: disabled ? 'default' : 'pointer', padding: 0,
-        display: 'flex', alignItems: 'center', justifyContent: 'center',
-        opacity: disabled ? 0.3 : 1,
-        background: hover && !disabled ? (hoverBg ?? 'rgba(0,0,0,0.05)') : 'transparent',
-        color: hover && !disabled ? (hoverColor ?? color) : color,
-        transition: 'background 0.15s, color 0.15s',
-      }}
-    >
-      {children}
-    </button>
-  )
-}
-
-const UITextField = ({
-  value, onChange, dark, placeholder, startAdornment,
-}: {
-  value: string; onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void; dark: boolean
-  placeholder?: string; startAdornment?: React.ReactNode
-}) => {
-  const [focused, setFocused] = useState(false)
-  const borderColor = focused ? '#2563EB' : (dark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.12)')
-  return (
-    <div
-      style={{
-        display: 'flex', alignItems: 'center', gap: 8,
-        borderRadius: 10, padding: '0 10px',
-        background: dark ? 'rgba(255,255,255,0.04)' : 'rgba(0,0,0,0.03)',
-        border: `${focused ? 1 : 0.5}px solid ${borderColor}`,
-        transition: 'border-color 0.15s',
-      }}
-    >
-      {startAdornment}
-      <input
-        value={value}
-        onChange={onChange}
-        placeholder={placeholder}
-        onFocus={() => setFocused(true)}
-        onBlur={() => setFocused(false)}
-        style={{
-          flex: 1, border: 'none', outline: 'none', background: 'transparent', width: '100%',
-          fontSize: 13, padding: '9px 0', color: dark ? '#fff' : '#111',
-        }}
-      />
-    </div>
-  )
-}
 
 const UIChip = ({ label, color, dark }: { label: string; color: 'warning' | 'error' | 'default' | 'primary'; dark: boolean }) => {
   const colors: Record<string, { border: string; text: string }> = {
@@ -300,226 +47,6 @@ const UIChip = ({ label, color, dark }: { label: string; color: 'warning' | 'err
   )
 }
 
-const UIAvatar = ({ src, name, bg }: { src?: string; name: string; bg: string }) => (
-  <div
-    style={{
-      width: 32, height: 32, borderRadius: '50%', flexShrink: 0, overflow: 'hidden',
-      display: 'flex', alignItems: 'center', justifyContent: 'center',
-      background: bg, color: '#fff', fontSize: 13, fontWeight: 500,
-    }}
-  >
-    {src ? <img src={src} alt={name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} /> : getInitials(name)}
-  </div>
-)
-
-const UISkeleton = ({ width, height, circular, dark }: { width: number; height: number; circular?: boolean; dark: boolean }) => (
-  <motion.div
-    animate={{ opacity: [0.5, 1, 0.5] }}
-    transition={{ duration: 1.4, repeat: Infinity, ease: 'easeInOut' }}
-    style={{
-      width, height, borderRadius: circular ? '50%' : 6,
-      background: dark ? 'rgba(255,255,255,0.07)' : 'rgba(0,0,0,0.07)',
-    }}
-  />
-)
-
-const UITablePagination = ({
-  count, page, rowsPerPage, onPageChange, dark,
-}: {
-  count: number; page: number; rowsPerPage: number; onPageChange: (p: number) => void; dark: boolean
-}) => {
-  const totalPages = Math.max(1, Math.ceil(count / rowsPerPage))
-  const from = count === 0 ? 0 : page * rowsPerPage + 1
-  const to = Math.min(count, (page + 1) * rowsPerPage)
-  return (
-    <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-      <span style={{ fontSize: 12, color: dark ? 'rgba(255,255,255,0.4)' : 'rgba(0,0,0,0.45)' }}>
-        {from}–{to} of {count}
-      </span>
-      <UIIconButton
-        onClick={() => onPageChange(page - 1)}
-        disabled={page === 0}
-        color={dark ? 'rgba(255,255,255,0.35)' : 'rgba(0,0,0,0.35)'}
-        hoverBg={dark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.05)'}
-      >
-        <ChevronLeftIcon size={18} />
-      </UIIconButton>
-      <UIIconButton
-        onClick={() => onPageChange(page + 1)}
-        disabled={page >= totalPages - 1}
-        color={dark ? 'rgba(255,255,255,0.35)' : 'rgba(0,0,0,0.35)'}
-        hoverBg={dark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.05)'}
-      >
-        <ChevronRightIcon size={18} />
-      </UIIconButton>
-    </div>
-  )
-}
-
-/* ============================================================
-   Feature components
-   ============================================================ */
-const StatCard = ({
-  label, value, icon, dark, delay,
-}: {
-  label: string; value: number; icon: React.ReactNode; dark: boolean; delay: number
-}) => {
-  const ref = useRef(null)
-  const inView = useInView(ref, { once: true })
-  const [count, setCount] = useState(0)
-
-  useEffect(() => {
-    if (!inView || value === 0) return
-    let v = 0
-    const step = Math.ceil(value / 30)
-    const t = setInterval(() => {
-      v += step
-      if (v >= value) { setCount(value); clearInterval(t) }
-      else setCount(v)
-    }, 20)
-    return () => clearInterval(t)
-  }, [inView, value])
-
-  return (
-    <motion.div
-      ref={ref}
-      variants={fadeUp}
-      custom={delay}
-      className={`rounded-2xl border p-5 flex items-center gap-4 ${
-        dark ? 'bg-[#27272A] border-gray-800' : 'bg-white border-gray-100'
-      }`}
-    >
-      <div
-        style={{
-          width: 44, height: 44, borderRadius: 12, display: 'flex',
-          alignItems: 'center', justifyContent: 'center',
-          background: dark ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.04)',
-          color: dark ? 'rgba(255,255,255,0.5)' : 'rgba(0,0,0,0.4)',
-        }}
-      >
-        {icon}
-      </div>
-      <div>
-        <p style={{ margin: 0, fontSize: 11, fontWeight: 500, letterSpacing: '0.07em', textTransform: 'uppercase', color: dark ? 'rgba(255,255,255,0.35)' : 'rgba(0,0,0,0.4)' }}>
-          {label}
-        </p>
-        <p style={{ margin: 0, fontSize: 22, fontWeight: 500, lineHeight: 1.2, color: dark ? '#fff' : '#111' }}>
-          {count}
-        </p>
-      </div>
-    </motion.div>
-  )
-}
-
-type FilterRole = 'all' | Role
-type FilterStatus = 'all' | UserStatus
-
-const Pill = ({ label, active, dark, onClick }: {
-  label: string; active: boolean; dark: boolean; onClick: () => void
-}) => (
-  <motion.button
-    onClick={onClick}
-    whileTap={{ scale: 0.94 }}
-    style={{
-      border: 'none',
-      cursor: 'pointer',
-      borderRadius: 99,
-      padding: '4px 12px',
-      fontSize: 12,
-      fontWeight: 500,
-      transition: 'background 0.15s, color 0.15s',
-      background: active
-        ? '#2563EB'
-        : dark ? 'rgba(255,255,255,0.07)' : 'rgba(0,0,0,0.06)',
-      color: active
-        ? '#fff'
-        : dark ? 'rgba(255,255,255,0.5)' : 'rgba(0,0,0,0.5)',
-    }}
-  >
-    {label}
-  </motion.button>
-)
-
-/* --- Action menu: kept exactly as before, just rebuilt without MUI --- */
-const ActionMenu = ({
-  user, dark, onAction,
-}: {
-  user: AdminUser; dark: boolean; onAction: (action: string, userId: string) => void
-}) => {
-  const [open, setOpen] = useState(false)
-  const wrapperRef = useRef<HTMLDivElement>(null)
-  useClickOutside(wrapperRef, () => setOpen(false))
-
-  const actions: { key: string; label: string; icon: React.ReactNode; disabled: boolean; danger?: boolean }[] = [
-    { key: 'verify', label: 'Verify user', icon: <VerifiedUserIcon size={16} />, disabled: user.verified },
-    { key: 'makeMod', label: 'Make moderator', icon: <ManageAccountsIcon size={16} />, disabled: user.role !== 'user' },
-    { key: 'removeRole', label: 'Remove role', icon: <PersonRemoveIcon size={16} />, disabled: user.role === 'user' },
-    { key: 'suspend', label: 'Suspend', icon: <PauseCircleIcon size={16} />, disabled: user.status === 'suspended' },
-    { key: 'unsuspend', label: 'Remove suspension', icon: <PlayCircleIcon size={16} />, disabled: user.status !== 'suspended' },
-    { key: 'ban', label: 'Ban user', icon: <BlockIcon size={16} />, disabled: user.status === 'banned', danger: true },
-    { key: 'unban', label: 'Unban user', icon: <CheckCircleIcon size={16} />, disabled: user.status !== 'banned' },
-  ]
-
-  return (
-    <div ref={wrapperRef} style={{ position: 'relative', display: 'inline-block' }}>
-      <UITooltip title="Actions">
-        <UIIconButton
-          onClick={() => setOpen(o => !o)}
-          color={dark ? 'rgba(255,255,255,0.3)' : 'rgba(0,0,0,0.3)'}
-          hoverBg={dark ? 'rgba(255,255,255,0.07)' : 'rgba(0,0,0,0.05)'}
-          hoverColor={dark ? '#fff' : '#111'}
-        >
-          <MoreVertIcon size={18} />
-        </UIIconButton>
-      </UITooltip>
-      <AnimatePresence>
-        {open && (
-          <motion.div
-            initial={{ opacity: 0, scale: 0.95, y: -4 }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.95, y: -4 }}
-            transition={{ duration: 0.12 }}
-            style={{
-              position: 'absolute', top: 'calc(100% + 4px)', right: 0, zIndex: 20,
-              minWidth: 190, borderRadius: 12, overflow: 'hidden',
-              border: dark ? '0.5px solid rgba(255,255,255,0.08)' : '0.5px solid rgba(0,0,0,0.08)',
-              background: dark ? '#1f1f1f' : '#fff',
-              boxShadow: '0 12px 32px rgba(0,0,0,0.2)',
-              padding: '4px 0',
-            }}
-          >
-            {actions.map(a => (
-              <button
-                key={a.key}
-                type="button"
-                disabled={a.disabled}
-                onClick={() => { onAction(a.key, user._id); setOpen(false) }}
-                onMouseEnter={e => {
-                  if (a.disabled) return
-                  e.currentTarget.style.background = a.danger
-                    ? 'rgba(239,68,68,0.08)'
-                    : (dark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.04)')
-                }}
-                onMouseLeave={e => { e.currentTarget.style.background = 'transparent' }}
-                style={{
-                  width: '100%', display: 'flex', alignItems: 'center', gap: 10,
-                  padding: '8px 16px', fontSize: 13, border: 'none', background: 'transparent',
-                  cursor: a.disabled ? 'default' : 'pointer', textAlign: 'left',
-                  opacity: a.disabled ? 0.28 : 1,
-                  color: a.danger ? '#ef4444' : (dark ? 'rgba(255,255,255,0.75)' : 'rgba(0,0,0,0.75)'),
-                  transition: 'background 0.12s',
-                }}
-              >
-                {a.icon}
-                {a.label}
-              </button>
-            ))}
-          </motion.div>
-        )}
-      </AnimatePresence>
-    </div>
-  )
-}
 
 const StatusChip = ({ status }: { status: UserStatus }) => {
   const styles: Record<UserStatus, { bg: string; color: string; dot: string }> = {
@@ -532,7 +59,7 @@ const StatusChip = ({ status }: { status: UserStatus }) => {
     <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6, borderRadius: 99, padding: '3px 10px', background: s.bg }}>
       <span style={{ width: 6, height: 6, borderRadius: '50%', background: s.dot, flexShrink: 0 }} />
       <span style={{ fontSize: 12, fontWeight: 500, color: s.color, lineHeight: 1 }}>
-        {STATUS_LABELS[status]}
+        {STATUS_LABELS[status]} here
       </span>
     </span>
   )
@@ -554,26 +81,17 @@ const RoleChip = ({ role }: { role: Role }) => {
   )
 }
 
-const cellStyle = (dark: boolean): React.CSSProperties => ({
-  padding: '12px 16px',
-  borderBottom: dark ? '0.5px solid rgba(255,255,255,0.06)' : '0.5px solid rgba(0,0,0,0.05)',
-  fontSize: 13,
-  color: dark ? 'rgba(255,255,255,0.75)' : 'rgba(0,0,0,0.7)',
-  verticalAlign: 'middle',
-})
 
-const RowSkeleton = ({ dark }: { dark: boolean }) => (
-  <tr style={{ borderBottom: dark ? '0.5px solid rgba(255,255,255,0.06)' : '0.5px solid rgba(0,0,0,0.06)' }}>
-    {[60, 80, 70, 110, 40, 80].map((w, i) => (
-      <td key={i} style={{ padding: '14px 16px' }}>
-        <UISkeleton width={i === 0 ? 32 : w} height={i === 0 ? 32 : 16} circular={i === 0} dark={dark} />
-      </td>
-    ))}
-  </tr>
-)
-
-const AnimatedRow = ({ user, dark, index, onAction }: {
-  user: AdminUser; dark: boolean; index: number; onAction: (a: string, id: string) => void
+const AnimatedRow = ({ 
+  user, 
+  dark, 
+  index,
+   onAction 
+  }: {
+  user: AdminUser; 
+  dark: boolean; 
+  index: number; 
+  onAction: (a: string, id: string) => void
 }) => {
   const ref = useRef(null)
   const inView = useInView(ref, { once: true, margin: '-40px' })
@@ -644,21 +162,19 @@ const AnimatedRow = ({ user, dark, index, onAction }: {
   )
 }
 
-/* ============================================================
-   Page
-   ============================================================ */
 const AdminUserManagement = () => {
-  const { globalData } = useGlobalDataContext()
-  const { showConfirmSwal } = useSwal()
-  const dark = !globalData.themeGlobal
 
-  const [users] = useState<AdminUser[]>(FAKE_USERS)
-  const [loading] = useState(false)
-  const [search, setSearch] = useState('')
-  const [roleFilter, setRoleFilter] = useState<FilterRole>('all')
-  const [statusFilter, setStatusFilter] = useState<FilterStatus>('all')
-  const [page, setPage] = useState(0)
-  const rowsPerPage = 8
+  const { globalData } = useGlobalDataContext();
+  const { showConfirmSwal } = useSwal();
+  const dark = !globalData.themeGlobal;
+
+  const [users] = useState<AdminUser[]>(FAKE_USERS);
+  const [loading] = useState(false);
+  const [search, setSearch] = useState('');
+  const [roleFilter, setRoleFilter] = useState<FilterRole>('all');
+  const [statusFilter, setStatusFilter] = useState<FilterStatus>('all');
+  const [page, setPage] = useState(0);
+  const rowsPerPage = 8;
 
   const filtered = users.filter(u => {
     const q = search.toLowerCase()
