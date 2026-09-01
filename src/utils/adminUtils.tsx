@@ -26,20 +26,7 @@ export const DAYS   = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
 
 
 // ************ fake data users admins
-export const FAKE_USERS: AdminUser[] = [
-  { _id: '1', name: 'Ana García', email: 'ana@mail.com', role: 'admin', status: 'active', verified: true, createdAt: '2024-01-12', numberPost: 34, reports: [] },
-  { _id: '2', name: 'Carlos López', email: 'carlos@mail.com', role: 'moderator', status: 'active', verified: true, createdAt: '2024-02-05', numberPost: 21, reports: [{ type: 'spam', count: 2 }] },
-  { _id: '3', name: 'María Soto', email: 'maria@mail.com', role: 'user', status: 'active', verified: false, createdAt: '2024-03-18', numberPost: 8, reports: [] },
-  { _id: '4', name: 'Pedro Ruiz', email: 'pedro@mail.com', role: 'user', status: 'suspended', verified: false, createdAt: '2024-04-01', numberPost: 2, reports: [{ type: 'harassment', count: 3 }, { type: 'spam', count: 1 }] },
-  { _id: '5', name: 'Lucía Mora', email: 'lucia@mail.com', role: 'user', status: 'banned', verified: false, createdAt: '2024-04-22', numberPost: 0, reports: [{ type: 'scam', count: 5 }, { type: 'offensive', count: 2 }] },
-  { _id: '6', name: 'Diego Torres', email: 'diego@mail.com', role: 'moderator', status: 'active', verified: true, createdAt: '2024-05-10', numberPost: 15, reports: [] },
-  { _id: '7', name: 'Sofía Reyes', email: 'sofia@mail.com', role: 'user', status: 'active', verified: true, createdAt: '2024-05-30', numberPost: 42, reports: [] },
-  { _id: '8', name: 'Andrés Vega', email: 'andres@mail.com', role: 'user', status: 'suspended', verified: false, createdAt: '2024-06-15', numberPost: 1, reports: [{ type: 'offensive', count: 1 }] },
-  { _id: '9', name: 'Valeria Cruz', email: 'valeria@mail.com', role: 'user', status: 'active', verified: false, createdAt: '2024-07-02', numberPost: 5, reports: [] },
-  { _id: '10', name: 'Mateo Jiménez', email: 'mateo@mail.com', role: 'user', status: 'active', verified: true, createdAt: '2024-07-20', numberPost: 18, reports: [{ type: 'spam', count: 1 }] },
-  { _id: '11', name: 'Camila Herrera', email: 'camila@mail.com', role: 'user', status: 'banned', verified: false, createdAt: '2024-08-01', numberPost: 0, reports: [{ type: 'harassment', count: 6 }] },
-  { _id: '12', name: 'Sebastián Ríos', email: 'seba@mail.com', role: 'moderator', status: 'active', verified: true, createdAt: '2024-08-15', numberPost: 9, reports: [] },
-]
+
 
 export const REPORT_LABELS: Record<ReportType, string> = {
   spam: 'Spam',
@@ -56,17 +43,16 @@ export const REPORT_COLORS: Record<ReportType, 'warning' | 'error' | 'default' |
 }
 
 export const STATUS_LABELS: Record<UserStatus, string> = {
-  active: 'Active',
-  suspended: 'Suspended',
-  banned: 'Banned',
+  ACTIVE: 'Active',
+  BANNED: 'Banned',
+  TO_CONFIRM: 'To Confirm'
 }
 
 export const ROLE_LABELS: Record<Role, string> = {
-  user: 'User',
-  moderator: 'Moderator',
-  admin: 'Admin',
+  ROLE_USER: 'User',
+  ROLE_MOD: 'Moderator',
+  ROLE_ADMIN: 'Admin',
 }
-
 // **************+ fake data posts
 export const FAKE_POSTS: AdminPost[] = [
   {

@@ -21,8 +21,8 @@ export interface FormState {
 
 export type UIButtonVariant = 'primary' | 'outline' | 'danger';
 
-export type Role = 'user' | 'moderator' | 'admin'
-export type UserStatus = 'active' | 'suspended' | 'banned'
+export type Role = 'ROLE_USER' | 'ROLE_MOD' | 'ROLE_ADMIN'
+export type UserStatus = 'ACTIVE' | 'BANNED' | 'TO_CONFIRM';
 export type ReportType = 'spam' | 'harassment' | 'offensive' | 'scam'
 
 export interface ReportItem {

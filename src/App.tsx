@@ -138,7 +138,7 @@ function App() {
           <Route path="/error" element={<ErrorPage />} />
 
           {/* ADMIN PANEL */}
-          <Route element={<RequireRole allowedRoles={["ROLE_ADMIN"]} />}>
+          <Route element={<RequireRole allowedRoles={["ROLE_ADMIN", "ROLE_MOD"]} />}>
             <Route path="/admin" element={<AdminPanel />}>
               <Route path="dashboard" element={<AdminDashboard />} />
               <Route path="user-management" element={<AdminUserManagement />} />

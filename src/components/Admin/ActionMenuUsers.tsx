@@ -1,10 +1,11 @@
 import { useEffect, useRef, useState } from "react";
-import { AdminUser } from "../../interfaces/admin.interfaces";
 import { BlockIcon, CheckCircleIcon, ManageAccountsIcon, MoreVertIcon, PauseCircleIcon, PersonRemoveIcon, PlayCircleIcon, VerifiedUserIcon } from "../../utils/iconsUtils";
 import UITooltip from "./UIToolTip";
 import UIIconButton from "./UIIconButton";
 import { AnimatePresence, motion } from "framer-motion";
+import useUserAuthContext from "../../context/hooks/useUserAuthContext";
 
+// to do click outside and close component
 const useClickOutside = (ref: React.RefObject<HTMLElement>, onOutside: () => void) => {
   useEffect(() => {
     const handler = (e: MouseEvent) => {
@@ -15,32 +16,68 @@ const useClickOutside = (ref: React.RefObject<HTMLElement>, onOutside: () => voi
   }, [ref, onOutside])
 }
 
-
+// main component
 const ActionMenuUsers = ({
-  user, dark, onAction,
+  user,
+  dark,
+  onAction,
+  boundaryRef
 }: {
-  user: any; dark: boolean; onAction: (action: string, userId: string) => void
+  user: any;
+  dark: boolean;
+  onAction: (action: string, userId: string) => void
+  boundaryRef?: React.RefObject<HTMLElement>
 }) => {
 
-  const [open, setOpen] = useState(false);
-  const wrapperRef = useRef<HTMLDivElement>(null);
+  const [open, setOpen] = useState(false)
+  const wrapperRef = useRef<HTMLDivElement>(null)
   useClickOutside(wrapperRef, () => setOpen(false));
 
+  const [openUpward, setOpenUpward] = useState(false);
+  const MENU_HEIGHT = 220;
+
+  const { userAuth } = useUserAuthContext();
+
+  // viewer
+  const viewerRoles: string[] = (userAuth?.roles ?? []).map((r: any) =>
+    typeof r === "string" ? r : r?.name
+  );
+  const viewerIsAdmin = viewerRoles.includes('ROLE_ADMIN')
+  const viewerIsMod = viewerRoles.includes('ROLE_MOD')
+
+  const canVerify = viewerIsAdmin || viewerIsMod
+  const canBan = viewerIsAdmin || viewerIsMod
+  const canChangeRole = viewerIsAdmin
+
+  // if viwer can applicate change
+  const targetIsMod = user.roles.map((r: any) => r.name).includes('ROLE_MOD')
+  const isBanned = user.status === 'BANNED';
+
   const actions: { key: string; label: string; icon: React.ReactNode; disabled: boolean; danger?: boolean }[] = [
-    { key: 'verify', label: 'Verify user', icon: <VerifiedUserIcon size={16} />, disabled: user.verified },
-    { key: 'makeMod', label: 'Make moderator', icon: <ManageAccountsIcon size={16} />, disabled: user.role !== 'user' },
-    { key: 'removeRole', label: 'Remove role', icon: <PersonRemoveIcon size={16} />, disabled: user.role === 'user' },
-    { key: 'suspend', label: 'Suspend', icon: <PauseCircleIcon size={16} />, disabled: user.status === 'suspended' },
-    { key: 'unsuspend', label: 'Remove suspension', icon: <PlayCircleIcon size={16} />, disabled: user.status !== 'suspended' },
-    { key: 'ban', label: 'Ban user', icon: <BlockIcon size={16} />, disabled: user.status === 'banned', danger: true },
-    { key: 'unban', label: 'Unban user', icon: <CheckCircleIcon size={16} />, disabled: user.status !== 'banned' },
+    { key: 'verify', label: 'Verify user', icon: <VerifiedUserIcon size={16} />, disabled: user.confirm || !canVerify },
+    { key: 'makeMod', label: 'Make moderator', icon: <ManageAccountsIcon size={16} />, disabled: targetIsMod || !canChangeRole },
+    { key: 'removeRole', label: 'Remove role', icon: <PersonRemoveIcon size={16} />, disabled: !targetIsMod || !canChangeRole },
+    { key: 'ban', label: 'Ban user', icon: <BlockIcon size={16} />, disabled: isBanned || !canBan, danger: true },
+    { key: 'unban', label: 'Unban user', icon: <CheckCircleIcon size={16} />, disabled: !isBanned || !canBan },
   ]
+
+  const handleToggle = () => {
+    if (!open && wrapperRef.current) {
+      const buttonRect = wrapperRef.current.getBoundingClientRect()
+      const boundaryRect = boundaryRef?.current?.getBoundingClientRect()
+        ?? { bottom: window.innerHeight }
+
+      const spaceBelow = boundaryRect.bottom - buttonRect.bottom
+      setOpenUpward(spaceBelow < MENU_HEIGHT)
+    }
+    setOpen(o => !o)
+  }
 
   return (
     <div ref={wrapperRef} style={{ position: 'relative', display: 'inline-block' }}>
       <UITooltip title="Actions">
         <UIIconButton
-          onClick={() => setOpen(o => !o)}
+          onClick={handleToggle}
           color={dark ? 'rgba(255,255,255,0.3)' : 'rgba(0,0,0,0.3)'}
           hoverBg={dark ? 'rgba(255,255,255,0.07)' : 'rgba(0,0,0,0.05)'}
           hoverColor={dark ? '#fff' : '#111'}
@@ -51,12 +88,16 @@ const ActionMenuUsers = ({
       <AnimatePresence>
         {open && (
           <motion.div
-            initial={{ opacity: 0, scale: 0.95, y: -4 }}
+            initial={{ opacity: 0, scale: 0.95, y: openUpward ? 4 : -4 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.95, y: -4 }}
+            exit={{ opacity: 0, scale: 0.95, y: openUpward ? 4 : -4 }}
             transition={{ duration: 0.12 }}
             style={{
-              position: 'absolute', top: 'calc(100% + 4px)', right: 0, zIndex: 20,
+              position: 'absolute',
+              ...(openUpward
+                ? { bottom: 'calc(100% + 4px)' }
+                : { top: 'calc(100% + 4px)' }),
+              right: 0, zIndex: 20,
               minWidth: 190, borderRadius: 12, overflow: 'hidden',
               border: dark ? '0.5px solid rgba(255,255,255,0.08)' : '0.5px solid rgba(0,0,0,0.08)',
               background: dark ? '#1f1f1f' : '#fff',
@@ -69,7 +110,10 @@ const ActionMenuUsers = ({
                 key={a.key}
                 type="button"
                 disabled={a.disabled}
-                onClick={() => { onAction(a.key, user._id); setOpen(false) }}
+                onClick={() => {
+                  onAction(a.key, user._id); // send information to outside function
+                  setOpen(false)
+                }}
                 onMouseEnter={e => {
                   if (a.disabled) return
                   e.currentTarget.style.background = a.danger
