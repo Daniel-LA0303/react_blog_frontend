@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 
@@ -10,6 +10,8 @@ import Logo from '../Logo/Logo'
 import userUserAuthContext from '../../context/hooks/useUserAuthContext'
 import useGlobalDataContext from '../../context/hooks/useGlobalDataContext'
 import Notifications from '../Notifications/Notifications'
+import useGetSocketBannedNotification from '../../context/hooks/useGetBannedNotification'
+import { useSwal } from '../../hooks/useSwal'
 
 const Sidebar = () => {
   const { userAuth } = userUserAuthContext()
@@ -18,8 +20,38 @@ const Sidebar = () => {
 
   const [open, setOpen] = useState(false)
 
+  const { bannedMessage } = useGetSocketBannedNotification();
+  const { showConfirmSwal } = useSwal();
+
   const homePath = '/'
   const isHome = location.pathname === homePath
+
+
+  useEffect(() => {
+
+    const handleBannedUser = async () => {
+      if (!bannedMessage) return;
+
+      const { isConfirmed } = await showConfirmSwal({
+        message: bannedMessage,
+        status: 'error',
+        confirmButton: true,
+        cancelButton: false, // Hide cancel button since user MUST leave
+      });
+
+
+      if (isConfirmed) {
+        // 2. Clear client storage/session (e.g. remove token)
+        ['token', 'tokenAuthUser', 'email', 'username', 'userId', 'profileImage', 'expiresAt', 'isFree', 'plan', 'refreshToken']
+          .forEach(k => localStorage.removeItem(k))
+        document.location.reload()
+        document.location.href = '/'
+
+      }
+    }
+
+    handleBannedUser();
+  }, [bannedMessage]);
 
   return (
     <>

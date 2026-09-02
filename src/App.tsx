@@ -51,6 +51,8 @@ import PrivacyPolicy from "./Pages/About/PrivacyPolicy";
 import TermsOfUse from "./Pages/About/TermsOfUse";
 import { RequireRole } from "./components/Global/RequireRole";
 import UnauthorizedPage from "./components/Global/UnauthorizedPage";
+import useGetSocketBannedNotification from "./context/hooks/useGetBannedNotification";
+import { useSwal } from "./hooks/useSwal";
 
 
 
@@ -63,6 +65,8 @@ function App() {
 
   const { userAuth } = userUserAuthContext();
   const { globalData } = useGlobalDataContext();
+  //const { bannedMessage } = useGetSocketBannedNotification();
+  //const { showConfirmSwal } = useSwal();
 
   useEffect(() => {
     if (globalData.themeGlobal) {
@@ -73,6 +77,17 @@ function App() {
       document.body.classList.remove('bgt-white');
     }
   }, [globalData.themeGlobal])
+
+  /*useEffect(() => {
+    if (userAuth){
+      showConfirmSwal({
+        message: bannedMessage || 'You has been banned',       
+        status: 'error',
+        confirmButton: false});
+
+      window.location.replace('/');
+    }
+  }, [bannedMessage]); */
 
 
   return (

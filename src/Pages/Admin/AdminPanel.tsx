@@ -4,6 +4,8 @@ import { motion, AnimatePresence } from 'framer-motion'
 import useGlobalDataContext from '../../context/hooks/useGlobalDataContext'
 import userUserAuthContext from '../../context/hooks/useUserAuthContext'
 import { fadeUp, stagger } from '../../utils/animationsUtils'
+import useGetSocketBannedNotification from '../../context/hooks/useGetBannedNotification'
+import { useSwal } from '../../hooks/useSwal'
 
 const Icons = {
   dashboard: (
@@ -54,31 +56,31 @@ const Icons = {
 
 const NAV_ITEMS = [
   {
-    to:    '/admin/dashboard',
-    icon:  Icons.dashboard,
+    to: '/admin/dashboard',
+    icon: Icons.dashboard,
     label: 'Dashboard',
-    desc:  'Platform overview, KPIs and revenue',
+    desc: 'Platform overview, KPIs and revenue',
     color: { dark: 'bg-indigo-900/40 text-indigo-400', light: 'bg-indigo-50 text-indigo-500' },
   },
   {
-    to:    '/admin/user-management',
-    icon:  Icons.users,
+    to: '/admin/user-management',
+    icon: Icons.users,
     label: 'User management',
-    desc:  'Roles, bans, suspensions and reports',
+    desc: 'Roles, bans, suspensions and reports',
     color: { dark: 'bg-teal-900/40 text-teal-400', light: 'bg-teal-50 text-teal-500' },
   },
   {
-    to:    '/admin/post-moderation',
-    icon:  Icons.moderation,
+    to: '/admin/post-moderation',
+    icon: Icons.moderation,
     label: 'Post moderation',
-    desc:  'Hide, delete, feature and review posts',
+    desc: 'Hide, delete, feature and review posts',
     color: { dark: 'bg-rose-900/40 text-rose-400', light: 'bg-rose-50 text-rose-500' },
   },
   {
-    to:    '/admin/categories',
-    icon:  Icons.categories,
+    to: '/admin/categories',
+    icon: Icons.categories,
     label: 'Categories',
-    desc:  'Create, edit and delete post categories',
+    desc: 'Create, edit and delete post categories',
     color: { dark: 'bg-amber-900/40 text-amber-400', light: 'bg-amber-50 text-amber-500' },
   },
 ]
@@ -95,6 +97,37 @@ const AdminSidebar = ({
   onClose: () => void
 }) => {
   const location = useLocation()
+
+
+  const { bannedMessage } = useGetSocketBannedNotification();
+  const { showConfirmSwal } = useSwal();
+
+  useEffect(() => {
+
+    const handleBannedUser = async () => {
+      if (!bannedMessage) return;
+
+      const { isConfirmed } = await showConfirmSwal({
+        message: bannedMessage,
+        status: 'error',
+        confirmButton: true,
+        cancelButton: false, // Hide cancel button since user MUST leave
+      });
+
+
+      if (isConfirmed) {
+        // 2. Clear client storage/session (e.g. remove token)
+        ['token', 'tokenAuthUser', 'email', 'username', 'userId', 'profileImage', 'expiresAt', 'isFree', 'plan', 'refreshToken']
+          .forEach(k => localStorage.removeItem(k))
+        document.location.reload()
+        document.location.href = '/'
+
+      }
+    }
+
+    handleBannedUser();
+  }, [bannedMessage]);
+
 
   const sidebarContent = (
     <div className="flex flex-col h-full">

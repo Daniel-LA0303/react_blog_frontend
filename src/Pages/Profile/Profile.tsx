@@ -32,6 +32,7 @@ import ProfileSkeleton from '../../components/Spinner/Skeletons/ProfileSkeleton'
 import { CakeIcon } from '../../utils/iconsUtils';
 
 const Profile = () => {
+
   const { setErrorPage } = usePages();
   const { userAuth } = userUserAuthContext();
   const { showConfirmSwal } = useSwal();
@@ -45,6 +46,7 @@ const Profile = () => {
   const [isFollow, setIsFollow] = useState(false);
   const [posts, setPosts] = useState<any[]>([]);
   const [user, setUser] = useState<any>({});
+  const [userRoles, setUserRoles] = useState<string[]>([]);
   const [loading, setLoading] = useState(false);
   const [profileLoading, setProfileLoading] = useState(true);
   const [recommendedUsers, setRecommendedUsers] = useState<any[]>([]);
@@ -76,9 +78,17 @@ const Profile = () => {
       ? clientAuthAxios.get(`${globalData.link}/users/get-users-recommended`)
       : null;
 
+
     Promise.all([profileRequest, recommendedRequest])
       .then(([profileRes, recommendedRes]) => {
         setUser(profileRes.data.data);
+
+        // get roles
+        const viewerRoles: string[] = (profileRes.data.data?.roles ?? []).map((r: any) =>
+          typeof r === "string" ? r : r?.name
+        );
+        setUserRoles(viewerRoles);
+
         setIsFollow(profileRes.data.data.followersUsers.followers.includes(userAuth.userId));
 
         if (recommendedRes) {
@@ -100,6 +110,9 @@ const Profile = () => {
       });
 
   }, [params.id]);
+
+  console.log(user);
+
 
   useEffect(() => {
     setPosts([]);
@@ -204,18 +217,28 @@ const Profile = () => {
                           animate={{ opacity: 1, scale: 1 }}
                           transition={{ duration: 0.5, ease: [0.34, 1.56, 0.64, 1] }}
                         />
-
                       </motion.div>
 
                       {/* Info */}
                       <div className="flex-1 text-center sm:text-left">
-                        <motion.h1
-                          variants={fadeUp}
-                          custom={1}
-                          className={`text-2xl font-bold tracking-tight ${dark ? 'text-white' : 'text-gray-900'}`}
-                        >
-                          {user?.name}
-                        </motion.h1>
+                        <div className='flex justify-between'>
+                          <motion.h1
+                            variants={fadeUp}
+                            custom={1}
+                            className={`text-2xl font-bold tracking-tight ${dark ? 'text-white' : 'text-gray-900'}`}
+                          >
+                            {user?.name}
+                          </motion.h1>
+                          <p>
+                
+
+                            { userRoles.some(r => r === 'ROLE_MOD') &&
+                              <span className={`inline-block px-2 py-0.5 text-xs font-semibold rounded-full mb-2 bg-green-100 text-green-800`}>
+                                MODERATOR
+                              </span>
+                            }
+                          </p>
+                        </div>
 
                         {user?.info?.work && (
                           <motion.p variants={fadeUp} custom={2} className="mt-1 text-base text-gray-500 dark:text-gray-400 font-medium">
@@ -230,7 +253,7 @@ const Profile = () => {
                         )}
 
                         <motion.div variants={fadeUp} custom={4} className="mt-2 flex items-center justify-center sm:justify-start gap-1.5">
-                          <CakeIcon isDark={globalData.themeGlobal}/>
+                          <CakeIcon isDark={globalData.themeGlobal} />
                           <p className="text-xs text-gray-400 dark:text-gray-500">
                             Joined{' '}
                             <span className="font-medium text-gray-500 dark:text-gray-400">
@@ -370,7 +393,7 @@ const Profile = () => {
                     animate={{ opacity: 1 }}
                     exit={{ opacity: 0 }}
                   >
-                  <SmallSpinner />
+                    <SmallSpinner />
                   </motion.div>
                 )}
               </AnimatePresence>
