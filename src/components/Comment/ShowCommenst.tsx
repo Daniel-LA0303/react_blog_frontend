@@ -55,15 +55,17 @@ const ShowCommenst = ({
   /**
    * states
    */
-  const [editActive, setEditActive] = useState(false)
-  const [newComment, setNewComment] = useState('')
-  const [highlight, setHighlight] = useState(true)
-  const [replyActive, setReplyActive] = useState(false)
-  const [repliesState, setRepliesState] = useState<any[]>([])
-  const [repliesMeta, setRepliesMeta] = useState({ total: 0, totalPages: 1, hasMore: false })
-  const [currentRepliesPage, setCurrentRepliesPage] = useState(0)
-  const [loadingMoreReplies, setLoadingMoreReplies] = useState(false)
-  const [initialLoadDone, setInitialLoadDone] = useState(false)
+  const [editActive, setEditActive] = useState(false);
+
+  const [newComment, setNewComment] = useState('');
+
+  const [highlight, setHighlight] = useState(true);
+  const [replyActive, setReplyActive] = useState(false);
+  const [repliesState, setRepliesState] = useState<any[]>([]);
+  const [repliesMeta, setRepliesMeta] = useState({ total: 0, totalPages: 1, hasMore: false });
+  const [currentRepliesPage, setCurrentRepliesPage] = useState(0);
+  const [loadingMoreReplies, setLoadingMoreReplies] = useState(false);
+  const [initialLoadDone, setInitialLoadDone] = useState(false);
 
   /**
    * useEffect
@@ -243,21 +245,25 @@ const ShowCommenst = ({
       >
         {/* Comment header */}
         <div className={`flex items-start justify-between pb-4 mb-4 border-b ${dark ? 'border-gray-800' : 'border-gray-100'}`}>
-          <Link to={`/profile/${comment.userID._id}`} className="flex items-center gap-3 group">
-            <img
-              src={comment.userID.profilePicture?.secure_url || '/avatar.png'}
-              alt={comment.userID.name}
-              className="h-8 w-8 rounded-full object-cover flex-shrink-0"
-            />
-            <div>
-              <p className={`text-sm font-semibold group-hover:underline underline-offset-2 ${dark ? 'text-white' : 'text-gray-900'}`}>
-                {comment.userID.name}
-              </p>
-              <p className={`text-xs ${dark ? 'text-gray-600' : 'text-gray-400'}`}>
-                {new Date(comment.dateComment).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
-              </p>
-            </div>
-          </Link>
+          {
+            comment.userID.status !== 'BANNED' ?
+              <Link to={`/profile/${comment.userID._id}`} className="flex items-center gap-3 group">
+                <img
+                  src={comment.userID.profilePicture?.secure_url || '/avatar.png'}
+                  alt={comment.userID.name}
+                  className="h-8 w-8 rounded-full object-cover flex-shrink-0"
+                />
+                <div>
+                  <p className={`text-sm font-semibold group-hover:underline underline-offset-2 ${dark ? 'text-white' : 'text-gray-900'}`}>
+                    {comment.userID.name}
+                  </p>
+                  <p className={`text-xs ${dark ? 'text-gray-600' : 'text-gray-400'}`}>
+                    {new Date(comment.dateComment).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+                  </p>
+                </div>
+              </Link> :
+              <p className={`text-xs ${dark ? 'text-gray-600' : 'text-gray-400'}`}>This user has been banned</p>
+          }
 
           {/* Owner actions */}
           {isOwner && (
@@ -312,23 +318,27 @@ const ShowCommenst = ({
 
         {/* Footer actions */}
         <div className="flex items-center gap-4 mt-4">
-          {isLoggedIn && (
-            <motion.button
-              type="button"
-              onClick={handleReplyComment}
-              whileTap={{ scale: 0.95 }}
-              className={`flex items-center gap-1.5 text-xs font-medium transition-colors
+          {
+            comment.userID.status !== 'BANNED' ?
+              isLoggedIn && (
+                <motion.button
+                  type="button"
+                  onClick={handleReplyComment}
+                  whileTap={{ scale: 0.95 }}
+                  className={`flex items-center gap-1.5 text-xs font-medium transition-colors
                 ${replyActive
-                  ? 'text-[#2563EB]'
-                  : dark ? 'text-gray-500 hover:text-gray-300' : 'text-gray-400 hover:text-gray-600'
-                }`}
-            >
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round" className="w-3.5 h-3.5">
-                <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
-              </svg>
-              Reply
-            </motion.button>
-          )}
+                      ? 'text-[#2563EB]'
+                      : dark ? 'text-gray-500 hover:text-gray-300' : 'text-gray-400 hover:text-gray-600'
+                    }`}
+                >
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round" className="w-3.5 h-3.5">
+                    <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+                  </svg>
+                  Reply
+                </motion.button>
+              ) : null
+          }
+
 
           {repliesMeta.total > 0 && (
             <span className={`text-xs ${dark ? 'text-gray-600' : 'text-gray-400'}`}>
@@ -349,7 +359,8 @@ const ShowCommenst = ({
             idPost={idPost}
             onNewReply={handleNewReply}
           />
-        )}
+        )
+        }
       </AnimatePresence>
 
       {/* Replies list */}

@@ -55,7 +55,12 @@ const IconButton = ({
   </motion.button>
 );
 
-const Post = ({ post }: any) => {
+interface PostProps {
+  post?: any; // Marked optional with '?'
+  status?: string
+}
+
+export const Post = ({ post, status }: PostProps) => {
   const [like, setLike] = useState(false);
   const [numberLike, setNumberLike] = useState(0);
   const [save, setSave] = useState(false);
@@ -162,23 +167,39 @@ const Post = ({ post }: any) => {
         <div className="flex flex-col justify-between flex-1 p-5 gap-3 min-w-0">
 
           {/* Top: author + date */}
-          <div className="flex items-center gap-2.5">
-            <Link to={`/profile/${user._id}`} className="flex items-center gap-2 group/author">
-              <img
-                src={user?.profilePicture?.secure_url || '/avatar.png'}
-                alt={user.name}
-                className="h-7 w-7 rounded-full object-cover ring-1 ring-gray-200 dark:ring-gray-700 flex-shrink-0"
-              />
-              <span className={`text-xs font-medium truncate group-hover/author:underline underline-offset-2
+          <div className='flex justify-between'>
+
+            <div className="flex items-center gap-2.5">
+              <Link to={`/profile/${user._id}`} className="flex items-center gap-2 group/author">
+                <img
+                  src={user?.profilePicture?.secure_url || '/avatar.png'}
+                  alt={user.name}
+                  className="h-7 w-7 rounded-full object-cover ring-1 ring-gray-200 dark:ring-gray-700 flex-shrink-0"
+                />
+                <span className={`text-xs font-medium truncate group-hover/author:underline underline-offset-2
                 ${dark ? 'text-gray-300' : 'text-gray-700'}`}>
-                {user.name}
+                  {user.name}
+                </span>
+              </Link>
+              <span className={`text-xs ${dark ? 'text-gray-600' : 'text-gray-400'}`}>·</span>
+              <time className={`text-xs flex-shrink-0 ${dark ? 'text-gray-600' : 'text-gray-400'}`}>
+                {new Date(date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+              </time>
+            </div>
+
+            {status !== undefined && (
+              <span
+                className={`inline-block px-2 py-0.5 text-xs font-semibold rounded-full mb-2 ${status === 'PUBLISHED'
+                  ? 'bg-green-100 text-green-800'
+                  : 'bg-yellow-100 text-yellow-800'
+                  }`}
+              >
+                {status}
               </span>
-            </Link>
-            <span className={`text-xs ${dark ? 'text-gray-600' : 'text-gray-400'}`}>·</span>
-            <time className={`text-xs flex-shrink-0 ${dark ? 'text-gray-600' : 'text-gray-400'}`}>
-              {new Date(date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
-            </time>
+            )}
           </div>
+
+
 
           {/* Title */}
           <Link to={`/view-post/${_id}`} className="block min-w-0">

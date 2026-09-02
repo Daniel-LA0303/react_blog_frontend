@@ -106,6 +106,9 @@ const UserPosts = () => {
     }
   };
 
+  console.log("here");
+  
+
   return (
     <div className={`${globalData.themeGlobal ? 'text-black' : 'text-white'}`}>
       <Sidebar />
@@ -127,7 +130,7 @@ const UserPosts = () => {
 
             <div className="mt-4 space-y-6">
               {posts.map((post: any) => (
-                <Post key={post._id} post={post} />
+                <Post key={post._id} post={post} status={post.status}/>
               ))}
             </div>
 

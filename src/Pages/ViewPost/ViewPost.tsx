@@ -118,59 +118,86 @@ const ViewPost = () => {
    */
 
   // useeffect to get one post or blog
-  useEffect(() => {
-    setPost(null)
-    setLoading(true);
-    axios.get(`${globalData.link}/pages/page-view-post/${params.id}`)
-      .then(response => {
+useEffect(() => {
+  setPost(null);
+  setLoading(true);
 
-        setPost(response.data.data.post);
+  axios.get(`${globalData.link}/pages/page-view-post/${params.id}`)
+    .then(response => {
+      const fetchedPost = response.data?.data?.post;
+      const comments = response.data?.data?.comments || [];
+      const totalComments = response.data?.data?.totalComments || 0;
 
-        const plain = response.data.data.post.content.replace(/<[^>]*>/g, '').trim()
-        setCountContent(plain.length > 500 ? true : false);
+      // 1. Guard against missing post data
+      if (!fetchedPost) {
+        route('/');
+        return;
+      }
 
-        const newEngagement = {
-          numberLikes: response.data.data.post.likePost.users.length,
-          numberSaves: response.data.data.post.usersSavedPost.users.length,
-          numberComments: response.data.data.comments.length,
-        }
+      const postAuthorId = fetchedPost.user?._id;
+      const isAuthor = userAuth?.userId === postAuthorId;
 
-        // paint like
-        setLike(response.data.data.post.likePost.users.includes(userAuth.userId))
-        // paint save
-        setSave(response.data.data.post.usersSavedPost.users.includes(userAuth.userId))
-        // engagement post
-        setEngagementPost(newEngagement)
-        // comments
-        setCommentsState(response.data.data.comments)
-        setCommentsMeta({
-          total: response.data.data.totalComments,
-          totalPages: Math.ceil(response.data.data.totalComments / 5),
-          hasMore: response.data.data.totalComments > 5,
-        });
+      // 2. Access Control: Redirect if HIDDEN and visitor is NOT the author
+      if (fetchedPost.status === 'HIDDEN' && !isAuthor) {
+        showConfirmSwal({ message: 'This post is private or hidden.', status: 'error', confirmButton: true });
+        route('/');
+        return; // Stop further state updates
+      }
 
-        setRecommendedMoreFromAuthor(response.data.data.blogsUserSuggestion);
+      // 3. Set main post state using fresh response data
+      setPost(fetchedPost);
 
-        if (userAuth.userId) {
-          setBlogsLoading(true);
-          clientAuthAxios.get(`${globalData.link}/users/get-blogs-recommended`)
-            .then((res) => {
-              setRecommendedBlogs(res.data.data.recomended.recommendedBlogs);
-            })
-            .catch(console.error)
-            .finally(() => setBlogsLoading(false));
-        }
-      })
-      .catch(error => {
-        console.log(error)
-        if (error.code === 'ERR_NETWORK') {
-          route('/error', { state: { error: true, message: { status: null, message: 'Network Error', desc: null } } })
-        } else {
-            showConfirmSwal({ message: error.response.data.message, status: 'error', confirmButton: true })
-            route('/')
-        }
-      }).finally(() => setLoading(false))
-  }, [params.id]);
+      // 4. Safe plain text length check
+      const plainText = (fetchedPost.content || '').replace(/<[^>]*>/g, '').trim();
+      setCountContent(plainText.length > 500);
+
+      // 5. Safe array handling for engagement counters
+      const likesArray = fetchedPost.likePost?.users || [];
+      const savesArray = fetchedPost.usersSavedPost?.users || [];
+
+      setEngagementPost({
+        numberLikes: likesArray.length,
+        numberSaves: savesArray.length,
+        numberComments: comments.length,
+      });
+
+      // Paint active like/save buttons safely
+      setLike(userAuth?.userId ? likesArray.includes(userAuth.userId) : false);
+      setSave(userAuth?.userId ? savesArray.includes(userAuth.userId) : false);
+
+      // Comments state
+      setCommentsState(comments);
+      setCommentsMeta({
+        total: totalComments,
+        totalPages: Math.ceil(totalComments / 5),
+        hasMore: totalComments > 5,
+      });
+
+      setRecommendedMoreFromAuthor(response.data?.data?.blogsUserSuggestion || []);
+
+      // 6. Fetch recommended blogs for authenticated users
+      if (userAuth?.userId) {
+        setBlogsLoading(true);
+        clientAuthAxios.get(`${globalData.link}/users/get-blogs-recommended`)
+          .then((res) => {
+            setRecommendedBlogs(res.data?.data?.recomended?.recommendedBlogs || []);
+          })
+          .catch(console.error)
+          .finally(() => setBlogsLoading(false));
+      }
+    })
+    .catch(error => {
+      console.error(error);
+      if (error.code === 'ERR_NETWORK') {
+        route('/error', { state: { error: true, message: { status: null, message: 'Network Error', desc: null } } });
+      } else {
+        const errorMsg = error.response?.data?.message || 'Failed to load post';
+        showConfirmSwal({ message: errorMsg, status: 'error', confirmButton: true });
+        route('/');
+      }
+    })
+    .finally(() => setLoading(false));
+}, [params.id]);
 
 
   useEffect(() => {
@@ -203,8 +230,6 @@ const ViewPost = () => {
    */
   const deletePostComponent = async (id: any) => {
 
-
-
     // 1. Show confirmation dialog
     const { isConfirmed } = await showConfirmSwal({
       message: 'Are you sure you want to remove this Post?',
@@ -222,7 +247,7 @@ const ViewPost = () => {
         showAutoSwal({ message: 'Post deleted successfully', status: 'success', timer: 2000 })
         setTimeout(() => route('/'), 2000)
       } catch (error: any) {
-          showConfirmSwal({ message: error.response.data.message, status: 'error', confirmButton: true })
+        showConfirmSwal({ message: error.response.data.message, status: 'error', confirmButton: true })
       }
     }
   }
@@ -329,6 +354,7 @@ const ViewPost = () => {
   const isOwner = userAuth.userId === post?.user?._id
   const isLoggedIn = !!userAuth.userId
 
+
   if (loading || !post) return <Spinner />
 
   return (
@@ -346,19 +372,23 @@ const ViewPost = () => {
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ duration: 0.4, delay: 0.3 }}
               >
-                <ActionsPost
-                  user={userAuth}
-                  id={params.id}
-                  numberLike={engagementPost.numberLikes}
-                  numberSave={engagementPost.numberSaves}
-                  numberComments={engagementPost.numberComments}
-                  save={save}
-                  like={like}
-                  handleLike={handleLike}
-                  handleDislike={handleDislike}
-                  handleSave={handleSave}
-                  handleUnsave={handleUnsave}
-                />
+                {
+                  post.user.status !== 'BANNED' &&
+                  <ActionsPost
+                    user={userAuth}
+                    id={params.id}
+                    numberLike={engagementPost.numberLikes}
+                    numberSave={engagementPost.numberSaves}
+                    numberComments={engagementPost.numberComments}
+                    save={save}
+                    like={like}
+                    handleLike={handleLike}
+                    handleDislike={handleDislike}
+                    handleSave={handleSave}
+                    handleUnsave={handleUnsave}
+                  />
+                }
+
               </motion.div>
             )}
           </div>
@@ -389,25 +419,29 @@ const ViewPost = () => {
                 )}
               </AnimatePresence>
 
-              <div className="px-6 sm:px-6 py-8">
+              <div className={`px-6 sm:px-6  ${post.user.status === 'BANNED' ? 'py-1' : 'py-8'}`}>
 
                 {/* Author row */}
-                <div className="flex items-center justify-between mb-6">
-                  <Link to={`/profile/${post.user._id}`} className="flex items-center gap-3 group">
-                    <img
-                      src={post.user.profilePicture?.secure_url || '/avatar.png'}
-                      alt={post.user.name}
-                      className="h-10 w-10 rounded-full object-cover ring-2 ring-offset-2 ring-gray-100 dark:ring-gray-800 flex-shrink-0"
-                    />
-                    <div>
-                      <p className={`text-sm font-semibold group-hover:underline underline-offset-2 ${dark ? 'text-white' : 'text-gray-900'}`}>
-                        {post.user.name}
-                      </p>
-                      <p className={`text-xs ${dark ? 'text-gray-500' : 'text-gray-400'}`}>
-                        {new Date(post.createdAt).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}
-                      </p>
-                    </div>
-                  </Link>
+                <div className={`flex items-center justify-between mb-6`}>
+                  {
+                    post.user.status !== 'BANNED' && (
+                      <Link to={`/profile/${post.user._id}`} className="flex items-center gap-3 group">
+                        <img
+                          src={post.user.profilePicture?.secure_url || '/avatar.png'}
+                          alt={post.user.name}
+                          className="h-10 w-10 rounded-full object-cover ring-2 ring-offset-2 ring-gray-100 dark:ring-gray-800 flex-shrink-0"
+                        />
+                        <div>
+                          <p className={`text-sm font-semibold group-hover:underline underline-offset-2 ${dark ? 'text-white' : 'text-gray-900'}`}>
+                            {post.user.name}
+                          </p>
+                          <p className={`text-xs ${dark ? 'text-gray-500' : 'text-gray-400'}`}>
+                            {new Date(post.createdAt).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}
+                          </p>
+                        </div>
+                      </Link>
+                    )
+                  }
 
                   {/* Owner actions */}
                   {isOwner && (
@@ -416,6 +450,17 @@ const ViewPost = () => {
                       animate={{ opacity: 1, scale: 1 }}
                       className="flex items-center gap-1"
                     >
+
+                      {post.status !== undefined && (
+                        <span
+                          className={`inline-block px-2 py-0.5 text-xs font-semibold rounded-full mb-2 ${post.status === 'PUBLISHED'
+                            ? 'bg-green-100 text-green-800'
+                            : 'bg-yellow-100 text-yellow-800'
+                            }`}
+                        >
+                          {post.status}
+                        </span>
+                      )}
                       <Link
                         to={`/edit-post/${params.id}`}
                         className={`flex items-center justify-center h-8 w-8 rounded-lg transition-colors
@@ -568,9 +613,13 @@ const ViewPost = () => {
             }
 
             {/* Mobile user card */}
-            <div className="block lg:hidden mt-6">
-              <UserCard user={post.user} />
-            </div>
+            {
+              post.user.status !== 'BANNED' && (
+                <div className="block lg:hidden mt-6">
+                  <UserCard user={post.user} />
+                </div>
+              )
+            }
 
             <motion.div
               className='block lg:hidden mt-6'
@@ -630,16 +679,18 @@ const ViewPost = () => {
               </h2>
 
               {isLoggedIn && (
-                <div className="mb-6">
-                  <NewComment
-                    user={userAuth}
-                    idPost={params.id}
-                    comments={commentsState}
-                    setCommentsState={setCommentsState}
-                    setEngagementPost={setEngagementPost}
-                    userPost={post.user}
-                  />
-                </div>
+                post.user.status !== 'BANNED' && (
+                  <div className="mb-6">
+                    <NewComment
+                      user={userAuth}
+                      idPost={params.id}
+                      comments={commentsState}
+                      setCommentsState={setCommentsState}
+                      setEngagementPost={setEngagementPost}
+                      userPost={post.user}
+                    />
+                  </div>
+                )
               )}
 
               <AnimatePresence mode="popLayout">
@@ -694,15 +745,21 @@ const ViewPost = () => {
                 //)
               }
               <p className={`text-xs font-semibold uppercase tracking-widest ${dark ? 'text-gray-500' : 'text-gray-400'}`}>
-                About the author
+                {
+                  post.user.status === 'BANNED' ? 'This user has been banned.' : 'About the author'
+                }
               </p>
-              <motion.div
-                initial={{ opacity: 0, y: 12 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.4, delay: 0.25 }}
-              >
-                <UserCard user={post.user} />
-              </motion.div>
+              {
+                post.user.status !== 'BANNED' && (
+                  <motion.div
+                    initial={{ opacity: 0, y: 12 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.4, delay: 0.25 }}
+                  >
+                    <UserCard user={post.user} />
+                  </motion.div>
+                )
+              }
 
               <motion.div
                 className='mt-4'
@@ -775,21 +832,24 @@ const ViewPost = () => {
           className={`fixed bottom-0 left-0 right-0 z-40 block lg:hidden border-t
             ${dark ? 'bg-[#27272A]/95 border-gray-800 backdrop-blur-md' : 'bg-white/95 border-gray-100 backdrop-blur-md'}`}
         >
-          <div className="flex justify-center py-0 px-4">
-            <ActionsPost
-              user={userAuth}
-              id={params.id}
-              numberLike={engagementPost.numberLikes}
-              numberSave={engagementPost.numberSaves}
-              numberComments={engagementPost.numberComments}
-              save={save}
-              like={like}
-              handleLike={handleLike}
-              handleDislike={handleDislike}
-              handleSave={handleSave}
-              handleUnsave={handleUnsave}
-            />
-          </div>
+          {
+            post.user.status !== 'BANNED' &&
+            <div className="flex justify-center py-0 px-4">
+              <ActionsPost
+                user={userAuth}
+                id={params.id}
+                numberLike={engagementPost.numberLikes}
+                numberSave={engagementPost.numberSaves}
+                numberComments={engagementPost.numberComments}
+                save={save}
+                like={like}
+                handleLike={handleLike}
+                handleDislike={handleDislike}
+                handleSave={handleSave}
+                handleUnsave={handleUnsave}
+              />
+            </div>
+          }
         </motion.div>
       )}
     </div>

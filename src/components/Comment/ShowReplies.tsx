@@ -21,6 +21,7 @@ import { motion, AnimatePresence } from 'framer-motion'
  */
 import clientAuthAxios from '../../services/clientAuthAxios'
 import { PenIcon, TrashIcon } from '../../utils/iconsUtils'
+import { Link } from 'react-router-dom'
 
 const ShowReplies = ({ reply, onUpdateReply, onDeleteReply }: any) => {
 
@@ -116,21 +117,28 @@ const ShowReplies = ({ reply, onUpdateReply, onDeleteReply }: any) => {
     >
       {/* Header */}
       <div className="flex items-center justify-between mb-3">
-        <div className="flex items-center gap-2.5">
-          <img
-            src={reply.userID.profilePicture?.secure_url || '/avatar.png'}
-            alt={reply.userID.name}
-            className="h-6 w-6 rounded-full object-cover flex-shrink-0"
-          />
-          <div>
-            <p className={`text-xs font-semibold ${dark ? 'text-white' : 'text-gray-900'}`}>
-              {reply.userID.name}
-            </p>
-            <p className={`text-[10px] ${dark ? 'text-gray-600' : 'text-gray-400'}`}>
-              {new Date(reply.dateReply).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
-            </p>
-          </div>
-        </div>
+        {
+          reply.userID.status === 'BANNED' ?
+            <p className={`text-xs ${dark ? 'text-gray-600' : 'text-gray-400'}`}>This user has been banned</p> :
+            <Link
+              to={reply.userID?._id ? `/profile/${reply.userID._id}` : '#'}
+              className="flex items-center gap-2.5 hover:opacity-80 transition-opacity"
+            >
+              <img
+                src={reply.userID?.profilePicture?.secure_url || '/avatar.png'}
+                alt={reply.userID?.name || 'User'}
+                className="h-6 w-6 rounded-full object-cover flex-shrink-0"
+              />
+              <div>
+                <p className={`text-xs font-semibold ${dark ? 'text-white' : 'text-gray-900'}`}>
+                  {reply.userID?.name || 'Banned User'}
+                </p>
+                <p className={`text-[10px] ${dark ? 'text-gray-600' : 'text-gray-400'}`}>
+                  {new Date(reply.dateReply).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+                </p>
+              </div>
+            </Link>
+        }
 
         {/* Owner actions */}
         {isOwner && !isEditing && (

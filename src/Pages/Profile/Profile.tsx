@@ -94,7 +94,7 @@ const Profile = () => {
         if (error.code === 'ERR_NETWORK') {
           setErrorPage({ error: true, message: { status: null, message: 'Network Error', desc: null } });
         } else {
-          showConfirmSwal({ message: error.response.data.message, status: 'error', confirmButton: true });
+          showConfirmSwal({ message: error.response.data.message + ' or user has been banned.', status: 'error', confirmButton: true });
           route('/');
         }
       });
