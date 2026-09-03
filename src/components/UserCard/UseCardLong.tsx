@@ -43,6 +43,7 @@ const UserCardLong = ({ user }: any) => {
                 message: error?.response?.data?.message || "Error in unfollow User",
                 status: "error",
                 confirmButton: true,
+                cancelButton: false,
             });
         }
     };
@@ -58,6 +59,7 @@ const UserCardLong = ({ user }: any) => {
                 message: error?.response?.data?.message || "Error in follow User",
                 status: "error",
                 confirmButton: true,
+                cancelButton: false,
             });
         }
     };

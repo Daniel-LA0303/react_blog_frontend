@@ -23,7 +23,7 @@ const CategoryCard = ({ category }: any) => {
       await clientAuthAxios.post(`/users/follow-tag/${userAuth.userId}?categoryId=${category._id}`)
       setIsFollow(true)
     } catch (error: any) {
-      showConfirmSwal({ message: error.response.data.message, status: 'error', confirmButton: true })
+      showConfirmSwal({ message: error.response.data.message, status: 'error', confirmButton: true, cancelButton: false,})
     }
   }
 
@@ -32,7 +32,7 @@ const CategoryCard = ({ category }: any) => {
       await clientAuthAxios.post(`/users/unfollow-tag/${userAuth.userId}?categoryId=${category._id}`)
       setIsFollow(false)
     } catch (error: any) {
-      showConfirmSwal({ message: error.response.data.message, status: 'error', confirmButton: true })
+      showConfirmSwal({ message: error.response.data.message, status: 'error', confirmButton: true, cancelButton: false, })
     }
   }
 

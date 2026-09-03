@@ -56,6 +56,7 @@ const CardCategoryDashboard = ({ category, userAuth }: any) => {
         message: error.response?.data?.message || error.message,
         status: "error",
         confirmButton: true,
+        cancelButton: false,
       });
     }
   };
@@ -71,6 +72,7 @@ const CardCategoryDashboard = ({ category, userAuth }: any) => {
         message: error.response?.data?.message || error.message,
         status: "error",
         confirmButton: true,
+        cancelButton: false,
       });
     }
   };

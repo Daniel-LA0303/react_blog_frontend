@@ -61,7 +61,8 @@ const EditPost = () => {
    * states
    */
   const [title, setTitle] = useState('')
-  const [desc, setDesc] = useState('')
+  const [desc, setDesc] = useState('');
+  const [statusPost, setStatusPost] = useState('');
   const [categoriesSelect, setCategoriesSelect] = useState<any[]>([])
   const [content, setContent] = useState('')
   const [image, setImage] = useState<any>('')
@@ -75,7 +76,7 @@ const EditPost = () => {
   const [errors, setErrors] = useState<Record<string, string>>({})
 
   // AI states
-  const [flagCount, setFlagCount]   = useState(false)
+  const [flagCount, setFlagCount] = useState(false)
   const [activeTool, setActiveTool] = useState<'summary' | 'custom' | null>(null)
 
   const inputRef = useRef<HTMLInputElement>(null)
@@ -87,6 +88,9 @@ const EditPost = () => {
     setLoading(true)
     clientAuthAxios.get(`/pages/page-edit-post/${params.id}`)
       .then(response => {
+
+        console.log(response);
+        setStatusPost(response.data.data.post.status);
         setCategories(response.data.data.categories)
         setTitle(response.data.data.post.title)
         setContent(response.data.data.post.content)
@@ -117,7 +121,7 @@ const EditPost = () => {
           setLoading(false)
           route('/error', { state: data })
         } else {
-          showConfirmSwal({ message: msg, status: 'error', confirmButton: true })
+          showConfirmSwal({ message: msg, status: 'error', confirmButton: true, cancelButton: false, })
           setLoading(false)
           route('/error', { state: data })
         }
@@ -211,7 +215,8 @@ const EditPost = () => {
       content,
       categoriesPost: cats,
       categoriesSelect,
-      desc,
+      desc, 
+      status: statusPost
     }
 
     if (newImage) {
@@ -235,7 +240,7 @@ const EditPost = () => {
       route('/')
     } catch (error: any) {
       const msg = error.response?.data?.message || 'Unexpected error'
-      showConfirmSwal({ message: msg, status: 'error', confirmButton: true })
+      showConfirmSwal({ message: msg, status: 'error', confirmButton: true, cancelButton: false, })
     } finally {
       setSaving(false)
     }
@@ -314,8 +319,8 @@ const EditPost = () => {
                         {loadingType === 'title'
                           ? <span className={`w-3 h-3 border-2 rounded-full animate-spin
                               ${dark ? 'border-white/30 border-t-white' : 'border-black/20 border-t-black'}`}
-                            />
-                          : <MagicIcon isDark={globalData.themeGlobal}/>
+                          />
+                          : <MagicIcon isDark={globalData.themeGlobal} />
                         }
                       </button>
                     </Tooltip>
@@ -356,11 +361,55 @@ const EditPost = () => {
                         {loadingType === 'description'
                           ? <span className={`w-3 h-3 border-2 rounded-full animate-spin
                               ${dark ? 'border-white/30 border-t-white' : 'border-black/20 border-t-black'}`}
-                            />
-                          : <MagicIcon isDark={globalData.themeGlobal}/>
+                          />
+                          : <MagicIcon isDark={globalData.themeGlobal} />
                         }
                       </button>
                     </Tooltip>
+                  </div>
+                </Field>
+
+                {/* Status Post */}
+                <Field label="Post Visibility" htmlFor="statusPost" error={errors.statusPost} dark={dark}>
+                  <div className="relative">
+                    <select
+                      id="statusPost"
+                      value={statusPost}
+                      onChange={e => {
+                        setStatusPost(e.target.value);
+                        if (errors.statusPost) setErrors(p => ({ ...p, statusPost: '' }));
+                      }}
+                      className={`
+                          w-full appearance-none rounded-lg px-4 py-2.5 text-sm font-medium transition-all duration-200 outline-none pr-10 cursor-pointer
+                          ${dark
+                            ? 'bg-zinc-900/80 text-white border-zinc-800 hover:border-zinc-700 focus:border-zinc-500'
+                            : 'bg-white text-zinc-900 border-zinc-200 hover:border-zinc-300 focus:border-zinc-400'
+                          }
+                          ${errors.statusPost ? 'border-red-500 focus:border-red-500 focus:ring-1 focus:ring-red-500' : 'border'}
+                        `}
+                    >
+                      <option value="" disabled hidden className={dark ? 'bg-zinc-900 text-zinc-500' : 'bg-white text-zinc-400'}>
+                        Select Post Status
+                      </option>
+                      <option value="PUBLISHED" className={dark ? 'bg-zinc-900 text-emerald-400 font-semibold' : 'bg-white text-emerald-600 font-semibold'}>
+                        ● Published (Visible to public)
+                      </option>
+                      <option value="HIDDEN" className={dark ? 'bg-zinc-900 text-amber-400 font-semibold' : 'bg-white text-amber-600 font-semibold'}>
+                        ● Hidden (Only visible to you)
+                      </option>
+                    </select>
+
+                    {/* Custom Dropdown Arrow */}
+                    <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3">
+                      <svg
+                        className={`h-4 w-4 transition-transform duration-200 ${dark ? 'text-zinc-400' : 'text-zinc-500'}`}
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
+                      </svg>
+                    </div>
                   </div>
                 </Field>
 

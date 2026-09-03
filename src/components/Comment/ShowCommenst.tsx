@@ -194,7 +194,7 @@ const ShowCommenst = ({
       )
     } catch (error: any) {
       console.log(error)
-      showConfirmSwal({ message: error.response.data.message, status: 'error', confirmButton: true })
+      showConfirmSwal({ message: error.response.data.message, status: 'error', confirmButton: true, cancelButton: false, })
     }
   }
 

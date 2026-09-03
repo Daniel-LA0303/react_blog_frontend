@@ -91,7 +91,7 @@ const EditProfile = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     if (skills.length > 10) {
-      showConfirmSwal({ message: 'Max 10 skills allowed', status: 'warning', confirmButton: true })
+      showConfirmSwal({ message: 'Max 10 skills allowed', status: 'warning', confirmButton: true, cancelButton: false, })
       return
     }
     setSaving(true)

@@ -49,7 +49,8 @@ const UserConfirmed = () => {
                 showConfirmSwal({
                     message: error.response.data.message,
                     status: "error",
-                    confirmButton: true
+                    confirmButton: true,
+                    cancelButton: false,
                 }).then((result) => {
                     if (result.isConfirmed) {
                         route('/');

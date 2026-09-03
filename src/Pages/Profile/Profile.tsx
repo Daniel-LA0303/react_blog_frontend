@@ -104,7 +104,7 @@ const Profile = () => {
         if (error.code === 'ERR_NETWORK') {
           setErrorPage({ error: true, message: { status: null, message: 'Network Error', desc: null } });
         } else {
-          showConfirmSwal({ message: error.response.data.message + ' or user has been banned.', status: 'error', confirmButton: true });
+          showConfirmSwal({ message: error.response.data.message + ' or user has been banned.', status: 'error', confirmButton: true, cancelButton: false, });
           route('/');
         }
       });
@@ -159,7 +159,7 @@ const Profile = () => {
       await clientAuthAxios.post(`/users/user-unfollow/${userAuth.userId}?userUnfollow=${params.id}`);
       setIsFollow(false);
     } catch (error: any) {
-      showConfirmSwal({ message: error.response.data.message, status: 'error', confirmButton: true });
+      showConfirmSwal({ message: error.response.data.message, status: 'error', confirmButton: true, cancelButton: false, });
     }
   };
 
@@ -168,7 +168,7 @@ const Profile = () => {
       await clientAuthAxios.post(`/users/user-follow/${userAuth.userId}?userFollow=${params.id}`);
       setIsFollow(true);
     } catch (error: any) {
-      showConfirmSwal({ message: error.response.data.message, status: 'error', confirmButton: true });
+      showConfirmSwal({ message: error.response.data.message, status: 'error', confirmButton: true, cancelButton: false, });
     }
   };
 

@@ -340,7 +340,7 @@ const AdminUserManagement = () => {
     } catch (err: any) {
 
       // show a error
-      showConfirmSwal({ message: err?.response?.data?.message || 'Error loading users', status: 'error', confirmButton: true })
+      showConfirmSwal({ message: err?.response?.data?.message || 'Error loading users', status: 'error', confirmButton: true, cancelButton: false, })
 
     } finally {
       setLoading(false)
@@ -397,13 +397,14 @@ const AdminUserManagement = () => {
 
     try {
       await clientAuthAxios.post(endpoint, payload);
-      showConfirmSwal({ message: 'Action applied successfully', status: 'success', confirmButton: true });
+      showConfirmSwal({ message: 'Action applied successfully', status: 'success', confirmButton: true, cancelButton: false, });
       fetchUsers();
     } catch (err: any) {
       showConfirmSwal({
         message: err?.response?.data?.message || 'Error applying action',
         status: 'error',
-        confirmButton: true
+        confirmButton: true,
+        cancelButton: false,
       });
     }
   }

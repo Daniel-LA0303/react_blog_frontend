@@ -53,6 +53,7 @@ const ForgetPassword = () => {
                 message: "Flied is requiered!",
                 status: "warning",
                 confirmButton: true,
+                cancelButton: false,
             });
             return;
         }
@@ -74,6 +75,7 @@ const ForgetPassword = () => {
                 message: error.response?.data?.msg || error.message,
                 status: "error",
                 confirmButton: true,
+                cancelButton: false,
             });
         }
 

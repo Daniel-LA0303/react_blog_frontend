@@ -65,8 +65,6 @@ function App() {
 
   const { userAuth } = userUserAuthContext();
   const { globalData } = useGlobalDataContext();
-  //const { bannedMessage } = useGetSocketBannedNotification();
-  //const { showConfirmSwal } = useSwal();
 
   useEffect(() => {
     if (globalData.themeGlobal) {
@@ -77,17 +75,6 @@ function App() {
       document.body.classList.remove('bgt-white');
     }
   }, [globalData.themeGlobal])
-
-  /*useEffect(() => {
-    if (userAuth){
-      showConfirmSwal({
-        message: bannedMessage || 'You has been banned',       
-        status: 'error',
-        confirmButton: false});
-
-      window.location.replace('/');
-    }
-  }, [bannedMessage]); */
 
 
   return (

@@ -34,7 +34,7 @@ const ReplyComment = ({
   const replyCommentFunc = async () => {
     // 1. checks if reply is empty
     if (!replyComment.trim() || submitting) {
-      showConfirmSwal({ message: 'Reply is empty', status: 'warning', confirmButton: true })
+      showConfirmSwal({ message: 'Reply is empty', status: 'warning', confirmButton: true, cancelButton: false, })
       return
     }
 
@@ -52,7 +52,7 @@ const ReplyComment = ({
       if (onNewReply) onNewReply(res.data.data)
     } catch (error: any) {
       console.log(error)
-      showConfirmSwal({ message: error.response.data.message, status: 'error', confirmButton: true })
+      showConfirmSwal({ message: error.response.data.message, status: 'error', confirmButton: true, cancelButton: false, })
     } finally {
       setSubmitting(false)
       setReplyActive(false)

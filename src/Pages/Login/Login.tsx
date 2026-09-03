@@ -95,7 +95,7 @@ const Login = () => {
       showAutoSwal({ message: 'Login successfully', status: 'success', timer: 2000 })
       setTimeout(() => route('/'), 1000)
     } catch (error: any) {
-      showConfirmSwal({ message: error.response.data.message, status: 'error', confirmButton: true })
+      showConfirmSwal({ message: error.response.data.message, status: 'error', confirmButton: true, cancelButton: false, })
     } finally {
       setLoading(false)
     }

@@ -50,7 +50,7 @@ const NewComment = ({
 
     // 1. valid data
     if (comment.trim() === '') {
-      showConfirmSwal({ message: 'Comment is empty', status: 'warning', confirmButton: true })
+      showConfirmSwal({ message: 'Comment is empty', status: 'warning', confirmButton: true, cancelButton: false, })
       return
     }
 
@@ -68,7 +68,7 @@ const NewComment = ({
       setEngagementPost((prev: any) => ({ ...prev, numberComments: prev.numberComments + 1 }))
     } catch (error: any) {
       console.log(error)
-      showConfirmSwal({ message: error.response.data.message, status: 'error', confirmButton: true })
+      showConfirmSwal({ message: error.response.data.message, status: 'error', confirmButton: true,cancelButton: false, })
     } finally {
       setSubmitting(false)
     }

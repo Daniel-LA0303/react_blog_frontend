@@ -139,7 +139,7 @@ useEffect(() => {
 
       // 2. Access Control: Redirect if HIDDEN and visitor is NOT the author
       if (fetchedPost.status === 'HIDDEN' && !isAuthor) {
-        showConfirmSwal({ message: 'This post is private or hidden.', status: 'error', confirmButton: true });
+        showConfirmSwal({ message: 'This post is private or hidden.', status: 'error', confirmButton: true, cancelButton: false, });
         route('/');
         return; // Stop further state updates
       }
@@ -192,7 +192,7 @@ useEffect(() => {
         route('/error', { state: { error: true, message: { status: null, message: 'Network Error', desc: null } } });
       } else {
         const errorMsg = error.response?.data?.message || 'Failed to load post';
-        showConfirmSwal({ message: errorMsg, status: 'error', confirmButton: true });
+        showConfirmSwal({ message: errorMsg, status: 'error', confirmButton: true, cancelButton: false, });
         route('/');
       }
     })
@@ -247,7 +247,7 @@ useEffect(() => {
         showAutoSwal({ message: 'Post deleted successfully', status: 'success', timer: 2000 })
         setTimeout(() => route('/'), 2000)
       } catch (error: any) {
-        showConfirmSwal({ message: error.response.data.message, status: 'error', confirmButton: true })
+        showConfirmSwal({ message: error.response.data.message, status: 'error', confirmButton: true, cancelButton: false, })
       }
     }
   }
@@ -261,7 +261,7 @@ useEffect(() => {
       // removePostFromLikes(id);
     } catch (error: any) {
       console.log(error)
-      showConfirmSwal({ message: error.response.data.message, status: 'error', confirmButton: true })
+      showConfirmSwal({ message: error.response.data.message, status: 'error', confirmButton: true, cancelButton: false,})
     }
   }
 
@@ -272,7 +272,7 @@ useEffect(() => {
       setEngagementPost(prev => ({ ...prev, numberLikes: prev.numberLikes + 1 }))
     } catch (error: any) {
       console.log(error)
-      showConfirmSwal({ message: error.response.data.message, status: 'error', confirmButton: true })
+      showConfirmSwal({ message: error.response.data.message, status: 'error', confirmButton: true, cancelButton: false, })
     }
   }
 
@@ -283,7 +283,7 @@ useEffect(() => {
       setEngagementPost(prev => ({ ...prev, numberSaves: prev.numberSaves + 1 }))
     } catch (error: any) {
       console.log(error)
-      showConfirmSwal({ message: error.response.data.message, status: 'error', confirmButton: true })
+      showConfirmSwal({ message: error.response.data.message, status: 'error', confirmButton: true, cancelButton: false, })
     }
   }
 
@@ -294,7 +294,7 @@ useEffect(() => {
       setEngagementPost(prev => ({ ...prev, numberSaves: prev.numberSaves - 1 }))
     } catch (error: any) {
       console.log(error)
-      showConfirmSwal({ message: error.response.data.message, status: 'error', confirmButton: true })
+      showConfirmSwal({ message: error.response.data.message, status: 'error', confirmButton: true, cancelButton: false, })
     }
   }
 

@@ -103,7 +103,7 @@ const AdminCats = () => {
       setCategory(payload.data ?? [])
       setTotal(payload.meta?.total ?? 0)
     } catch (err: any) {
-      showConfirmSwal({ message: err?.response?.data?.message || 'Error loading categories', status: 'error', confirmButton: true })
+      showConfirmSwal({ message: err?.response?.data?.message || 'Error loading categories', status: 'error', confirmButton: true, cancelButton: false, })
     } finally {
       setLoading(false)
     }
@@ -123,15 +123,15 @@ const AdminCats = () => {
     try {
       if (editingCat) {
         await clientAuthAxios.put(`/categories/update-category/${editingCat._id}`, values)
-        showConfirmSwal({ message: 'Category updated successfully', status: 'success', confirmButton: true })
+        showConfirmSwal({ message: 'Category updated successfully', status: 'success', confirmButton: true, cancelButton: false, })
       } else {
         await clientAuthAxios.post('/categories/', values)
-        showConfirmSwal({ message: 'Category created successfully', status: 'success', confirmButton: true })
+        showConfirmSwal({ message: 'Category created successfully', status: 'success', confirmButton: true, cancelButton: false, })
       }
       setModalOpen(false)
       fetchUsers()
     } catch (err: any) {
-      showConfirmSwal({ message: err?.response?.data?.message || 'Error saving category', status: 'error', confirmButton: true })
+      showConfirmSwal({ message: err?.response?.data?.message || 'Error saving category', status: 'error', confirmButton: true, cancelButton: false, })
     } finally {
       setSubmitting(false)
     }

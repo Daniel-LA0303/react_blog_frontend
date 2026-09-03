@@ -102,7 +102,7 @@ export const Post = ({ post, status }: PostProps) => {
       setLike(false);
       setNumberLike((n) => n - 1);
     } catch (error: any) {
-      showConfirmSwal({ message: error.response.data.message, status: 'error', confirmButton: true });
+      showConfirmSwal({ message: error.response.data.message, status: 'error', confirmButton: true, cancelButton: false, });
     }
   };
 
@@ -112,7 +112,7 @@ export const Post = ({ post, status }: PostProps) => {
       setLike(true);
       setNumberLike((n) => n + 1);
     } catch (error: any) {
-      showConfirmSwal({ message: error.response.data.message, status: 'error', confirmButton: true });
+      showConfirmSwal({ message: error.response.data.message, status: 'error', confirmButton: true, cancelButton: false, });
     }
   };
 
@@ -121,7 +121,7 @@ export const Post = ({ post, status }: PostProps) => {
       await clientAuthAxios.post(`/posts/save-post/${_id}?userId=${userAuth.userId}`);
       setSave(true);
     } catch (error: any) {
-      showConfirmSwal({ message: error.response.data.message, status: 'error', confirmButton: true });
+      showConfirmSwal({ message: error.response.data.message, status: 'error', confirmButton: true, cancelButton: false, });
     }
   };
 
@@ -130,7 +130,7 @@ export const Post = ({ post, status }: PostProps) => {
       await clientAuthAxios.post(`/posts/unsave-post/${_id}?userId=${userAuth.userId}`);
       setSave(false);
     } catch (error: any) {
-      showConfirmSwal({ message: error.response.data.message, status: 'error', confirmButton: true });
+      showConfirmSwal({ message: error.response.data.message, status: 'error', confirmButton: true, cancelButton: false,});
     }
   };
 

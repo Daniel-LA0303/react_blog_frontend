@@ -58,7 +58,7 @@ const UserCard = ({ user }: any) => {
       setIsFollow(false)
     } catch (error: any) {
       console.log(error)
-      showConfirmSwal({ message: error.response.data.message, status: 'error', confirmButton: true })
+      showConfirmSwal({ message: error.response.data.message, status: 'error', confirmButton: true, cancelButton: false, })
     }
   }
 
@@ -68,7 +68,7 @@ const UserCard = ({ user }: any) => {
       setIsFollow(true)
     } catch (error: any) {
       console.log(error)
-      showConfirmSwal({ message: error.response.data.message, status: 'error', confirmButton: true })
+      showConfirmSwal({ message: error.response.data.message, status: 'error', confirmButton: true, cancelButton: false,})
     }
   }
 

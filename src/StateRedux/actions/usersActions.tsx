@@ -64,7 +64,8 @@ export function editUserAction(userId: any, editUserData: any, route: any){
             showConfirmSwal({ 
                 message: msg, 
                 status: "error", 
-                confirmButton: true 
+                confirmButton: true,
+                cancelButton: false,
             });
 
             // we don't redirect here

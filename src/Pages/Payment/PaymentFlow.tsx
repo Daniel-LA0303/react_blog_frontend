@@ -98,6 +98,7 @@ const PaymentFlow = () => {
                 message: error.response?.data?.message || 'Error deleting the reply',
                 status: 'error',
                 confirmButton: true,
+                cancelButton: false,
             })
         } finally {
             setPaying(false)

@@ -64,6 +64,7 @@ const ShowReplies = ({ reply, onUpdateReply, onDeleteReply }: any) => {
         message: error.response?.data?.message || 'Error deleting the reply',
         status: 'error',
         confirmButton: true,
+        cancelButton: false,
       })
     }
 
@@ -74,7 +75,7 @@ const ShowReplies = ({ reply, onUpdateReply, onDeleteReply }: any) => {
   const handleEditReply = async () => {
     // 1. check if reply is empty
     if (!editText.trim() || submitting) {
-      showConfirmSwal({ message: 'Reply is empty', status: 'warning', confirmButton: true })
+      showConfirmSwal({ message: 'Reply is empty', status: 'warning', confirmButton: true, cancelButton: false, })
       return
     }
     setSubmitting(true)
@@ -87,13 +88,14 @@ const ShowReplies = ({ reply, onUpdateReply, onDeleteReply }: any) => {
       })
       if (onUpdateReply) onUpdateReply(res.data.data)
       setIsEditing(false)
-      showConfirmSwal({ message: 'Reply updated', status: 'success', confirmButton: false })
+      showConfirmSwal({ message: 'Reply updated', status: 'success', confirmButton: false, cancelButton: false, })
     } catch (error: any) {
       console.error('Error editing reply:', error)
       showConfirmSwal({
         message: error.response?.data?.message || 'Error editing',
         status: 'error',
         confirmButton: true,
+        cancelButton: false,
       })
     } finally {
       setSubmitting(false)
