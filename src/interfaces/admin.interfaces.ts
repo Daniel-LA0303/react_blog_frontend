@@ -56,13 +56,25 @@ export type FilterRole = 'all' | Role
 export type FilterStatus = 'all' | UserStatus
 
 
-// interfaces posts
-export type PostStatus = 'published' | 'hidden' | 'featured' | 'under_review' | 'deleted'
-export type ReportReason = 'spam' | 'prohibited_content' | 'harassment' | 'misinformation' | 'copyright'
+/* ------ INTERFACES AND TYPES TO ADMIN PANEL POST */
+
+export type PostStatus = 'PUBLISHED' | 'HIDDEN' | 'DELETED' | 'BANNED' | 'DELETED_BY_ADMIN' | 'HIDDEN_BY_ADMIN'
+
+export type ReportStatus = 'PENDING' | 'RESOLVED' | 'DISMISSED';
 
 export interface PostReport {
-  reason: ReportReason
-  count: number
+  _id: string
+  reason: string;
+  status: ReportStatus;
+  reportedBy: string;
+  cretedAt: string;
+}
+
+export interface CategoryPostAdmin {
+  _id: string;
+  name: string;
+  color: string;
+  createdAt: string;
 }
 
 export interface PostAuthor {
@@ -79,9 +91,7 @@ export interface AdminPost {
   createdAt: string
   reports: PostReport[]
   views: number
-  likes: number
-  category: string
+  likePost: any
+  categories: CategoryPostAdmin[];
   flagged: boolean
 }
-
-export type ActionKey = 'hide' | 'unhide' | 'feature' | 'unfeature' | 'review' | 'delete' | 'restore'

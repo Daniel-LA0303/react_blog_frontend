@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { BlockIcon, CheckCircleIcon, ManageAccountsIcon, MoreVertIcon, PauseCircleIcon, PersonRemoveIcon, PlayCircleIcon, VerifiedUserIcon } from "../../utils/iconsUtils";
+import { BlockIcon, CheckCircleIcon, ManageAccountsIcon, MoreVertIcon, PersonRemoveIcon, VerifiedUserIcon } from "../../utils/iconsUtils";
 import UITooltip from "./UIToolTip";
 import UIIconButton from "./UIIconButton";
 import { AnimatePresence, motion } from "framer-motion";
@@ -46,8 +46,11 @@ const ActionMenuUsers = ({
   const viewerIsMod = viewerRoles.includes('ROLE_MOD')
 
   const canVerify = viewerIsAdmin || viewerIsMod
-  const canBan = viewerIsAdmin || viewerIsMod
-  const canChangeRole = viewerIsAdmin
+  const canBan = viewerIsAdmin 
+    //|| viewerIsMod
+  const canAddMod = viewerIsAdmin || viewerIsMod
+  const canQuitMod = viewerIsAdmin
+  const canUnban = viewerIsAdmin || viewerIsMod;
 
   // if viwer can applicate change
   const targetIsMod = user.roles.map((r: any) => r.name).includes('ROLE_MOD')
@@ -55,10 +58,10 @@ const ActionMenuUsers = ({
 
   const actions: { key: string; label: string; icon: React.ReactNode; disabled: boolean; danger?: boolean }[] = [
     { key: 'verify', label: 'Verify user', icon: <VerifiedUserIcon size={16} />, disabled: user.confirm || !canVerify },
-    { key: 'makeMod', label: 'Make moderator', icon: <ManageAccountsIcon size={16} />, disabled: targetIsMod || !canChangeRole },
-    { key: 'removeRole', label: 'Remove role', icon: <PersonRemoveIcon size={16} />, disabled: !targetIsMod || !canChangeRole },
+    { key: 'makeMod', label: 'Make moderator', icon: <ManageAccountsIcon size={16} />, disabled: targetIsMod || !canAddMod },
+    { key: 'removeRole', label: 'Remove role', icon: <PersonRemoveIcon size={16} />, disabled: !targetIsMod || !canQuitMod },
     { key: 'ban', label: 'Ban user', icon: <BlockIcon size={16} />, disabled: isBanned || !canBan, danger: true },
-    { key: 'unban', label: 'Unban user', icon: <CheckCircleIcon size={16} />, disabled: !isBanned || !canBan },
+    { key: 'unban', label: 'Unban user', icon: <CheckCircleIcon size={16} />, disabled: !isBanned || !canUnban },
   ]
 
   const handleToggle = () => {

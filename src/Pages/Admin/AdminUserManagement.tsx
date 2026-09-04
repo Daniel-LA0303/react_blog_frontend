@@ -11,8 +11,8 @@ import {
 import UITextField from '../../components/Admin/UITextField'
 import ActionMenu from '../../components/Admin/ActionMenuUsers'
 import UITablePagination from '../../components/Admin/UITablePagination'
-import StatCard from '../../components/Admin/StatCard'
-import Pill from '../../components/Admin/Pill'
+import StatCard from '../../components/Global/StatCard'
+import Pill from '../../components/Global/Pill'
 import RowSkeleton from '../../components/Admin/RowSkeleton'
 import UIAvatar from '../../components/Admin/UIAvatar'
 import useUserAuthContext from '../../context/hooks/useUserAuthContext'
@@ -142,7 +142,7 @@ const AnimatedRow = ({
 }) => {
 
   const cellSx = cellStyle(dark)
-  const roleNames = user.roles.map(r => r.name)
+  const roleNames = user.roles.map(r => r.name);
 
   return (
     <motion.tr
@@ -210,6 +210,7 @@ const AnimatedRow = ({
       {/* show actions menu */}
       <td style={{ ...cellSx, textAlign: 'right', width: 48 }} onClick={e => e.stopPropagation()}>
         {canManage &&
+    
           <ActionMenu
             user={user}
             dark={dark}
@@ -284,8 +285,6 @@ const ReportsModal = ({ user, dark, onClose }: { user: AdminUser; dark: boolean;
   </AnimatePresence>
 )
 
-
-
 // pagination options limits
 const ROWS_PER_PAGE_OPTIONS = [8, 16, 24, 50]
 
@@ -318,8 +317,6 @@ const AdminUserManagement = () => {
   const [selectedUser, setSelectedUser] = useState<AdminUser | null>(null);
 
   const tableWrapperRef = useRef<HTMLDivElement>(null)
-
-
 
   // get users with filters
   const fetchUsers = useCallback(async () => {
@@ -469,7 +466,7 @@ const AdminUserManagement = () => {
             <span style={{ fontSize: 11, fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.06em', color: dark ? 'rgba(255,255,255,0.3)' : 'rgba(0,0,0,0.35)', marginRight: 4 }}>
               Role:
             </span>
-            {(['all', 'ROLE_USER', 'ROLE_MOD', 'ROLE_ADMIN'] as FilterRole[]).map(r => (
+            {(['all', 'ROLE_USER', 'ROLE_MOD'] as FilterRole[]).map(r => (
               <Pill
                 key={r}
                 label={r === 'all' ? 'All' : ROLE_LABELS[r as Role]}
