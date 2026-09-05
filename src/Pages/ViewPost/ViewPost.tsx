@@ -48,7 +48,8 @@ import BlogRecommendedCard from '../../components/Post/BlogRecommendedCard'
 import useIA from '../../context/hooks/useIA'
 import { AIAssistModal } from '../../components/IA/NewPost/AIAssistModal'
 import { Question, QuizModal } from '../../components/IA/ViewPost/QuizModal'
-import { PenIcon, TrashIcon } from '../../utils/iconsUtils'
+import { FlagIcon, PenIcon, TrashIcon } from '../../utils/iconsUtils'
+import { ReportModal } from '../../components/Report/ReportModal'
 
 
 const ViewPost = () => {
@@ -107,6 +108,8 @@ const ViewPost = () => {
   const [activeTool, setActiveTool] = useState<'summary' | 'custom' | null>(null) // to show modal
   const { loadingType, errorIA, response, requestIA } = useIA();
 
+  const [reportOpen, setReportOpen] = useState(false);
+
 
   /**
    * states redux
@@ -118,86 +121,86 @@ const ViewPost = () => {
    */
 
   // useeffect to get one post or blog
-useEffect(() => {
-  setPost(null);
-  setLoading(true);
+  useEffect(() => {
+    setPost(null);
+    setLoading(true);
 
-  axios.get(`${globalData.link}/pages/page-view-post/${params.id}`)
-    .then(response => {
-      const fetchedPost = response.data?.data?.post;
-      const comments = response.data?.data?.comments || [];
-      const totalComments = response.data?.data?.totalComments || 0;
+    axios.get(`${globalData.link}/pages/page-view-post/${params.id}`)
+      .then(response => {
+        const fetchedPost = response.data?.data?.post;
+        const comments = response.data?.data?.comments || [];
+        const totalComments = response.data?.data?.totalComments || 0;
 
-      // 1. Guard against missing post data
-      if (!fetchedPost) {
-        route('/');
-        return;
-      }
+        // 1. Guard against missing post data
+        if (!fetchedPost) {
+          route('/');
+          return;
+        }
 
-      const postAuthorId = fetchedPost.user?._id;
-      const isAuthor = userAuth?.userId === postAuthorId;
+        const postAuthorId = fetchedPost.user?._id;
+        const isAuthor = userAuth?.userId === postAuthorId;
 
-      // 2. Access Control: Redirect if HIDDEN and visitor is NOT the author
-      if (fetchedPost.status === 'HIDDEN' && !isAuthor) {
-        showConfirmSwal({ message: 'This post is private or hidden.', status: 'error', confirmButton: true, cancelButton: false, });
-        route('/');
-        return; // Stop further state updates
-      }
+        // 2. Access Control: Redirect if HIDDEN and visitor is NOT the author
+        if (fetchedPost.status === 'HIDDEN' && !isAuthor) {
+          showConfirmSwal({ message: 'This post is private or hidden.', status: 'error', confirmButton: true, cancelButton: false, });
+          route('/');
+          return; // Stop further state updates
+        }
 
-      // 3. Set main post state using fresh response data
-      setPost(fetchedPost);
+        // 3. Set main post state using fresh response data
+        setPost(fetchedPost);
 
-      // 4. Safe plain text length check
-      const plainText = (fetchedPost.content || '').replace(/<[^>]*>/g, '').trim();
-      setCountContent(plainText.length > 500);
+        // 4. Safe plain text length check
+        const plainText = (fetchedPost.content || '').replace(/<[^>]*>/g, '').trim();
+        setCountContent(plainText.length > 500);
 
-      // 5. Safe array handling for engagement counters
-      const likesArray = fetchedPost.likePost?.users || [];
-      const savesArray = fetchedPost.usersSavedPost?.users || [];
+        // 5. Safe array handling for engagement counters
+        const likesArray = fetchedPost.likePost?.users || [];
+        const savesArray = fetchedPost.usersSavedPost?.users || [];
 
-      setEngagementPost({
-        numberLikes: likesArray.length,
-        numberSaves: savesArray.length,
-        numberComments: comments.length,
-      });
+        setEngagementPost({
+          numberLikes: likesArray.length,
+          numberSaves: savesArray.length,
+          numberComments: comments.length,
+        });
 
-      // Paint active like/save buttons safely
-      setLike(userAuth?.userId ? likesArray.includes(userAuth.userId) : false);
-      setSave(userAuth?.userId ? savesArray.includes(userAuth.userId) : false);
+        // Paint active like/save buttons safely
+        setLike(userAuth?.userId ? likesArray.includes(userAuth.userId) : false);
+        setSave(userAuth?.userId ? savesArray.includes(userAuth.userId) : false);
 
-      // Comments state
-      setCommentsState(comments);
-      setCommentsMeta({
-        total: totalComments,
-        totalPages: Math.ceil(totalComments / 5),
-        hasMore: totalComments > 5,
-      });
+        // Comments state
+        setCommentsState(comments);
+        setCommentsMeta({
+          total: totalComments,
+          totalPages: Math.ceil(totalComments / 5),
+          hasMore: totalComments > 5,
+        });
 
-      setRecommendedMoreFromAuthor(response.data?.data?.blogsUserSuggestion || []);
+        setRecommendedMoreFromAuthor(response.data?.data?.blogsUserSuggestion || []);
 
-      // 6. Fetch recommended blogs for authenticated users
-      if (userAuth?.userId) {
-        setBlogsLoading(true);
-        clientAuthAxios.get(`${globalData.link}/users/get-blogs-recommended`)
-          .then((res) => {
-            setRecommendedBlogs(res.data?.data?.recomended?.recommendedBlogs || []);
-          })
-          .catch(console.error)
-          .finally(() => setBlogsLoading(false));
-      }
-    })
-    .catch(error => {
-      console.error(error);
-      if (error.code === 'ERR_NETWORK') {
-        route('/error', { state: { error: true, message: { status: null, message: 'Network Error', desc: null } } });
-      } else {
-        const errorMsg = error.response?.data?.message || 'Failed to load post';
-        showConfirmSwal({ message: errorMsg, status: 'error', confirmButton: true, cancelButton: false, });
-        route('/');
-      }
-    })
-    .finally(() => setLoading(false));
-}, [params.id]);
+        // 6. Fetch recommended blogs for authenticated users
+        if (userAuth?.userId) {
+          setBlogsLoading(true);
+          clientAuthAxios.get(`${globalData.link}/users/get-blogs-recommended`)
+            .then((res) => {
+              setRecommendedBlogs(res.data?.data?.recomended?.recommendedBlogs || []);
+            })
+            .catch(console.error)
+            .finally(() => setBlogsLoading(false));
+        }
+      })
+      .catch(error => {
+        console.error(error);
+        if (error.code === 'ERR_NETWORK') {
+          route('/error', { state: { error: true, message: { status: null, message: 'Network Error', desc: null } } });
+        } else {
+          const errorMsg = error.response?.data?.message || 'Failed to load post';
+          showConfirmSwal({ message: errorMsg, status: 'error', confirmButton: true, cancelButton: false, });
+          route('/');
+        }
+      })
+      .finally(() => setLoading(false));
+  }, [params.id]);
 
 
   useEffect(() => {
@@ -261,7 +264,7 @@ useEffect(() => {
       // removePostFromLikes(id);
     } catch (error: any) {
       console.log(error)
-      showConfirmSwal({ message: error.response.data.message, status: 'error', confirmButton: true, cancelButton: false,})
+      showConfirmSwal({ message: error.response.data.message, status: 'error', confirmButton: true, cancelButton: false, })
     }
   }
 
@@ -444,13 +447,12 @@ useEffect(() => {
                   }
 
                   {/* Owner actions */}
-                  {isOwner && (
+                  {isOwner ? (
                     <motion.div
                       initial={{ opacity: 0, scale: 0.9 }}
                       animate={{ opacity: 1, scale: 1 }}
                       className="flex items-center gap-1"
                     >
-
                       {post.status !== undefined && (
                         <span
                           className={`inline-block px-2 py-0.5 text-xs font-semibold rounded-full mb-2 ${post.status === 'PUBLISHED'
@@ -464,7 +466,7 @@ useEffect(() => {
                       <Link
                         to={`/edit-post/${params.id}`}
                         className={`flex items-center justify-center h-8 w-8 rounded-lg transition-colors
-                          ${dark ? 'text-gray-400 hover:bg-gray-800 hover:text-white' : 'text-gray-400 hover:bg-gray-100 hover:text-gray-700'}`}
+                        ${dark ? 'text-gray-400 hover:bg-gray-800 hover:text-white' : 'text-gray-400 hover:bg-gray-100 hover:text-gray-700'}`}
                       >
                         <PenIcon isDark={dark} />
                       </Link>
@@ -473,11 +475,24 @@ useEffect(() => {
                         onClick={() => deletePostComponent(params.id)}
                         whileTap={{ scale: 0.9 }}
                         className={`flex items-center justify-center h-8 w-8 rounded-lg transition-colors
-                          ${dark ? 'text-gray-500 hover:bg-red-900/30 hover:text-red-400' : 'text-gray-400 hover:bg-red-50 hover:text-red-500'}`}
+                        ${dark ? 'text-gray-500 hover:bg-red-900/30 hover:text-red-400' : 'text-gray-400 hover:bg-red-50 hover:text-red-500'}`}
                       >
                         <TrashIcon isDark={dark} />
                       </motion.button>
                     </motion.div>
+                  ) : (
+                    userAuth.userId !== null && (
+                      <motion.button
+                        type="button"
+                        onClick={() => setReportOpen(true)}
+                        title="Report post"
+                        whileTap={{ scale: 0.9 }}
+                        className={`flex items-center justify-center h-8 w-8 rounded-lg transition-colors flex-shrink-0
+                        ${dark ? 'text-gray-500 hover:bg-rose-900/30 hover:text-rose-400' : 'text-gray-400 hover:bg-rose-50 hover:text-rose-500'}`}
+                      >
+                        <FlagIcon size={16} />
+                      </motion.button>
+                    )
                   )}
                 </div>
 
@@ -852,6 +867,13 @@ useEffect(() => {
           }
         </motion.div>
       )}
+
+      <ReportModal
+        open={reportOpen}
+        onClose={() => setReportOpen(false)}
+        targetType="Post"
+        targetId={params.id}
+      />
     </div>
   )
 }

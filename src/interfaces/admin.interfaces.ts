@@ -71,6 +71,9 @@ export interface PostReport {
   status: ReportStatus;
   reportedBy: string;
   cretedAt: string;
+  reasonUserType: string;
+  reasonUser: string;
+  createdAt: string;
 }
 
 export interface CategoryPostAdmin {

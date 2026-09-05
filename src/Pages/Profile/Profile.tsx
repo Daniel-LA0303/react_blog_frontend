@@ -29,7 +29,8 @@ import SidebarContent from '../../components/Profile/SidebarContent';
 import ActionButton from '../../components/Profile/ActionButton';
 import SmallSpinner from '../../components/Spinner/SmallSpinner';
 import ProfileSkeleton from '../../components/Spinner/Skeletons/ProfileSkeleton';
-import { CakeIcon } from '../../utils/iconsUtils';
+import { CakeIcon, FlagIcon } from '../../utils/iconsUtils';
+import { ReportModal } from '../../components/Report/ReportModal';
 
 const Profile = () => {
 
@@ -42,6 +43,8 @@ const Profile = () => {
   const route = useNavigate();
 
   const dark = !globalData.themeGlobal;
+
+  const [reportOpen, setReportOpen] = useState(false);
 
   const [isFollow, setIsFollow] = useState(false);
   const [posts, setPosts] = useState<any[]>([]);
@@ -221,7 +224,8 @@ const Profile = () => {
 
                       {/* Info */}
                       <div className="flex-1 text-center sm:text-left">
-                        <div className='flex justify-between'>
+
+                        <div className='flex justify-between items-start'>
                           <motion.h1
                             variants={fadeUp}
                             custom={1}
@@ -229,15 +233,27 @@ const Profile = () => {
                           >
                             {user?.name}
                           </motion.h1>
-                          <p>
-                
 
-                            { userRoles.some(r => r === 'ROLE_MOD') &&
+                          <div className="flex items-center gap-2">
+                            {userRoles.some(r => r === 'ROLE_MOD') && (
                               <span className={`inline-block px-2 py-0.5 text-xs font-semibold rounded-full mb-2 bg-green-100 text-green-800`}>
                                 MODERATOR
                               </span>
-                            }
-                          </p>
+                            )}
+
+                            {/* Botón de reporte: solo si no es mi propio perfil y estoy logeado */}
+                            {!isOwn && userAuth.userId !== null && (
+                              <button
+                                type="button"
+                                onClick={() => setReportOpen(true)}
+                                title="Report user"
+                                className={`flex items-center justify-center h-7 w-7 rounded-lg transition-colors flex-shrink-0
+                                ${dark ? 'text-gray-500 hover:bg-rose-900/30 hover:text-rose-400' : 'text-gray-400 hover:bg-rose-50 hover:text-rose-500'}`}
+                              >
+                                <FlagIcon size={15} />
+                              </button>
+                            )}
+                          </div>
                         </div>
 
                         {user?.info?.work && (
@@ -471,6 +487,13 @@ const Profile = () => {
           </motion.aside>
         </div>
       </main>
+
+      <ReportModal
+        open={reportOpen}
+        onClose={() => setReportOpen(false)}
+        targetType="User"
+        targetId={user._id}
+      />
     </div>
   );
 };

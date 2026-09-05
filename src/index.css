@@ -432,3 +432,26 @@ h1{
 [data-testid="dev-tools-button"] {
     display: none !important;
 }
+
+
+.reports-scroll {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(128, 128, 128, 0.35) transparent;
+}
+
+.reports-scroll::-webkit-scrollbar {
+  width: 5px;
+}
+
+.reports-scroll::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.reports-scroll::-webkit-scrollbar-thumb {
+  background: rgba(128, 128, 128, 0.35);
+  border-radius: 10px;
+}
+
+.reports-scroll::-webkit-scrollbar-thumb:hover {
+  background: rgba(128, 128, 128, 0.55);
+}

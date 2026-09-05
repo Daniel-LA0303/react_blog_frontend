@@ -307,7 +307,12 @@ const AdminUserManagement = () => {
 
       {/* to show modal and reports by users */}
       {selectedUser && (
-        <ReportsUserModal user={selectedUser} dark={dark} onClose={() => setSelectedUser(null)} />
+        <ReportsUserModal 
+          user={selectedUser} 
+          dark={dark} 
+          onClose={() => setSelectedUser(null)} 
+          fetchUsers={fetchUsers}
+        />
       )}
     </div>
   )
