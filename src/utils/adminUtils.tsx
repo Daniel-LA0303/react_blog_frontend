@@ -1,5 +1,4 @@
-import { ActionMenuItem, AdminCategory, AdminPost, AdminUser, PostStatus, ReportStatus, ReportType, Role, UserStatus } from "../interfaces/admin.interfaces"
-import { CheckCircleIcon, DeleteIcon, RateReviewIcon, StarIcon, VisibilityOffIcon } from "./iconsUtils"
+import { AdminUser, PostStatus, ReportStatus, Role, UserStatus } from "../interfaces/admin.interfaces"
 
 // a global styles in cell to table in admin panel
 export const cellStyle = (dark: boolean): React.CSSProperties => ({
@@ -20,46 +19,43 @@ export function avatarBg(name: string) {
   return BGCOLORS_POST[Math.abs(hash) % BGCOLORS_POST.length]
 }
 
+// only get initials
+export function initials(name: string) {
+  return name.trim().split(/\s+/).slice(0, 2).map(w => w[0]?.toUpperCase()).join('')
+}
+
+// get colors for roles
+export function avatarColorForRoles(roles: Role[]) {
+  if (roles.length > 1) return '#0b0b0b'
+  if (roles[0] === 'ROLE_ADMIN') return '#0b0b0b'
+  return '#2563EB'
+}
+
+// retrun bollean if exists role
+export function hasRole(user: AdminUser, ...names: Role[]) {
+  return user.roles.some(r => names.includes(r.name))
+}
+
 export const PALETTE = [
   '#2563EB', '#1D9E75', '#D85A30', '#7F77DD',
   '#D4537E', '#BA7517', '#0891b2', '#65a30d',
 ]
 
-export function toSlug(name: string) {
-  return name.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '')
-}
-
 export const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
 export const DAYS   = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
 
 
-// ************ fake data users admins
-
-
-export const REPORT_LABELS: Record<ReportType, string> = {
-  spam: 'Spam',
-  harassment: 'Harassment',
-  offensive: 'Offensive',
-  scam: 'Scam',
-}
-
-export const REPORT_COLORS: Record<ReportType, 'warning' | 'error' | 'default' | 'primary'> = {
-  spam: 'warning',
-  harassment: 'error',
-  offensive: 'default',
-  scam: 'primary',
-}
-
-export const STATUS_LABELS: Record<UserStatus, string> = {
-  ACTIVE: 'Active',
-  BANNED: 'Banned',
-  TO_CONFIRM: 'To Confirm'
-}
-
+/* ----------- ADMIN PANEL USERS ------------ */
 export const ROLE_LABELS: Record<Role, string> = {
   ROLE_USER: 'User',
   ROLE_MOD: 'Moderator',
   ROLE_ADMIN: 'Admin',
+}
+
+export const STATUS_LABELS_USER: Record<UserStatus, string> = {
+  ACTIVE: 'Active',
+  BANNED: 'Banned',
+  TO_CONFIRM: 'To Confirm'
 }
 
 /* ----------- ADMIN PANEL POSTS ------------ */
@@ -76,7 +72,6 @@ export const REPORT_LABELS_POST: Record<ReportStatus, string> = {
 
 // status to iterate to print in select
 export const REPORT_STATUS_OPTIONS: ReportStatus[] = ['PENDING', 'RESOLVED', 'DISMISSED']
-
 
 // styles to show reports statuss
 export const REPORT_CHIP_STYLE: Record<ReportStatus, { bg: string; color: string; border: string }> = {

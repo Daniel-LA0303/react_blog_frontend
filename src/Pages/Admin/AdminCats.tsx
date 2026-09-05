@@ -1,73 +1,23 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
-import CategoryFormModal, { CategoryFormValues } from '../../components/Admin/CategoryFormModal'
+import CategoryFormModal from '../../components/Admin/AdminCategoryPanel/CategoryFormModal'
 import UIButton from '../../components/Admin/UIButton'
 import useGlobalDataContext from '../../context/hooks/useGlobalDataContext';
 import useUserAuthContext from '../../context/hooks/useUserAuthContext';
 import { useSwal } from '../../hooks/useSwal';
-import { AddIcon, EditIcon, SearchIcon } from '../../utils/iconsUtils' // AddIcon ya lo tenías importado
+import { AddIcon, SearchIcon } from '../../utils/iconsUtils' // AddIcon ya lo tenías importado
 import clientAuthAxios from '../../services/clientAuthAxios';
 import { motion } from "framer-motion";
 import { fadeUp } from '../../utils/animationsUtils';
 import UITextField from '../../components/Admin/UITextField';
 import RowSkeleton from '../../components/Admin/RowSkeleton';
-import { cellStyle } from '../../utils/adminUtils';
-import UIIconButton from '../../components/Admin/UIIconButton';
+import { ROWS_PER_PAGE_OPTIONS } from '../../utils/adminUtils';
 import UITablePagination from '../../components/Admin/UITablePagination';
+import { CategoryFormValues, ICategoryAdminPanel } from '../../interfaces/admin.interfaces';
+import AnimatedRowCategory from '../../components/Admin/AdminCategoryPanel/AnimatedRowCategory';
 
-const ROWS_PER_PAGE_OPTIONS = [8, 16, 24, 50]
-
-interface ICategory {
-  _id: string
-  name: string
-  color: string
-  desc: string
-  longDesc: string
-  createdAt: string
-  followersCount: number
-}
-
-const AnimatedRow = ({
-  cat, dark, canManage, onEdit, boundaryRef
-}: {
-  cat: ICategory
-  dark: boolean
-  canManage: boolean
-  onEdit: (cat: ICategory) => void
-  boundaryRef?: React.RefObject<HTMLElement>
-}) => {
-  const cellSx = cellStyle(dark)
-
-  return (
-    <motion.tr initial="hidden" animate="visible" variants={fadeUp} style={{ display: 'table-row' }}>
-      <td style={{ ...cellSx, minWidth: 200 }}>
-        <p style={{ margin: 0, fontSize: 13, fontWeight: 500, color: dark ? '#fff' : '#111' }}>{cat.name}</p>
-      </td>
-      <td style={cellSx}>
-        <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
-          <span style={{ width: 14, height: 14, borderRadius: '50%', background: cat.color, flexShrink: 0 }} />
-          <span style={{ fontSize: 12, color: dark ? 'rgba(255,255,255,0.5)' : 'rgba(0,0,0,0.5)' }}>{cat.color}</span>
-        </span>
-      </td>
-      <td style={{ ...cellSx, fontSize: 12, color: dark ? 'rgba(255,255,255,0.55)' : 'rgba(0,0,0,0.55)' }}>{cat.desc}</td>
-      <td style={{ ...cellSx, minWidth: 100 }}>{cat.followersCount}</td>
-      <td style={cellSx}>{new Date(cat.createdAt).toLocaleDateString('en-US', { day: '2-digit', month: 'short', year: 'numeric' })}</td>
-      <td style={{ ...cellSx, textAlign: 'right', width: 48 }}>
-        {canManage && (
-          <UIIconButton
-            onClick={() => onEdit(cat)}
-            color={dark ? 'rgba(255,255,255,0.3)' : 'rgba(0,0,0,0.3)'}
-            hoverBg={dark ? 'rgba(255,255,255,0.07)' : 'rgba(0,0,0,0.05)'}
-            hoverColor={dark ? '#fff' : '#111'}
-          >
-            <EditIcon size={16} />
-          </UIIconButton>
-        )}
-      </td>
-    </motion.tr>
-  )
-}
 
 const AdminCats = () => {
+
   const { userAuth } = useUserAuthContext();
   const { globalData } = useGlobalDataContext();
   const { showConfirmSwal } = useSwal();
@@ -80,7 +30,7 @@ const AdminCats = () => {
   // Solo ROLE_ADMIN puede crear/editar categorías (no ROLE_MOD)
   const canManage = currentUserRoles.includes('ROLE_ADMIN');
 
-  const [categories, setCategory] = useState<ICategory[]>([]);
+  const [categories, setCategory] = useState<ICategoryAdminPanel[]>([]);
   const [total, setTotal] = useState(0);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
@@ -88,7 +38,7 @@ const AdminCats = () => {
   const [rowsPerPage, setRowsPerPage] = useState(8);
 
   const [modalOpen, setModalOpen] = useState(false)
-  const [editingCat, setEditingCat] = useState<ICategory | null>(null)
+  const [editingCat, setEditingCat] = useState<ICategoryAdminPanel | null>(null)
   const [submitting, setSubmitting] = useState(false)
 
   const tableWrapperRef = useRef<HTMLDivElement>(null)
@@ -115,7 +65,7 @@ const AdminCats = () => {
   }, [fetchUsers])
 
   const openCreate = () => { setEditingCat(null); setModalOpen(true) }
-  const openEdit = (cat: ICategory) => { setEditingCat(cat); setModalOpen(true) }
+  const openEdit = (cat: ICategoryAdminPanel) => { setEditingCat(cat); setModalOpen(true) }
   const closeModal = () => { if (!submitting) setModalOpen(false) }
 
   const handleSubmitCategory = async (values: CategoryFormValues) => {
@@ -137,6 +87,7 @@ const AdminCats = () => {
     }
   }
 
+  // styles
   const surfaceClass = dark ? 'bg-[#27272A] border-gray-800' : 'bg-white border-gray-100'
   const headCellStyle: React.CSSProperties = {
     fontSize: 11, fontWeight: 500, letterSpacing: '0.07em', textTransform: 'uppercase',
@@ -232,7 +183,7 @@ const AdminCats = () => {
                       </tr>
                     )
                     : categories.map((c) => (
-                      <AnimatedRow
+                      <AnimatedRowCategory
                         key={c._id}
                         cat={c}
                         dark={dark}

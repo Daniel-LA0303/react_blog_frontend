@@ -142,6 +142,7 @@ const AdminPostModeration = () => {
           </p>
         </motion.div>
 
+        {/* stats with some info */}
         <motion.div
           initial="hidden" animate="visible" variants={stagger}
           className="grid grid-cols-2 lg:grid-cols-4 gap-4"
@@ -156,6 +157,7 @@ const AdminPostModeration = () => {
           className={`rounded-2xl border ${surfaceClass}`}
           style={{ padding: '16px 20px', display: 'flex', flexDirection: 'column', gap: 12 }}
         >
+          {/* search filter */}
           <UITextField
             value={search}
             onChange={e => { setSearch(e.target.value); setPage(0) }}
@@ -186,6 +188,7 @@ const AdminPostModeration = () => {
           </div>
         </motion.div>
 
+        {/* table */}
         <motion.div
           initial="hidden"
           animate="visible"
@@ -239,11 +242,10 @@ const AdminPostModeration = () => {
                     ))
                 }
               </tbody>
-
-
             </table>
           </div>
 
+          {/* pagination*/}
           <div
             style={{
               borderTop: dark ? '0.5px solid rgba(255,255,255,0.06)' : '0.5px solid rgba(0,0,0,0.06)',
@@ -274,6 +276,7 @@ const AdminPostModeration = () => {
           </div>
         </motion.div>
 
+        {/* to show modal and reports by post */}
         <PostDetailDialog
           post={preview}
           dark={dark}

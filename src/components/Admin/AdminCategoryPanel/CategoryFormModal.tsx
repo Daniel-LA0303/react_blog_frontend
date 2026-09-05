@@ -1,24 +1,11 @@
 import { useEffect, useState } from "react";
-import UIModal from "./UIModal";
-import UITextField from "./UITextField";
-import UIButton from "./UIButton";
-import ColorPicker from "./ColorPicker";
-import { toSlug } from "../../utils/adminUtils";
+import UIModal from "../UIModal";
+import UITextField from "../UITextField";
+import UIButton from "../UIButton";
+import ColorPicker from "../ColorPicker";
+import { CategoryFormValues, ICategoryInfo } from "../../../interfaces/admin.interfaces";
 
-interface ICategory {
-  _id: string
-  name: string
-  color: string
-  desc: string
-  longDesc: string
-}
 
-interface CategoryFormValues {
-  name: string
-  color: string
-  desc: string
-  longDesc: string
-}
 
 const EMPTY_FORM: CategoryFormValues = {
   name: '', color: '#2563EB', desc: '', longDesc: '',
@@ -30,7 +17,7 @@ const CategoryFormModal = ({
   open: boolean
   onClose: () => void
   dark: boolean
-  editing: ICategory | null // null = create mode, ICategory = edit mode
+  editing: ICategoryInfo | null // null = create mode, ICategory = edit mode
   onSubmit: (values: CategoryFormValues) => Promise<void>
   submitting: boolean
 }) => {
@@ -125,4 +112,3 @@ const CategoryFormModal = ({
 }
 
 export default CategoryFormModal
-export type { CategoryFormValues, ICategory }

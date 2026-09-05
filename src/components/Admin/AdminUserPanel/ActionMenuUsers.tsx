@@ -1,10 +1,9 @@
 import { useEffect, useRef, useState } from "react";
-import UITooltip from "./UIToolTip";
-import UIIconButtonComplex from "./UIIconButtonComplex";
-import { BlockIcon, CheckCircleIcon, FileBanIcon, FileOffIcon, FileRestoreIcon, ManageAccountsIcon, MoreVertIcon, PersonRemoveIcon, TrashIcon, VerifiedUserIcon } from "../../utils/iconsUtils";
 import { AnimatePresence, motion } from "framer-motion";
-import useUserAuthContext from "../../context/hooks/useUserAuthContext";
-import { AdminPost } from "../../interfaces/admin.interfaces";
+import useUserAuthContext from "../../../context/hooks/useUserAuthContext";
+import UIIconButton from "../UIIconButton";
+import UITooltip from "../UIToolTip";
+import { BlockIcon, CheckCircleIcon, ManageAccountsIcon, MoreVertIcon, PersonRemoveIcon, VerifiedUserIcon } from "../../../utils/iconsUtils";
 
 // to do click outside and close component
 const useClickOutside = (ref: React.RefObject<HTMLElement>, onOutside: () => void) => {
@@ -18,27 +17,28 @@ const useClickOutside = (ref: React.RefObject<HTMLElement>, onOutside: () => voi
 }
 
 // main component
-const ActionMenuPosts = ({
-  post,
+const ActionMenuUsers = ({
+  user,
   dark,
   onAction,
   boundaryRef
 }: {
-  post: AdminPost;
+  user: any;
   dark: boolean;
-  onAction: (key: string, postId: string) => void;
+  onAction: (action: string, userId: string) => void
   boundaryRef?: React.RefObject<HTMLElement>
 }) => {
 
-  const { userAuth } = useUserAuthContext();
-
-  const [open, setOpen] = useState(false);
-  const wrapperRef = useRef<HTMLDivElement>(null);
+  const [open, setOpen] = useState(false)
+  const wrapperRef = useRef<HTMLDivElement>(null)
   useClickOutside(wrapperRef, () => setOpen(false));
 
   const [openUpward, setOpenUpward] = useState(false);
   const MENU_HEIGHT = 220;
 
+  const { userAuth } = useUserAuthContext();
+
+  // viewer
   const viewerRoles: string[] = (userAuth?.roles ?? []).map((r: any) =>
     typeof r === "string" ? r : r?.name
   );
@@ -46,38 +46,22 @@ const ActionMenuPosts = ({
   const viewerIsMod = viewerRoles.includes('ROLE_MOD')
 
   const canVerify = viewerIsAdmin || viewerIsMod
-  const canDeletePost = viewerIsAdmin;
+  const canBan = viewerIsAdmin 
+    //|| viewerIsMod
+  const canAddMod = viewerIsAdmin || viewerIsMod
+  const canQuitMod = viewerIsAdmin
+  const canUnban = viewerIsAdmin || viewerIsMod;
 
-  const RECOVERABLE_STATUSES = ['BANNED', 'HIDDEN_BY_ADMIN']
-
-  const TERMINAL_STATUSES = ['DELETED', 'DELETED_BY_ADMIN']
-  const isTerminal = TERMINAL_STATUSES.includes(post.status)
+  // if viwer can applicate change
+  const targetIsMod = user.roles.map((r: any) => r.name).includes('ROLE_MOD')
+  const isBanned = user.status === 'BANNED';
 
   const actions: { key: string; label: string; icon: React.ReactNode; disabled: boolean; danger?: boolean }[] = [
-    {
-      key: 'BANNED',
-      label: 'Banned Post',
-      icon: <FileBanIcon size={16} />,
-      disabled: isTerminal || !canVerify || post.status === 'BANNED',
-    },
-    {
-      key: 'DELETED_BY_ADMIN',
-      label: 'Delete Post',
-      icon: <TrashIcon size={16} />,
-      disabled: isTerminal || !canDeletePost || post.status === 'DELETED_BY_ADMIN', // only admin can delete
-    },
-    {
-      key: 'HIDDEN_BY_ADMIN',
-      label: 'Hidden Post',
-      icon: <FileOffIcon size={16} />,
-      disabled: isTerminal || !canVerify || post.status === 'HIDDEN_BY_ADMIN',
-    },
-    {
-      key: 'PUBLISHED',
-      label: 'Recuperate Post',
-      icon: <FileRestoreIcon size={16} />,
-      disabled: isTerminal || !canVerify || !RECOVERABLE_STATUSES.includes(post.status),
-    },
+    { key: 'verify', label: 'Verify user', icon: <VerifiedUserIcon size={16} />, disabled: user.confirm || !canVerify },
+    { key: 'makeMod', label: 'Make moderator', icon: <ManageAccountsIcon size={16} />, disabled: targetIsMod || !canAddMod },
+    { key: 'removeRole', label: 'Remove role', icon: <PersonRemoveIcon size={16} />, disabled: !targetIsMod || !canQuitMod },
+    { key: 'ban', label: 'Ban user', icon: <BlockIcon size={16} />, disabled: isBanned || !canBan, danger: true },
+    { key: 'unban', label: 'Unban user', icon: <CheckCircleIcon size={16} />, disabled: !isBanned || !canUnban },
   ]
 
   const handleToggle = () => {
@@ -92,18 +76,17 @@ const ActionMenuPosts = ({
     setOpen(o => !o)
   }
 
-
   return (
     <div ref={wrapperRef} style={{ position: 'relative', display: 'inline-block' }}>
       <UITooltip title="Actions">
-        <UIIconButtonComplex
+        <UIIconButton
           onClick={handleToggle}
           color={dark ? 'rgba(255,255,255,0.3)' : 'rgba(0,0,0,0.3)'}
           hoverBg={dark ? 'rgba(255,255,255,0.07)' : 'rgba(0,0,0,0.05)'}
           hoverColor={dark ? '#fff' : '#111'}
         >
           <MoreVertIcon size={18} />
-        </UIIconButtonComplex>
+        </UIIconButton>
       </UITooltip>
       <AnimatePresence>
         {open && (
@@ -131,7 +114,7 @@ const ActionMenuPosts = ({
                 type="button"
                 disabled={a.disabled}
                 onClick={() => {
-                  onAction(a.key, post._id); // send information to outside function
+                  onAction(a.key, user._id); // send information to outside function
                   setOpen(false)
                 }}
                 onMouseEnter={e => {
@@ -160,4 +143,5 @@ const ActionMenuPosts = ({
     </div>
   )
 }
-export default ActionMenuPosts;
+
+export default ActionMenuUsers;

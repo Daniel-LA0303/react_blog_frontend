@@ -1,62 +1,65 @@
 import { ReactNode } from "react"
 
-export interface AdminCategory {
+/* ------  GLOBAL ------ */
+export interface Report {
   _id: string
-  name: string
-  slug: string
-  description: string
-  postCount: number
+  reason: string
+  status: string
+  reportedBy: string
   createdAt: string
-  color: string
 }
-
-export type DialogMode = 'create' | 'edit' | null;
-
-export interface FormState {
-  name: string
-  description: string
-  color: string
-}
-
 
 export type UIButtonVariant = 'primary' | 'outline' | 'danger';
 
-export type Role = 'ROLE_USER' | 'ROLE_MOD' | 'ROLE_ADMIN'
-export type UserStatus = 'ACTIVE' | 'BANNED' | 'TO_CONFIRM';
-export type ReportType = 'spam' | 'harassment' | 'offensive' | 'scam'
-
-export interface ReportItem {
-  type: ReportType
-  count: number
+/* ------ INTERFACES AND TYPES TO ADMIN PANEL CATEGORY ------ */
+export interface ICategoryAdminPanel {
+  _id: string
+  name: string
+  color: string
+  desc: string
+  longDesc: string
+  createdAt: string
+  followersCount: number
 }
+
+export interface ICategoryInfo {
+  _id: string
+  name: string
+  color: string
+  desc: string
+  longDesc: string
+}
+
+export interface CategoryFormValues {
+  name: string
+  color: string
+  desc: string
+  longDesc: string
+}
+
+/* ------ INTERFACES AND TYPES TO ADMIN PANEL USER ------ */
+export type Role = 'ROLE_USER' | 'ROLE_MOD' | 'ROLE_ADMIN'
+export type UserStatus = 'ACTIVE' | 'BANNED' | 'TO_CONFIRM'
+export type FilterRole = Role | 'all'
+export type FilterStatus = UserStatus | 'all'
 
 export interface AdminUser {
   _id: string
   name: string
   email: string
-  profilePicture?: { secure_url: string }
-  role: Role
-  status: UserStatus
-  verified: boolean
+  confirm: boolean;
+  profilePicture?: { secure_url: string; public_id: string } | null
   createdAt: string
-  numberPost: number
-  reports: ReportItem[]
+  roles: { name: Role }[]
+  status: UserStatus
+  verified?: boolean
+  numberPost?: number
+  reports: Report[]
+  reportsCount: number
 }
 
-export interface ActionMenuItem<T> {
-  key: string;
-  label: string;
-  icon: ReactNode;
-  disabled: (entity: T) => boolean;
-  danger?: boolean;
-}
 
-export type FilterRole = 'all' | Role
-
-export type FilterStatus = 'all' | UserStatus
-
-
-/* ------ INTERFACES AND TYPES TO ADMIN PANEL POST */
+/* ------ INTERFACES AND TYPES TO ADMIN PANEL POST ------ */
 
 export type PostStatus = 'PUBLISHED' | 'HIDDEN' | 'DELETED' | 'BANNED' | 'DELETED_BY_ADMIN' | 'HIDDEN_BY_ADMIN'
 

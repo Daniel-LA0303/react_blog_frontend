@@ -6,7 +6,7 @@ import { fadeUp } from "../../../utils/animationsUtils";
 import UIAvatar from "../UIAvatar";
 import StatusChip from "./StatusChip";
 import { FlagIcon } from "../../../utils/iconsUtils";
-import ActionMenuPosts from "../ActionMenuPosts";
+import ActionMenuPosts from "./ActionMenuPosts";
 
 
 const AnimatedRowPost = ({
