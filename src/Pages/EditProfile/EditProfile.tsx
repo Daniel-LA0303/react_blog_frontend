@@ -11,11 +11,11 @@ import useGlobalDataContext from '../../context/hooks/useGlobalDataContext'
 import userUserAuthContext from '../../context/hooks/useUserAuthContext'
 import Spinner from '../../components/Spinner/Spinner'
 import { fadeUp, stagger } from '../../utils/animationsUtils'
-import SectionEditProfile from '../../components/ProfileButton/SectionEditProfile'
+import SectionEditProfile from '../../components/Profile/SectionEditProfile'
 import FieldWithOutError from '../../components/Global/FieldWithOutError'
 import { SocialIcons } from '../../utils/iconsUtils'
 import { inputCls } from '../../utils/postUtils'
-import SocialField from '../../components/ProfileButton/SocialField'
+import SocialField from '../../components/Profile/SocialField'
 
 
 const EditProfile = () => {

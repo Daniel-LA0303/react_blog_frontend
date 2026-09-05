@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import CategoryFormModal from '../../components/Admin/AdminCategoryPanel/CategoryFormModal'
-import UIButton from '../../components/Admin/UIButton'
+import UIButton from '../../components/Global/UIButton'
 import useGlobalDataContext from '../../context/hooks/useGlobalDataContext';
 import useUserAuthContext from '../../context/hooks/useUserAuthContext';
 import { useSwal } from '../../hooks/useSwal';
@@ -8,7 +8,7 @@ import { AddIcon, SearchIcon } from '../../utils/iconsUtils' // AddIcon ya lo te
 import clientAuthAxios from '../../services/clientAuthAxios';
 import { motion } from "framer-motion";
 import { fadeUp } from '../../utils/animationsUtils';
-import UITextField from '../../components/Admin/UITextField';
+import UITextField from '../../components/Global/UITextField';
 import RowSkeleton from '../../components/Admin/RowSkeleton';
 import { ROWS_PER_PAGE_OPTIONS } from '../../utils/adminUtils';
 import UITablePagination from '../../components/Admin/UITablePagination';

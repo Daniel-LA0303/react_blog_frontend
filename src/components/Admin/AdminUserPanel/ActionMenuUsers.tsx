@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import useUserAuthContext from "../../../context/hooks/useUserAuthContext";
-import UIIconButton from "../UIIconButton";
+import UIIconButton from "../../Global/UIIconButton";
 import UITooltip from "../UIToolTip";
 import { BlockIcon, CheckCircleIcon, ManageAccountsIcon, MoreVertIcon, PersonRemoveIcon, VerifiedUserIcon } from "../../../utils/iconsUtils";
 

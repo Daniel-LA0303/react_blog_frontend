@@ -4,7 +4,7 @@ import UIActionButtonModal from "./UIActionButtonModal";
 import { useSwal } from "../../../hooks/useSwal";
 import clientAuthAxios from "../../../services/clientAuthAxios";
 import { CheckCircleIcon, CloseIcon, DeleteIcon, FileBanIcon, FlagIcon, VisibilityOffIcon } from "../../../utils/iconsUtils";
-import UIModal from "../UIModal";
+import UIModal from "../../Global/UIModal";
 import UIIconButtonComplex from "../UIIconButtonComplex";
 import UIAvatar from "../UIAvatar";
 import ReportStatusSelect from "./ReportStatusSelect";

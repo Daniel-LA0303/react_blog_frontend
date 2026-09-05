@@ -1,9 +1,17 @@
 import { AnimatePresence, motion } from "framer-motion";
 
 const UIModal = ({
-  open, onClose, dark, maxWidth = 400, children,
+  open, 
+  onClose, 
+  dark, 
+  maxWidth = 400, 
+  children,
 }: {
-  open: boolean; onClose: () => void; dark: boolean; maxWidth?: number; children: React.ReactNode
+  open: boolean; 
+  onClose: () => void; 
+  dark: boolean; 
+  maxWidth?: number; 
+  children: React.ReactNode
 }) => (
   <AnimatePresence>
     {open && (

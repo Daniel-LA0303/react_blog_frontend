@@ -62,6 +62,13 @@ const NAV_ITEMS = [
     desc: 'Platform overview, KPIs and revenue',
     color: { dark: 'bg-indigo-900/40 text-indigo-400', light: 'bg-indigo-50 text-indigo-500' },
   },
+    {
+    to: '/admin/principal',
+    icon: Icons.users,
+    label: 'Principal',
+    desc: 'Roles, bans, suspensions and reports',
+    color: { dark: 'bg-teal-900/40 text-teal-400', light: 'bg-teal-50 text-teal-500' },
+  },
   {
     to: '/admin/user-management',
     icon: Icons.users,

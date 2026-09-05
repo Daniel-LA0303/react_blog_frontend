@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
-import UIModal from "../UIModal";
-import UITextField from "../UITextField";
-import UIButton from "../UIButton";
+import UIModal from "../../Global/UIModal";
+import UITextField from "../../Global/UITextField";
+import UIButton from "../../Global/UIButton";
 import ColorPicker from "../ColorPicker";
 import { CategoryFormValues, ICategoryInfo } from "../../../interfaces/admin.interfaces";
 

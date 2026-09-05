@@ -2,7 +2,7 @@ import { ICategoryAdminPanel } from "../../../interfaces/admin.interfaces";
 import { cellStyle } from "../../../utils/adminUtils"
 import { fadeUp } from "../../../utils/animationsUtils"
 import { EditIcon } from "../../../utils/iconsUtils"
-import UIIconButton from "../UIIconButton"
+import UIIconButton from "../../Global/UIIconButton"
 import { motion } from "framer-motion";
 
 

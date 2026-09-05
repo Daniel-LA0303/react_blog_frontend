@@ -53,6 +53,7 @@ import { RequireRole } from "./components/Global/RequireRole";
 import UnauthorizedPage from "./components/Global/UnauthorizedPage";
 import useGetSocketBannedNotification from "./context/hooks/useGetBannedNotification";
 import { useSwal } from "./hooks/useSwal";
+import AdminPrincipal from "./Pages/Admin/AdminPrincipal";
 
 
 
@@ -143,6 +144,7 @@ function App() {
           <Route element={<RequireRole allowedRoles={["ROLE_ADMIN", "ROLE_MOD"]} />}>
             <Route path="/admin" element={<AdminPanel />}>
               <Route path="dashboard" element={<AdminDashboard />} />
+              <Route path="principal" element={<AdminPrincipal />} />
               <Route path="user-management" element={<AdminUserManagement />} />
               <Route path="post-moderation" element={<AdminPostModeration />} />
               <Route path="categories" element={<AdminCats />} />
