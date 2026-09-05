@@ -221,7 +221,7 @@ const AdminUserManagement = () => {
           className={`rounded-2xl border ${surfaceClass}`} // class in base dark theme
           style={{ overflow: 'hidden' }}
         >
-          <div ref={tableWrapperRef} style={{ overflowX: 'hidden', overflowY: 'hidden' }}>
+          <div ref={tableWrapperRef} style={{ overflowX: 'auto', overflowY: 'hidden' }}>
             <table style={{ width: '100%', borderCollapse: 'collapse', tableLayout: 'fixed' }}>
               <thead>
                 <tr>
