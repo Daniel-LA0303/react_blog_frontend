@@ -98,3 +98,9 @@ export interface AdminPost {
   categories: CategoryPostAdmin[];
   flagged: boolean
 }
+
+/* ------ INTERFACES AND TYPES TO ADMIN PANEL PRINCIPAL ------ */
+export interface DateRange {
+  startDate: string; // MM-DD-YYYY
+  endDate: string;   // MM-DD-YYYY
+}

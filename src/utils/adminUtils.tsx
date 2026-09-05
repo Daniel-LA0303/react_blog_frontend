@@ -1,4 +1,4 @@
-import { AdminUser, PostStatus, ReportStatus, Role, UserStatus } from "../interfaces/admin.interfaces"
+import { AdminUser, DateRange, PostStatus, ReportStatus, Role, UserStatus } from "../interfaces/admin.interfaces"
 
 // a global styles in cell to table in admin panel
 export const cellStyle = (dark: boolean): React.CSSProperties => ({
@@ -117,6 +117,35 @@ export const STATUS_LABELS_POST: Record<PostStatus, string> = {
   HIDDEN_BY_ADMIN: 'Hidden by admin'
 }
 
+/* ----------- ADMIN PANEL PRINCIPAL ------------ */
+const pad = (n: number) => String(n).padStart(2, '0');
+
+// Formatea a MM-DD-YYYY (formato inglés que consume el backend)
+export const formatDateForApi = (date: Date): string => {
+  return `${pad(date.getMonth() + 1)}-${pad(date.getDate())}-${date.getFullYear()}`;
+};
+
+export const getRangeFromDays = (days: number): DateRange => {
+  const end = new Date();
+  const start = new Date();
+  start.setDate(end.getDate() - days);
+  return {
+    startDate: formatDateForApi(start),
+    endDate: formatDateForApi(end),
+  };
+};
+
+export type PresetKey = '7' | '30' | '90' | '365' | 'custom';
+
+export const PRESETS: { key: PresetKey; label: string; days: number | null }[] = [
+  { key: '7', label: 'Últimos 7 días', days: 7 },
+  { key: '30', label: 'Últimos 30 días', days: 30 },
+  { key: '90', label: 'Últimos 90 días', days: 90 },
+  { key: '365', label: 'Último año', days: 365 },
+  { key: 'custom', label: 'Rango personalizado', days: null },
+];
+
+export const DEFAULT_PRESET: PresetKey = '30'; // carga inicial: últimos 30 días
 
 
 
