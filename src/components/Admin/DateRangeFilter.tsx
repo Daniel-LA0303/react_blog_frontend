@@ -2,35 +2,9 @@
 import { useState, useEffect, useRef, useMemo, useLayoutEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import useGlobalDataContext from '../../context/hooks/useGlobalDataContext';
-import { DateRange } from '../../interfaces/admin.interfaces';
-import { DEFAULT_PRESET, formatDateForApi, getRangeFromDays, PresetKey, PRESETS } from '../../utils/adminUtils';
-
-// ---- Iconos locales estilo IconBase ----
-const CalendarIcon = ({ size = 16 }: { size?: number }) => (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-        <rect x="3" y="4" width="18" height="18" rx="2" />
-        <path d="M16 2v4" /><path d="M8 2v4" /><path d="M3 10h18" />
-    </svg>
-);
-const ChevronLeftIcon = ({ size = 16 }: { size?: number }) => (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-        <polyline points="15 18 9 12 15 6" />
-    </svg>
-);
-const ChevronRightIcon = ({ size = 16 }: { size?: number }) => (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-        <polyline points="9 18 15 12 9 6" />
-    </svg>
-);
-const ChevronDownIcon = ({ size = 14 }: { size?: number }) => (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-        <polyline points="6 9 12 15 18 9" />
-    </svg>
-);
-
-// ---- Helpers de calendario (sin dependencias externas) ----
-const WEEKDAYS = ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'];
-const MONTH_NAMES = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+import { DateRangeFilterProps } from '../../interfaces/admin.interfaces';
+import { DEFAULT_PRESET, formatDateForApi, getRangeFromDays, MONTH_NAMES, PresetKey, PRESETS, WEEKDAYS } from '../../utils/adminUtils';
+import { CalendarIcon, ChevronDownIcon, ChevronLeftDateIcon, ChevronRightDateIcon } from '../../utils/iconsUtils';
 
 const startOfDay = (d: Date) => {
     const c = new Date(d);
@@ -58,7 +32,6 @@ const getMonthMatrix = (year: number, month: number) => {
 const formatShortDate = (d: Date) =>
     `${MONTH_NAMES[d.getMonth()].slice(0, 3)} ${d.getDate()}, ${d.getFullYear()}`;
 
-// Dimensiones aproximadas del popover — se usan para el cálculo de colisión antes del primer render medido
 const POPOVER_WIDTH = 300;
 const POPOVER_HEIGHT_ESTIMATE = 420;
 const VIEWPORT_MARGIN = 12;
@@ -66,14 +39,6 @@ const VIEWPORT_MARGIN = 12;
 interface Placement {
     horizontal: 'left' | 'right'; // 'right' = alineado al borde derecho del trigger (popover crece hacia la izq)
     vertical: 'bottom' | 'top';   // 'top' = el popover se abre hacia arriba del trigger
-}
-
-interface DateRangeFilterProps {
-    onChange: (range: DateRange) => void;
-    /** id único para no chocar si hay varios filtros en la misma vista */
-    instanceId: string;
-    /** días del preset inicial que se dispara al montar (default: 30) */
-    defaultDays?: number;
 }
 
 export const DateRangeFilter = ({ onChange, instanceId, defaultDays = 30 }: DateRangeFilterProps) => {
@@ -224,7 +189,7 @@ export const DateRangeFilter = ({ onChange, instanceId, defaultDays = 30 }: Date
   `;
 
     return (
-        <div ref={containerRef} className="relative inline-block">
+        <div ref={containerRef} className="relative inline-block z-50">
             {/* Trigger */}
             <button
                 ref={triggerRef}
@@ -284,7 +249,7 @@ export const DateRangeFilter = ({ onChange, instanceId, defaultDays = 30 }: Date
                                 className={`h-7 w-7 flex items-center justify-center rounded-lg transition-colors duration-150
                                     ${dark ? 'text-gray-400 hover:bg-gray-800' : 'text-gray-500 hover:bg-gray-100'}`}
                             >
-                                <ChevronLeftIcon size={15} />
+                                <ChevronLeftDateIcon size={15} />
                             </button>
                             <span className={`text-xs font-bold ${dark ? 'text-gray-200' : 'text-gray-800'}`}>
                                 {MONTH_NAMES[viewMonth]} {viewYear}
@@ -295,7 +260,7 @@ export const DateRangeFilter = ({ onChange, instanceId, defaultDays = 30 }: Date
                                 className={`h-7 w-7 flex items-center justify-center rounded-lg transition-colors duration-150
                                     ${dark ? 'text-gray-400 hover:bg-gray-800' : 'text-gray-500 hover:bg-gray-100'}`}
                             >
-                                <ChevronRightIcon size={15} />
+                                <ChevronRightDateIcon size={15} />
                             </button>
                         </div>
 

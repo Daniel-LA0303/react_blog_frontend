@@ -221,17 +221,19 @@ const AdminUserManagement = () => {
           className={`rounded-2xl border ${surfaceClass}`} // class in base dark theme
           style={{ overflow: 'hidden' }}
         >
-          <div ref={tableWrapperRef} style={{ overflowX: 'auto', overflowY: 'hidden' }}>
+          <div
+            className="ui-scroll-x"
+            ref={tableWrapperRef} style={{ overflowX: 'auto', overflowY: 'hidden' }}>
             <table style={{ width: '100%', borderCollapse: 'collapse', tableLayout: 'fixed' }}>
               <thead>
                 <tr>
-                  <th style={{ ...headCellStyle, width: '24%' }}>User</th>
-                  <th style={{ ...headCellStyle, width: '16%' }}>Role</th>
-                  <th style={{ ...headCellStyle, width: '12%' }}>Status</th>
-                  <th style={{ ...headCellStyle, width: '16%' }}>Reports</th>
-                  <th style={{ ...headCellStyle, width: '8%', textAlign: 'center' }}>Posts</th>
-                  <th style={{ ...headCellStyle, width: '14%' }}>Joined</th>
-                  <th style={{ ...headCellStyle, width: '10%' }} />
+                  <th style={{ ...headCellStyle, width: 220 }}>User</th>
+                  <th style={{ ...headCellStyle, width: 140 }}>Role</th>
+                  <th style={{ ...headCellStyle, width: 110 }}>Status</th>
+                  <th style={{ ...headCellStyle, width: 140 }}>Reports</th>
+                  <th style={{ ...headCellStyle, width: 90, textAlign: 'center' }}>Posts</th>
+                  <th style={{ ...headCellStyle, width: 130 }}>Joined</th>
+                  <th style={{ ...headCellStyle, width: 60 }} />
                 </tr>
               </thead>
               <motion.tbody
@@ -307,10 +309,10 @@ const AdminUserManagement = () => {
 
       {/* to show modal and reports by users */}
       {selectedUser && (
-        <ReportsUserModal 
-          user={selectedUser} 
-          dark={dark} 
-          onClose={() => setSelectedUser(null)} 
+        <ReportsUserModal
+          user={selectedUser}
+          dark={dark}
+          onClose={() => setSelectedUser(null)}
           fetchUsers={fetchUsers}
         />
       )}

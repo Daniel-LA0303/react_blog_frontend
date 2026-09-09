@@ -3,40 +3,13 @@ import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer, Legend } from 'recharts';
 import useGlobalDataContext from '../../../context/hooks/useGlobalDataContext';
-// import { clientAuthAxios } from '../../../services/clientAuthAxios';
+import clientAuthAxios from '../../../services/clientAuthAxios';
+import { NotificationsActivityPoint } from '../../../interfaces/admin.interfaces';
+import { TYPE_META } from '../../../utils/adminUtils';
 
-interface NotificationsActivityPoint {
-    date: string; // MM-DD-YYYY
-    FOLLOW: number;
-    LIKE: number;
-    COMMENT: number;
-    REPLY: number;
-}
-
-const TYPE_META = {
-    FOLLOW: { label: 'Follow', light: '#0284C7', dark: '#38BDF8' },
-    LIKE: { label: 'Like', light: '#E11D48', dark: '#FB7185' },
-    COMMENT: { label: 'Comment', light: '#D97706', dark: '#FBBF24' },
-    REPLY: { label: 'Reply', light: '#7C3AED', dark: '#A78BFA' },
-} as const;
-
-// ---- Fake service (reemplazar por llamada real) ----
-// Nota: siempre mandamos days=7, no depende de ningún filtro de UI
 const fetchNotificationsActivity = async (): Promise<NotificationsActivityPoint[]> => {
-    // const { data } = await clientAuthAxios.get('/stats/notifications-activity', { params: { days: 7 } });
-    // return data.data;
-    await new Promise((r) => setTimeout(r, 500));
-    return Array.from({ length: 7 }, (_, i) => {
-        const d = new Date();
-        d.setDate(d.getDate() - (6 - i));
-        return {
-            date: `${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}-${d.getFullYear()}`,
-            FOLLOW: Math.floor(Math.random() * 15) + 5,
-            LIKE: Math.floor(Math.random() * 40) + 20,
-            COMMENT: Math.floor(Math.random() * 20) + 10,
-            REPLY: Math.floor(Math.random() * 12) + 4,
-        };
-    });
+    const { data } = await clientAuthAxios.get('/dashboard/get-notifications-info');
+    return data.data.data;
 };
 
 const shortWeekday = (mmddyyyy: string) => {
@@ -73,7 +46,7 @@ export const NotificationsActivityCard = () => {
             initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.35 }}
-            className={`rounded-2xl border p-5 flex flex-col gap-4 h-full
+            className={`rounded-2xl border p-5 flex flex-col justify-between gap-4 h-full
                 ${dark ? 'bg-[#27272A] border-gray-800' : 'bg-white border-gray-100'}`}
         >
             <div>
@@ -93,7 +66,7 @@ export const NotificationsActivityCard = () => {
                     </div>
                 ) : (
                     <ResponsiveContainer width="100%" height="100%">
-                        <AreaChart data={data} margin={{ top: 8, right: 4, left: -20, bottom: 0 }}>
+                        <AreaChart data={data} margin={{ top: 8, right: 4, left: 0, bottom: 0 }}>
                             <defs>
                                 {(Object.keys(TYPE_META) as (keyof typeof TYPE_META)[]).map((key) => (
                                     <linearGradient key={key} id={`grad-${key}`} x1="0" y1="0" x2="0" y2="1">
@@ -108,8 +81,10 @@ export const NotificationsActivityCard = () => {
                                 tick={{ fontSize: 11, fill: axisColor }}
                                 axisLine={false}
                                 tickLine={false}
+                                interval={0}
+                                padding={{ left: 10, right: 10 }}
                             />
-                            <YAxis hide />
+                            <YAxis hide width={0} />
                             <Tooltip
                                 labelFormatter={(label) => shortWeekday(label as string)}
                                 contentStyle={{

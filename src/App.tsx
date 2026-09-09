@@ -38,7 +38,6 @@ import ChatLayout from "./components/Chat/ChatLayout";
 import AdminUserManagement from "./Pages/Admin/AdminUserManagement";
 import AdminPostModeration from "./Pages/Admin/AdminPostModeration";
 import AdminCats from "./Pages/Admin/AdminCats";
-import AdminDashboard from "./Pages/Admin/AdminDashboard";
 import AdminPanel from "./Pages/Admin/AdminPanel";
 
 import Pricing from "./Pages/Pricing/Princing";
@@ -51,9 +50,8 @@ import PrivacyPolicy from "./Pages/About/PrivacyPolicy";
 import TermsOfUse from "./Pages/About/TermsOfUse";
 import { RequireRole } from "./components/Global/RequireRole";
 import UnauthorizedPage from "./components/Global/UnauthorizedPage";
-import useGetSocketBannedNotification from "./context/hooks/useGetBannedNotification";
-import { useSwal } from "./hooks/useSwal";
 import AdminPrincipal from "./Pages/Admin/AdminPrincipal";
+import AdminAuditLogs from "./Pages/Admin/AdminAuditLogs";
 
 
 
@@ -143,11 +141,13 @@ function App() {
           {/* ADMIN PANEL */}
           <Route element={<RequireRole allowedRoles={["ROLE_ADMIN", "ROLE_MOD"]} />}>
             <Route path="/admin" element={<AdminPanel />}>
-              <Route path="dashboard" element={<AdminDashboard />} />
               <Route path="principal" element={<AdminPrincipal />} />
               <Route path="user-management" element={<AdminUserManagement />} />
               <Route path="post-moderation" element={<AdminPostModeration />} />
               <Route path="categories" element={<AdminCats />} />
+              <Route element={<RequireRole allowedRoles={["ROLE_ADMIN"]} />}>
+                <Route path="logs" element={<AdminAuditLogs />} />
+              </Route>
             </Route>
           </Route>
 

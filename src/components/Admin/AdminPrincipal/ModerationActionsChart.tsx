@@ -1,48 +1,68 @@
 // components/dashboard/charts/ModerationActionsChart.tsx
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useMemo } from 'react';
 import { motion } from 'framer-motion';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell } from 'recharts';
-import { DateRange } from '../../../interfaces/admin.interfaces';
+import { DateRange, ModerationActionPoint, ModerationActionsResponse } from '../../../interfaces/admin.interfaces';
 import useGlobalDataContext from '../../../context/hooks/useGlobalDataContext';
 import { DateRangeFilter } from '../DateRangeFilter';
-// import { clientAuthAxios } from '../../../services/clientAuthAxios';
+import clientAuthAxios from '../../../services/clientAuthAxios';
+import { MONTHS_MODERATION } from '../../../utils/adminUtils';
 
-interface ModerationActionPoint {
-    date: string; // MM-DD-YYYY
-    count: number;
-}
 
-interface ModerationActionsResponse {
-    range: DateRange;
-    data: ModerationActionPoint[];
-}
-
-// ---- Fake service (reemplazar por llamada real) ----
 const fetchModerationActionsTimeline = async (range: DateRange): Promise<ModerationActionsResponse> => {
-    // const { data } = await clientAuthAxios.get('/stats/moderation-actions-timeline', { params: range });
-    // return data;
-    await new Promise((r) => setTimeout(r, 500));
-    const points: ModerationActionPoint[] = Array.from({ length: 10 }, (_, i) => {
-        const d = new Date();
-        d.setDate(d.getDate() - (9 - i));
-        return {
-            date: `${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}-${d.getFullYear()}`,
-            count: Math.floor(Math.random() * 15) + 1,
-        };
-    });
-    return { range, data: points };
+    const { data } = await clientAuthAxios.get('/dashboard/get-moderation-info', { params: range });
+    return data.data;
 };
 
-const shortLabel = (mmddyyyy: string) => {
-    const [mm, dd] = mmddyyyy.split('-');
-    const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-    return `${months[Number(mm) - 1]} ${dd}`;
+// Parsea MM-DD-YYYY a Date
+const parseMMDDYYYY = (str: string) => {
+    const [mm, dd, yyyy] = str.split('-').map(Number);
+    return new Date(yyyy, mm - 1, dd);
+};
+
+const DAILY_VIEW_MAX_DAYS = 31;
+
+const aggregateTimeline = (
+    timeline: ModerationActionPoint[],
+    spanDays: number
+): { points: ModerationActionPoint[]; grouped: boolean } => {
+    if (spanDays <= DAILY_VIEW_MAX_DAYS || timeline.length === 0) {
+        return { points: timeline, grouped: false };
+    }
+
+    const monthBuckets = new Map<string, ModerationActionPoint>();
+
+    for (const point of timeline) {
+        const d = parseMMDDYYYY(point.date);
+        const monthKey = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
+
+        const existing = monthBuckets.get(monthKey);
+        if (existing) {
+            existing.count += point.count;
+        } else {
+            monthBuckets.set(monthKey, {
+                date: `${String(d.getMonth() + 1).padStart(2, '0')}-01-${d.getFullYear()}`,
+                count: point.count,
+            });
+        }
+    }
+
+    return { points: Array.from(monthBuckets.values()), grouped: true };
+};
+
+const buildLabelFormatter = (grouped: boolean) => (mmddyyyy: string) => {
+    const [mm, dd, yyyy] = mmddyyyy.split('-');
+    const monthName = MONTHS_MODERATION[Number(mm) - 1];
+
+    if (!grouped) {
+        return `${monthName} ${dd}`;
+    }
+    return `${monthName} ${yyyy}`;
 };
 
 export const ModerationActionsChart = () => {
     const { globalData } = useGlobalDataContext();
     const dark = !globalData.themeGlobal;
-
     const [loading, setLoading] = useState(true);
     const [timeline, setTimeline] = useState<ModerationActionPoint[]>([]);
 
@@ -60,6 +80,20 @@ export const ModerationActionsChart = () => {
     const axisColor = dark ? '#6B7280' : '#9CA3AF';
     const barColor = dark ? '#818CF8' : '#4F46E5';
 
+    const spanDays = useMemo(() => {
+        if (timeline.length < 2) return 0;
+        const first = parseMMDDYYYY(timeline[0].date);
+        const last = parseMMDDYYYY(timeline[timeline.length - 1].date);
+        return Math.round((last.getTime() - first.getTime()) / (1000 * 60 * 60 * 24));
+    }, [timeline]);
+
+    const { points: chartData, grouped } = useMemo(
+        () => aggregateTimeline(timeline, spanDays),
+        [timeline, spanDays]
+    );
+
+    const labelFormatter = useMemo(() => buildLabelFormatter(grouped), [grouped]);
+
     return (
         <motion.div
             initial={{ opacity: 0, y: 12 }}
@@ -74,12 +108,13 @@ export const ModerationActionsChart = () => {
                         Moderation Actions
                     </h3>
                     <p className={`text-xs ${dark ? 'text-gray-500' : 'text-gray-400'}`}>
-                        Actions logged by moderators and admins over time
+                        {grouped
+                            ? 'Actions logged by moderators and admins (grouped by month)'
+                            : 'Actions logged by moderators and admins over time'}
                     </p>
                 </div>
                 <DateRangeFilter instanceId="moderation-actions" onChange={loadData} />
             </div>
-
             <div className="relative w-full h-64">
                 {loading ? (
                     <div className="absolute inset-0 flex items-center justify-center">
@@ -88,14 +123,18 @@ export const ModerationActionsChart = () => {
                     </div>
                 ) : (
                     <ResponsiveContainer width="100%" height="100%">
-                        <BarChart data={timeline} margin={{ top: 8, right: 8, left: -16, bottom: 0 }}>
+                        <BarChart data={chartData} margin={{ top: 8, right: 8, left: -16, bottom: 20 }}>
                             <CartesianGrid strokeDasharray="3 3" stroke={gridColor} vertical={false} />
                             <XAxis
                                 dataKey="date"
-                                tickFormatter={shortLabel}
+                                tickFormatter={labelFormatter}
+                                interval={grouped ? 0 : 'preserveStartEnd'}
                                 tick={{ fontSize: 11, fill: axisColor }}
                                 axisLine={{ stroke: gridColor }}
                                 tickLine={false}
+                                angle={-45}
+                                textAnchor="end"
+                                height={60}
                             />
                             <YAxis
                                 allowDecimals={false}
@@ -104,7 +143,7 @@ export const ModerationActionsChart = () => {
                                 tickLine={false}
                             />
                             <Tooltip
-                                labelFormatter={(label) => shortLabel(label as string)}
+                                labelFormatter={(label) => labelFormatter(label as string)}
                                 formatter={(value: number) => [`${value} actions`, '']}
                                 contentStyle={{
                                     background: dark ? '#1E1E21' : '#FFFFFF',
@@ -113,10 +152,16 @@ export const ModerationActionsChart = () => {
                                     fontSize: 12,
                                     color: dark ? '#E5E7EB' : '#111827',
                                 }}
+                                itemStyle={{
+                                    color: dark ? '#FFFFFF' : '#111827',
+                                }}
+                                labelStyle={{
+                                    color: dark ? '#FFFFFF' : '#111827',
+                                }}
                                 cursor={{ fill: dark ? 'rgba(255,255,255,0.03)' : 'rgba(0,0,0,0.02)' }}
                             />
                             <Bar dataKey="count" radius={[6, 6, 0, 0]} animationDuration={700}>
-                                {timeline.map((_, i) => (
+                                {chartData.map((_, i) => (
                                     <Cell key={i} fill={barColor} />
                                 ))}
                             </Bar>

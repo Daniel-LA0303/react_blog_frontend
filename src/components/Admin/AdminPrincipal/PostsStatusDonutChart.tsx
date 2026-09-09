@@ -1,51 +1,22 @@
 // components/dashboard/charts/PostsStatusDonutChart.tsx
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer, Legend } from 'recharts';
-import { DateRange } from '../../../interfaces/admin.interfaces';
+import { DateRange, PostsStatusResponse } from '../../../interfaces/admin.interfaces';
 import useGlobalDataContext from '../../../context/hooks/useGlobalDataContext';
 import { DateRangeFilter } from '../DateRangeFilter';
-// import { clientAuthAxios } from '../../../services/clientAuthAxios';
+import clientAuthAxios from '../../../services/clientAuthAxios';
+import { STATUS_META_POSTS } from '../../../utils/adminUtils';
 
-type PostStatus = 'PUBLISHED' | 'HIDDEN' | 'DELETED';
-
-interface PostsStatusDatum {
-  status: PostStatus;
-  count: number;
-  percentage: number;
-}
-
-interface PostsStatusResponse {
-  range: DateRange;
-  total: number;
-  data: PostsStatusDatum[];
-}
-
-const STATUS_META: Record<PostStatus, { label: string; light: string; dark: string }> = {
-  PUBLISHED: { label: 'Publicados', light: '#059669', dark: '#34D399' },
-  HIDDEN: { label: 'Ocultos', light: '#D97706', dark: '#FBBF24' },
-  DELETED: { label: 'Eliminados', light: '#E11D48', dark: '#FB7185' },
-};
-
-// ---- Fake service (reemplazar por llamada real) ----
 const fetchPostsStatusDistribution = async (range: DateRange): Promise<PostsStatusResponse> => {
-  // const { data } = await clientAuthAxios.get('/stats/posts-status-distribution', { params: range });
-  // return data;
-  await new Promise((r) => setTimeout(r, 500));
-  const total = 1000;
-  return {
-    range,
-    total,
-    data: [
-      { status: 'PUBLISHED', count: 500, percentage: 50 },
-      { status: 'HIDDEN', count: 300, percentage: 30 },
-      { status: 'DELETED', count: 200, percentage: 20 },
-    ],
-  };
+  const { data } = await clientAuthAxios.get('/dashboard/get-count-post-status', { params: range });
+  return data.data
 };
 
 export const PostsStatusDonutChart = () => {
+
   const { globalData } = useGlobalDataContext();
+
   const dark = !globalData.themeGlobal;
 
   const [loading, setLoading] = useState(true);
@@ -62,10 +33,10 @@ export const PostsStatusDonutChart = () => {
   }, []);
 
   const chartData = stats?.data.map((d) => ({
-    name: STATUS_META[d.status].label,
+    name: STATUS_META_POSTS[d.status].label,
     value: d.count,
     percentage: d.percentage,
-    color: dark ? STATUS_META[d.status].dark : STATUS_META[d.status].light,
+    color: dark ? STATUS_META_POSTS[d.status].dark : STATUS_META_POSTS[d.status].light,
   })) ?? [];
 
   return (
@@ -79,10 +50,10 @@ export const PostsStatusDonutChart = () => {
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
           <h3 className={`text-sm font-bold ${dark ? 'text-white' : 'text-gray-900'}`}>
-            Distribución de Posts
+            Distribution of Publications
           </h3>
           <p className={`text-xs ${dark ? 'text-gray-500' : 'text-gray-400'}`}>
-            Publicados, ocultos y eliminados por el usuario
+            Published, hidden and deleted by user
           </p>
         </div>
         <DateRangeFilter instanceId="posts-status" onChange={loadData} />
@@ -119,7 +90,14 @@ export const PostsStatusDonutChart = () => {
                     border: `1px solid ${dark ? '#27272A' : '#F3F4F6'}`,
                     borderRadius: 12,
                     fontSize: 12,
-                    color: dark ? '#E5E7EB' : '#111827',
+                    cursor: 'pointer',
+                    color: dark ? '#FFFFFF' : '#FFFFFF',
+                  }}
+                  itemStyle={{
+                    color: dark ? '#FFFFFF' : '#111827',
+                  }}
+                  labelStyle={{
+                    color: dark ? '#FFFFFF' : '#111827',
                   }}
                   formatter={(value: number, _name, item: any) => [
                     `${value} (${item.payload.percentage}%)`,
@@ -138,7 +116,7 @@ export const PostsStatusDonutChart = () => {
               </PieChart>
             </ResponsiveContainer>
 
-            {/* Total centrado */}
+            {/* Total center */}
             <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none pb-9">
               <span className={`text-2xl font-bold tabular-nums ${dark ? 'text-white' : 'text-gray-900'}`}>
                 {stats?.total ?? 0}

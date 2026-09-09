@@ -3,27 +3,12 @@ import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell } from 'recharts';
 import useGlobalDataContext from '../../../context/hooks/useGlobalDataContext';
-// import { clientAuthAxios } from '../../../services/clientAuthAxios';
+import clientAuthAxios from '../../../services/clientAuthAxios';
+import { MessagesActivityPoint } from '../../../interfaces/admin.interfaces';
 
-interface MessagesActivityPoint {
-    date: string; // MM-DD-YYYY
-    count: number;
-}
-
-// ---- Fake service (reemplazar por llamada real) ----
-// Nota: siempre mandamos days=7, no depende de ningún filtro de UI
 const fetchMessagesActivity = async (): Promise<MessagesActivityPoint[]> => {
-    // const { data } = await clientAuthAxios.get('/stats/messages-activity', { params: { days: 7 } });
-    // return data.data;
-    await new Promise((r) => setTimeout(r, 500));
-    return Array.from({ length: 7 }, (_, i) => {
-        const d = new Date();
-        d.setDate(d.getDate() - (6 - i));
-        return {
-            date: `${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}-${d.getFullYear()}`,
-            count: Math.floor(Math.random() * 60) + 20,
-        };
-    });
+    const { data } = await clientAuthAxios.get('/dashboard/get-messages-info');
+    return data.data.data;
 };
 
 const shortWeekday = (mmddyyyy: string) => {
@@ -60,7 +45,7 @@ export const MessagesActivityCard = () => {
             initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.35 }}
-            className={`rounded-2xl border p-5 flex flex-col gap-4 h-full
+            className={`rounded-2xl border p-5 flex flex-col gap-4 h-full justify-between
         ${dark ? 'bg-[#27272A] border-gray-800' : 'bg-white border-gray-100'}`}
         >
             <div>
@@ -98,6 +83,12 @@ export const MessagesActivityCard = () => {
                                     borderRadius: 12,
                                     fontSize: 12,
                                     color: dark ? '#E5E7EB' : '#111827',
+                                }}
+                                itemStyle={{
+                                    color: dark ? '#FFFFFF' : '#111827',
+                                }}
+                                labelStyle={{
+                                    color: dark ? '#FFFFFF' : '#111827',
                                 }}
                                 cursor={{ fill: dark ? 'rgba(255,255,255,0.03)' : 'rgba(0,0,0,0.02)' }}
                             />

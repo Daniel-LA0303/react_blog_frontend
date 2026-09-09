@@ -45,3 +45,8 @@ export const staggerContainer: Variants = {
   hidden: {},
   visible: { transition: { staggerChildren: 0.07 } },
 };
+
+// charts
+export const containerVariants = { hidden: {}, show: { transition: { staggerChildren: 0.06 } } };
+export const rowVariants = { hidden: { opacity: 0, x: -8 }, show: { opacity: 1, x: 0, transition: { duration: 0.3 } } };
+export const cardVariants = { hidden: { opacity: 0, y: 8 }, show: { opacity: 1, y: 0, transition: { duration: 0.3 } } };

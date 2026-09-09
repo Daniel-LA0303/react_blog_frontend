@@ -6,7 +6,7 @@ import { fadeUp, stagger } from '../../utils/animationsUtils'
 import { ArticleIcon, DeleteIcon, FlagIcon, SearchIcon } from '../../utils/iconsUtils'
 import UITextField from '../../components/Global/UITextField'
 import UITablePagination from '../../components/Admin/UITablePagination'
-import {  ROWS_PER_PAGE_OPTIONS, STATUS_CONFIG_POST } from '../../utils/adminUtils'
+import { ROWS_PER_PAGE_OPTIONS, STATUS_CONFIG_POST } from '../../utils/adminUtils'
 import StatCard from '../../components/Global/StatCard'
 import Pill from '../../components/Global/Pill'
 import RowSkeleton from '../../components/Admin/RowSkeleton'
@@ -197,16 +197,18 @@ const AdminPostModeration = () => {
           className={`rounded-2xl border ${surfaceClass}`}
           style={{ overflow: 'hidden' }}
         >
-          <div ref={tableWrapperRef} style={{ overflowX: 'auto', overflowY: 'hidden' }}>
+          <div
+            className="ui-scroll-x"
+            ref={tableWrapperRef} style={{ overflowX: 'auto', overflowY: 'hidden' }}>
             <table style={{ width: '100%', borderCollapse: 'collapse', tableLayout: 'fixed' }}>
               <thead>
                 <tr>
-                  <th style={{ ...headCellStyle, width: '40%' }}>Post</th>
-                  <th style={{ ...headCellStyle, width: '13%' }}>Status</th>
-                  <th style={{ ...headCellStyle, width: '20%' }}>Categories</th>
-                  <th style={{ ...headCellStyle, width: '12%' }}>Reports</th>
-                  <th style={{ ...headCellStyle, width: '9%' }}>Date</th>
-                  <th style={{ ...headCellStyle, width: '6%' }} />
+                  <th style={{ ...headCellStyle, width: 340 }}>Post</th>
+                  <th style={{ ...headCellStyle, width: 140 }}>Status</th>
+                  <th style={{ ...headCellStyle, width: 180 }}>Categories</th>
+                  <th style={{ ...headCellStyle, width: 110 }}>Reports</th>
+                  <th style={{ ...headCellStyle, width: 110 }}>Date</th>
+                  <th style={{ ...headCellStyle, width: 60 }} />
                 </tr>
               </thead>
               <tbody>

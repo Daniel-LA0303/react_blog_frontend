@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import { FlagIcon, ManageAccountsIcon, VerifiedUserIcon } from '../../utils/iconsUtils';
 import useGlobalDataContext from '../../context/hooks/useGlobalDataContext';
 import { motion, Variants } from "framer-motion";
@@ -13,6 +13,9 @@ import { ReportsDistributionCard } from '../../components/Admin/AdminPrincipal/R
 import { MessagesActivityCard } from '../../components/Admin/AdminPrincipal/MessagesActivityCard';
 import { NotificationsActivityCard } from '../../components/Admin/AdminPrincipal/NotificationsActivityCard';
 import { ActiveSessionsCard } from '../../components/Admin/AdminPrincipal/ActiveSessionsCard';
+import clientAuthAxios from '../../services/clientAuthAxios';
+import { useSwal } from '../../hooks/useSwal';
+import SmallSpinner from '../../components/Spinner/SmallSpinner';
 
 const IconBase = ({ size = 20, children }: { size?: number; children: React.ReactNode }) => (
     <svg
@@ -52,39 +55,13 @@ const CommentsIcon = ({ size }: { size?: number }) => (
     </IconBase>
 );
 
-const ConversationsIcon = ({ size }: { size?: number }) => (
-    <IconBase size={size}>
-        <path d="M18 8a4 4 0 0 0-8 0v3a4 4 0 0 1-8 0" opacity="0" />
-        <rect x="3" y="5" width="14" height="10" rx="2" />
-        <path d="M7 19l3-4" /><path d="M17 9h4v6h-3l-1 3-1-3" opacity="0" />
-    </IconBase>
-);
-
-const NotificationsIcon = ({ size }: { size?: number }) => (
-    <IconBase size={size}>
-        <path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9" />
-        <path d="M13.73 21a2 2 0 0 1-3.46 0" />
-    </IconBase>
-);
-
-const TokensIcon = ({ size }: { size?: number }) => (
-    <IconBase size={size}>
-        <rect x="3" y="11" width="18" height="10" rx="2" />
-        <path d="M7 11V7a5 5 0 0 1 10 0v4" />
-    </IconBase>
-);
-
 // ---- Tipos ----
 interface DashboardStatsData {
-    usersTotal: number;
-    postsTotal: number;
-    categoriesTotal: number;
-    commentsTotal: number;
-    reportsTotal: number;
-    conversationsTotal: number;
-    notificationsTotal: number;
-    tokensTotal: number;
-    auditLogsTotal: number;
+    countUsers: number;
+    countPosts: number;
+    countCategories: number;
+    countComments: number;
+    countReports: number;
 }
 
 interface StatCardConfig {
@@ -95,15 +72,11 @@ interface StatCardConfig {
 }
 
 const CARDS: StatCardConfig[] = [
-    { key: 'usersTotal', label: 'Users', icon: VerifiedUserIcon, accent: 'indigo' },
-    { key: 'postsTotal', label: 'Posts', icon: PostsIcon, accent: 'emerald' },
-    { key: 'categoriesTotal', label: 'Categories', icon: CategoriesIcon, accent: 'amber' },
-    { key: 'commentsTotal', label: 'Comments', icon: CommentsIcon, accent: 'sky' },
-    { key: 'reportsTotal', label: 'Reports', icon: FlagIcon, accent: 'rose' },
-    { key: 'conversationsTotal', label: 'Conversations', icon: ConversationsIcon, accent: 'violet' },
-    { key: 'notificationsTotal', label: 'Notifications', icon: NotificationsIcon, accent: 'fuchsia' },
-    { key: 'tokensTotal', label: 'Sesiones activas', icon: TokensIcon, accent: 'teal' },
-    { key: 'auditLogsTotal', label: 'Audit Logs', icon: ManageAccountsIcon, accent: 'slate' },
+    { key: 'countUsers', label: 'Users', icon: VerifiedUserIcon, accent: 'indigo' },
+    { key: 'countPosts', label: 'Posts', icon: PostsIcon, accent: 'emerald' },
+    { key: 'countCategories', label: 'Categories', icon: CategoriesIcon, accent: 'amber' },
+    { key: 'countComments', label: 'Comments', icon: CommentsIcon, accent: 'sky' },
+    { key: 'countReports', label: 'Reports', icon: FlagIcon, accent: 'rose' },
 ];
 
 const ACCENT_STYLES: Record<StatCardConfig['accent'], { light: string; dark: string }> = {
@@ -116,19 +89,6 @@ const ACCENT_STYLES: Record<StatCardConfig['accent'], { light: string; dark: str
     fuchsia: { light: 'bg-fuchsia-50 text-fuchsia-600', dark: 'bg-fuchsia-500/10 text-fuchsia-400' },
     teal: { light: 'bg-teal-50 text-teal-600', dark: 'bg-teal-500/10 text-teal-400' },
     slate: { light: 'bg-slate-100 text-slate-600', dark: 'bg-slate-500/10 text-slate-400' },
-};
-
-// ---- Data fake (aquí luego conectas tu endpoint real) ----
-const FAKE_STATS: DashboardStatsData = {
-    usersTotal: 1999,
-    postsTotal: 4820,
-    categoriesTotal: 32,
-    commentsTotal: 12873,
-    reportsTotal: 47,
-    conversationsTotal: 356,
-    notificationsTotal: 9021,
-    tokensTotal: 1543,
-    auditLogsTotal: 782,
 };
 
 const formatNumber = (n: number) => new Intl.NumberFormat('en-US').format(n);
@@ -148,50 +108,78 @@ const cardVariants: Variants = {
 
 const AdminPrincipal = () => {
 
+    const { showConfirmSwal } = useSwal()
     const { globalData } = useGlobalDataContext();
     const dark = !globalData.themeGlobal;
-    const stats = FAKE_STATS; // <- reemplazar por data real cuando exista el endpoint
+    //const stats = FAKE_STATS; // <- reemplazar por data real cuando exista el endpoint
+
+    const [loading, setLoading] = useState(false);
+    const [stats, setStats] = useState<DashboardStatsData | null>(null);
+
+
+    useEffect(() => {
+
+        const fetchStatsData = async () => {
+
+            setLoading(true);
+            try {
+                const res = await clientAuthAxios.get(`/dashboard/get-counts`);
+                setStats(res.data.data);
+                setLoading(false);
+            } catch (error: any) {
+                const msg = error.response?.data?.message
+                showConfirmSwal({ message: msg, status: 'error', confirmButton: true, cancelButton: false, })
+                setLoading(false);
+            }
+
+        }
+        fetchStatsData();
+    }, []);
 
     return (
         <main className='max-w-screen-xl mx-auto px-4 py-10 sm:px-6 lg:px-10 space-y-7'>
-            <motion.div
-                variants={containerVariants}
-                initial="hidden"
-                animate="show"
-                className="grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-5 gap-4"
-            >
-                {CARDS.map(({ key, label, icon: Icon, accent }) => {
-                    const value = stats[key];
-                    const accentClass = dark ? ACCENT_STYLES[accent].dark : ACCENT_STYLES[accent].light;
+            {
+                loading ? 
+                    <SmallSpinner/> :
+                    <motion.div
+                        variants={containerVariants}
+                        initial="hidden"
+                        animate="show"
+                        className="grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-5 gap-4"
+                    >
+                        {CARDS.map(({ key, label, icon: Icon, accent }) => {
+                            const value = stats?.[key] ?? 0;
+                            const accentClass = dark ? ACCENT_STYLES[accent].dark : ACCENT_STYLES[accent].light;
 
-                    return (
-                        <motion.div
-                            key={key}
-                            variants={cardVariants}
-                            whileHover={{ y: -3 }}
-                            transition={{ type: 'spring', stiffness: 300, damping: 20 }}
-                            className={`rounded-2xl border p-5 flex flex-col gap-4 transition-colors duration-200 cursor-pointer
+                            return (
+                                <motion.div
+                                    key={key}
+                                    variants={cardVariants}
+                                    whileHover={{ y: -3 }}
+                                    transition={{ type: 'spring', stiffness: 300, damping: 20 }}
+                                    className={`rounded-2xl border p-5 flex flex-col gap-4 transition-colors duration-200 cursor-pointer
                                 ${dark
-                                    ? 'bg-[#27272A] border-gray-800 hover:border-gray-700'
-                                    : 'bg-white border-gray-100 hover:border-gray-200'
-                                }`}
-                        >
-                            <div className={`h-9 w-9 rounded-xl flex items-center justify-center ${accentClass}`}>
-                                <Icon size={18} />
-                            </div>
+                                            ? 'bg-[#27272A] border-gray-800 hover:border-gray-700'
+                                            : 'bg-white border-gray-100 hover:border-gray-200'
+                                        }`}
+                                >
+                                    <div className={`h-9 w-9 rounded-xl flex items-center justify-center ${accentClass}`}>
+                                        <Icon size={18} />
+                                    </div>
 
-                            <div className="flex flex-col gap-1 min-w-0">
-                                <span className={`text-2xl font-bold tracking-tight tabular-nums ${dark ? 'text-white' : 'text-gray-900'}`}>
-                                    {formatNumber(value)}
-                                </span>
-                                <span className={`text-xs font-medium truncate ${dark ? 'text-gray-500' : 'text-gray-400'}`}>
-                                    {label}
-                                </span>
-                            </div>
-                        </motion.div>
-                    );
-                })}
-            </motion.div>
+                                    <div className="flex flex-col gap-1 min-w-0">
+                                        <span className={`text-2xl font-bold tracking-tight tabular-nums ${dark ? 'text-white' : 'text-gray-900'}`}>
+                                            {formatNumber(value)}
+                                        </span>
+                                        <span className={`text-xs font-medium truncate ${dark ? 'text-gray-500' : 'text-gray-400'}`}>
+                                            {label}
+                                        </span>
+                                    </div>
+                                </motion.div>
+                            );
+                        })}
+                    </motion.div>
+            }
 
 
             <div>
@@ -241,7 +229,7 @@ const AdminPrincipal = () => {
             </section>
 
             <section className="mt-6">
-                <ActiveSessionsCard />
+                {/*<ActiveSessionsCard />*/}
             </section>
         </main>
     );

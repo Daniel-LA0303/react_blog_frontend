@@ -455,3 +455,47 @@ h1{
 .reports-scroll::-webkit-scrollbar-thumb:hover {
   background: rgba(128, 128, 128, 0.55);
 }
+
+.ui-scroll-x {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(128, 128, 128, 0.35) transparent;
+}
+
+.ui-scroll-x::-webkit-scrollbar {
+  height: 6px;
+}
+
+.ui-scroll-x::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.ui-scroll-x::-webkit-scrollbar-thumb {
+  background: rgba(128, 128, 128, 0.35);
+  border-radius: 10px;
+}
+
+.ui-scroll-x::-webkit-scrollbar-thumb:hover {
+  background: rgba(128, 128, 128, 0.55);
+}
+
+.ui-scroll-y {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(128, 128, 128, 0.35) transparent;
+}
+
+.ui-scroll-y::-webkit-scrollbar {
+  width: 5px;
+}
+
+.ui-scroll-y::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.ui-scroll-y::-webkit-scrollbar-thumb {
+  background: rgba(128, 128, 128, 0.35);
+  border-radius: 10px;
+}
+
+.ui-scroll-y::-webkit-scrollbar-thumb:hover {
+  background: rgba(128, 128, 128, 0.55);
+}

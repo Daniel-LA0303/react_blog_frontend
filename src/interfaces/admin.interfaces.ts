@@ -107,3 +107,126 @@ export interface DateRange {
   startDate: string; // MM-DD-YYYY
   endDate: string;   // MM-DD-YYYY
 }
+
+export type PostStatusPrincipal = 'PUBLISHED' | 'HIDDEN' | 'DELETED';
+
+export interface PostsStatusDatum {
+  status: PostStatusPrincipal;
+  count: number;
+  percentage: number;
+}
+
+export interface PostsStatusResponse {
+  range: DateRange;
+  total: number;
+  data: PostsStatusDatum[];
+}
+
+export interface FollowedCategory {
+    categoryId: string;
+    name: string;
+    color: string;
+    count: number;
+    percentage: number;
+}
+
+export interface UsedCategory {
+    categoryId: string;
+    name: string;
+    color: string;
+    count: number;
+    percentage: number;
+}
+
+export interface CategoriesAnalyticsResponse {
+    range: DateRange;
+    mostFollowed: FollowedCategory[];
+    mostUsed: UsedCategory[];
+}
+
+export interface EngagementOverviewResponse {
+    range: DateRange;
+    commentsTotal: number;
+    repliesTotal: number;
+    messagesTotal: number;
+    notificationsTotal: number;
+}
+
+export interface MessagesActivityPoint {
+    date: string; // MM-DD-YYYY
+    count: number;
+}
+
+export interface ModerationActionPoint {
+    date: string; // MM-DD-YYYY
+    count: number;
+}
+
+export interface ModerationActionsResponse {
+    range: DateRange;
+    data: ModerationActionPoint[];
+}
+
+export interface NotificationsActivityPoint {
+    date: string; // MM-DD-YYYY
+    FOLLOW_USER: number;
+    LIKE_POST: number;
+    COMMENT_POST: number;
+    REPLY_COMMENT: number;
+}
+
+export interface RecentAction {
+    _id: string;
+    action: string;
+    category: 'AUTH' | 'MODERATION' | 'CONTENT' | 'SYSTEM';
+    actor: { name: string; roles: string[] };
+    target?: { entityType?: string; name?: string };
+    createdAt: string;
+}
+
+export interface ReportsDatum {
+    status: ReportStatus;
+    count: number;
+    percentage: number;
+}
+
+export interface ReportsDistributionResponse {
+    range: DateRange;
+    total: number;
+    data: ReportsDatum[];
+}
+
+export interface TopModerator {
+  userId: string;
+  name: string;
+  email: string;
+  profilePicture?: { secure_url: string; public_id: string };
+  actionsCount: number;
+  percentage: number;
+}
+
+export interface UsersTimelinePoint {
+  date: string; // MM-DD-YYYY
+  ACTIVE: number;
+  TO_CONFIRM: number;
+  BANNED: number;
+}
+
+export interface UsersTimelineResponse {
+  range: DateRange;
+  data: UsersTimelinePoint[];
+}
+
+// FILTER RANGE
+export interface DateRangeFilterProps {
+    onChange: (range: DateRange) => void;
+    /** id único para no chocar si hay varios filtros en la misma vista */
+    instanceId: string;
+    /** días del preset inicial que se dispara al montar (default: 30) */
+    defaultDays?: number;
+}
+
+
+
+// --- AUDILOGS
+export type Category = 'AUTH' | 'MODERATION' | 'CONTENT' | 'SYSTEM';

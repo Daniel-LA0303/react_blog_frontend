@@ -3,38 +3,14 @@ import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { ManageAccountsIcon } from '../../../utils/iconsUtils';
 import useGlobalDataContext from '../../../context/hooks/useGlobalDataContext';
-// import { clientAuthAxios } from '../../../services/clientAuthAxios';
-
-interface TopModerator {
-  userId: string;
-  name: string;
-  email: string;
-  profilePicture?: { secure_url: string; public_id: string };
-  actionsCount: number;
-  percentage: number;
-}
+import clientAuthAxios from '../../../services/clientAuthAxios';
+import { TopModerator } from '../../../interfaces/admin.interfaces';
+import { containerVariants, rowVariants } from '../../../utils/animationsUtils';
 
 // ---- Fake service (reemplazar por llamada real) ----
 const fetchTopModerators = async (): Promise<TopModerator[]> => {
-  // const { data } = await clientAuthAxios.get('/stats/top-moderators');
-  // return data.data;
-  await new Promise((r) => setTimeout(r, 500));
-  return [
-    { userId: '1', name: 'Laura Méndez', email: 'laura.mendez@mail.com', profilePicture: { secure_url: '', public_id: '' }, actionsCount: 214, percentage: 100 },
-    { userId: '2', name: 'Carlos Ruiz', email: 'carlos.ruiz@mail.com', profilePicture: { secure_url: '', public_id: '' }, actionsCount: 152, percentage: 71 },
-    { userId: '3', name: 'Ana Torres', email: 'ana.torres@mail.com', profilePicture: { secure_url: '', public_id: '' }, actionsCount: 98, percentage: 46 },
-    { userId: '4', name: 'Diego Paredes', email: 'diego.paredes@mail.com', profilePicture: { secure_url: '', public_id: '' }, actionsCount: 61, percentage: 28 },
-    { userId: '5', name: 'Sofía Vega', email: 'sofia.vega@mail.com', profilePicture: { secure_url: '', public_id: '' }, actionsCount: 34, percentage: 16 },
-  ];
-};
-
-const containerVariants = {
-  hidden: {},
-  show: { transition: { staggerChildren: 0.06 } },
-};
-const rowVariants = {
-  hidden: { opacity: 0, x: -8 },
-  show: { opacity: 1, x: 0, transition: { duration: 0.3 } },
+  const { data } = await clientAuthAxios.get('/dashboard/get-top-mods');
+  return data.data;
 };
 
 export const TopModeratorsCard = () => {

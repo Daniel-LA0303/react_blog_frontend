@@ -2,59 +2,16 @@
 import { useState, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer, Legend } from 'recharts';
-import { DateRange } from '../../../interfaces/admin.interfaces';
+import { CategoriesAnalyticsResponse, DateRange } from '../../../interfaces/admin.interfaces';
 import useGlobalDataContext from '../../../context/hooks/useGlobalDataContext';
 import { DateRangeFilter } from '../DateRangeFilter';
-// import { clientAuthAxios } from '../../../services/clientAuthAxios';
+import clientAuthAxios from '../../../services/clientAuthAxios';
+import { containerVariants, rowVariants } from '../../../utils/animationsUtils';
 
-interface FollowedCategory {
-    categoryId: string;
-    name: string;
-    color: string;
-    countFollows: number;
-    percentage: number;
-}
-
-interface UsedCategory {
-    categoryId: string;
-    name: string;
-    color: string;
-    postsCount: number;
-    percentage: number;
-}
-
-interface CategoriesAnalyticsResponse {
-    range: DateRange;
-    mostFollowed: FollowedCategory[];
-    mostUsed: UsedCategory[];
-}
-
-// ---- Fake service (reemplazar por llamada real) ----
 const fetchCategoriesAnalytics = async (range: DateRange): Promise<CategoriesAnalyticsResponse> => {
-    // const { data } = await clientAuthAxios.get('/stats/categories-analytics', { params: range });
-    // return data;
-    await new Promise((r) => setTimeout(r, 500));
-    return {
-        range,
-        mostFollowed: [
-            { categoryId: '1', name: 'Tecnología', color: '#4F46E5', countFollows: 1240, percentage: 100 },
-            { categoryId: '2', name: 'Deportes', color: '#059669', countFollows: 890, percentage: 72 },
-            { categoryId: '3', name: 'Música', color: '#D97706', countFollows: 610, percentage: 49 },
-            { categoryId: '4', name: 'Viajes', color: '#DB2777', countFollows: 430, percentage: 35 },
-            { categoryId: '5', name: 'Cocina', color: '#0284C7', countFollows: 310, percentage: 25 },
-        ],
-        mostUsed: [
-            { categoryId: '1', name: 'Tecnología', color: '#4F46E5', postsCount: 512, percentage: 38 },
-            { categoryId: '3', name: 'Música', color: '#D97706', postsCount: 340, percentage: 25 },
-            { categoryId: '2', name: 'Deportes', color: '#059669', postsCount: 260, percentage: 19 },
-            { categoryId: '5', name: 'Cocina', color: '#0284C7', postsCount: 150, percentage: 11 },
-            { categoryId: '4', name: 'Viajes', color: '#DB2777', postsCount: 95, percentage: 7 },
-        ],
-    };
+    const { data } = await clientAuthAxios.get('/dashboard/get-cats-info', { params: range });
+    return data.data;
 };
-
-const containerVariants = { hidden: {}, show: { transition: { staggerChildren: 0.06 } } };
-const rowVariants = { hidden: { opacity: 0, x: -8 }, show: { opacity: 1, x: 0, transition: { duration: 0.3 } } };
 
 export const CategoryAnalyticsCard = () => {
     const { globalData } = useGlobalDataContext();
@@ -75,7 +32,7 @@ export const CategoryAnalyticsCard = () => {
 
     const pieData = data?.mostUsed.map((c) => ({
         name: c.name,
-        value: c.postsCount,
+        value: c.count,
         percentage: c.percentage,
         color: c.color,
     })) ?? [];
@@ -128,7 +85,7 @@ export const CategoryAnalyticsCard = () => {
                                             </span>
                                         </div>
                                         <span className={`text-xs font-bold tabular-nums flex-shrink-0 ${dark ? 'text-gray-400' : 'text-gray-500'}`}>
-                                            {cat.countFollows.toLocaleString('en-US')}
+                                            {cat.count.toLocaleString('en-US')}
                                         </span>
                                     </div>
                                     <div className={`h-1.5 w-full rounded-full overflow-hidden ${dark ? 'bg-gray-800' : 'bg-gray-100'}`}>
@@ -181,12 +138,19 @@ export const CategoryAnalyticsCard = () => {
                                             border: `1px solid ${dark ? '#27272A' : '#F3F4F6'}`,
                                             borderRadius: 12,
                                             fontSize: 12,
+                                            cursor: 'pointer',
                                             color: dark ? '#E5E7EB' : '#111827',
                                         }}
                                         formatter={(value: number, _name, item: any) => [
                                             `${value} posts (${item.payload.percentage}%)`,
                                             item.payload.name,
                                         ]}
+                                        itemStyle={{
+                                            color: dark ? '#FFFFFF' : '#111827',
+                                        }}
+                                        labelStyle={{
+                                            color: dark ? '#FFFFFF' : '#111827',
+                                        }}
                                     />
                                     <Legend
                                         verticalAlign="bottom"

@@ -1,59 +1,86 @@
 // components/dashboard/charts/UsersStatusLineChart.tsx
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useMemo } from 'react';
 import { motion } from 'framer-motion';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from 'recharts';
-import { DateRange } from '../../../interfaces/admin.interfaces';
+import { DateRange, UsersTimelinePoint, UsersTimelineResponse } from '../../../interfaces/admin.interfaces';
 import useGlobalDataContext from '../../../context/hooks/useGlobalDataContext';
 import { DateRangeFilter } from '../DateRangeFilter';
-// import { clientAuthAxios } from '../../../services/clientAuthAxios';
+import clientAuthAxios from '../../../services/clientAuthAxios';
+import { SERIES_META_USERS } from '../../../utils/adminUtils';
 
-interface UsersTimelinePoint {
-  date: string; // MM-DD-YYYY
-  ACTIVE: number;
-  TO_CONFIRM: number;
-  BANNED: number;
-}
 
-interface UsersTimelineResponse {
-  range: DateRange;
-  data: UsersTimelinePoint[];
-}
 
-const SERIES_META = {
-  ACTIVE: { label: 'Activos', light: '#2563EB', dark: '#60A5FA' },
-  TO_CONFIRM: { label: 'Por confirmar', light: '#D97706', dark: '#FBBF24' },
-  BANNED: { label: 'Baneados', light: '#E11D48', dark: '#FB7185' },
-} as const;
 
-// ---- Fake service (reemplazar por llamada real) ----
+
+const MONTHS = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'];
+
 const fetchUsersStatusTimeline = async (range: DateRange): Promise<UsersTimelineResponse> => {
-  // const { data } = await clientAuthAxios.get('/stats/users-status-timeline', { params: range });
-  // return data;
-  await new Promise((r) => setTimeout(r, 500));
-  const points: UsersTimelinePoint[] = Array.from({ length: 10 }, (_, i) => {
-    const d = new Date();
-    d.setDate(d.getDate() - (9 - i));
-    return {
-      date: `${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}-${d.getFullYear()}`,
-      ACTIVE: Math.floor(Math.random() * 20) + 5,
-      TO_CONFIRM: Math.floor(Math.random() * 6),
-      BANNED: Math.floor(Math.random() * 3),
-    };
-  });
-  return { range, data: points };
+  const { data } = await clientAuthAxios.get('/dashboard/get-users-info', { params: range });
+  return data.data;
 };
 
-// Convierte MM-DD-YYYY a algo corto tipo "Ene 05" para el eje X
-const shortLabel = (mmddyyyy: string) => {
-  const [mm, dd] = mmddyyyy.split('-');
-  const months = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'];
-  return `${months[Number(mm) - 1]} ${dd}`;
+const parseMMDDYYYY = (str: string) => {
+  const [mm, dd, yyyy] = str.split('-').map(Number);
+  return new Date(yyyy, mm - 1, dd);
+};
+
+/**
+ * Umbral: por encima de este número de días, agrupamos por mes en vez de mostrar día a día.
+ */
+const DAILY_VIEW_MAX_DAYS = 31;
+
+/**
+ * Si el rango es corto (<= DAILY_VIEW_MAX_DAYS), regresa los puntos tal cual (día a día).
+ * Si es largo, agrupa y SUMA los valores de cada mes en un solo punto por mes.
+ * Esto reduce el número real de puntos en la línea, no solo las etiquetas del eje.
+ */
+const aggregateTimeline = (
+  timeline: UsersTimelinePoint[],
+  spanDays: number
+): { points: UsersTimelinePoint[]; grouped: boolean } => {
+  if (spanDays <= DAILY_VIEW_MAX_DAYS || timeline.length === 0) {
+    return { points: timeline, grouped: false };
+  }
+
+  const monthBuckets = new Map<string, UsersTimelinePoint>();
+
+  for (const point of timeline) {
+    const d = parseMMDDYYYY(point.date);
+    const monthKey = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
+
+    const existing = monthBuckets.get(monthKey);
+    if (existing) {
+      existing.ACTIVE += point.ACTIVE;
+      existing.TO_CONFIRM += point.TO_CONFIRM;
+      existing.BANNED += point.BANNED;
+    } else {
+      // Usamos el día 01 del mes como "fecha representativa" del bucket
+      monthBuckets.set(monthKey, {
+        date: `${String(d.getMonth() + 1).padStart(2, '0')}-01-${d.getFullYear()}`,
+        ACTIVE: point.ACTIVE,
+        TO_CONFIRM: point.TO_CONFIRM,
+        BANNED: point.BANNED,
+      });
+    }
+  }
+
+  // Los mapas mantienen orden de inserción, y el timeline original ya viene ordenado
+  return { points: Array.from(monthBuckets.values()), grouped: true };
+};
+
+const buildLabelFormatter = (grouped: boolean) => (mmddyyyy: string) => {
+  const [mm, dd, yyyy] = mmddyyyy.split('-');
+  const monthName = MONTHS[Number(mm) - 1];
+
+  if (!grouped) {
+    return `${monthName} ${dd}`;
+  }
+  return `${monthName} ${yyyy}`; // un punto = un mes, mostramos mes + año
 };
 
 export const UsersStatusLineChart = () => {
   const { globalData } = useGlobalDataContext();
   const dark = !globalData.themeGlobal;
-
   const [loading, setLoading] = useState(true);
   const [timeline, setTimeline] = useState<UsersTimelinePoint[]>([]);
 
@@ -70,6 +97,20 @@ export const UsersStatusLineChart = () => {
   const gridColor = dark ? '#27272A' : '#F3F4F6';
   const axisColor = dark ? '#6B7280' : '#9CA3AF';
 
+  const spanDays = useMemo(() => {
+    if (timeline.length < 2) return 0;
+    const first = parseMMDDYYYY(timeline[0].date);
+    const last = parseMMDDYYYY(timeline[timeline.length - 1].date);
+    return Math.round((last.getTime() - first.getTime()) / (1000 * 60 * 60 * 24));
+  }, [timeline]);
+
+  const { points: chartData, grouped } = useMemo(
+    () => aggregateTimeline(timeline, spanDays),
+    [timeline, spanDays]
+  );
+
+  const labelFormatter = useMemo(() => buildLabelFormatter(grouped), [grouped]);
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 12 }}
@@ -84,12 +125,13 @@ export const UsersStatusLineChart = () => {
             Comportamiento de Usuarios
           </h3>
           <p className={`text-xs ${dark ? 'text-gray-500' : 'text-gray-400'}`}>
-            Activos, por confirmar y baneados en el tiempo
+            {grouped
+              ? 'Activos, por confirmar y baneados (agrupado por mes)'
+              : 'Activos, por confirmar y baneados en el tiempo'}
           </p>
         </div>
         <DateRangeFilter instanceId="users-status" onChange={loadData} />
       </div>
-
       <div className="relative w-full h-72 sm:h-80">
         {loading ? (
           <div className="absolute inset-0 flex items-center justify-center">
@@ -98,14 +140,18 @@ export const UsersStatusLineChart = () => {
           </div>
         ) : (
           <ResponsiveContainer width="100%" height="100%">
-            <LineChart data={timeline} margin={{ top: 8, right: 8, left: -16, bottom: 0 }}>
+            <LineChart data={chartData} margin={{ top: 8, right: 8, left: -16, bottom: 0 }}>
               <CartesianGrid strokeDasharray="3 3" stroke={gridColor} vertical={false} />
               <XAxis
                 dataKey="date"
-                tickFormatter={shortLabel}
+                tickFormatter={labelFormatter}
+                interval={grouped ? 0 : 'preserveStartEnd'}
                 tick={{ fontSize: 11, fill: axisColor }}
                 axisLine={{ stroke: gridColor }}
                 tickLine={false}
+                angle={-45}
+                textAnchor="end"
+                height={60}
               />
               <YAxis
                 allowDecimals={false}
@@ -114,7 +160,7 @@ export const UsersStatusLineChart = () => {
                 tickLine={false}
               />
               <Tooltip
-                labelFormatter={(label) => shortLabel(label as string)}
+                labelFormatter={(label) => labelFormatter(label as string)}
                 contentStyle={{
                   background: dark ? '#1E1E21' : '#FFFFFF',
                   border: `1px solid ${dark ? '#27272A' : '#F3F4F6'}`,
@@ -130,13 +176,13 @@ export const UsersStatusLineChart = () => {
                   <span className={`text-xs ${dark ? 'text-gray-400' : 'text-gray-600'}`}>{value}</span>
                 )}
               />
-              {(Object.keys(SERIES_META) as (keyof typeof SERIES_META)[]).map((key) => (
+              {(Object.keys(SERIES_META_USERS) as (keyof typeof SERIES_META_USERS)[]).map((key) => (
                 <Line
                   key={key}
                   type="monotone"
                   dataKey={key}
-                  name={SERIES_META[key].label}
-                  stroke={dark ? SERIES_META[key].dark : SERIES_META[key].light}
+                  name={SERIES_META_USERS[key].label}
+                  stroke={dark ? SERIES_META_USERS[key].dark : SERIES_META_USERS[key].light}
                   strokeWidth={2.5}
                   dot={{ r: 3, strokeWidth: 0 }}
                   activeDot={{ r: 5 }}

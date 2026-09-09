@@ -27,7 +27,6 @@ const AdminCats = () => {
     typeof role === "string" ? role : role?.name
   );
 
-  // Solo ROLE_ADMIN puede crear/editar categorías (no ROLE_MOD)
   const canManage = currentUserRoles.includes('ROLE_ADMIN');
 
   const [categories, setCategory] = useState<ICategoryAdminPanel[]>([]);
@@ -147,16 +146,18 @@ const AdminCats = () => {
           className={`rounded-2xl border ${surfaceClass}`}
           style={{ overflow: 'hidden' }}
         >
-          <div ref={tableWrapperRef} style={{ overflowX: 'auto', overflowY: 'hidden' }}>
+          <div
+            className="ui-scroll-x"
+            ref={tableWrapperRef} style={{ overflowX: 'auto', overflowY: 'hidden' }}>
             <table style={{ width: '100%', borderCollapse: 'collapse', tableLayout: 'fixed' }}>
               <thead>
                 <tr>
-                  <th style={{ ...headCellStyle, width: '15%' }}>Category</th>
-                  <th style={{ ...headCellStyle, width: '16%' }}>Color</th>
-                  <th style={{ ...headCellStyle, width: '30%' }}>Description</th>
-                  <th style={{ ...headCellStyle, width: '14%' }}>Followers</th>
-                  <th style={{ ...headCellStyle, width: '14%' }}>Create at</th>
-                  <th style={{ ...headCellStyle, width: '10%' }} />
+                  <th style={{ ...headCellStyle, width: 180 }}>Category</th>
+                  <th style={{ ...headCellStyle, width: 100 }}>Color</th>
+                  <th style={{ ...headCellStyle, width: 280 }}>Description</th>
+                  <th style={{ ...headCellStyle, width: 110 }}>Followers</th>
+                  <th style={{ ...headCellStyle, width: 130 }}>Create at</th>
+                  <th style={{ ...headCellStyle, width: 60 }} />
                 </tr>
               </thead>
               <motion.tbody
