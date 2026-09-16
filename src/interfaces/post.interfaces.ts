@@ -4,7 +4,8 @@ export interface PostUpdate {
   categoriesPost?: any;
   categoriesSelect?: any;
   desc?: string;
-  status?: string
+  status?: string;
+  typePost?: string;
   previousName?: string | null;
   linkImage?: PostImage | null;
 }
@@ -19,6 +20,7 @@ export interface NewPostI {
   title: string;
   content: string;
   status: string;
+  typePost: string;
   categories: string[];
   desc: string;
   date: number;
