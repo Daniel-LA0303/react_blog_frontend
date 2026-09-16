@@ -6,12 +6,17 @@ import { menuItems } from '../../utils/profileUtils'
 
 
 const ProfileButton = () => {
-  
+
   const { userAuth } = userUserAuthContext()
   const { setGlobalData, globalData } = useGlobalDataContext()
   const dark = !globalData.themeGlobal
 
-  const [open, setOpen] = useState(false)
+  const [open, setOpen] = useState(false);
+
+  const viewerRoles: string[] = (userAuth?.roles ?? []).map((r: any) =>
+    typeof r === "string" ? r : r?.name
+  );
+
 
   const handleLogOut = () => {
     ['token', 'tokenAuthUser', 'email', 'username', 'userId', 'profileImage', 'expiresAt', 'isFree', 'plan', 'refreshToken']
@@ -98,7 +103,9 @@ const ProfileButton = () => {
           </div>*/}
           {/* Nav items */}
           <div className="py-1.5">
-            {menuItems.map((item) => (
+            {menuItems
+              .filter(item => !item.roles || item?.roles.some((r: string) => viewerRoles.includes(r)))
+              .map((item) => (
               <Link
                 key={item.label}
                 to={item.to(userAuth.userId as string)}

@@ -58,8 +58,6 @@ export const RecentActionsCard = () => {
             setLoading(true);
             try {
                 const data = await fetchRecentActions();
-                console.log(data);
-
                 setActions(data);
             } finally {
                 setLoading(false);

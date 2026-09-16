@@ -114,9 +114,6 @@ const Profile = () => {
 
   }, [params.id]);
 
-  console.log(user);
-
-
   useEffect(() => {
     setPosts([]);
     setPage(1);

@@ -65,8 +65,6 @@ const AdminPostModeration = () => {
           status: statusFilter !== 'all' ? statusFilter : undefined, // filter info
         },
       })
-      console.log(data);
-
       const payload = data.data
       setPosts(payload.posts ?? [])
       setTotal(payload.meta?.total ?? 0)

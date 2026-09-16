@@ -89,7 +89,6 @@ const EditPost = () => {
     clientAuthAxios.get(`/pages/page-edit-post/${params.id}`)
       .then(response => {
 
-        console.log(response);
         setStatusPost(response.data.data.post.status);
         setCategories(response.data.data.categories)
         setTitle(response.data.data.post.title)

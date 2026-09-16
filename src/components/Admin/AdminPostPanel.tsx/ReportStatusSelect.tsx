@@ -24,17 +24,15 @@ const ReportStatusSelect = ({
     setCurrent(newStatus) // optimistic update, se ve el cambio al instante
     setSaving(true)
     try {
-      console.log('cambiando status del reporte', reportId, '->', newStatus)
       await clientAuthAxios.post("/reports/change-status-report", {
           reportId,
           status: newStatus,
       });
-      console.log("succesfully change report status");
       
       onChanged(reportId, newStatus)
     } catch (err) {
       setCurrent(prev) // si falla el request, revierte al estado previo
-      console.log('error actualizando el reporte', err)
+      console.log('Error to update', err)
     } finally {
       setSaving(false)
     }

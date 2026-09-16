@@ -690,3 +690,20 @@ export const ChevronDownIcon = ({ size = 14 }: { size?: number }) => (
         <polyline points="6 9 12 15 18 9" />
     </svg>
 );
+
+export const LayoutDashboardIcon = ({ size = 14 }: { size?: number }) => (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <rect x="3" y="3" width="7" height="9" rx="1" />
+        <rect x="14" y="3" width="7" height="5" rx="1" />
+        <rect x="14" y="12" width="7" height="9" rx="1" />
+        <rect x="3" y="16" width="7" height="5" rx="1" />
+    </svg>
+);
+
+export const AuditHistoryIcon = ({ size = 14 }: { size?: number }) => (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M3 3v5h5" />
+        <path d="M3.05 13a9 9 0 1 0 .5-4.5" />
+        <path d="M12 7v5l3 3" />
+    </svg>
+);

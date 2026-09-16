@@ -7,9 +7,17 @@ import { Link } from 'react-router-dom'
  * context
  */
 import useGlobalDataContext from '../../context/hooks/useGlobalDataContext';
-import { AddCircleIcon, BookmarkIcon, ChatBubbleIcon, EmailIcon, GavelIcon, HomeIcon, InfoIcon, NoteStickyIcon, PrivacyTipIcon } from '../../utils/iconsUtils';
+import { AddCircleIcon, BookmarkIcon, ChatBubbleIcon, EmailIcon, GavelIcon, HomeIcon, InfoIcon, LayoutDashboardIcon, NoteStickyIcon, PrivacyTipIcon } from '../../utils/iconsUtils';
+import useUserAuthContext from '../../context/hooks/useUserAuthContext';
 
 const AsideMenu = ({ user }: any) => {
+
+    const { userAuth } = useUserAuthContext();
+
+    const viewerRoles: string[] = (userAuth?.roles ?? []).map((r: any) =>
+        typeof r === "string" ? r : r?.name
+    );
+
     const { globalData } = useGlobalDataContext();
     const dark = !globalData.themeGlobal;
 
@@ -31,11 +39,19 @@ const AsideMenu = ({ user }: any) => {
             <p className={labelClass}>Navigation</p>
             <div className="px-2">
                 <Link to="/" className={itemClass}>
-                    <HomeIcon isDark={dark}/>
+                    <HomeIcon isDark={dark} />
                     <span>Home</span>
                 </Link>
             </div>
 
+            {viewerRoles.some(r => r === 'ROLE_MOD' || r === 'ROLE_ADMIN') &&
+                <div className="px-2">
+                    <Link to="/admin" className={itemClass}>
+                        <LayoutDashboardIcon size={14} />
+                        <span>Admin Dashboard</span>
+                    </Link>
+                </div>
+            }
             {divider}
 
             {/* — Workspace (auth-only) — */}
@@ -44,16 +60,16 @@ const AsideMenu = ({ user }: any) => {
                     <p className={labelClass}>Workspace</p>
                     <div className="px-2">
                         <Link to="/chat" className={itemClass}>
-                            <ChatBubbleIcon isDark={dark}/>
+                            <ChatBubbleIcon isDark={dark} />
                             <span className="flex-1">My Chats</span>
                             <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 flex-shrink-0" />
                         </Link>
                         <Link to="/new-post" className={itemClass}>
-                           <AddCircleIcon isDark={dark}/>
+                            <AddCircleIcon isDark={dark} />
                             <span>New Post</span>
                         </Link>
                         <Link to={`/save-posts/${user.userId}`} className={itemClass}>
-                            <BookmarkIcon isDark={dark}/>
+                            <BookmarkIcon isDark={dark} />
                             <span>Saved</span>
                         </Link>
                     </div>
@@ -65,7 +81,7 @@ const AsideMenu = ({ user }: any) => {
             <p className={labelClass}>Explore</p>
             <div className="px-2">
                 <Link to="/categories" className={itemClass}>
-                    <NoteStickyIcon isDark={dark}/>
+                    <NoteStickyIcon isDark={dark} />
                     <span>Categories</span>
                 </Link>
                 <Link to="/about" className={itemClass}>
@@ -86,7 +102,7 @@ const AsideMenu = ({ user }: any) => {
                 </Link>
                 <Link to="/terms-use" className={itemClass}>
                     <GavelIcon isDark={dark} />
-                    <span>Privacy Policy</span>
+                    <span>Terms Of Use</span>
                 </Link>
             </div>
         </div>
