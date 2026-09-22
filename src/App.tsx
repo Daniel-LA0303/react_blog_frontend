@@ -52,6 +52,7 @@ import { RequireRole } from "./components/Global/RequireRole";
 import UnauthorizedPage from "./components/Global/UnauthorizedPage";
 import AdminPrincipal from "./Pages/Admin/AdminPrincipal";
 import AdminAuditLogs from "./Pages/Admin/AdminAuditLogs";
+import KanbanBoard from "./Pages/Project/Project";
 
 
 
@@ -120,6 +121,8 @@ function App() {
           <Route path="/edit-profile/:id" element={userAuth.userId ? <EditProfile /> : <Login />} />
           <Route path="/search/:id" element={<Search />} />
           <Route path="/notifications/:id" element={userAuth.userId ? <Notifications /> : <Login />} />
+
+          <Route path="/project/:id" element={userAuth.userId ? <KanbanBoard /> : <Login />} />
 
 
 
