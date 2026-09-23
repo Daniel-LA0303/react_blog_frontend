@@ -432,9 +432,9 @@ export const LinkedInIcon = ({ size = 16, className = '' }: IconProps) => (
 );
 
 
-export const IconBase = ({ children, size = 20 }: { children: React.ReactNode; size?: number }) => (
+export const IconBase = ({ children, size = 20, color }: { children: React.ReactNode; size?: number; color?: string }) => (
   <svg
-    viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}
+    viewBox="0 0 24 24" fill="none" stroke={color || 'currentColor'} strokeWidth={2}
     strokeLinecap="round" strokeLinejoin="round"
     style={{ width: size, height: size, display: 'block', flexShrink: 0 }}
   >
@@ -484,8 +484,8 @@ export const CategoryIcon = ({ size }: { size?: number }) => (
   </IconBase>
 )
 
-export const CheckIcon = ({ size }: { size?: number }) => (
-  <IconBase size={size}><polyline points="20 6 9 17 4 12" /></IconBase>
+export const CheckIcon = ({ size, color }: { size?: number; color?: string }) => (
+  <IconBase size={size} color={color}><polyline points="20 6 9 17 4 12" /></IconBase>
 )
 
 export const ArticleIcon = ({ size }: { size?: number }) => (

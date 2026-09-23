@@ -15,7 +15,7 @@ export interface KanbanProject {
   name: string;
   description: string;
   status: ProjectStatus;
-  owner: KanbanUser;
+  owner: string;
   members: KanbanUser[];
 }
 
