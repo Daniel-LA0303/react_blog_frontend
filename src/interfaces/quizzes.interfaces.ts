@@ -17,7 +17,7 @@ export interface QuizQuestion {
 }
 
 export interface Quiz {
-  _id: string
+  id: string
   owner: string
   title: string
   description: string
@@ -29,4 +29,50 @@ export interface Quiz {
   tags: string[]
   publishedAt: string | null
   deletedAt: string | null
+}
+
+// ======= TAKE QUIZ =======
+export interface AttemptQuizOption {
+  _id: string
+  text: string
+}
+ 
+export interface AttemptQuizQuestion {
+  _id: string
+  question: string
+  points: number
+  order: number
+  options: AttemptQuizOption[]
+}
+ 
+export interface AttemptQuiz {
+  _id: string
+  title: string
+  description: string
+  timeLimit: number | null
+  questions: AttemptQuizQuestion[]
+}
+ 
+export interface QuizResultBreakdownItem {
+  questionId: string
+  question: string
+  selectedOptionId: string | null
+  selectedOptionText: string | null
+  correctOptionId: string
+  correctOptionText: string
+  isCorrect: boolean
+  points: number
+  earnedPoints: number
+}
+ 
+export interface QuizResult {
+  attemptId: string
+  quizId: string
+  score: number // percentage 0-100
+  correctAnswers: number
+  totalQuestions: number
+  earnedPoints: number
+  totalPoints: number
+  duration: number // seconds
+  breakdown: QuizResultBreakdownItem[]
 }

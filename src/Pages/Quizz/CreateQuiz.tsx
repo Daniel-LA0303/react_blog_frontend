@@ -13,16 +13,20 @@ import { useSwal } from '../../hooks/useSwal'
 import { AddCircleIcon, CloseIcon } from '../../utils/iconsUtils'
 import { QuizQuestion, QuizStatus } from '../../interfaces/quizzes.interfaces'
 import { createQuestion, createQuiz, publishQuiz, reorderQuestions, updateQuestion, updateQuiz } from '../../utils/quizUtils'
-import QuestionEditor from './QuestionEditor'
-import Sidebar from '../Sidebar/Sidebar'
+import QuestionEditor from '../../components/Quizz/QuestionEditor'
+import Sidebar from '../../components/Sidebar/Sidebar'
+import useUserAuthContext from '../../context/hooks/useUserAuthContext'
 
-const uid = (prefix: string) => `${prefix}_${Date.now().toString(36)}_${Math.random().toString(36).slice(2, 8)}`
+export const uid = (prefix: string) => `${prefix}_${Date.now().toString(36)}_${Math.random().toString(36).slice(2, 8)}`
 
-const emptyOptions = () => [
+
+// build empty option
+export const emptyOptions = () => [
   { _id: uid('option'), text: '', isCorrect: true, order: 0 },
   { _id: uid('option'), text: '', isCorrect: false, order: 1 },
 ]
 
+// build a question
 const emptyQuestion = (order: number): QuizQuestion => ({
   _id: uid('question'),
   quiz: '',
@@ -40,8 +44,12 @@ const InsertionBar = () => (
 // page
 // ----------------------------
 export const CreateQuiz = () => {
+
+  const { userAuth } = useUserAuthContext();
   const { showConfirmSwal } = useSwal()
+
   const { globalData } = useGlobalDataContext()
+
   const dark = !globalData.themeGlobal
 
   const [quizId, setQuizId] = useState<string | null>(null)
@@ -66,14 +74,30 @@ export const CreateQuiz = () => {
     setDragIndicator(null)
   }
 
+  // Sort questions by their order
   const sortedQuestions = [...questions].sort((a, b) => a.order - b.order)
 
+  // Recalculate whenever a dependency changes
   const isComplete = useMemo(() => {
+
+    // Check that the title is not empty and that there is at least one question
     if (!title.trim() || sortedQuestions.length === 0) return false
+
+    // Check that every question is valid
     return sortedQuestions.every((q) => {
-      if (!q.question.trim()) return false
+
+      // Check that the question is not empty
+      if (!q.question.trim()) {
+        return false
+      }
+
+      // Check that the question has at least two filled options
       const filled = q.options.filter((o) => o.text.trim())
-      if (filled.length < 2) return false
+      if (filled.length < 2) {
+        return false
+      }
+
+      // Check that exactly one option is marked as correct
       return filled.filter((o) => o.isCorrect).length === 1
     })
   }, [title, sortedQuestions])
@@ -87,53 +111,132 @@ export const CreateQuiz = () => {
   }
   const removeTag = (tag: string) => setTags((prev) => prev.filter((t) => t !== tag))
 
-  // ---- questions ----------------------------------------------------------
-  const addQuestion = () => setQuestions((prev) => [...prev, emptyQuestion(prev.length)])
+  // add new question to our state
+  const addQuestion = () => setQuestions(
+    (prev) => [
+      ...prev,
+      emptyQuestion(prev.length) // build question
+    ])
 
+  // remove question from our state
   const removeQuestion = (id: string) => {
     setQuestions((prev) =>
-      prev.filter((q) => q._id !== id).map((q, i) => ({ ...q, order: i }))
+      prev
+        .filter(
+          (q) => q._id !== id // filter question to remove
+        )
+        .map(
+          (q, i) => ({ ...q, order: i }) // reorder questions from question removed position
+        )
     )
   }
 
-  const updateQuestionField = (id: string, patch: Partial<Pick<QuizQuestion, 'question' | 'points'>>) =>
-    setQuestions((prev) => prev.map((q) => (q._id === id ? { ...q, ...patch } : q)))
+  // update question only text question or points
+  const updateQuestionField = (
+    id: string,
+    patch: Partial<Pick<QuizQuestion, 'question' | 'points'>>
+  ) => {
 
-  const updateOptionText = (questionId: string, optionId: string, text: string) =>
+    setQuestions(
+      (prev) => prev.map(
+        (q) => (q._id === id ? { ...q, ...patch } : q) // change status
+      )
+    );
+
+  }
+
+  // to update only text for one option only
+  const updateOptionText = (
+    questionId: string,
+    optionId: string,
+    text: string
+  ) => {
     setQuestions((prev) =>
       prev.map((q) =>
-        q._id === questionId ? { ...q, options: q.options.map((o) => (o._id === optionId ? { ...o, text } : o)) } : q
+        q._id === questionId // find question
+          ? {
+            ...q,
+            options: q.options.map(
+              (o) => (
+                o._id === optionId // find option
+                  ? { ...o, text } // update data
+                  : o))
+          }
+          : q
       )
     )
+  }
 
+  // set a correct option
   const setCorrectOption = (questionId: string, optionId: string) =>
+  {
     setQuestions((prev) =>
       prev.map((q) =>
-        q._id === questionId
-          ? { ...q, options: q.options.map((o) => ({ ...o, isCorrect: o._id === optionId })) }
+        q._id === questionId // find question
+          ? { 
+              ...q, 
+              options: q.options.map( // iterate option
+                (o) => ({ 
+                  ...o, 
+                  isCorrect: o._id === optionId // set bolean
+                })) 
+            }
           : q
       )
     )
+  }
 
-  const addOption = (questionId: string) =>
+
+  // add a new option
+  const addOption = (questionId: string) => {
     setQuestions((prev) =>
       prev.map((q) =>
-        q._id === questionId && q.options.length < 4
-          ? { ...q, options: [...q.options, { _id: uid('option'), text: '', isCorrect: false, order: q.options.length }] }
+        q._id === questionId && q.options.length < 4 // find question and check if does not have more than 4 options
+          ? { ...q, options: 
+              [
+                ...q.options, 
+                // set an option empty
+                { 
+                  _id: uid('option'), 
+                  text: '', 
+                  isCorrect: false, 
+                  order: q.options.length 
+                }
+              ] 
+            }
           : q
       )
     )
+  }
 
-  const removeOption = (questionId: string, optionId: string) =>
+  // remove option 
+  const removeOption = (questionId: string, optionId: string) => {
     setQuestions((prev) =>
       prev.map((q) => {
-        if (q._id !== questionId || q.options.length <= 2) return q
-        const remaining = q.options.filter((o) => o._id !== optionId).map((o, i) => ({ ...o, order: i }))
+
+        if (q._id !== questionId || q.options.length <= 2) return q // dont do nothing if is not our question
+
+        // we find our question
+        const remaining = q.options
+          .filter(
+            (o) => o._id !== optionId // conserve option if is diferent to optionId
+          )
+          .map(
+            (o, i) => ({ ...o, order: i }) // up another options 
+          )
+
         // if the removed option was the correct one, fall back to the first
-        if (!remaining.some((o) => o.isCorrect) && remaining.length > 0) remaining[0].isCorrect = true
-        return { ...q, options: remaining }
+        if (!remaining.some((o) => o.isCorrect) && remaining.length > 0) {
+            remaining[0].isCorrect = true // set correct the first one
+        }
+
+        return { 
+          ...q, // question
+          options: remaining 
+        }
       })
     )
+  }
 
   // ---- question reordering (id-based, mirrors the kanban board fix) -----
   const handleQuestionDrop = () => {
@@ -152,33 +255,85 @@ export const CreateQuiz = () => {
     cleanupDrag()
   }
 
-  // ---- save ---------------------------------------------------------------
+  // save quizz
   const persist = async () => {
-    const quizPayload = { title: title.trim(), description: description.trim(), category: category.trim(), tags, timeLimit: hasTimeLimit ? timeLimit : null }
 
+    // get info to send backend
+    const quizPayload = {
+      title: title.trim(),
+      description: description.trim(),
+      category: category.trim(),
+      questionCount: questions.length,
+      owner: userAuth.userId,
+      tags,
+      timeLimit: hasTimeLimit ? timeLimit : null
+    }
+
+    // check if is editing
     let currentQuizId = quizId
+
     if (!currentQuizId) {
-      const created = await createQuiz(quizPayload)
-      currentQuizId = created._id
-      setQuizId(created._id)
+      // if isnt editing then we create quiz with info
+      const created = await createQuiz(quizPayload) // call backend
+
+      console.log("create ", created);
+
+
+      currentQuizId = created.id
+
+      // set id
+      setQuizId(created.id);
     } else {
       await updateQuiz(currentQuizId, quizPayload)
     }
 
+    // create var to save question to update
     const savedQuestions: QuizQuestion[] = []
+
+    // iterate for send questions to back
     for (const q of sortedQuestions) {
-      const optionsPayload = q.options.map((o, i) => ({ _id: o._id.startsWith('option_') ? undefined : o._id, text: o.text, isCorrect: o.isCorrect, order: i }))
+
+      // iterate to get options for question
+      const optionsPayload = q.options.map(
+        (o, i) => (
+          {
+            _id: o._id.startsWith('option_')
+              ? undefined
+              : o._id,
+            text: o.text,
+            isCorrect: o.isCorrect,
+            order: i
+          }
+        )
+      );
+
+      // if we'll create
       if (q._id.startsWith('question_')) {
-        const created = await createQuestion(currentQuizId, { question: q.question, points: q.points, order: q.order, options: optionsPayload })
-        savedQuestions.push(created)
+
+        // for each insert in backend
+        const created = await createQuestion(
+          currentQuizId as string,
+          { question: q.question, points: q.points, order: q.order, options: optionsPayload }
+        )
+
+        // we push the response in savedQuestions
+        if (created) {
+          savedQuestions.push(created)
+        }
+
       } else {
         const updated = await updateQuestion(q._id, { question: q.question, points: q.points, order: q.order, options: optionsPayload })
         savedQuestions.push(updated)
       }
     }
-    setQuestions(savedQuestions)
-    await reorderQuestions(currentQuizId, savedQuestions.map((q) => q._id))
 
+    // set all question from backend
+    setQuestions(savedQuestions)
+
+    // check this
+    //await reorderQuestions(currentQuizId, savedQuestions.map((q) => q._id))
+
+    // we return id
     return currentQuizId
   }
 
@@ -197,13 +352,24 @@ export const CreateQuiz = () => {
     }
   }
 
+  // when we first build quizz for first time
   const handlePublish = async () => {
+
+    // check if quiz is complete
     if (!isComplete) return
-    setSaving('publish')
+
+    setSaving('publish');
+
     try {
+
+      // save quizz info and insert questions in backend
       const id = await persist()
-      await publishQuiz(id)
+
+      // maybe dont put this 
+      //await publishQuiz(id);
+
       setStatus('PUBLISHED')
+
     } catch (error: any) {
       showConfirmSwal({ message: error.response?.data?.message || 'Could not publish the quiz', status: 'error', confirmButton: true, cancelButton: false })
     } finally {
@@ -213,7 +379,7 @@ export const CreateQuiz = () => {
 
   return (
     <div className={`min-h-screen w-full ${dark ? 'bg-[#18181B]' : 'bg-gray-50'}`}>
-                <Sidebar />
+      <Sidebar />
       <div className="max-w-5xl mx-auto px-4 sm:px-6 py-6 flex flex-col gap-5">
 
         {/* ---- header / actions ---- */}
@@ -229,9 +395,8 @@ export const CreateQuiz = () => {
             <button
               onClick={handleSaveDraft}
               disabled={saving !== null}
-              className={`px-3 py-1.5 text-xs font-semibold rounded-lg border transition-colors disabled:opacity-50 ${
-                dark ? 'border-gray-700 text-gray-300 hover:bg-gray-800' : 'border-gray-200 text-gray-600 hover:bg-gray-50'
-              }`}
+              className={`px-3 py-1.5 text-xs font-semibold rounded-lg border transition-colors disabled:opacity-50 ${dark ? 'border-gray-700 text-gray-300 hover:bg-gray-800' : 'border-gray-200 text-gray-600 hover:bg-gray-50'
+                }`}
             >
               {saving === 'draft' ? 'Saving...' : 'Save draft'}
             </button>
@@ -252,9 +417,8 @@ export const CreateQuiz = () => {
             value={title}
             onChange={(e) => setTitle(e.target.value)}
             placeholder="Quiz title"
-            className={`text-lg font-bold rounded-lg px-3 py-2 outline-none border ${
-              dark ? 'bg-[#18181B] border-gray-700 text-white placeholder:text-gray-600' : 'bg-gray-50 border-gray-200 text-gray-900 placeholder:text-gray-400'
-            }`}
+            className={`text-lg font-bold rounded-lg px-3 py-2 outline-none border ${dark ? 'bg-[#18181B] border-gray-700 text-white placeholder:text-gray-600' : 'bg-gray-50 border-gray-200 text-gray-900 placeholder:text-gray-400'
+              }`}
           />
 
           <textarea
@@ -262,9 +426,8 @@ export const CreateQuiz = () => {
             onChange={(e) => setDescription(e.target.value)}
             placeholder="What is this quiz about?"
             rows={2}
-            className={`text-sm rounded-lg px-3 py-2 outline-none border resize-none ${
-              dark ? 'bg-[#18181B] border-gray-700 text-gray-200 placeholder:text-gray-600' : 'bg-gray-50 border-gray-200 text-gray-700 placeholder:text-gray-400'
-            }`}
+            className={`text-sm rounded-lg px-3 py-2 outline-none border resize-none ${dark ? 'bg-[#18181B] border-gray-700 text-gray-200 placeholder:text-gray-600' : 'bg-gray-50 border-gray-200 text-gray-700 placeholder:text-gray-400'
+              }`}
           />
 
           <div className="flex flex-col sm:flex-row gap-3">
@@ -272,9 +435,8 @@ export const CreateQuiz = () => {
               value={category}
               onChange={(e) => setCategory(e.target.value)}
               placeholder="Category (e.g. Science)"
-              className={`flex-1 text-sm rounded-lg px-3 py-2 outline-none border ${
-                dark ? 'bg-[#18181B] border-gray-700 text-white placeholder:text-gray-600' : 'bg-gray-50 border-gray-200 text-gray-900 placeholder:text-gray-400'
-              }`}
+              className={`flex-1 text-sm rounded-lg px-3 py-2 outline-none border ${dark ? 'bg-[#18181B] border-gray-700 text-white placeholder:text-gray-600' : 'bg-gray-50 border-gray-200 text-gray-900 placeholder:text-gray-400'
+                }`}
             />
 
             <div className="flex items-center gap-2">
@@ -289,9 +451,8 @@ export const CreateQuiz = () => {
                     min={1}
                     value={timeLimit}
                     onChange={(e) => setTimeLimit(Math.max(1, Number(e.target.value) || 1))}
-                    className={`w-16 text-sm rounded-lg px-2 py-1.5 outline-none border ${
-                      dark ? 'bg-[#18181B] border-gray-700 text-white' : 'bg-gray-50 border-gray-200 text-gray-900'
-                    }`}
+                    className={`w-16 text-sm rounded-lg px-2 py-1.5 outline-none border ${dark ? 'bg-[#18181B] border-gray-700 text-white' : 'bg-gray-50 border-gray-200 text-gray-900'
+                      }`}
                   />
                   <span className={`text-xs ${dark ? 'text-gray-500' : 'text-gray-400'}`}>min</span>
                 </div>
@@ -320,9 +481,8 @@ export const CreateQuiz = () => {
                 {tags.map((tag) => (
                   <span
                     key={tag}
-                    className={`flex items-center gap-1 text-xs font-medium px-2.5 py-1 rounded-full ${
-                      dark ? 'bg-gray-800 text-gray-300' : 'bg-gray-100 text-gray-600'
-                    }`}
+                    className={`flex items-center gap-1 text-xs font-medium px-2.5 py-1 rounded-full ${dark ? 'bg-gray-800 text-gray-300' : 'bg-gray-100 text-gray-600'
+                      }`}
                   >
                     #{tag}
                     <button onClick={() => removeTag(tag)} aria-label={`Remove tag ${tag}`} className="hover:text-rose-500">
@@ -360,10 +520,14 @@ export const CreateQuiz = () => {
                       const before = e.clientY < rect.top + rect.height / 2
                       setDragIndicator({ beforeQuestionId: before ? question._id : nextQuestion ? nextQuestion._id : null })
                     }}
+
+                    // state in question editor
                     onChangeText={(text) => updateQuestionField(question._id, { question: text })}
                     onChangePoints={(points) => updateQuestionField(question._id, { points })}
+
                     onChangeOptionText={(optionId, text) => updateOptionText(question._id, optionId, text)}
                     onSetCorrectOption={(optionId) => setCorrectOption(question._id, optionId)}
+
                     onAddOption={() => addOption(question._id)}
                     onRemoveOption={(optionId) => removeOption(question._id, optionId)}
                     onDelete={() => removeQuestion(question._id)}
@@ -387,9 +551,8 @@ export const CreateQuiz = () => {
 
             <button
               onClick={addQuestion}
-              className={`mt-1 w-full flex items-center justify-center gap-1.5 text-sm font-medium rounded-2xl border border-dashed py-3 transition-colors ${
-                dark ? 'border-gray-700 text-gray-500 hover:bg-gray-800/40' : 'border-gray-200 text-gray-400 hover:bg-gray-50'
-              }`}
+              className={`mt-1 w-full flex items-center justify-center gap-1.5 text-sm font-medium rounded-2xl border border-dashed py-3 transition-colors ${dark ? 'border-gray-700 text-gray-500 hover:bg-gray-800/40' : 'border-gray-200 text-gray-400 hover:bg-gray-50'
+                }`}
             >
               <AddCircleIcon isDark={dark} /> Add question
             </button>
