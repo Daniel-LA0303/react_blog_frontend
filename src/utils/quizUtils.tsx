@@ -69,7 +69,7 @@ export const getQuiz = async (quizId: string) => {
   
   const res = await clientAuthAxios.get(`/quiz/get-quiz-update/${quizId}`)
   
-  return delay<{ quiz: Quiz; questions: QuizQuestion[], usersAttempts: any}>(
+  return delay<{ quiz: Quiz; questions: QuizQuestion[], usersAttempts: any, owner: any}>(
     res.data.data,
     400
   )
