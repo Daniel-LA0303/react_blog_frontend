@@ -1,5 +1,6 @@
-import { Fragment, useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
+import { useParams } from 'react-router-dom'
 
 /**
  * hooks
@@ -12,7 +13,7 @@ import { useSwal } from '../../hooks/useSwal'
  */
 import { AddCircleIcon, CloseIcon } from '../../utils/iconsUtils'
 import { QuizQuestion, QuizStatus } from '../../interfaces/quizzes.interfaces'
-import { createQuestion, createQuiz, publishQuiz, reorderQuestions, updateQuestion, updateQuiz } from '../../utils/quizUtils'
+import { createQuestion, createQuiz, deleteQuestion, getQuiz, updateQuestion, updateQuiz } from '../../utils/quizUtils'
 import QuestionEditor from '../../components/Quizz/QuestionEditor'
 import Sidebar from '../../components/Sidebar/Sidebar'
 import useUserAuthContext from '../../context/hooks/useUserAuthContext'
@@ -36,10 +37,6 @@ const emptyQuestion = (order: number): QuizQuestion => ({
   options: emptyOptions(),
 })
 
-const InsertionBar = () => (
-  <motion.div layout initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="h-1 rounded-full bg-[#2563EB]" />
-)
-
 // ----------------------------
 // page
 // ----------------------------
@@ -52,8 +49,14 @@ export const CreateQuiz = () => {
 
   const dark = !globalData.themeGlobal
 
+  // get :id from the route — if present we are editing, otherwise creating
+  const { id } = useParams()
+  const isEditMode = !!id
+
+  const [loading, setLoading] = useState(isEditMode) // only show the loader when we actually have something to fetch
+
   const [quizId, setQuizId] = useState<string | null>(null)
-  const [status, setStatus] = useState<QuizStatus>('DRAFT')
+  const [status, setStatus] = useState<QuizStatus>('HIDDEN') // no more DRAFT, only PUBLISHED / HIDDEN
   const [title, setTitle] = useState('')
   const [description, setDescription] = useState('')
   const [category, setCategory] = useState('')
@@ -64,15 +67,48 @@ export const CreateQuiz = () => {
 
   const [questions, setQuestions] = useState<QuizQuestion[]>([emptyQuestion(0)])
 
-  const [saving, setSaving] = useState<'draft' | 'publish' | null>(null)
+  const [saving, setSaving] = useState(false)
 
-  // ---- drag state (same id-based approach as the kanban board) ----------
-  const [draggedQuestionId, setDraggedQuestionId] = useState<string | null>(null)
-  const [dragIndicator, setDragIndicator] = useState<{ beforeQuestionId: string | null } | null>(null)
-  const cleanupDrag = () => {
-    setDraggedQuestionId(null)
-    setDragIndicator(null)
-  }
+  // ---- load existing quiz when editing -----------------------------------
+  useEffect(() => {
+
+    if (!id) return // create mode, nothing to fetch
+
+    let cancelled = false
+
+    const getQuizToEdit = async () => {
+
+      setLoading(true)
+
+      try {
+
+        // get quiz info + its questions to fill our state
+        const { quiz, questions: loadedQuestions } = await getQuiz(id)
+
+        if (cancelled) return
+
+        setQuizId(quiz.id)
+        setStatus(quiz.status)
+        setTitle(quiz.title)
+        setDescription(quiz.description)
+        setCategory(quiz.category)
+        setTags(quiz.tags ?? [])
+        setHasTimeLimit(quiz.timeLimit !== null)
+        setTimeLimit(quiz.timeLimit ?? 10)
+        setQuestions(loadedQuestions.length > 0 ? loadedQuestions : [emptyQuestion(0)])
+
+      } catch (error: any) {
+        showConfirmSwal({ message: error.response?.data?.message || 'Could not load this quiz', status: 'error', confirmButton: true, cancelButton: false })
+      } finally {
+        if (!cancelled) setLoading(false)
+      }
+    }
+
+    getQuizToEdit()
+
+    return () => { cancelled = true }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [id])
 
   // Sort questions by their order
   const sortedQuestions = [...questions].sort((a, b) => a.order - b.order)
@@ -118,12 +154,24 @@ export const CreateQuiz = () => {
       emptyQuestion(prev.length) // build question
     ])
 
-  // remove question from our state
-  const removeQuestion = (id: string) => {
+  // remove question from our state (and from the backend if it was already saved there)
+  const removeQuestion = async (question: QuizQuestion) => {
+
+    // only a question created locally (never saved) has this prefix — for
+    // anything else we need to delete it in the backend first
+    if (!question._id.startsWith('question_')) {
+      try {
+        await deleteQuestion(question._id) // call backend to delete
+      } catch (error: any) {
+        showConfirmSwal({ message: error.response?.data?.message || 'Could not delete the question', status: 'error', confirmButton: true, cancelButton: false })
+        return // dont remove locally if backend delete failed
+      }
+    }
+
     setQuestions((prev) =>
       prev
         .filter(
-          (q) => q._id !== id // filter question to remove
+          (q) => q._id !== question._id // filter question to remove
         )
         .map(
           (q, i) => ({ ...q, order: i }) // reorder questions from question removed position
@@ -168,42 +216,41 @@ export const CreateQuiz = () => {
   }
 
   // set a correct option
-  const setCorrectOption = (questionId: string, optionId: string) =>
-  {
+  const setCorrectOption = (questionId: string, optionId: string) => {
     setQuestions((prev) =>
       prev.map((q) =>
         q._id === questionId // find question
-          ? { 
-              ...q, 
-              options: q.options.map( // iterate option
-                (o) => ({ 
-                  ...o, 
-                  isCorrect: o._id === optionId // set bolean
-                })) 
-            }
+          ? {
+            ...q,
+            options: q.options.map( // iterate option
+              (o) => ({
+                ...o,
+                isCorrect: o._id === optionId // set bolean
+              }))
+          }
           : q
       )
     )
   }
-
 
   // add a new option
   const addOption = (questionId: string) => {
     setQuestions((prev) =>
       prev.map((q) =>
         q._id === questionId && q.options.length < 4 // find question and check if does not have more than 4 options
-          ? { ...q, options: 
+          ? {
+            ...q, options:
               [
-                ...q.options, 
+                ...q.options,
                 // set an option empty
-                { 
-                  _id: uid('option'), 
-                  text: '', 
-                  isCorrect: false, 
-                  order: q.options.length 
+                {
+                  _id: uid('option'),
+                  text: '',
+                  isCorrect: false,
+                  order: q.options.length
                 }
-              ] 
-            }
+              ]
+          }
           : q
       )
     )
@@ -227,32 +274,15 @@ export const CreateQuiz = () => {
 
         // if the removed option was the correct one, fall back to the first
         if (!remaining.some((o) => o.isCorrect) && remaining.length > 0) {
-            remaining[0].isCorrect = true // set correct the first one
+          remaining[0].isCorrect = true // set correct the first one
         }
 
-        return { 
+        return {
           ...q, // question
-          options: remaining 
+          options: remaining
         }
       })
     )
-  }
-
-  // ---- question reordering (id-based, mirrors the kanban board fix) -----
-  const handleQuestionDrop = () => {
-    if (!draggedQuestionId) return
-    const indicator = dragIndicator ?? { beforeQuestionId: null }
-    setQuestions((prev) => {
-      const sorted = [...prev].sort((a, b) => a.order - b.order)
-      const fromIndex = sorted.findIndex((q) => q._id === draggedQuestionId)
-      if (fromIndex === -1) return prev
-      const [moved] = sorted.splice(fromIndex, 1)
-      const rawTarget = indicator.beforeQuestionId ? sorted.findIndex((q) => q._id === indicator.beforeQuestionId) : -1
-      const targetIndex = rawTarget === -1 ? sorted.length : rawTarget
-      sorted.splice(targetIndex, 0, moved)
-      return sorted.map((q, i) => ({ ...q, order: i }))
-    })
-    cleanupDrag()
   }
 
   // save quizz
@@ -262,11 +292,12 @@ export const CreateQuiz = () => {
     const quizPayload = {
       title: title.trim(),
       description: description.trim(),
-      category: category.trim(),
+      category: "",
       questionCount: questions.length,
-      owner: userAuth.userId,
+      owner: userAuth.userId as string,
       tags,
-      timeLimit: hasTimeLimit ? timeLimit : null
+      timeLimit: hasTimeLimit ? timeLimit : null,
+      status // status now travels with the quiz payload, no separate publish call
     }
 
     // check if is editing
@@ -275,9 +306,6 @@ export const CreateQuiz = () => {
     if (!currentQuizId) {
       // if isnt editing then we create quiz with info
       const created = await createQuiz(quizPayload) // call backend
-
-      console.log("create ", created);
-
 
       currentQuizId = created.id
 
@@ -322,7 +350,15 @@ export const CreateQuiz = () => {
         }
 
       } else {
-        const updated = await updateQuestion(q._id, { question: q.question, points: q.points, order: q.order, options: optionsPayload })
+        const updated = await updateQuestion(
+          currentQuizId,
+          q._id,
+          {
+            question: q.question,
+            points: q.points,
+            order: q.order,
+            options: optionsPayload
+          })
         savedQuestions.push(updated)
       }
     }
@@ -330,51 +366,41 @@ export const CreateQuiz = () => {
     // set all question from backend
     setQuestions(savedQuestions)
 
-    // check this
-    //await reorderQuestions(currentQuizId, savedQuestions.map((q) => q._id))
+    // reordering discarded, nothing to persist here anymore
 
     // we return id
     return currentQuizId
   }
 
-  const handleSaveDraft = async () => {
+  // save the quiz — status is picked from the select now, so there is only
+  // one save action left (no more separate draft/publish handlers)
+  const handleSave = async () => {
+
     if (!title.trim()) {
       showConfirmSwal({ message: 'Give your quiz a title before saving', status: 'error', confirmButton: true, cancelButton: false })
       return
     }
-    setSaving('draft')
+
+    // check if quiz is complete before allowing PUBLISHED
+    if (status === 'PUBLISHED' && !isComplete) {
+      showConfirmSwal({ message: 'Every question needs text, at least 2 options, and exactly one correct answer before publishing', status: 'error', confirmButton: true, cancelButton: false })
+      return
+    }
+
+    setSaving(true)
+
     try {
+      // save quizz info and insert/update questions in backend
       await persist()
     } catch (error: any) {
       showConfirmSwal({ message: error.response?.data?.message || 'Could not save the quiz', status: 'error', confirmButton: true, cancelButton: false })
     } finally {
-      setSaving(null)
+      setSaving(false)
     }
   }
 
-  // when we first build quizz for first time
-  const handlePublish = async () => {
-
-    // check if quiz is complete
-    if (!isComplete) return
-
-    setSaving('publish');
-
-    try {
-
-      // save quizz info and insert questions in backend
-      const id = await persist()
-
-      // maybe dont put this 
-      //await publishQuiz(id);
-
-      setStatus('PUBLISHED')
-
-    } catch (error: any) {
-      showConfirmSwal({ message: error.response?.data?.message || 'Could not publish the quiz', status: 'error', confirmButton: true, cancelButton: false })
-    } finally {
-      setSaving(null)
-    }
+  if (loading) {
+    return <div className={`p-10 text-center text-sm ${dark ? 'text-gray-400' : 'text-gray-500'}`}>Loading quiz...</div>
   }
 
   return (
@@ -385,28 +411,33 @@ export const CreateQuiz = () => {
         {/* ---- header / actions ---- */}
         <div className="flex items-center justify-between">
           <div>
-            <h1 className={`text-lg font-bold ${dark ? 'text-white' : 'text-gray-900'}`}>Create quiz</h1>
+            <h1 className={`text-lg font-bold ${dark ? 'text-white' : 'text-gray-900'}`}>{isEditMode ? 'Edit quiz' : 'Create quiz'}</h1>
             <p className={`text-xs mt-0.5 ${dark ? 'text-gray-500' : 'text-gray-400'}`}>
-              {status === 'PUBLISHED' ? 'Published' : 'Draft'} · {sortedQuestions.length} question{sortedQuestions.length !== 1 ? 's' : ''}
+              {sortedQuestions.length} question{sortedQuestions.length !== 1 ? 's' : ''}
               {!isComplete && ' · incomplete'}
             </p>
           </div>
           <div className="flex items-center gap-2">
-            <button
-              onClick={handleSaveDraft}
-              disabled={saving !== null}
-              className={`px-3 py-1.5 text-xs font-semibold rounded-lg border transition-colors disabled:opacity-50 ${dark ? 'border-gray-700 text-gray-300 hover:bg-gray-800' : 'border-gray-200 text-gray-600 hover:bg-gray-50'
+            {/* status select replaces the old draft/publish buttons — only two possible values */}
+            <select
+              value={status}
+              onChange={(e) => setStatus(e.target.value as QuizStatus)}
+              disabled={saving}
+              className={`text-xs font-semibold rounded-lg px-3 py-1.5 outline-none border ${dark ? 'bg-[#18181B] border-gray-700 text-white' : 'bg-white border-gray-200 text-gray-900'
                 }`}
             >
-              {saving === 'draft' ? 'Saving...' : 'Save draft'}
-            </button>
+              <option value="HIDDEN">Hidden</option>
+              <option value="PUBLISHED" disabled={!isComplete}>
+                Published{!isComplete ? ' (complete quiz first)' : ''}
+              </option>
+            </select>
+
             <button
-              onClick={handlePublish}
-              disabled={saving !== null || !isComplete}
-              title={!isComplete ? 'Every question needs text, at least 2 options, and exactly one correct answer' : undefined}
-              className="px-3 py-1.5 text-xs font-semibold rounded-lg bg-[#2563EB] text-white hover:bg-blue-700 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+              onClick={handleSave}
+              disabled={saving}
+              className="px-3 py-1.5 text-xs font-semibold rounded-lg bg-[#2563EB] text-white hover:bg-blue-700 disabled:opacity-50 transition-colors"
             >
-              {saving === 'publish' ? 'Publishing...' : 'Publish'}
+              {saving ? 'Saving...' : 'Save'}
             </button>
           </div>
         </div>
@@ -495,68 +526,45 @@ export const CreateQuiz = () => {
           </div>
         </div>
 
-        {/* ---- questions ---- */}
+        {/* ---- questions (fixed order — no more drag/reorder) ---- */}
         <div className="flex flex-col gap-3">
           <AnimatePresence initial={false}>
-            {sortedQuestions.map((question, index) => {
-              const nextQuestion = sortedQuestions[index + 1]
-              const showBarBefore = dragIndicator?.beforeQuestionId === question._id && draggedQuestionId !== question._id
+            {sortedQuestions.map((question, index) => (
+              <motion.div
+                key={question._id}
+                layout
+                initial={{ opacity: 0, y: 8 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, scale: 0.96 }}
+                transition={{ type: 'spring', stiffness: 400, damping: 30 }}
+              >
+                <QuestionEditor
+                  question={question}
+                  index={index}
+                  dark={dark}
 
-              return (
-                <Fragment key={question._id}>
-                  {showBarBefore && <InsertionBar />}
-                  <QuestionEditor
-                    question={question}
-                    index={index}
-                    dark={dark}
-                    isDragging={draggedQuestionId === question._id}
-                    onDragStart={() => setDraggedQuestionId(question._id)}
-                    onDragEnd={cleanupDrag}
-                    onDragOverCard={(e) => {
-                      e.preventDefault()
-                      e.stopPropagation()
-                      if (!draggedQuestionId || draggedQuestionId === question._id) return
-                      const rect = e.currentTarget.getBoundingClientRect()
-                      const before = e.clientY < rect.top + rect.height / 2
-                      setDragIndicator({ beforeQuestionId: before ? question._id : nextQuestion ? nextQuestion._id : null })
-                    }}
+                  // state in question editor
+                  onChangeText={(text) => updateQuestionField(question._id, { question: text })}
+                  onChangePoints={(points) => updateQuestionField(question._id, { points })}
 
-                    // state in question editor
-                    onChangeText={(text) => updateQuestionField(question._id, { question: text })}
-                    onChangePoints={(points) => updateQuestionField(question._id, { points })}
+                  onChangeOptionText={(optionId, text) => updateOptionText(question._id, optionId, text)}
+                  onSetCorrectOption={(optionId) => setCorrectOption(question._id, optionId)}
 
-                    onChangeOptionText={(optionId, text) => updateOptionText(question._id, optionId, text)}
-                    onSetCorrectOption={(optionId) => setCorrectOption(question._id, optionId)}
-
-                    onAddOption={() => addOption(question._id)}
-                    onRemoveOption={(optionId) => removeOption(question._id, optionId)}
-                    onDelete={() => removeQuestion(question._id)}
-                  />
-                </Fragment>
-              )
-            })}
+                  onAddOption={() => addOption(question._id)}
+                  onRemoveOption={(optionId) => removeOption(question._id, optionId)}
+                  onDelete={() => removeQuestion(question)}
+                />
+              </motion.div>
+            ))}
           </AnimatePresence>
 
-          <div
-            onDragOver={(e) => {
-              e.preventDefault()
-              if (draggedQuestionId) setDragIndicator({ beforeQuestionId: null })
-            }}
-            onDrop={(e) => {
-              e.preventDefault()
-              if (draggedQuestionId) handleQuestionDrop()
-            }}
+          <button
+            onClick={addQuestion}
+            className={`mt-1 w-full flex items-center justify-center gap-1.5 text-sm font-medium rounded-2xl border border-dashed py-3 transition-colors ${dark ? 'border-gray-700 text-gray-500 hover:bg-gray-800/40' : 'border-gray-200 text-gray-400 hover:bg-gray-50'
+              }`}
           >
-            {dragIndicator?.beforeQuestionId === null && draggedQuestionId && <InsertionBar />}
-
-            <button
-              onClick={addQuestion}
-              className={`mt-1 w-full flex items-center justify-center gap-1.5 text-sm font-medium rounded-2xl border border-dashed py-3 transition-colors ${dark ? 'border-gray-700 text-gray-500 hover:bg-gray-800/40' : 'border-gray-200 text-gray-400 hover:bg-gray-50'
-                }`}
-            >
-              <AddCircleIcon isDark={dark} /> Add question
-            </button>
-          </div>
+            <AddCircleIcon isDark={dark} /> Add question
+          </button>
         </div>
       </div>
     </div>

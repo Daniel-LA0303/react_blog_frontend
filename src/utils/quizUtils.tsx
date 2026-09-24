@@ -22,21 +22,24 @@ const delay = <T,>(value: T, ms = 300): Promise<T> => new Promise((resolve) => s
 
 const uid = (prefix: string) => `${prefix}_${Date.now().toString(36)}_${Math.random().toString(36).slice(2, 8)}`
 
-// call when user is not editing
+// call when user is not editing // service functional
 export const createQuiz = async (payload: {
   title: string
   description: string
   category: string
   tags: string[]
-  timeLimit: number | null
+  timeLimit: number | null,
+  status: QuizStatus
+  questionCount: number
+  owner: string
 }) => {
 
   const res = await clientAuthAxios.post('/quiz/create-quiz', payload);
   return delay<Quiz>({
     id: res.data.data.id,
-    owner: res.data.data.owner,
-    status: res.data.data.status,
-    questionCount: res.data.data.questionCount,
+    //owner: res.data.data.owner,
+    //status: res.data.data.status,
+    //questionCount: res.data.data.questionCount,
     isComplete: res.data.data.isComplete,
     publishedAt: res.data.data.publishedAt,
     deletedAt: res.data.data.deletedAt,
@@ -44,35 +47,35 @@ export const createQuiz = async (payload: {
   })
 }
 
-// update only quiz info
+// update only quiz info TODO: DESCARTADO
 export const updateQuiz = async (
   quizId: string,
-  payload: { 
-    title: string; 
-    description: string; 
-    category: string; 
-    tags: string[]; 
-    timeLimit: number | null 
+  payload: {
+    title: string
+    description: string
+    category: string
+    tags: string[]
+    timeLimit: number | null
+    status: QuizStatus
+    questionCount: number
   }
 ) => {
-  logRequest('PUT', `/quiz/update-quiz/${quizId}`, payload)
-  return delay({ ok: true })
+  const res = await clientAuthAxios.put(`/quiz/update-quiz/${quizId}`, {...payload, quizId})
+  return res.data.data
 }
 
-// only change status
-export const publishQuiz = async (
-  quizId: string
-) => {
-  logRequest('PATCH', `/quiz/publish-quiz/${quizId}`)
-  return delay<
-    {
-      status: QuizStatus;
-      publishedAt: string
-    }
-  >({ status: 'PUBLISHED', publishedAt: new Date().toISOString() })
+// GET QUIZ TO UPDATE
+export const getQuiz = async (quizId: string) => {
+  
+  const res = await clientAuthAxios.get(`/quiz/get-quiz-update/${quizId}`)
+
+  return delay<{ quiz: Quiz; questions: QuizQuestion[] }>(
+    res.data.data,
+    400
+  )
 }
 
-// create a question
+// create a question // service functional
 export const createQuestion = async (
   quizId: string,
   payload: {
@@ -102,8 +105,9 @@ export const createQuestion = async (
   }
 }
 
-
+//TODO NO SE SABE
 export const updateQuestion = async (
+  quizId: string,
   questionId: string,
   payload: { 
     question: string; 
@@ -118,26 +122,26 @@ export const updateQuestion = async (
     }[] 
   }
 ) => {
-  logRequest('PUT', `/quiz/update-question/${questionId}`, payload)
+  logRequest('PUT', `/quiz/update-question/${questionId}`, payload);
+
+  const res = await clientAuthAxios.put(`/quiz/update-question/${questionId}`, {quiz:quizId, questionId, ...payload });
+
   return delay<QuizQuestion>({
-    _id: questionId,
-    quiz: '',
-    question: payload.question,
-    points: payload.points,
-    order: payload.order,
-    options: payload.options.map((o) => ({ ...o, _id: o._id ?? uid('option') })),
+    _id: res.data.data._id,
+    quiz: res.data.data.quiz,
+    question: res.data.data.question,
+    points: res.data.data.points,
+    order: res.data.data.order,
+    options: res.data.data.options.map((o: any) => ({ ...o, _id: o._id ?? uid('option') })),
   })
 }
 
 export const deleteQuestion = async (questionId: string) => {
   logRequest('DELETE', `/quiz/delete-question/${questionId}`)
+  await clientAuthAxios.delete(`/quiz/delete-question/${questionId}`);
   return delay({ ok: true })
 }
-
-export const reorderQuestions = async (quizId: string, orderedQuestionIds: string[]) => {
-  logRequest('PATCH', `/quiz/reorder-questions/${quizId}`, { orderedQuestionIds })
-  return delay({ ok: true })
-}
+ 
 
 // ------------- TAKE QUIZ ----------------
 // to get quiz

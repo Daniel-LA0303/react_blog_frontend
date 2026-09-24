@@ -1,4 +1,4 @@
-export type QuizStatus = 'DRAFT' | 'PUBLISHED' | 'ARCHIVED'
+export type QuizStatus = 'PUBLISHED' | 'HIDDEN'
 
 export interface QuizOption {
   _id: string

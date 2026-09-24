@@ -146,6 +146,11 @@ function App() {
           />
 
           <Route
+            path="/create-quiz/:id"
+            element={userAuth.userId ? <CreateQuiz /> : <Navigate to="/login" />}
+          />
+
+          <Route
             path="/take-quiz/:id"
             element={userAuth.userId ? <TakeQuiz /> : <Navigate to="/login" />}
           />

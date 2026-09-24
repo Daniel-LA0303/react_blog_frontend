@@ -9,10 +9,6 @@ interface QuestionEditorProps {
   question: QuizQuestion
   index: number
   dark: boolean
-  isDragging: boolean
-  onDragStart: () => void
-  onDragEnd: () => void
-  onDragOverCard: (e: React.DragEvent<HTMLDivElement>) => void
   onChangeText: (text: string) => void
   onChangePoints: (points: number) => void
   onChangeOptionText: (optionId: string, text: string) => void
@@ -27,10 +23,6 @@ const QuestionEditor = ({
   question,
   index,
   dark,
-  isDragging,
-  onDragStart,
-  onDragEnd,
-  onDragOverCard,
   onChangeText, // when change question in option
   onChangePoints, // when change status in option
   onChangeOptionText, // when change text in option
@@ -45,28 +37,8 @@ const QuestionEditor = ({
   const canAddOption = question.options.length < MAX_OPTIONS
 
   return (
-    <motion.div
-      layout
-      draggable
-      onDragStart={onDragStart}
-      onDragEnd={onDragEnd}
-      onDragOver={onDragOverCard}
-      initial={{ opacity: 0, y: 8 }}
-      animate={{ opacity: isDragging ? 0.4 : 1, y: 0, scale: isDragging ? 0.98 : 1 }}
-      exit={{ opacity: 0, scale: 0.96 }}
-      transition={{ type: 'spring', stiffness: 400, damping: 30 }}
-      className={`rounded-2xl border p-4 ${isDragging ? 'ring-2 ring-[#2563EB]/50' : ''} ${dark ? 'bg-[#212124] border-gray-800' : 'bg-white border-gray-100'
-        }`}
-    >
+    <div className={`rounded-2xl border p-4 ${dark ? 'bg-[#212124] border-gray-800' : 'bg-white border-gray-100'}`}>
       <div className="flex items-start gap-3">
-        <div className="flex flex-col items-center gap-1 pt-1.5 cursor-grab active:cursor-grabbing flex-shrink-0" aria-hidden="true">
-          <div className={`grid grid-cols-2 gap-[3px] ${dark ? 'text-gray-600' : 'text-gray-300'}`}>
-            {Array.from({ length: 6 }).map((_, i) => (
-              <span key={i} className="h-1 w-1 rounded-full bg-current" />
-            ))}
-          </div>
-        </div>
-
         <div className="flex-1 min-w-0">
           <div className="flex items-center justify-between gap-3">
             <span className={`text-xs font-semibold uppercase tracking-wide ${dark ? 'text-gray-500' : 'text-gray-400'}`}>
@@ -154,7 +126,7 @@ const QuestionEditor = ({
           )}
         </div>
       </div>
-    </motion.div>
+    </div>
   )
 }
 
