@@ -19,7 +19,7 @@ const ProfileButton = () => {
 
 
   const handleLogOut = () => {
-    ['token', 'tokenAuthUser', 'email', 'username', 'userId', 'profileImage', 'expiresAt', 'isFree', 'plan', 'refreshToken']
+    ['token', 'tokenAuthUser', 'email', 'username', 'userId', 'profileImage', 'expiresAt', 'isFree', 'plan', 'refreshToken', 'roles']
       .forEach(k => localStorage.removeItem(k))
     document.location.href = '/'
   }

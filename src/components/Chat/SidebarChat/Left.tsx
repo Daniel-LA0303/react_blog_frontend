@@ -22,6 +22,7 @@ function Left() {
     localStorage.removeItem("isFree");
     localStorage.removeItem("expiresAt");
     localStorage.removeItem("plan");
+    localStorage.removeItem("roles");
 
 
     document.location.reload();

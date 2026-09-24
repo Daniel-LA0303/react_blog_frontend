@@ -76,3 +76,16 @@ export interface QuizResult {
   duration: number // seconds
   breakdown: QuizResultBreakdownItem[]
 }
+
+
+export interface QuizUserAttempt {
+  _id: string
+  user: {
+    _id: string
+    name: string
+    profilePicture?: { secure_url: string; public_id: string }
+  }
+  score: number
+  attempts: number
+}
+ 

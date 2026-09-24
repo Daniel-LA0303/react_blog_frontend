@@ -19,7 +19,7 @@ function ChatLayout() {
   const dark = !globalData.themeGlobal
 
   const handleLogout = () => {
-    ['token', 'tokenAuthUser', 'email', 'username', 'userId', 'profileImage', 'expiresAt', 'isFree', 'plan', 'refreshToken']
+    ['token', 'tokenAuthUser', 'email', 'username', 'userId', 'profileImage', 'expiresAt', 'isFree', 'plan', 'refreshToken', 'roles']
       .forEach(k => localStorage.removeItem(k))
     document.location.reload()
     document.location.href = '/'
