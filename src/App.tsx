@@ -52,6 +52,8 @@ import { RequireRole } from "./components/Global/RequireRole";
 import UnauthorizedPage from "./components/Global/UnauthorizedPage";
 import AdminPrincipal from "./Pages/Admin/AdminPrincipal";
 import AdminAuditLogs from "./Pages/Admin/AdminAuditLogs";
+import CreateQuiz from "./Pages/Quizz/CreateQuiz";
+import TakeQuiz from "./Pages/Quizz/TakeQuiz";
 
 
 
@@ -137,6 +139,21 @@ function App() {
             element={userAuth.userId ? <ChatLayout /> : <Navigate to="/login" />}
           />
           <Route path="/error" element={<ErrorPage />} />
+
+          <Route
+            path="/create-quiz"
+            element={userAuth.userId ? <CreateQuiz /> : <Navigate to="/login" />}
+          />
+
+          <Route
+            path="/create-quiz/:id"
+            element={userAuth.userId ? <CreateQuiz /> : <Navigate to="/login" />}
+          />
+
+          <Route
+            path="/take-quiz/:id"
+            element={userAuth.userId ? <TakeQuiz /> : <Navigate to="/login" />}
+          />
 
           {/* ADMIN PANEL */}
           <Route element={<RequireRole allowedRoles={["ROLE_ADMIN", "ROLE_MOD"]} />}>
