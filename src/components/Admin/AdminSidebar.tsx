@@ -126,7 +126,7 @@ const AdminSidebar = ({
                   ? 'text-gray-500 hover:bg-gray-800 hover:text-gray-200'
                   : 'text-gray-400 hover:bg-gray-50 hover:text-gray-700'
               }
-    `}
+          `}
           >
             {({ isActive }) => (
               <>

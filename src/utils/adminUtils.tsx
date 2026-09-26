@@ -249,6 +249,37 @@ export const Icons = {
       <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
     </svg>
   ),
+  badges: (
+    <svg
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth={1.7}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className="w-[18px] h-[18px]"
+    >
+      <path d="M12 3l2.2 2.2 3.1-.1.1 3.1L19.5 10 18 12l1.5 2-2.1 1.8-.1 3.1-3.1-.1L12 21l-2.2-2.2-3.1.1-.1-3.1L4.5 14 6 12l-1.5-2 2.1-1.8.1-3.1 3.1.1L12 3z" />
+      <path d="M9 12l2 2 4-4" />
+    </svg>
+  ),
+
+  logs: (
+    <svg
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth={1.7}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className="w-[18px] h-[18px]"
+    >
+      <path d="M5 4h14a1 1 0 0 1 1 1v14a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1z" />
+      <path d="M8 8h8" />
+      <path d="M8 12h8" />
+      <path d="M8 16h5" />
+    </svg>
+  ),
   logout: (
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.7} strokeLinecap="round" strokeLinejoin="round" className="w-[18px] h-[18px]">
       <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
@@ -273,6 +304,13 @@ export const NAV_ITEMS = [
     color: { dark: 'bg-teal-900/40 text-teal-400', light: 'bg-teal-50 text-teal-500' },
   },
   {
+    to: '/admin/badges',
+    icon: Icons.badges,
+    label: 'Badges moderation',
+    desc: 'Hide, delete, feature and review badges',
+    color: { dark: 'bg-rose-900/40 text-rose-400', light: 'bg-rose-50 text-rose-500' },
+  },
+  {
     to: '/admin/post-moderation',
     icon: Icons.moderation,
     label: 'Post moderation',
@@ -288,7 +326,7 @@ export const NAV_ITEMS = [
   },
   {
     to: '/admin/logs',
-    icon: Icons.categories,
+    icon: Icons.logs,
     label: 'Audit Logs',
     desc: 'To view all logs',
     color: { dark: 'bg-amber-900/40 text-amber-400', light: 'bg-amber-50 text-amber-500' },

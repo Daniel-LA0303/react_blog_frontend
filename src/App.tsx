@@ -52,6 +52,7 @@ import { RequireRole } from "./components/Global/RequireRole";
 import UnauthorizedPage from "./components/Global/UnauthorizedPage";
 import AdminPrincipal from "./Pages/Admin/AdminPrincipal";
 import AdminAuditLogs from "./Pages/Admin/AdminAuditLogs";
+import AdminBadgeManagement from "./Pages/Admin/AdminBadgeManagement";
 
 
 
@@ -145,6 +146,7 @@ function App() {
               <Route path="user-management" element={<AdminUserManagement />} />
               <Route path="post-moderation" element={<AdminPostModeration />} />
               <Route path="categories" element={<AdminCats />} />
+              <Route path="badges" element={<AdminBadgeManagement />} />
               <Route element={<RequireRole allowedRoles={["ROLE_ADMIN"]} />}>
                 <Route path="logs" element={<AdminAuditLogs />} />
               </Route>
