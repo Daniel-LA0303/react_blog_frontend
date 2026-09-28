@@ -54,6 +54,8 @@ import AdminPrincipal from "./Pages/Admin/AdminPrincipal";
 import AdminAuditLogs from "./Pages/Admin/AdminAuditLogs";
 import CreateQuiz from "./Pages/Quizz/CreateQuiz";
 import TakeQuiz from "./Pages/Quizz/TakeQuiz";
+import StudyListView from "./components/Lists/StudyListView";
+import StudyListEmptyState from "./components/Lists/StudyListEmptyState";
 
 
 
@@ -155,6 +157,12 @@ function App() {
             element={userAuth.userId ? <TakeQuiz /> : <Navigate to="/login" />}
           />
 
+          <Route path="/study-list/:listId" element={<StudyListView />}>
+            <Route index element={<StudyListEmptyState />} />
+            <Route path="post/:id" element={<ViewPost />} />
+            <Route path="quiz/:id" element={userAuth.userId ? <TakeQuiz /> : <Navigate to="/login" />} />
+          </Route>
+
           {/* ADMIN PANEL */}
           <Route element={<RequireRole allowedRoles={["ROLE_ADMIN", "ROLE_MOD"]} />}>
             <Route path="/admin" element={<AdminPanel />}>
@@ -169,7 +177,7 @@ function App() {
           </Route>
 
           <Route path="/unauthorized" element={<UnauthorizedPage />} />
-          
+
 
         </Routes>
       </PagesProvider>
