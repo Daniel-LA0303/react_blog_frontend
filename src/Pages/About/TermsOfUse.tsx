@@ -4,7 +4,54 @@ import Sidebar from '../../components/Sidebar/Sidebar'
 import useGlobalDataContext from '../../context/hooks/useGlobalDataContext'
 import Section from '../../components/Global/Section'
 import { fadeUp } from '../../utils/animationsUtils'
-import { termsOfUse } from '../../utils/aboutUtils'
+
+const termsOfUse = [
+  {
+    badge: 'Who this is for',
+    title: 'A space for every field',
+    items: [
+      'DLTechBlog is open to people from any area of study, not just one field',
+      'You can write about, follow, and discover topics across many different categories',
+      'Everyone is welcome to share knowledge, regardless of their background',
+    ],
+  },
+  {
+    badge: 'Your account',
+    title: 'Creating and using your account',
+    items: [
+      'You must provide accurate information when you sign up',
+      'You are responsible for keeping your account secure',
+      'You must be the one using your own account',
+    ],
+  },
+  {
+    badge: 'Your content',
+    title: 'What you post',
+    items: [
+      'You own what you write and publish',
+      'Your content should be respectful and not mislead or harm others',
+      'We may remove content that goes against community guidelines',
+    ],
+  },
+  {
+    badge: 'Community',
+    title: 'How we expect you to behave',
+    items: [
+      'Treat other users with respect in posts, comments, and chat',
+      'No harassment, hate speech, or spam',
+      'Report anything that makes the community feel unsafe',
+    ],
+  },
+  {
+    badge: 'Changes',
+    title: 'Updates to these terms',
+    items: [
+      'We may update these terms from time to time as the platform grows',
+      'We will let you know if there are important changes',
+      'Continuing to use the platform means you accept the current terms',
+    ],
+  },
+]
 
 const TermsOfUse = () => {
   const { globalData } = useGlobalDataContext()
@@ -48,9 +95,6 @@ const TermsOfUse = () => {
             className={`rounded-2xl border p-6 space-y-4 ${dark ? 'bg-[#27272A] border-gray-800' : 'bg-white border-gray-100'}`}
           >
             <div className="flex items-start gap-4">
-              <div className={`h-10 w-10 rounded-xl flex items-center justify-center flex-shrink-0 ${dark ? 'bg-[#2563EB]/15 text-blue-400' : 'bg-[#2563EB]/8 text-[#2563EB]'}`}>
-                {t.icon}
-              </div>
               <div className="flex-1">
                 <span className={`inline-block text-[10px] font-semibold uppercase tracking-widest px-2.5 py-0.5 rounded-full mb-2
                   ${dark ? 'bg-[#2563EB]/15 text-blue-400' : 'bg-[#2563EB]/8 text-[#2563EB]'}`}>

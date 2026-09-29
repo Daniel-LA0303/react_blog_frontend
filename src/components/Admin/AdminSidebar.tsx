@@ -34,7 +34,7 @@ const AdminSidebar = ({
   const { showConfirmSwal } = useSwal();
 
   const handleLogout = () => {
-    ['token', 'tokenAuthUser', 'email', 'username', 'userId', 'profileImage', 'expiresAt', 'isFree', 'plan', 'refreshToken']
+    ['token', 'tokenAuthUser', 'email', 'username', 'userId', 'profileImage', 'expiresAt', 'isFree', 'plan', 'refreshToken', 'roles']
       .forEach(k => localStorage.removeItem(k))
     document.location.reload()
     document.location.href = '/'

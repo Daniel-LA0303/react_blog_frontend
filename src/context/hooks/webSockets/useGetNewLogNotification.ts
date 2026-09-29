@@ -18,8 +18,7 @@ const useGetSocketNewLogNotification = () => {
         if (!socket) return;
 
         const handleNewLogNotification = (data: any) => {
-            console.log("new log received:", data);
-            setNewLog(data); // 👈 esto faltaba
+            setNewLog(data); 
         };
 
         socket.on("newLog", handleNewLogNotification);

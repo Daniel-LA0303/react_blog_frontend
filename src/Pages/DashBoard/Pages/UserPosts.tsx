@@ -106,9 +106,6 @@ const UserPosts = () => {
     }
   };
 
-  console.log("here");
-  
-
   return (
     <div className={`${globalData.themeGlobal ? 'text-black' : 'text-white'}`}>
       <Sidebar />

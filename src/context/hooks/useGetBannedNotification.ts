@@ -20,8 +20,6 @@ const useGetSocketBannedNotification = () => {
         if (!socket) return;
 
         const handleBannedNotification = (data: { message: string }) => {
-            
-            console.log("msg: " + data);
             setMessage(data.message);
         };
 

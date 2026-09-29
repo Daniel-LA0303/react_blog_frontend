@@ -4,7 +4,7 @@ import Sidebar from '../../components/Sidebar/Sidebar'
 /**
  * router
  */
-import { Link, useParams, useNavigate } from 'react-router-dom'
+import { Link, useParams, useNavigate, useLocation } from 'react-router-dom'
 
 
 /**
@@ -50,10 +50,14 @@ import { AIAssistModal } from '../../components/IA/NewPost/AIAssistModal'
 import { Question, QuizModal } from '../../components/IA/ViewPost/QuizModal'
 import { FlagIcon, PenIcon, TrashIcon } from '../../utils/iconsUtils'
 import { ReportModal } from '../../components/Report/ReportModal'
+import SmallSpinner from '../../components/Spinner/SmallSpinner'
 
 
 const ViewPost = () => {
-  const dispatch = useDispatch<any>()
+  const dispatch = useDispatch<any>();
+
+  const location = useLocation();
+  const isInsideStudyList = location.pathname.startsWith('/study-list/');
 
   /**
    * hooks
@@ -358,11 +362,15 @@ const ViewPost = () => {
   const isLoggedIn = !!userAuth.userId
 
 
-  if (loading || !post) return <Spinner />
+  if ((loading || !post) && isInsideStudyList){
+    return <SmallSpinner />
+  }else if((loading || !post) && !isInsideStudyList){
+    return <Spinner />
+  }
 
   return (
     <div className={`min-h-screen transition-colors duration-300 ${dark ? 'bg-[#0f0f0f]' : 'bgt-white'}`}>
-      <Sidebar />
+      {!isInsideStudyList && <Sidebar />}
 
       <div className="max-w-screen-xl mx-auto px-4 sm:px-6 lg:px-8 pb-32">
         <div className="flex gap-8 mt-6">

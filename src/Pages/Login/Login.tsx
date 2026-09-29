@@ -66,8 +66,6 @@ const Login = () => {
     setLoading(true)
     try {
       const res = await axios.post(`${globalData.link}/users/login`, data);
-
-      console.log(res.data.data);
       
       localStorage.setItem('token', JSON.stringify(res.data.data.accessToken))
       localStorage.setItem('tokenAuthUser', res.data.data.accessToken)

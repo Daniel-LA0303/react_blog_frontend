@@ -80,6 +80,7 @@ const NewPost = () => {
   const [title, setTitle] = useState('')
   const [desc, setDesc] = useState('');
   const [status, setStatusPost] = useState('PUBLISHED');
+  const [type, setType] = useState('NORMAL');
   const [content, setContent] = useState('')
   const [file, setFile] = useState<File | null>(null)
   const [categoriesPost, setCategoriesPost] = useState<any[]>([])
@@ -174,6 +175,7 @@ const NewPost = () => {
       title,
       content,
       status,
+      typePost: type,
       categories: catsIds,
       desc,
       date: Date.now(),
@@ -382,6 +384,50 @@ const NewPost = () => {
                       </option>
                       <option value="HIDDEN" className={dark ? 'bg-zinc-900 text-amber-400 font-semibold' : 'bg-white text-amber-600 font-semibold'}>
                         ● Hidden (Only visible to you)
+                      </option>
+                    </select>
+
+                    {/* Custom Dropdown Arrow */}
+                    <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3">
+                      <svg
+                        className={`h-4 w-4 transition-transform duration-200 ${dark ? 'text-zinc-400' : 'text-zinc-500'}`}
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
+                      </svg>
+                    </div>
+                  </div>
+                </Field>
+
+                {/* Status Post */}
+                <Field label="Post type" htmlFor="typePost" error={errors.type} dark={dark}>
+                  <div className="relative">
+                    <select
+                      id="typePost"
+                      value={type}
+                      onChange={e => {
+                        setType(e.target.value);
+                        if (errors.type) setErrors(p => ({ ...p, type: '' }));
+                      }}
+                      className={`
+                          w-full appearance-none rounded-lg px-4 py-2.5 text-sm font-medium transition-all duration-200 outline-none pr-10 cursor-pointer
+                          ${dark
+                          ? 'bg-zinc-900/80 text-white border-zinc-800 hover:border-zinc-700 focus:border-zinc-500'
+                          : 'bg-white text-zinc-900 border-zinc-200 hover:border-zinc-300 focus:border-zinc-400'
+                        }
+                          ${errors.type ? 'border-red-500 focus:border-red-500 focus:ring-1 focus:ring-red-500' : 'border'}
+                        `}
+                    >
+                      <option value="" disabled hidden className={dark ? 'bg-zinc-900 text-zinc-500' : 'bg-white text-zinc-400'}>
+                        Select Post Type
+                      </option>
+                      <option value="NORMAL" className={dark ? 'bg-zinc-900 text-amber-400 font-semibold' : 'bg-white text-amber-600 font-semibold'}>
+                        ● Normal
+                      </option>
+                      <option value="INVESTIGATION" className={dark ? 'bg-zinc-900 text-red-600 font-semibold' : 'bg-white text-red-600 font-semibold'}>
+                        ● Investigation
                       </option>
                     </select>
 

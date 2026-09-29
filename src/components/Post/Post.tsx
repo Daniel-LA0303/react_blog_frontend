@@ -14,6 +14,8 @@ import useGlobalDataContext from '../../context/hooks/useGlobalDataContext'
 import userUserAuthContext from '../../context/hooks/useUserAuthContext'
 import { useSwal } from '../../hooks/useSwal'
 import { BookmarkIcon, CommentIcon, HeartIcon } from '../../utils/iconsActionsUtils'
+import StudyListModal from '../Lists/StudyListModal'
+import { ListIcon } from '../../utils/iconsUtils'
 
 
 const IconButton = ({
@@ -61,9 +63,11 @@ interface PostProps {
 }
 
 export const Post = ({ post, status }: PostProps) => {
+
   const [like, setLike] = useState(false);
   const [numberLike, setNumberLike] = useState(0);
   const [save, setSave] = useState(false);
+  const [studyListModalOpen, setStudyListModalOpen] = useState<boolean>(false);
 
   const {
     title,
@@ -76,6 +80,7 @@ export const Post = ({ post, status }: PostProps) => {
     date,
     comments,
     commenstOnPost,
+    typePost
   } = post;
 
   const { userAuth } = userUserAuthContext();
@@ -130,7 +135,7 @@ export const Post = ({ post, status }: PostProps) => {
       await clientAuthAxios.post(`/posts/unsave-post/${_id}?userId=${userAuth.userId}`);
       setSave(false);
     } catch (error: any) {
-      showConfirmSwal({ message: error.response.data.message, status: 'error', confirmButton: true, cancelButton: false,});
+      showConfirmSwal({ message: error.response.data.message, status: 'error', confirmButton: true, cancelButton: false, });
     }
   };
 
@@ -187,19 +192,26 @@ export const Post = ({ post, status }: PostProps) => {
               </time>
             </div>
 
-            {status !== undefined && (
-              <span
-                className={`inline-block px-2 py-0.5 text-xs font-semibold rounded-full mb-2 ${status === 'PUBLISHED'
-                  ? 'bg-green-100 text-green-800'
-                  : 'bg-yellow-100 text-yellow-800'
-                  }`}
-              >
-                {status}
-              </span>
-            )}
+            <div className=''>
+              {typePost === 'INVESTIGATION' && (
+                <span className="inline-flex mr-1 items-center gap-1.5 px-3 py-1 text-[10px] font-semibold uppercase tracking-widest rounded-full mb-2 border shadow-sm bg-sky-50 text-sky-700 border-sky-200">
+                  <span className="w-1.5 h-1.5 rounded-full bg-sky-500" />
+                  Investigation
+                </span>
+              )}
+              {status !== undefined && (
+                <span
+                  className={`inline-block px-2 py-0.5 text-xs font-semibold rounded-full mb-2 ${status === 'PUBLISHED'
+                    ? 'bg-green-100 text-green-800'
+                    : 'bg-yellow-100 text-yellow-800'
+                    }`}
+                >
+                  {status}
+                </span>
+              )}
+            </div>
+
           </div>
-
-
 
           {/* Title */}
           <Link to={`/view-post/${_id}`} className="block min-w-0">
@@ -276,23 +288,59 @@ export const Post = ({ post, status }: PostProps) => {
             </div>
 
             {/* Right: read time + save */}
-            <div className="flex items-center gap-3">
-              <span className={`text-xs ${dark ? 'text-gray-600' : 'text-gray-400'}`}>5 min read</span>
+            <div className="flex items-center justify-end">
 
-              <IconButton
-                onClick={save ? handleUnSave : handleSave}
-                disabled={!userAuth.userId}
-                active={save}
-                activeColor="text-[#2563EB]"
-                label={save ? 'Unsave post' : 'Save post'}
+              <div className='flex items-center '>
+                {/*<span className={`text-xs ${dark ? 'text-gray-600' : 'text-gray-400'}`}>5 min read</span>*/}
+                <IconButton
+                  onClick={save ? handleUnSave : handleSave}
+                  disabled={!userAuth.userId}
+                  active={save}
+                  activeColor="text-[#2563EB]"
+                  label={save ? 'Unsave post' : 'Save post'}
+                >
+                  <BookmarkIcon filled={save} />
+                </IconButton>
+              </div>
+
+              <button
+                type="button"
+                onClick={() => {
+                  setStudyListModalOpen(true)
+                }}
+                className={`flex items-center px-2 py-1.5 rounded-lg text-sm text-left
+                  ${dark
+                    ? 'text-gray-200 hover:bg-white/5'
+                    : 'text-gray-700 hover:bg-gray-50'
+                  }`}
               >
-                <BookmarkIcon filled={save} />
-              </IconButton>
+                {/* List icon */}
+               <ListIcon />
+              </button>
             </div>
           </div>
-
         </div>
       </div>
+
+      <StudyListModal
+        open={studyListModalOpen}
+        onClose={() => setStudyListModalOpen(false)}
+        dark={dark}
+        resourceId={_id}
+        resourceType="POST"
+        onAddToList={async (listId, resourceId, resourceType) => {
+          try {
+            const res = await clientAuthAxios.post(`/lists/study-lists/${listId}/items`, {
+              resourceId,
+              resourceType,
+            });
+            console.log(res);
+          } catch (error) {
+            console.log(error);
+          }
+        }}
+      />
+
     </article>
   );
 };

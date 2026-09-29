@@ -80,8 +80,6 @@ const NewPassword = () => {
             });
             return;
         }
-
-        console.log(password.length);
         
         if (password.length < 4) {
             showConfirmSwal({

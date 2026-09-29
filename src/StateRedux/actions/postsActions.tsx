@@ -35,7 +35,7 @@ export function newPostAction(newPostData: any, route: any) {
         dispatch(newPost());
 
         try {
-
+            
             // 2. Create post
             const response = await clientAuthAxios.post(`/posts`, newPostData);
 

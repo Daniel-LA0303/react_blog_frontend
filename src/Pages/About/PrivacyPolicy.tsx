@@ -4,8 +4,56 @@ import Sidebar from '../../components/Sidebar/Sidebar'
 import useGlobalDataContext from '../../context/hooks/useGlobalDataContext'
 import Section from '../../components/Global/Section'
 import { fadeUp } from '../../utils/animationsUtils'
-import { sectionsPolicy } from '../../utils/aboutUtils'
 
+const sectionsPolicy = [
+  {
+    badge: 'Data we collect',
+    title: 'Information we collect',
+    items: [
+      'Basic profile info: name, email, and photo',
+      'The content you create: posts, comments, and likes',
+      'Your activity: what you follow, save, and interact with',
+      'Messages you send through the chat',
+    ],
+  },
+  {
+    badge: 'How we use it',
+    title: 'How we use your information',
+    items: [
+      'To show you relevant content and recommendations',
+      'To let other users find and connect with you',
+      'To send you notifications about activity on your posts',
+      'To keep your account secure and working properly',
+    ],
+  },
+  {
+    badge: 'Your content',
+    title: 'Your posts and visibility',
+    items: [
+      'You control who sees your profile and activity through your settings',
+      'When you delete a post, it stops being visible to everyone right away',
+      'Comments and likes can be removed by you at any time',
+    ],
+  },
+  {
+    badge: 'Your control',
+    title: 'Managing your data',
+    items: [
+      'You can update or correct your personal info anytime from your profile',
+      'You can unfollow, unsave, or remove your activity whenever you want',
+      'You can request to close your account and remove your data',
+    ],
+  },
+  {
+    badge: 'Staying safe',
+    title: 'How we protect your account',
+    items: [
+      'Your password is never visible to anyone, including our team',
+      'We verify your email to keep your account secure',
+      'You can recover access anytime if you forget your password',
+    ],
+  },
+]
 
 const PrivacyPolicy = () => {
   const { globalData } = useGlobalDataContext()
@@ -30,10 +78,7 @@ const PrivacyPolicy = () => {
             Privacy policy
           </motion.h1>
           <motion.p variants={fadeUp} custom={2} className={`text-base leading-relaxed max-w-2xl mb-2 ${dark ? 'text-gray-400' : 'text-gray-500'}`}>
-            We built DLTechBlog as a BUAP social service project. This page explains what data we collect, how we use it, and what control you have over it.
-          </motion.p>
-          <motion.p variants={fadeUp} custom={3} className={`text-xs ${dark ? 'text-gray-600' : 'text-gray-400'}`}>
-            Last updated: August 2023
+            This page explains what information we collect, how we use it, and what control you have over your data.
           </motion.p>
         </Section>
       </section>
@@ -49,9 +94,6 @@ const PrivacyPolicy = () => {
             className={`rounded-2xl border p-6 space-y-4 ${dark ? 'bg-[#27272A] border-gray-800' : 'bg-white border-gray-100'}`}
           >
             <div className="flex items-start gap-4">
-              <div className={`h-10 w-10 rounded-xl flex items-center justify-center flex-shrink-0 ${dark ? 'bg-[#2563EB]/15 text-blue-400' : 'bg-[#2563EB]/8 text-[#2563EB]'}`}>
-                {s.icon}
-              </div>
               <div className="flex-1">
                 <span className={`inline-block text-[10px] font-semibold uppercase tracking-widest px-2.5 py-0.5 rounded-full mb-2
                   ${dark ? 'bg-[#2563EB]/15 text-blue-400' : 'bg-[#2563EB]/8 text-[#2563EB]'}`}>

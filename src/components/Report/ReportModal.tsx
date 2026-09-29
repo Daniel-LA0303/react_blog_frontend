@@ -57,14 +57,6 @@ export const ReportModal = ({ open, onClose, targetType, targetId }: ReportModal
 
         setSubmitting(true);
         try {
-
-            console.log(targetType);
-            console.log(targetId)
-            console.log(reasonUser);
-            console.log(reasonUserType);
-            console.log(description);
-            console.log("reportedBy " + userAuth.userId);
-            
             await clientAuthAxios.post('/reports/create-report', {
               targetType,
               targetId,

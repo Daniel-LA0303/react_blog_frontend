@@ -63,7 +63,7 @@ const PostDetailDialog = ({
       }
       onClose()
     } catch (err) {
-      console.log('error cambiando el status del post', err)
+      console.log('Error to change status', err)
     } finally {
       setApplyingStatus(null)
     }

@@ -5,37 +5,65 @@ import Sidebar from '../../components/Sidebar/Sidebar'
 import useGlobalDataContext from '../../context/hooks/useGlobalDataContext'
 import { fadeUp } from '../../utils/animationsUtils'
 import Section from '../../components/Global/Section'
-import { features, stack } from '../../utils/aboutUtils'
+import useUserAuthContext from '../../context/hooks/useUserAuthContext'
 
-const TechBadge = ({ name, index }: { name: string; index: number }) => {
-
-  const ref = useRef(null)
-  const inView = useInView(ref, { once: true })
-
-  return (
-    <motion.span
-      ref={ref}
-      initial={{ opacity: 0, scale: 0.85 }}
-      animate={inView ? { opacity: 1, scale: 1 } : {}}
-      transition={{ duration: 0.3, delay: index * 0.04, type: 'spring', stiffness: 400, damping: 20 }}
-      whileHover={{ scale: 1.06, y: -2 }}
-      className="inline-block rounded-full px-3.5 py-1.5 text-xs font-medium border cursor-default select-none
-        bg-[#2563EB]/8 text-[#2563EB] border-[#2563EB]/20
-        dark:bg-[#2563EB]/15 dark:text-blue-300 dark:border-[#2563EB]/30"
-    >
-      {name}
-    </motion.span>
-  )
-}
+const features = [
+  {
+    title: 'Content publishing',
+    desc: 'Create and publish articles, add images, and organize them into categories.',
+  },
+  {
+    title: 'Social interaction',
+    desc: 'Like posts, save them to read later, and comment or reply to other comments.',
+  },
+  {
+    title: 'Following',
+    desc: 'Follow other users and categories you care about to personalize your feed.',
+  },
+  {
+    title: 'Search and discovery',
+    desc: 'Search for content and discover recommended posts and users.',
+  },
+  {
+    title: 'Real-time chat',
+    desc: 'Chat directly with other users through real-time messaging.',
+  },
+  {
+    title: 'Notifications',
+    desc: 'Get notified when someone interacts with your posts or comments.',
+  },
+  {
+    title: 'Profile and settings',
+    desc: 'Update your personal info, photo, and account preferences.',
+  },
+  {
+    title: 'Personal dashboard',
+    desc: 'Check your stats: posts created, likes, saved content, followers, and more.',
+  },
+  {
+    title: 'Personalized experience',
+    desc: 'Choose between different visual themes to customize how the platform looks.',
+  },
+  {
+    title: 'Account recovery',
+    desc: 'Regain access to your account if you forget your password.',
+  },
+  {
+    title: 'Email notifications',
+    desc: 'Receive emails about important account actions and platform events.',
+  },
+  {
+    title: 'Community',
+    desc: 'Discover content and people you might be interested in through recommendations.',
+  },
+]
 
 const FeatureCard = ({
-  icon,
   title,
   desc,
   dark,
   index,
 }: {
-  icon: React.ReactNode
   title: string
   desc: string
   dark: boolean
@@ -48,42 +76,58 @@ const FeatureCard = ({
   return (
     <motion.div
       ref={ref}
-      initial={{ opacity: 0, y: 20 }}
-      animate={inView ? { opacity: 1, y: 0 } : {}}
-      transition={{ duration: 0.4, delay: index * 0.06, ease: [0.25, 0.46, 0.45, 0.94] }}
-      className={`rounded-2xl border p-5 space-y-3 transition-colors duration-200
-        ${dark ? 'bg-[#27272A] border-gray-800 hover:border-gray-700' : 'bg-white border-gray-100 hover:border-gray-200 hover:shadow-sm'}`}
+      initial={{ opacity: 0, y: 20, scale: 0.97 }}
+      animate={inView ? { opacity: 1, y: 0, scale: 1 } : {}}
+      transition={{ duration: 0.45, delay: index * 0.06, ease: [0.25, 0.46, 0.45, 0.94] }}
+      whileHover={{ y: -4, transition: { duration: 0.2, ease: 'easeOut' } }}
+      className={`group relative overflow-hidden rounded-2xl border p-5 space-y-2 cursor-default
+        transition-all duration-300
+        ${dark
+          ? 'bg-[#27272A] border-gray-800 hover:border-blue-500/40 hover:shadow-[0_8px_30px_rgba(37,99,235,0.12)]'
+          : 'bg-white border-gray-100 hover:border-blue-200 hover:shadow-[0_8px_30px_rgba(37,99,235,0.08)]'}`}
     >
-      <div className={`h-10 w-10 rounded-xl flex items-center justify-center
-        ${dark ? 'bg-[#2563EB]/15 text-blue-400' : 'bg-[#2563EB]/8 text-[#2563EB]'}`}>
-        {icon}
-      </div>
-      <div>
-        <p className={`text-sm font-semibold ${dark ? 'text-white' : 'text-gray-900'}`}>{title}</p>
-        <p className={`text-xs mt-1 leading-relaxed ${dark ? 'text-gray-500' : 'text-gray-400'}`}>{desc}</p>
+      {/* accent line that grows in on hover */}
+      <span
+        className={`absolute left-0 top-0 h-full w-[3px] origin-top scale-y-0 transition-transform duration-300 ease-out
+          group-hover:scale-y-100 ${dark ? 'bg-blue-500' : 'bg-[#2563EB]'}`}
+      />
+
+      {/* soft glow blob */}
+      <div
+        className={`pointer-events-none absolute -right-6 -top-6 h-24 w-24 rounded-full blur-2xl opacity-0
+          transition-opacity duration-300 group-hover:opacity-100
+          ${dark ? 'bg-blue-500/20' : 'bg-[#2563EB]/10'}`}
+      />
+
+      <motion.div
+        whileHover={{ scale: 1.08, rotate: -4 }}
+        transition={{ type: 'spring', stiffness: 400, damping: 15 }}
+        className={`relative h-8 w-8 rounded-lg flex items-center justify-center text-xs font-bold
+          bg-gradient-to-br
+          ${dark
+            ? 'from-blue-500/25 to-blue-500/5 text-blue-300 ring-1 ring-blue-500/20'
+            : 'from-[#2563EB]/15 to-[#2563EB]/5 text-[#2563EB] ring-1 ring-[#2563EB]/10'}`}
+      >
+        {index + 1}
+      </motion.div>
+
+      <div className="relative">
+        <p className={`text-sm font-semibold tracking-tight transition-colors duration-200
+          ${dark ? 'text-white group-hover:text-blue-300' : 'text-gray-900 group-hover:text-[#2563EB]'}`}>
+          {title}
+        </p>
+        <p className={`text-xs mt-1 leading-relaxed ${dark ? 'text-gray-500' : 'text-gray-400'}`}>
+          {desc}
+        </p>
       </div>
     </motion.div>
   )
 }
 
-const StatItemAbout = ({ value, label, dark }: { value: string; label: string; dark: boolean }) => (
-  <div className="text-center">
-    <motion.p
-      className={`text-3xl font-bold tracking-tight ${dark ? 'text-white' : 'text-gray-900'}`}
-      initial={{ opacity: 0, y: 12 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true }}
-      transition={{ duration: 0.5, ease: [0.25, 0.46, 0.45, 0.94] }}
-    >
-      {value}
-    </motion.p>
-    <p className={`text-xs mt-1 uppercase tracking-widest font-medium ${dark ? 'text-gray-600' : 'text-gray-400'}`}>
-      {label}
-    </p>
-  </div>
-)
-
 const About = () => {
+
+  const { userAuth } = useUserAuthContext();
+
   const { globalData } = useGlobalDataContext()
   const dark = !globalData.themeGlobal
 
@@ -96,7 +140,7 @@ const About = () => {
           <motion.div variants={fadeUp} custom={0} className="mb-3">
             <span className={`text-xs font-semibold uppercase tracking-widest
               ${dark ? 'text-gray-600' : 'text-gray-400'}`}>
-              MERN Stack · Social Service · BUAP 2022–2023
+              Community blog
             </span>
           </motion.div>
 
@@ -114,55 +158,45 @@ const About = () => {
             className={`text-base leading-relaxed max-w-2xl mb-8
               ${dark ? 'text-gray-400' : 'text-gray-500'}`}
           >
-            A full-featured blog platform built for the computer science community at BUAP.
-            Users write and discover articles, follow each other, interact in real time through chat,
-            and manage their reading life — all in one place.
+            A platform for writing, discovering, and connecting. Publish articles, follow other
+            people, save what interests you, and stay in the loop with notifications and
+            real-time chat.
           </motion.p>
 
-          <motion.div variants={fadeUp} custom={3} className="flex flex-wrap gap-3">
-            <Link
-              to="/register"
-              className="inline-flex items-center gap-2 rounded-full px-5 py-2.5 text-sm font-semibold text-white transition-colors"
-              style={{ backgroundColor: '#2563EB' }}
-              onMouseEnter={e => (e.currentTarget.style.backgroundColor = '#1d4ed8')}
-              onMouseLeave={e => (e.currentTarget.style.backgroundColor = '#2563EB')}
-            >
-              Get started
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" className="w-3.5 h-3.5">
-                <line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/>
-              </svg>
-            </Link>
-            <Link
-              to="/login"
-              className={`inline-flex items-center rounded-full px-5 py-2.5 text-sm font-medium border transition-colors
+          {userAuth === null || userAuth === undefined &&
+            <motion.div variants={fadeUp} custom={3} className="flex flex-wrap gap-3">
+              <Link
+                to="/register"
+                className="inline-flex items-center gap-2 rounded-full px-5 py-2.5 text-sm font-semibold text-white transition-colors"
+                style={{ backgroundColor: '#2563EB' }}
+                onMouseEnter={e => (e.currentTarget.style.backgroundColor = '#1d4ed8')}
+                onMouseLeave={e => (e.currentTarget.style.backgroundColor = '#2563EB')}
+              >
+                Get started
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" className="w-3.5 h-3.5">
+                  <line x1="5" y1="12" x2="19" y2="12" /><polyline points="12 5 19 12 12 19" />
+                </svg>
+              </Link>
+              <Link
+                to="/login"
+                className={`inline-flex items-center rounded-full px-5 py-2.5 text-sm font-medium border transition-colors
                 ${dark ? 'border-gray-700 text-gray-300 hover:bg-gray-800' : 'border-gray-200 text-gray-600 hover:bg-gray-50'}`}
-            >
-              Log in
-            </Link>
-          </motion.div>
+              >
+                Log in
+              </Link>
+            </motion.div>}
         </Section>
-      </section>
-
-      <section className={`border-y ${dark ? 'border-gray-800 bg-[#27272A]' : 'border-gray-100 bg-white'}`}>
-        <div className="max-w-3xl mx-auto px-4 sm:px-6 py-10">
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-8">
-            <StatItemAbout value="8+" label="Core features"   dark={dark} />
-            <StatItemAbout value="15+" label="Tech tools"     dark={dark} />
-            <StatItemAbout value="REST" label="API style"     dark={dark} />
-            <StatItemAbout value="AWS" label="Deployed on"    dark={dark} />
-          </div>
-        </div>
       </section>
 
       <section className="max-w-3xl mx-auto px-4 sm:px-6 py-16">
         <Section className="mb-10">
           <motion.p variants={fadeUp} custom={0}
             className={`text-xs font-semibold uppercase tracking-widest mb-2 ${dark ? 'text-gray-600' : 'text-gray-400'}`}>
-            What it does
+            What you can do
           </motion.p>
           <motion.h2 variants={fadeUp} custom={1}
             className={`text-2xl font-bold tracking-tight ${dark ? 'text-white' : 'text-gray-900'}`}>
-            Everything a dev community needs
+            Everything you need to share your ideas
           </motion.h2>
         </Section>
 
@@ -172,122 +206,44 @@ const About = () => {
           ))}
         </div>
       </section>
-
-      <section className={`border-t ${dark ? 'border-gray-800' : 'border-gray-100'}`}>
-        <div className="max-w-3xl mx-auto px-4 sm:px-6 py-16">
-          <Section className="mb-8">
-            <motion.p variants={fadeUp} custom={0}
-              className={`text-xs font-semibold uppercase tracking-widest mb-2 ${dark ? 'text-gray-600' : 'text-gray-400'}`}>
-              Built with
-            </motion.p>
-            <motion.h2 variants={fadeUp} custom={1}
-              className={`text-2xl font-bold tracking-tight ${dark ? 'text-white' : 'text-gray-900'}`}>
-              Tech stack
-            </motion.h2>
-          </Section>
-          <div className="flex flex-wrap gap-2">
-            {stack.map((tech, i) => (
-              <TechBadge key={tech} name={tech} index={i} />
-            ))}
-          </div>
-        </div>
-      </section>
-
-      <section className={`border-t ${dark ? 'border-gray-800' : 'border-gray-100'}`}>
-        <div className="max-w-3xl mx-auto px-4 sm:px-6 py-16">
-          <Section>
-            <motion.p variants={fadeUp} custom={0}
-              className={`text-xs font-semibold uppercase tracking-widest mb-2 ${dark ? 'text-gray-600' : 'text-gray-400'}`}>
-              Origin
-            </motion.p>
-            <motion.h2 variants={fadeUp} custom={1}
-              className={`text-2xl font-bold tracking-tight mb-6 ${dark ? 'text-white' : 'text-gray-900'}`}>
-              Social service project
-            </motion.h2>
-
-            <motion.div variants={fadeUp} custom={2}
-              className={`rounded-2xl border p-6 sm:p-8 space-y-4
-                ${dark ? 'bg-[#27272A] border-gray-800' : 'bg-white border-gray-100'}`}>
-              <p className={`text-sm leading-relaxed ${dark ? 'text-gray-400' : 'text-gray-600'}`}>
-                DLTechBlog was built as part of social service at BUAP (Benemérita Universidad Autónoma de Puebla)
-                from August 2022 to August 2023. The goal was to create a platform where students and developers
-                could share knowledge through articles, interact socially, and communicate in real time.
-              </p>
-              <p className={`text-sm leading-relaxed ${dark ? 'text-gray-400' : 'text-gray-600'}`}>
-                The project covers the full development lifecycle — from building a REST API with Express and MongoDB,
-                to implementing authentication with JWT and email verification, to deploying both server and frontend
-                on AWS EC2 instances.
+      {userAuth === null || userAuth === undefined &&
+        <section className={`border-t ${dark ? 'border-gray-800' : 'border-gray-100'}`}>
+          <div className="max-w-3xl mx-auto px-4 sm:px-6 py-16 text-center">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.5 }}
+              className="space-y-4"
+            >
+              <h2 className={`text-2xl font-bold tracking-tight ${dark ? 'text-white' : 'text-gray-900'}`}>
+                Ready to start writing?
+              </h2>
+              <p className={`text-sm ${dark ? 'text-gray-500' : 'text-gray-400'}`}>
+                Join the community and share what you know.
               </p>
 
-              {/* Contribution list */}
-              <div className={`pt-4 border-t space-y-2 ${dark ? 'border-gray-800' : 'border-gray-100'}`}>
-                {[
-                  'REST API with ExpressJS and MongoDB',
-                  'JWT authentication + Mailtrap email verification',
-                  'Real-time chat via Socket.IO WebSockets',
-                  'Cloudinary image management for profiles and posts',
-                  'AWS EC2 deployment for both server and client',
-                  'Frontend state management with Redux',
-                  'Search engine for posts, users, and categories',
-                  'Forgot password flow',
-                ].map((item, i) => (
-                  <motion.div
-                    key={item}
-                    initial={{ opacity: 0, x: -8 }}
-                    whileInView={{ opacity: 1, x: 0 }}
-                    viewport={{ once: true }}
-                    transition={{ duration: 0.3, delay: i * 0.05 }}
-                    className="flex items-start gap-2.5"
-                  >
-                    <svg viewBox="0 0 24 24" fill="none" stroke="#2563EB" strokeWidth={2.5}
-                      strokeLinecap="round" strokeLinejoin="round" className="w-3.5 h-3.5 flex-shrink-0 mt-0.5">
-                      <polyline points="20 6 9 17 4 12"/>
-                    </svg>
-                    <span className={`text-sm ${dark ? 'text-gray-400' : 'text-gray-600'}`}>{item}</span>
-                  </motion.div>
-                ))}
+              <div className="flex justify-center gap-3 pt-2">
+                <Link
+                  to="/register"
+                  className="inline-flex items-center gap-2 rounded-full px-6 py-2.5 text-sm font-semibold text-white transition-colors"
+                  style={{ backgroundColor: '#2563EB' }}
+                  onMouseEnter={e => (e.currentTarget.style.backgroundColor = '#1d4ed8')}
+                  onMouseLeave={e => (e.currentTarget.style.backgroundColor = '#2563EB')}
+                >
+                  Create account
+                </Link>
+                <Link
+                  to="/"
+                  className={`inline-flex items-center rounded-full px-6 py-2.5 text-sm font-medium border transition-colors
+                  ${dark ? 'border-gray-700 text-gray-300 hover:bg-gray-800' : 'border-gray-200 text-gray-600 hover:bg-gray-50'}`}
+                >
+                  Browse posts
+                </Link>
               </div>
             </motion.div>
-          </Section>
-        </div>
-      </section>
-
-      <section className={`border-t ${dark ? 'border-gray-800' : 'border-gray-100'}`}>
-        <div className="max-w-3xl mx-auto px-4 sm:px-6 py-16 text-center">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.5 }}
-            className="space-y-4"
-          >
-            <h2 className={`text-2xl font-bold tracking-tight ${dark ? 'text-white' : 'text-gray-900'}`}>
-              Ready to start writing?
-            </h2>
-            <p className={`text-sm ${dark ? 'text-gray-500' : 'text-gray-400'}`}>
-              Join the community and share what you know.
-            </p>
-            <div className="flex justify-center gap-3 pt-2">
-              <Link
-                to="/register"
-                className="inline-flex items-center gap-2 rounded-full px-6 py-2.5 text-sm font-semibold text-white transition-colors"
-                style={{ backgroundColor: '#2563EB' }}
-                onMouseEnter={e => (e.currentTarget.style.backgroundColor = '#1d4ed8')}
-                onMouseLeave={e => (e.currentTarget.style.backgroundColor = '#2563EB')}
-              >
-                Create account
-              </Link>
-              <Link
-                to="/"
-                className={`inline-flex items-center rounded-full px-6 py-2.5 text-sm font-medium border transition-colors
-                  ${dark ? 'border-gray-700 text-gray-300 hover:bg-gray-800' : 'border-gray-200 text-gray-600 hover:bg-gray-50'}`}
-              >
-                Browse posts
-              </Link>
-            </div>
-          </motion.div>
-        </div>
-      </section>
+          </div>
+        </section>}
     </div>
   )
 }
