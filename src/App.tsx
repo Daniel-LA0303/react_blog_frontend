@@ -59,6 +59,7 @@ import StudyListView from "./components/Lists/StudyListView";
 import StudyListEmptyState from "./components/Lists/StudyListEmptyState";
 import QuizBrowser from "./Pages/Quizz/QuizBrowser";
 import KanbanBoard from "./Pages/Project/Project";
+import ListBrowser from "./Pages/Lists/ListBrowser";
 
 
 
@@ -165,6 +166,7 @@ function App() {
           />
 
           <Route path="/quizzes" element={userAuth.userId ? <QuizBrowser /> : <Navigate to="/login" />}/>
+          <Route path="/lists" element={userAuth.userId ? <ListBrowser /> : <Navigate to="/login" />}/>
 
           <Route path="/study-list/:listId" element={<StudyListView />}>
             <Route index element={<StudyListEmptyState />} />

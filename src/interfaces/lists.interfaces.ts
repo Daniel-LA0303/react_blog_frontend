@@ -35,3 +35,15 @@ export interface StudyListItemsMeta {
   limit: number
   totalPages: number
 }
+
+export interface StudyListItemPaginated {
+  _id: string
+  owner: string
+  title: string
+  description: string
+  status: 'ACTIVE' | 'HIDDEN'
+  createdAt: string
+  updatedAt: string
+}
+
+export interface Meta { total: number; page: number; limit: number; totalPages: number }

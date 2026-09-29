@@ -1,4 +1,4 @@
-import { StudyList, StudyListItem, StudyListItemsMeta, StudyListStatus } from '../interfaces/lists.interfaces'
+import { Meta, StudyList, StudyListItem, StudyListItemPaginated, StudyListItemsMeta, StudyListStatus } from '../interfaces/lists.interfaces'
 import clientAuthAxios from '../services/clientAuthAxios'
 
 const BASE = '/lists'
@@ -57,4 +57,21 @@ export const getResourceListMembership = async (resourceType: 'POST' | 'QUIZ', r
     params: { resourceType, resourceId },
   })
   return data.data as { listId: string; itemId: string }[]
+}
+
+const unwrap = (res: any): { lists: StudyListItemPaginated[]; meta: Meta } => ({
+  lists: res.data.data.data,
+  meta: res.data.data.meta,
+})
+
+// all: mine + public from others (+ optional search)
+export const getStudyLists = async (page: number, limit: number, q?: string) => {
+  const res = await clientAuthAxios.get('/lists/study-lists', { params: { page, limit, q } })
+  return unwrap(res)
+}
+
+// only mine
+export const getMyStudyLists = async (page: number, limit: number) => {
+  const res = await clientAuthAxios.get('/lists/study-lists-by-owner', { params: { page, limit } })
+  return unwrap(res)
 }
