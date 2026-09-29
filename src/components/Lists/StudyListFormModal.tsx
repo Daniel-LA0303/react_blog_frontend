@@ -5,6 +5,7 @@ import useUserAuthContext from '../../context/hooks/useUserAuthContext'
 import { CloseIcon } from '../../utils/iconsUtils'
 import { StudyList, StudyListStatus } from '../../interfaces/lists.interfaces'
 import { updateStudyList } from '../../utils/listsUtils'
+import UISelect from '../Global/UISelect'
 
 interface StudyListFormModalProps {
   list: StudyList
@@ -29,8 +30,6 @@ const StudyListFormModal = ({ list, dark, onClose, onSaved }: StudyListFormModal
     }
     setSaving(true)
     try {
-
-      
       const updated = await updateStudyList(list._id, {
         owner: userAuth.userId as string,
         title: title.trim(),
@@ -104,10 +103,13 @@ const StudyListFormModal = ({ list, dark, onClose, onSaved }: StudyListFormModal
             </div>
             <div>
               <span style={labelStyle}>Status</span>
-              {/*<UISelect2 dark={dark} value={status} onChange={(e) => setStatus(e.target.value as StudyListStatus)}>
+              <select  
+                  value={status} 
+                  onChange={(e) => setStatus(e.target.value as StudyListStatus)}
+                >
                 <option value="ACTIVE">Active</option>
                 <option value="HIDDEN">Hidden</option>
-              </UISelect>*/}
+              </select>
             </div>
           </div>
 

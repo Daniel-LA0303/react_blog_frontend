@@ -6,7 +6,7 @@ import useGlobalDataContext from '../../context/hooks/useGlobalDataContext'
 import useUserAuthContext from '../../context/hooks/useUserAuthContext'
 import { useSwal } from '../../hooks/useSwal'
 
-import { PenIcon, TrashIcon } from '../../utils/iconsUtils'
+import { PenIcon, TrashIcon, WarningIcon } from '../../utils/iconsUtils'
 import { StudyList } from '../../interfaces/lists.interfaces'
 import { deleteStudyList, getStudyList } from '../../utils/listsUtils'
 import StudyListItemsPanel from './StudyListItemsPanel'
@@ -68,6 +68,23 @@ export const StudyListView = () => {
         return (
             <div className={`min-h-screen flex items-center justify-center text-sm ${dark ? 'bg-[#18181B] text-gray-400' : 'bg-gray-50 text-gray-500'}`}>
                 {loading ? <SmallSpinner /> : 'List not found'}
+            </div>
+        )
+    }
+
+    if (!isOwner && list.status === 'HIDDEN') {
+        return (
+            <div className={`min-h-screen w-full ${dark ? 'bg-[#18181B] text-white' : 'bg-gray-50 text-black'}`}>
+                <Sidebar />
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 py-6">
+                    <div className="flex items-center justify-center gap-2">
+
+                        <div className={`p-10 rounded-lg text-3xl flex items-center ${dark ? 'bg-[#18181B] ' : 'bg-white '}`}>
+                            <WarningIcon size={40}/>
+                            <p className='ml-3'>This list has been hidden by author</p>
+                        </div>
+                    </div>
+                </div>
             </div>
         )
     }

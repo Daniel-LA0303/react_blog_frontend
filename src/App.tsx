@@ -57,6 +57,8 @@ import TakeQuiz from "./Pages/Quizz/TakeQuiz";
 import StudyListView from "./components/Lists/StudyListView";
 import StudyListEmptyState from "./components/Lists/StudyListEmptyState";
 import QuizBrowser from "./Pages/Quizz/QuizBrowser";
+import KanbanBoard from "./Pages/Project/Project";
+
 
 
 
@@ -125,6 +127,8 @@ function App() {
           <Route path="/edit-profile/:id" element={userAuth.userId ? <EditProfile /> : <Login />} />
           <Route path="/search/:id" element={<Search />} />
           <Route path="/notifications/:id" element={userAuth.userId ? <Notifications /> : <Login />} />
+
+          <Route path="/project/:id" element={userAuth.userId ? <KanbanBoard /> : <Login />} />
 
 
 
