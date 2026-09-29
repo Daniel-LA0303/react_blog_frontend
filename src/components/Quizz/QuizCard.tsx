@@ -1,11 +1,9 @@
-import { useNavigate } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { QuizListItem } from '../../interfaces/quizzes.interfaces'
+import { BookmarkIcon, PenIcon } from '../../utils/iconsUtils'
+import useUserAuthContext from '../../context/hooks/useUserAuthContext'
 
-const BookmarkIcon = () => (
-  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-    <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z" />
-  </svg>
-)
+
 
 interface QuizCardProps {
   quiz: QuizListItem
@@ -14,23 +12,43 @@ interface QuizCardProps {
 }
 
 const QuizCard = ({ quiz, dark, onSave }: QuizCardProps) => {
-  const navigate = useNavigate()
+
+  const {userAuth} = useUserAuthContext();
+  const navigate = useNavigate() 
 
   return (
     <div
-      className={`rounded-2xl border p-4 flex flex-col gap-3 transition-colors ${
-        dark ? 'bg-[#27272A] border-gray-800 hover:border-gray-700' : 'bg-white border-gray-100 hover:border-gray-200 shadow-sm'
-      }`}
+      className={`rounded-2xl border p-4 flex flex-col gap-3 transition-colors ${dark ? 'bg-[#27272A] border-gray-800 hover:border-gray-700' : 'bg-white border-gray-100 hover:border-gray-200 shadow-sm'
+        }`}
     >
       <div className="flex items-start justify-between gap-2">
         <h3 className={`text-sm font-bold leading-snug line-clamp-2 ${dark ? 'text-white' : 'text-gray-900'}`}>{quiz.title}</h3>
-        <button
-          onClick={() => onSave(quiz._id)}
-          aria-label="Save to list"
-          className={`flex-shrink-0 transition-colors ${dark ? 'text-gray-500 hover:text-[#2563EB]' : 'text-gray-400 hover:text-[#2563EB]'}`}
+        <div className='flex items-center'>
+          {quiz.owner === userAuth.userId && (
+                    <Link
+          to={`/create-quiz/${quiz._id}`}
+          className="
+            inline-flex items-center justify-center
+            w-8 h-8
+            rounded-md
+            text-gray-500
+            hover:text-blue-500
+            hover:bg-blue-500/10
+            transition-colors duration-150
+          "
+          title="Edit quiz"
         >
-          <BookmarkIcon />
-        </button>
+          <PenIcon size={16} />
+        </Link>
+          )}
+          <button
+            onClick={() => onSave(quiz._id)}
+            aria-label="Save to list"
+            className={`flex-shrink-0 ml-3 transition-colors ${dark ? 'text-gray-500 hover:text-[#2563EB]' : 'text-gray-400 hover:text-[#2563EB]'}`}
+          >
+            <BookmarkIcon size={20} />
+          </button>
+        </div>
       </div>
 
       {quiz.description && <p className={`text-xs line-clamp-2 ${dark ? 'text-gray-400' : 'text-gray-500'}`}>{quiz.description}</p>}

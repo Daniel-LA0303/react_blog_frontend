@@ -60,16 +60,16 @@ export const updateQuiz = async (
     questionCount: number
   }
 ) => {
-  const res = await clientAuthAxios.put(`/quiz/update-quiz/${quizId}`, {...payload, quizId})
+  const res = await clientAuthAxios.put(`/quiz/update-quiz/${quizId}`, { ...payload, quizId })
   return res.data.data
 }
 
 // GET QUIZ TO UPDATE
 export const getQuiz = async (quizId: string) => {
-  
+
   const res = await clientAuthAxios.get(`/quiz/get-quiz-update/${quizId}`)
-  
-  return delay<{ quiz: Quiz; questions: QuizQuestion[], usersAttempts: any, owner: any}>(
+
+  return delay<{ quiz: Quiz; questions: QuizQuestion[], usersAttempts: any, owner: any }>(
     res.data.data,
     400
   )
@@ -109,23 +109,22 @@ export const createQuestion = async (
 export const updateQuestion = async (
   quizId: string,
   questionId: string,
-  payload: { 
-    question: string; 
-    points: number; 
-    order: number; 
+  payload: {
+    question: string;
+    points: number;
+    order: number;
     options: {
-       _id?: 
-       string; 
-       text: string; 
-       isCorrect: boolean; 
-       order: number 
-    }[] 
+      _id?:
+      string;
+      text: string;
+      isCorrect: boolean;
+      order: number
+    }[]
   }
 ) => {
-  logRequest('PUT', `/quiz/update-question/${questionId}`, payload);
 
-  const res = await clientAuthAxios.put(`/quiz/update-question/${questionId}`, {quiz:quizId, questionId, ...payload });
 
+  const res = await clientAuthAxios.put(`/quiz/update-question/${questionId}`, { quiz: quizId, questionId, ...payload });
   return delay<QuizQuestion>({
     _id: res.data.data._id,
     quiz: res.data.data.quiz,
@@ -141,14 +140,14 @@ export const deleteQuestion = async (questionId: string) => {
   await clientAuthAxios.delete(`/quiz/delete-question/${questionId}`);
   return delay({ ok: true })
 }
- 
+
 
 // ------------- TAKE QUIZ ----------------
 // to get quiz
 export const getQuizForAttempt = async (quizId: string) => {
 
   const res = await clientAuthAxios.get(`/quiz/get-quiz/${quizId}`);
-  
+
   return delay<any>(res.data.data, 400)
 }
 
@@ -160,10 +159,10 @@ export const submitQuizAttempt = async (
   payload: { answers: { questionId: string; selectedOptionId: string | null }[]; duration: number }
 ) => {
 
-  const res = await clientAuthAxios.post(`/quiz/create-attemp`, {...payload, quizId, userId});
-  
+  const res = await clientAuthAxios.post(`/quiz/create-attemp`, { ...payload, quizId, userId });
+
   const result: QuizResult = res.data.data;
-    
+
   return delay(result, 900)
 }
 
@@ -172,12 +171,12 @@ export const getQuizzes = async (page: number, limit: number) => {
   const { data } = await clientAuthAxios.get('/quiz/get-quizzes', { params: { page, limit } })
   return { quizzes: (data.data.quizes ?? []) as QuizListItem[], meta: data.data.meta as QuizListMeta }
 }
- 
+
 export const searchQuizzes = async (query: string, page: number, limit: number) => {
   const { data } = await clientAuthAxios.get('/quiz/search-quizzes', { params: { query, page, limit } })
   return { quizzes: (data.data.quizes ?? []) as QuizListItem[], meta: data.data.meta as QuizListMeta }
 }
- 
+
 // matches getQuizesPaginatedByUserIdService — adjust the path if your real
 // route for it is named differently
 export const getMyQuizzes = async (userId: string, page: number, limit: number) => {

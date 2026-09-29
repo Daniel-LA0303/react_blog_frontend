@@ -7,7 +7,7 @@ import { Link } from 'react-router-dom'
  * context
  */
 import useGlobalDataContext from '../../context/hooks/useGlobalDataContext';
-import { AddCircleIcon, BookmarkIcon, ChatBubbleIcon, EmailIcon, GavelIcon, HomeIcon, InfoIcon, LayoutDashboardIcon, NoteStickyIcon, PrivacyTipIcon } from '../../utils/iconsUtils';
+import { AddCircleIcon, BookmarkIcon, ChatBubbleIcon, EmailIcon, ExploreIcon, GavelIcon, HomeIcon, InfoIcon, LayoutDashboardIcon, NoteStickyIcon, PrivacyTipIcon } from '../../utils/iconsUtils';
 import useUserAuthContext from '../../context/hooks/useUserAuthContext';
 
 const AsideMenu = ({ user }: any) => {
@@ -84,6 +84,12 @@ const AsideMenu = ({ user }: any) => {
                     <NoteStickyIcon isDark={dark} />
                     <span>Categories</span>
                 </Link>
+                {user?.userId && (
+                <Link to="/quizzes" className={itemClass}>
+                    <ExploreIcon isDark={dark} />
+                    <span>Explore quizzes</span>
+                </Link>
+                )}
                 <Link to="/about" className={itemClass}>
                     <InfoIcon isDark={dark} />
                     <span>About</span>

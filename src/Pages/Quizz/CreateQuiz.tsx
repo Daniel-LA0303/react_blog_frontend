@@ -11,12 +11,13 @@ import { useSwal } from '../../hooks/useSwal'
 /**
  * services
  */
-import { AddCircleIcon, CloseIcon } from '../../utils/iconsUtils'
+import { AddCircleIcon, CloseIcon, WarningIcon } from '../../utils/iconsUtils'
 import { QuizQuestion, QuizStatus } from '../../interfaces/quizzes.interfaces'
 import { createQuestion, createQuiz, deleteQuestion, getQuiz, updateQuestion, updateQuiz } from '../../utils/quizUtils'
 import QuestionEditor from '../../components/Quizz/QuestionEditor'
 import Sidebar from '../../components/Sidebar/Sidebar'
 import useUserAuthContext from '../../context/hooks/useUserAuthContext'
+import Spinner from '../../components/Spinner/Spinner'
 
 export const uid = (prefix: string) => `${prefix}_${Date.now().toString(36)}_${Math.random().toString(36).slice(2, 8)}`
 
@@ -56,6 +57,7 @@ export const CreateQuiz = () => {
   const [loading, setLoading] = useState(isEditMode) // only show the loader when we actually have something to fetch
 
   const [quizId, setQuizId] = useState<string | null>(null)
+  const [owner, setOwner] = useState<string>()
   const [status, setStatus] = useState<QuizStatus>('HIDDEN') // no more DRAFT, only PUBLISHED / HIDDEN
   const [title, setTitle] = useState('')
   const [description, setDescription] = useState('')
@@ -69,7 +71,7 @@ export const CreateQuiz = () => {
 
   const [saving, setSaving] = useState(false)
 
-  // ---- load existing quiz when editing -----------------------------------
+  // load existing quiz when editing 
   useEffect(() => {
 
     if (!id) return // create mode, nothing to fetch
@@ -83,10 +85,12 @@ export const CreateQuiz = () => {
       try {
 
         // get quiz info + its questions to fill our state
-        const { quiz, questions: loadedQuestions } = await getQuiz(id)
+        const { quiz, questions: loadedQuestions } = await getQuiz(id);
+        console.log(quiz);
+
 
         if (cancelled) return
-
+        setOwner(quiz.owner);
         setQuizId(quiz.id)
         setStatus(quiz.status)
         setTitle(quiz.title)
@@ -400,8 +404,28 @@ export const CreateQuiz = () => {
   }
 
   if (loading) {
-    return <div className={`p-10 text-center text-sm ${dark ? 'text-gray-400' : 'text-gray-500'}`}>Loading quiz...</div>
+    return <Spinner />
   }
+
+
+  if ((owner !== userAuth.userId) && isEditMode) {
+    return (
+      <div className={`min-h-screen w-full ${dark ? 'bg-[#18181B] text-white' : 'bg-gray-50 text-black'}`}>
+        <Sidebar />
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 py-6">
+          <div className="flex items-center justify-center gap-2">
+
+            <div className={`p-10 rounded-lg text-3xl flex items-center ${dark ? 'bg-[#18181B] ' : 'bg-white '}`}>
+              <WarningIcon size={40} />
+              <p className='ml-3'>You don't have permission to do this!</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    )
+  }
+
+
 
   return (
     <div className={`min-h-screen w-full ${dark ? 'bg-[#18181B]' : 'bg-gray-50'}`}>
@@ -452,24 +476,15 @@ export const CreateQuiz = () => {
               }`}
           />
 
-          <textarea
-            value={description}
-            onChange={(e) => setDescription(e.target.value)}
-            placeholder="What is this quiz about?"
-            rows={2}
-            className={`text-sm rounded-lg px-3 py-2 outline-none border resize-none ${dark ? 'bg-[#18181B] border-gray-700 text-gray-200 placeholder:text-gray-600' : 'bg-gray-50 border-gray-200 text-gray-700 placeholder:text-gray-400'
-              }`}
-          />
-
           <div className="flex flex-col sm:flex-row gap-3">
-            <input
-              value={category}
-              onChange={(e) => setCategory(e.target.value)}
-              placeholder="Category (e.g. Science)"
-              className={`flex-1 text-sm rounded-lg px-3 py-2 outline-none border ${dark ? 'bg-[#18181B] border-gray-700 text-white placeholder:text-gray-600' : 'bg-gray-50 border-gray-200 text-gray-900 placeholder:text-gray-400'
+            <textarea
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+              placeholder="What is this quiz about?"
+              rows={2}
+              className={`text-sm w-full rounded-lg px-3 py-2 outline-none border resize-none ${dark ? 'bg-[#18181B] border-gray-700 text-gray-200 placeholder:text-gray-600' : 'bg-gray-50 border-gray-200 text-gray-700 placeholder:text-gray-400'
                 }`}
             />
-
             <div className="flex items-center gap-2">
               <label className={`flex items-center gap-1.5 text-xs whitespace-nowrap ${dark ? 'text-gray-400' : 'text-gray-500'}`}>
                 <input type="checkbox" checked={hasTimeLimit} onChange={(e) => setHasTimeLimit(e.target.checked)} />
@@ -491,8 +506,19 @@ export const CreateQuiz = () => {
             </div>
           </div>
 
+
+          {/*<div className="flex flex-col sm:flex-row gap-3">
+            <input
+              value={category}
+              onChange={(e) => setCategory(e.target.value)}
+              placeholder="Category (e.g. Science)"
+              className={`flex-1 text-sm rounded-lg px-3 py-2 outline-none border ${dark ? 'bg-[#18181B] border-gray-700 text-white placeholder:text-gray-600' : 'bg-gray-50 border-gray-200 text-gray-900 placeholder:text-gray-400'
+                }`}
+            />
+          </div>}*/}
+
           {/* tags */}
-          <div>
+          {/*<div>
             <div className={`flex items-center gap-2 rounded-lg border px-2.5 py-1.5 ${dark ? 'bg-[#18181B] border-gray-700' : 'bg-gray-50 border-gray-200'}`}>
               <input
                 value={tagInput}
@@ -523,7 +549,7 @@ export const CreateQuiz = () => {
                 ))}
               </div>
             )}
-          </div>
+          </div> */}
         </div>
 
         {/* ---- questions (fixed order — no more drag/reorder) ---- */}

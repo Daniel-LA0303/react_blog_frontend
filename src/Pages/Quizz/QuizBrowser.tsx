@@ -107,14 +107,14 @@ export const QuizBrowser = () => {
   return (
     <div className={`min-h-screen w-full ${dark ? 'bg-[#18181B]' : 'bg-gray-50'}`}>
       <Sidebar />
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 py-6 flex flex-col gap-5">
-        <div>
+      <div className="max-w-screen-xl mx-auto px-4 sm:px-6 py-6 flex flex-col ">
+        <div className='mb-3'>
           <h1 className={`text-lg font-bold ${dark ? 'text-white' : 'text-gray-900'}`}>Quizzes</h1>
           <p className={`text-xs mt-0.5 ${dark ? 'text-gray-500' : 'text-gray-400'}`}>Browse quizzes or find your own.</p>
         </div>
 
         {/* nav: tabs + search */}
-        <div className="flex flex-col sm:flex-row sm:items-center gap-3">
+        <div className="flex flex-col sm:flex-row sm:items-center gap-3 mb-3">
           <div className={`inline-flex rounded-xl border p-1 ${dark ? 'border-gray-800 bg-[#27272A]' : 'border-gray-200 bg-white'}`}>
             {(['all', 'mine'] as Tab[]).map((t) => (
               <button

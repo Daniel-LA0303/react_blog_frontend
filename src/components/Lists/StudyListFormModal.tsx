@@ -5,7 +5,12 @@ import useUserAuthContext from '../../context/hooks/useUserAuthContext'
 import { CloseIcon } from '../../utils/iconsUtils'
 import { StudyList, StudyListStatus } from '../../interfaces/lists.interfaces'
 import { updateStudyList } from '../../utils/listsUtils'
-import UISelect from '../Global/UISelect'
+import Field from '../Global/Field'
+
+const CONDITION_TYPES = [
+  { value: 'ACTIVE', label: 'Active' },
+  { value: 'HIDDEN', label: 'Hidden' },
+]
 
 interface StudyListFormModalProps {
   list: StudyList
@@ -22,6 +27,7 @@ const StudyListFormModal = ({ list, dark, onClose, onSaved }: StudyListFormModal
   const [description, setDescription] = useState(list.description)
   const [status, setStatus] = useState<StudyListStatus>(list.status)
   const [saving, setSaving] = useState(false)
+
 
   const handleSubmit = async () => {
     if (!title.trim()) {
@@ -101,16 +107,45 @@ const StudyListFormModal = ({ list, dark, onClose, onSaved }: StudyListFormModal
               <span style={labelStyle}>Description</span>
               <textarea value={description} onChange={(e) => setDescription(e.target.value)} rows={3} style={{ ...inputStyle, resize: 'none' }} />
             </div>
-            <div>
-              <span style={labelStyle}>Status</span>
-              <select  
-                  value={status} 
-                  onChange={(e) => setStatus(e.target.value as StudyListStatus)}
+            <Field label="Post Visibility" htmlFor="statusPost" dark={dark}>
+              <div className="relative">
+                <select
+                  id="statusPost"
+                  value={status}
+                  onChange={e => 
+                    setStatus(e.target.value as StudyListStatus)
+                  }
+                  className={`
+                    w-full appearance-none rounded-lg px-4 py-2.5 text-sm font-medium transition-all duration-200 outline-none pr-10 cursor-pointer
+                    ${dark
+                      ? 'bg-zinc-900/80 text-white border-zinc-800 hover:border-zinc-700 focus:border-zinc-500'
+                      : 'bg-white text-zinc-900 border-zinc-200 hover:border-zinc-300 focus:border-zinc-400'
+                    }`}
                 >
-                <option value="ACTIVE">Active</option>
-                <option value="HIDDEN">Hidden</option>
-              </select>
-            </div>
+                  <option value="" disabled hidden className={dark ? 'bg-zinc-900 text-zinc-500' : 'bg-white text-zinc-400'}>
+                    Select Post Status
+                  </option>
+                  <option value="ACTIVE" className={dark ? 'bg-zinc-900 text-emerald-400 font-semibold' : 'bg-white text-emerald-600 font-semibold'}>
+                    ● ACTIVE (Visible to public)
+                  </option>
+                  <option value="HIDDEN" className={dark ? 'bg-zinc-900 text-amber-400 font-semibold' : 'bg-white text-amber-600 font-semibold'}>
+                    ● Hidden (Only visible to you)
+                  </option>
+                </select>
+
+                {/* Custom Dropdown Arrow */}
+                <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3">
+                  <svg
+                    className={`h-4 w-4 transition-transform duration-200 ${dark ? 'text-zinc-400' : 'text-zinc-500'}`}
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
+                  </svg>
+                </div>
+              </div>
+            </Field>
           </div>
 
           <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 8, marginTop: 20 }}>
