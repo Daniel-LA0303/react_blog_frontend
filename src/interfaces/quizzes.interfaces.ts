@@ -89,3 +89,24 @@ export interface QuizUserAttempt {
   attempts: number
 }
  
+export interface QuizListItem {
+  _id: string
+  title: string
+  description: string
+  owner: string
+  status: QuizStatus
+  questionCount: number
+  timeLimit: number | null
+  categories: string[]
+  tags: string[]
+  publishedAt: string | null
+}
+
+ 
+export interface QuizListMeta {
+  total: number
+  page: number
+  limit: number
+  totalPages: number
+}
+ 

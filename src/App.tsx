@@ -56,6 +56,7 @@ import CreateQuiz from "./Pages/Quizz/CreateQuiz";
 import TakeQuiz from "./Pages/Quizz/TakeQuiz";
 import StudyListView from "./components/Lists/StudyListView";
 import StudyListEmptyState from "./components/Lists/StudyListEmptyState";
+import QuizBrowser from "./Pages/Quizz/QuizBrowser";
 
 
 
@@ -156,6 +157,8 @@ function App() {
             path="/take-quiz/:id"
             element={userAuth.userId ? <TakeQuiz /> : <Navigate to="/login" />}
           />
+
+          <Route path="/quizzes" element={<QuizBrowser />} />
 
           <Route path="/study-list/:listId" element={<StudyListView />}>
             <Route index element={<StudyListEmptyState />} />

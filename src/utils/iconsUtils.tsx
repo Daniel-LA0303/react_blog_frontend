@@ -641,6 +641,17 @@ export const FileBanIcon = ({ size }: { size?: number }) => (
   </IconBase>
 )
 
+export const ListIcon = ({ size }: { size?: number }) => (
+  <IconBase size={size}>
+    <line x1="8" y1="6" x2="20" y2="6" />
+    <line x1="8" y1="12" x2="20" y2="12" />
+    <line x1="8" y1="18" x2="20" y2="18" />
+    <line x1="4" y1="6" x2="4.01" y2="6" />
+    <line x1="4" y1="12" x2="4.01" y2="12" />
+    <line x1="4" y1="18" x2="4.01" y2="18" />
+  </IconBase>
+)
+
 export const CommentsIcon = ({ size = 16 }: { size?: number }) => (
     <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
         <path d="M21 12a8.5 8.5 0 0 1-8.5 8.5 8.4 8.4 0 0 1-3.9-.94L3 21l1.44-5.6A8.5 8.5 0 1 1 21 12z" />

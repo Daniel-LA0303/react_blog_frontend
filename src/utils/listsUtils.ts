@@ -51,3 +51,10 @@ export const reorderStudyListItems = async (listId: string, orderedItems: { _id:
   
   return data.data
 }
+
+export const getResourceListMembership = async (resourceType: 'POST' | 'QUIZ', resourceId: string) => {
+  const { data } = await clientAuthAxios.get('/lists/study-lists/resource-membership', {
+    params: { resourceType, resourceId },
+  })
+  return data.data as { listId: string; itemId: string }[]
+}

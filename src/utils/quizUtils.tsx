@@ -9,7 +9,7 @@
  * else in the UI needs to change.
  */
 
-import { AttemptQuiz, Quiz, QuizQuestion, QuizResult, QuizStatus } from "../interfaces/quizzes.interfaces"
+import { AttemptQuiz, Quiz, QuizListItem, QuizListMeta, QuizQuestion, QuizResult, QuizStatus } from "../interfaces/quizzes.interfaces"
 import clientAuthAxios from "../services/clientAuthAxios"
 
 
@@ -165,4 +165,22 @@ export const submitQuizAttempt = async (
   const result: QuizResult = res.data.data;
     
   return delay(result, 900)
+}
+
+
+export const getQuizzes = async (page: number, limit: number) => {
+  const { data } = await clientAuthAxios.get('/quiz/get-quizzes', { params: { page, limit } })
+  return { quizzes: (data.data.quizes ?? []) as QuizListItem[], meta: data.data.meta as QuizListMeta }
+}
+ 
+export const searchQuizzes = async (query: string, page: number, limit: number) => {
+  const { data } = await clientAuthAxios.get('/quiz/search-quizzes', { params: { query, page, limit } })
+  return { quizzes: (data.data.quizes ?? []) as QuizListItem[], meta: data.data.meta as QuizListMeta }
+}
+ 
+// matches getQuizesPaginatedByUserIdService — adjust the path if your real
+// route for it is named differently
+export const getMyQuizzes = async (userId: string, page: number, limit: number) => {
+  const { data } = await clientAuthAxios.get(`/quiz/get-quiz-by-user/${userId}`, { params: { page, limit } })
+  return { quizzes: (data.quizes ?? []) as QuizListItem[], meta: data.meta as QuizListMeta }
 }
