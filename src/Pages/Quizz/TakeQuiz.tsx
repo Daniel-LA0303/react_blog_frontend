@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Link, useParams } from 'react-router-dom'
+import { Link, useLocation, useParams } from 'react-router-dom'
 
 /**
  * hooks
@@ -17,6 +17,7 @@ import Spinner from '../../components/Spinner/Spinner'
 import Sidebar from '../../components/Sidebar/Sidebar'
 import useUserAuthContext from '../../context/hooks/useUserAuthContext'
 import Leaderboard from '../../components/Quizz/Leaderboard'
+import SmallSpinner from '../../components/Spinner/SmallSpinner'
 
 type Stage = 'loading' | 'intro' | 'progress' | 'submitting' | 'result' | 'error'
 
@@ -28,6 +29,9 @@ const formatTime = (totalSeconds: number) => {
 }
 
 export const TakeQuiz = () => {
+
+    const location = useLocation();
+    const isInsideStudyList = location.pathname.startsWith('/study-list/');
 
     const { globalData } = useGlobalDataContext();
 
@@ -199,7 +203,12 @@ export const TakeQuiz = () => {
 
     // ---- loading / error ----
     if (stage === 'loading') {
-        return <Spinner />
+        if(isInsideStudyList){
+            return <SmallSpinner />
+        }else if(!isInsideStudyList){
+            return <Spinner />
+        }
+        
     }
     if (stage === 'error' || !quiz) {
         return <div className="p-10 text-center text-sm text-rose-500">Something went wrong loading this quiz.</div>
@@ -207,7 +216,7 @@ export const TakeQuiz = () => {
 
     return (
         <div className={`min-h-screen w-full ${dark ? 'bg-[#18181B]' : 'bg-gray-50'}`}>
-            <Sidebar />
+            {!isInsideStudyList && <Sidebar />}
             <div className="max-w-5xl mx-auto  px-4 sm:px-6 py-10">
                 <AnimatePresence
                     mode="wait"
@@ -227,21 +236,21 @@ export const TakeQuiz = () => {
                                     <h1 className={`text-xl font-bold ${dark ? 'text-white' : 'text-gray-900'}`}>{quiz.title}</h1>
                                     {quiz.description && <p className={`mt-2 text-sm ${dark ? 'text-gray-400' : 'text-gray-500'}`}>
                                         <span className='font-bold'>Description: </span>
-                                        {quiz.description}    
+                                        {quiz.description}
                                     </p>}
 
                                     <div className={`text-sm  ${dark ? 'text-white' : 'text-gray-900'} mt-10`}>
-                                        
+
                                         <div className='flex justify-center w-1/6 mx-auto items-center'>
                                             <span className='font-bold'>Owner: </span>
-                                            <img src={owner?.profileImage?.secure_url || '/avatar.png'} alt=""  className="h-7 w-7 rounded-full object-cover flex-shrink-0"/> 
+                                            <img src={owner?.profileImage?.secure_url || '/avatar.png'} alt="" className="h-7 w-7 rounded-full object-cover flex-shrink-0" />
                                             <Link to={`/profile/${owner._id}`}>{owner?.name}</Link>
                                         </div>
                                     </div>
 
                                     <div className="mt-5 flex items-center justify-center gap-6">
                                         <div>
-                                            
+
                                             <p className={`text-lg font-bold ${dark ? 'text-white' : 'text-gray-900'}`}>{sortedQuestions.length}</p>
                                             <p className={`text-xs ${dark ? 'text-gray-500' : 'text-gray-400'}`}>Questions</p>
                                         </div>

@@ -11,6 +11,7 @@ import QuizCard from '../../components/Quizz/QuizCard'
 import { SearchIcon } from '../../utils/iconsUtils'
 import StudyListModal from '../../components/Lists/StudyListModal'
 import Sidebar from '../../components/Sidebar/Sidebar'
+import SmallSpinner from '../../components/Spinner/SmallSpinner'
 
 type Tab = 'all' | 'mine'
 
@@ -18,7 +19,7 @@ const LIMIT = 12
 
 export const QuizBrowser = () => {
   const { globalData } = useGlobalDataContext()
-  
+
   const { userAuth } = useUserAuthContext()
   const { showConfirmSwal } = useSwal()
   const dark = !globalData.themeGlobal
@@ -62,7 +63,7 @@ export const QuizBrowser = () => {
         setPage(1)
       } catch (error: any) {
         console.log(error);
-        
+
         showConfirmSwal({ message: error.response?.data?.message || 'Could not load quizzes', status: 'error', confirmButton: true, cancelButton: false })
       } finally {
         if (!cancelled) setLoading(false)
@@ -72,7 +73,6 @@ export const QuizBrowser = () => {
     return () => {
       cancelled = true
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [tab, debouncedQuery])
 
   const handleLoadMore = async () => {
@@ -102,12 +102,11 @@ export const QuizBrowser = () => {
     )
     observer.observe(sentinel)
     return () => observer.disconnect()
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [page, totalPages, loadingMore, tab, debouncedQuery])
 
   return (
     <div className={`min-h-screen w-full ${dark ? 'bg-[#18181B]' : 'bg-gray-50'}`}>
-        <Sidebar />
+      <Sidebar />
       <div className="max-w-6xl mx-auto px-4 sm:px-6 py-6 flex flex-col gap-5">
         <div>
           <h1 className={`text-lg font-bold ${dark ? 'text-white' : 'text-gray-900'}`}>Quizzes</h1>
@@ -121,9 +120,8 @@ export const QuizBrowser = () => {
               <button
                 key={t}
                 onClick={() => setTab(t)}
-                className={`px-3.5 py-1.5 text-xs font-semibold rounded-lg transition-colors ${
-                  tab === t ? 'bg-[#2563EB] text-white' : dark ? 'text-gray-400 hover:text-gray-200' : 'text-gray-500 hover:text-gray-800'
-                }`}
+                className={`px-3.5 py-1.5 text-xs font-semibold rounded-lg transition-colors ${tab === t ? 'bg-[#2563EB] text-white' : dark ? 'text-gray-400 hover:text-gray-200' : 'text-gray-500 hover:text-gray-800'
+                  }`}
               >
                 {t === 'all' ? 'All quizzes' : 'My quizzes'}
               </button>
@@ -143,7 +141,7 @@ export const QuizBrowser = () => {
 
         {/* grid */}
         {loading ? (
-          <p className={`text-sm text-center py-16 ${dark ? 'text-gray-500' : 'text-gray-400'}`}>Loading quizzes...</p>
+          <SmallSpinner />
         ) : quizzes.length === 0 ? (
           <p className={`text-sm text-center py-16 ${dark ? 'text-gray-500' : 'text-gray-400'}`}>No quizzes found.</p>
         ) : (
@@ -154,7 +152,7 @@ export const QuizBrowser = () => {
           </div>
         )}
 
-        {loadingMore && <p className={`text-xs text-center ${dark ? 'text-gray-500' : 'text-gray-400'}`}>Loading more...</p>}
+        {loadingMore && <SmallSpinner />}
         <div ref={sentinelRef} style={{ height: 1 }} />
       </div>
 

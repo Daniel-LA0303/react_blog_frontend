@@ -158,7 +158,7 @@ function App() {
             element={userAuth.userId ? <TakeQuiz /> : <Navigate to="/login" />}
           />
 
-          <Route path="/quizzes" element={<QuizBrowser />} />
+          <Route path="/quizzes" element={userAuth.userId ? <QuizBrowser /> : <Navigate to="/login" />}/>
 
           <Route path="/study-list/:listId" element={<StudyListView />}>
             <Route index element={<StudyListEmptyState />} />

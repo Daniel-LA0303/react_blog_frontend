@@ -29,6 +29,8 @@ const StudyListFormModal = ({ list, dark, onClose, onSaved }: StudyListFormModal
     }
     setSaving(true)
     try {
+
+      
       const updated = await updateStudyList(list._id, {
         owner: userAuth.userId as string,
         title: title.trim(),

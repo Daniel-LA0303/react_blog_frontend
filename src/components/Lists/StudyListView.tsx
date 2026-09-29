@@ -12,12 +12,10 @@ import { deleteStudyList, getStudyList } from '../../utils/listsUtils'
 import StudyListItemsPanel from './StudyListItemsPanel'
 import StudyListFormModal from './StudyListFormModal'
 import Sidebar from '../Sidebar/Sidebar'
+import SmallSpinner from '../Spinner/SmallSpinner'
 
 export const StudyListView = () => {
-    // NOTE: this route param is named `listId`, not `id` — the nested
-    // post/quiz routes use `:id` (to match ViewPost/TakeQuiz's own
-    // useParams() unmodified), so this has to be a different key or the
-    // child route's id would shadow this one
+
     const { listId } = useParams()
     const navigate = useNavigate()
     const { userAuth } = useUserAuthContext()
@@ -69,7 +67,7 @@ export const StudyListView = () => {
     if (loading || !list || !listId) {
         return (
             <div className={`min-h-screen flex items-center justify-center text-sm ${dark ? 'bg-[#18181B] text-gray-400' : 'bg-gray-50 text-gray-500'}`}>
-                {loading ? 'Loading list...' : 'List not found'}
+                {loading ? <SmallSpinner /> : 'List not found'}
             </div>
         )
     }
