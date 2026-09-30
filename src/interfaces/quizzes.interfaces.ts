@@ -110,3 +110,24 @@ export interface QuizListMeta {
   totalPages: number
 }
  
+
+export interface QuizAttemptItem {
+  _id: string
+  quiz: {
+    _id: string
+    title: string
+    description: string
+    owner: string
+    status: 'PUBLISHED' | 'HIDDEN'
+    questionCount: number
+    isComplete: boolean
+    timeLimit: number | null
+    publishedAt: string
+  }
+  score: number
+  correctAnswers: number
+  totalQuestions: number
+  duration: number
+  completedAt: string
+  startedAt: string
+}

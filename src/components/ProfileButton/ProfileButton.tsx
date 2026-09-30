@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom'
 import userUserAuthContext from '../../context/hooks/useUserAuthContext'
 import useGlobalDataContext from '../../context/hooks/useGlobalDataContext'
 import { menuItems } from '../../utils/profileUtils'
+import CreateProjectModal from '../Project/CreateProjectModal'
 
 
 const ProfileButton = () => {
@@ -12,6 +13,7 @@ const ProfileButton = () => {
   const dark = !globalData.themeGlobal
 
   const [open, setOpen] = useState(false);
+  const [createOpen, setCreateOpen] = useState(false)
 
   const viewerRoles: string[] = (userAuth?.roles ?? []).map((r: any) =>
     typeof r === "string" ? r : r?.name
@@ -30,6 +32,11 @@ const ProfileButton = () => {
       localStorage.setItem('theme', JSON.stringify(newTheme))
       return { ...prev, themeGlobal: newTheme }
     })
+  }
+
+  const handleCreateProject = async () => {
+    setOpen(false);
+    setCreateOpen(true);
   }
 
   return (
@@ -106,20 +113,35 @@ const ProfileButton = () => {
             {menuItems
               .filter(item => !item.roles || item?.roles.some((r: string) => viewerRoles.includes(r)))
               .map((item) => (
-              <Link
-                key={item.label}
-                to={item.to(userAuth.userId as string)}
-                onClick={() => setOpen(false)}
-                className={`flex items-center gap-3 px-4 py-2.5 text-sm transition-colors duration-150
+                <Link
+                  key={item.label}
+                  to={item.to(userAuth.userId as string)}
+                  onClick={() => setOpen(false)}
+                  className={`flex items-center gap-3 px-4 py-2.5 text-sm transition-colors duration-150
                   ${dark
-                    ? 'text-gray-300 hover:bg-gray-800 hover:text-white'
-                    : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
-                  }`}
-              >
-                <span className={dark ? 'text-gray-500' : 'text-gray-400'}>{item.icon}</span>
-                {item.label}
-              </Link>
-            ))}
+                      ? 'text-gray-300 hover:bg-gray-800 hover:text-white'
+                      : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
+                    }`}
+                >
+                  <span className={dark ? 'text-gray-500' : 'text-gray-400'}>{item.icon}</span>
+                  {item.label}
+                </Link>
+              ))}
+            <button
+              type="button"
+              onClick={handleCreateProject}
+              className={`w-full flex items-center gap-3 px-4 py-2.5 text-sm transition-colors duration-150 ${dark
+                ? 'text-gray-300 hover:bg-gray-800 hover:text-white'
+                : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
+                }`}
+            >
+              <span className={dark ? 'text-gray-500' : 'text-gray-400'}>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.7} strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4">
+                  <path d="M12 5v14" /><path d="M5 12h14" />
+                </svg>
+              </span>
+              New project
+            </button>
           </div>
 
           {/* Theme + Logout */}
@@ -171,6 +193,7 @@ const ProfileButton = () => {
             </button>
           </div>
         </div>
+        <CreateProjectModal open={createOpen} onClose={() => setCreateOpen(false)} dark={dark} />
       </div>
     </>
   )

@@ -1,18 +1,19 @@
+import { createPortal } from 'react-dom'
 import { AnimatePresence, motion } from "framer-motion";
 
 const UIModal = ({
-  open, 
-  onClose, 
-  dark, 
-  maxWidth = 400, 
+  open,
+  onClose,
+  dark,
+  maxWidth = 400,
   children,
 }: {
-  open: boolean; 
-  onClose: () => void; 
-  dark: boolean; 
-  maxWidth?: number; 
+  open: boolean;
+  onClose: () => void;
+  dark: boolean;
+  maxWidth?: number;
   children: React.ReactNode
-}) => (
+}) => createPortal(
   <AnimatePresence>
     {open && (
       <motion.div
@@ -46,7 +47,8 @@ const UIModal = ({
         </motion.div>
       </motion.div>
     )}
-  </AnimatePresence>
+  </AnimatePresence>,
+  document.body
 )
 
 export default UIModal;

@@ -48,6 +48,8 @@ const DashBoardProfile = () => {
     clientAuthAxios.get(`/pages/page-dashboard/${params.id}`)
       .then((response) => {
         setPageDashboard(response.data.data);
+        console.log(response);
+        
         setTimeout(() => {
           setLoading(false);
         }, 200);

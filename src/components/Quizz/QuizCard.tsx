@@ -1,4 +1,4 @@
-import { Link, useNavigate } from 'react-router-dom'
+import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { QuizListItem } from '../../interfaces/quizzes.interfaces'
 import { BookmarkIcon, PenIcon } from '../../utils/iconsUtils'
 import useUserAuthContext from '../../context/hooks/useUserAuthContext'
@@ -13,8 +13,11 @@ interface QuizCardProps {
 
 const QuizCard = ({ quiz, dark, onSave }: QuizCardProps) => {
 
-  const {userAuth} = useUserAuthContext();
-  const navigate = useNavigate() 
+  const location = useLocation();
+  const isInsideMyQuizzes = location.pathname.startsWith('/my-quizzes/');
+
+  const { userAuth } = useUserAuthContext();
+  const navigate = useNavigate()
 
   return (
     <div
@@ -25,9 +28,9 @@ const QuizCard = ({ quiz, dark, onSave }: QuizCardProps) => {
         <h3 className={`text-sm font-bold leading-snug line-clamp-2 ${dark ? 'text-white' : 'text-gray-900'}`}>{quiz.title}</h3>
         <div className='flex items-center'>
           {quiz.owner === userAuth.userId && (
-                    <Link
-          to={`/create-quiz/${quiz._id}`}
-          className="
+            <Link
+              to={`/create-quiz/${quiz._id}`}
+              className="
             inline-flex items-center justify-center
             w-8 h-8
             rounded-md
@@ -36,10 +39,10 @@ const QuizCard = ({ quiz, dark, onSave }: QuizCardProps) => {
             hover:bg-blue-500/10
             transition-colors duration-150
           "
-          title="Edit quiz"
-        >
-          <PenIcon size={16} />
-        </Link>
+              title="Edit quiz"
+            >
+              <PenIcon size={16} />
+            </Link>
           )}
           <button
             onClick={() => onSave(quiz._id)}
@@ -70,12 +73,14 @@ const QuizCard = ({ quiz, dark, onSave }: QuizCardProps) => {
           </span>
           {quiz.timeLimit && <span>{quiz.timeLimit} min</span>}
         </div>
-        <button
-          onClick={() => navigate(`/take-quiz/${quiz._id}`)}
-          className="text-xs font-semibold px-3 py-1.5 rounded-lg bg-[#2563EB] text-white hover:bg-blue-700 transition-colors"
-        >
-          Take quiz
-        </button>
+        {!isInsideMyQuizzes && (
+          <button
+            onClick={() => navigate(`/take-quiz/${quiz._id}`)}
+            className="text-xs font-semibold px-3 py-1.5 rounded-lg bg-[#2563EB] text-white hover:bg-blue-700 transition-colors"
+          >
+            Take quiz
+          </button>
+        )}
       </div>
     </div>
   )

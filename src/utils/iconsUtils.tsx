@@ -1,5 +1,6 @@
 import { IconProps } from "../interfaces/global.interfaces";
 
+// list icons is used in dashboard
 export const Icons = {
   blog: (
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.6} strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5">
@@ -44,6 +45,108 @@ export const Icons = {
   notifications: (
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.6} strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5">
       <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" /><path d="M13.73 21a2 2 0 0 1-3.46 0" />
+    </svg>
+  ),
+
+  projectsOwn: (
+    <svg
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth={1.6}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className="w-5 h-5"
+    >
+      <rect x="3" y="4" width="18" height="16" rx="2" />
+      <path d="M8 4v16" />
+      <path d="M13 9h5" />
+      <path d="M13 13h5" />
+      <path d="M13 17h3" />
+    </svg>
+  ),
+
+  projectsCollaboration: (
+    <svg
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth={1.6}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className="w-5 h-5"
+    >
+      <rect x="3" y="4" width="18" height="16" rx="2" />
+      <path d="M8 4v16" />
+      <circle cx="15" cy="10" r="2" />
+      <path d="M11.5 17c.6-2 2-3 3.5-3s2.9 1 3.5 3" />
+    </svg>
+  ),
+
+  quizzesOwn: (
+    <svg
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth={1.6}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className="w-5 h-5"
+    >
+      <path d="M6 3h9l4 4v14H6a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2z" />
+      <path d="M14 3v5h5" />
+      <path d="M8 12h8" />
+      <path d="M8 16h5" />
+    </svg>
+  ),
+
+  quizzesAttempt: (
+    <svg
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth={1.6}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className="w-5 h-5"
+    >
+      <path d="M6 3h9l4 4v14H6a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2z" />
+      <path d="M14 3v5h5" />
+      <path d="M8 13l2 2 4-4" />
+    </svg>
+  ),
+
+  lists: (
+    <svg
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth={1.6}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className="w-5 h-5"
+    >
+      <path d="M8 6h13" />
+      <path d="M8 12h13" />
+      <path d="M8 18h13" />
+      <path d="M3 6h.01" />
+      <path d="M3 12h.01" />
+      <path d="M3 18h.01" />
+    </svg>
+  ),
+
+  badges: (
+    <svg
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth={1.6}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className="w-5 h-5"
+    >
+      <circle cx="12" cy="8" r="5" />
+      <path d="M8.5 12L7 21l5-3 5 3-1.5-9" />
     </svg>
   ),
 }
@@ -205,24 +308,24 @@ export const TrashIcon = ({
 };
 
 export const BellIcon = ({ size = 16, className = '', }: IconProps) => {
-   return (
-   <svg width={size} height={size} viewBox="0 0 24 24" fill="none" className={className} > <path d="M18 8C18 4.68629 15.3137 2 12 2C8.68629 2 6 4.68629 6 8C6 15 3 17 3 17H21C21 17 18 15 18 8Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" /> <path d="M10 21H14" stroke="currentColor" strokeWidth="2" strokeLinecap="round" /> </svg>); 
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" className={className} > <path d="M18 8C18 4.68629 15.3137 2 12 2C8.68629 2 6 4.68629 6 8C6 15 3 17 3 17H21C21 17 18 15 18 8Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" /> <path d="M10 21H14" stroke="currentColor" strokeWidth="2" strokeLinecap="round" /> </svg>);
 };
 
-export const CreditCardIcon = ({ size = 16, className = '', }: IconProps) => { 
-  return ( <svg width={size} height={size} viewBox="0 0 24 24" fill="none" className={className} > <rect x="3" y="5" width="18" height="14" rx="2" stroke="currentColor" strokeWidth="2" /> <path d="M3 10H21" stroke="currentColor" strokeWidth="2" /> <path d="M7 15H10" stroke="currentColor" strokeWidth="2" strokeLinecap="round" /> </svg> ); 
+export const CreditCardIcon = ({ size = 16, className = '', }: IconProps) => {
+  return (<svg width={size} height={size} viewBox="0 0 24 24" fill="none" className={className} > <rect x="3" y="5" width="18" height="14" rx="2" stroke="currentColor" strokeWidth="2" /> <path d="M3 10H21" stroke="currentColor" strokeWidth="2" /> <path d="M7 15H10" stroke="currentColor" strokeWidth="2" strokeLinecap="round" /> </svg>);
 };
 
-export const CakeIcon = ({ size = 16, className = '', }: IconProps) => { 
-  return ( <svg width={size} height={size} viewBox="0 0 24 24" fill="none" className={className} > <path d="M4 12H20V20H4V12Z" stroke="currentColor" strokeWidth="2" strokeLinejoin="round" /> <path d="M4 16C5.5 17 7 17 8.5 16C10 15 11.5 15 13 16C14.5 17 16 17 17.5 16C19 15 20 15 20 16" stroke="currentColor" strokeWidth="2" strokeLinecap="round" /> <path d="M8 12V9" stroke="currentColor" strokeWidth="2" strokeLinecap="round" /> <path d="M12 12V8" stroke="currentColor" strokeWidth="2" strokeLinecap="round" /> <path d="M16 12V9" stroke="currentColor" strokeWidth="2" strokeLinecap="round" /> <path d="M8 7C8 6.44772 8.44772 6 9 6C9.55228 6 10 6.44772 10 7C10 7.55228 9.55228 8 9 8" stroke="currentColor" strokeWidth="2" strokeLinecap="round" /> <path d="M12 6C12 5.44772 12.4477 5 13 5C13.5523 5 14 5.44772 14 6C14 6.55228 13.5523 7 13 7" stroke="currentColor" strokeWidth="2" strokeLinecap="round" /> </svg> );
+export const CakeIcon = ({ size = 16, className = '', }: IconProps) => {
+  return (<svg width={size} height={size} viewBox="0 0 24 24" fill="none" className={className} > <path d="M4 12H20V20H4V12Z" stroke="currentColor" strokeWidth="2" strokeLinejoin="round" /> <path d="M4 16C5.5 17 7 17 8.5 16C10 15 11.5 15 13 16C14.5 17 16 17 17.5 16C19 15 20 15 20 16" stroke="currentColor" strokeWidth="2" strokeLinecap="round" /> <path d="M8 12V9" stroke="currentColor" strokeWidth="2" strokeLinecap="round" /> <path d="M12 12V8" stroke="currentColor" strokeWidth="2" strokeLinecap="round" /> <path d="M16 12V9" stroke="currentColor" strokeWidth="2" strokeLinecap="round" /> <path d="M8 7C8 6.44772 8.44772 6 9 6C9.55228 6 10 6.44772 10 7C10 7.55228 9.55228 8 9 8" stroke="currentColor" strokeWidth="2" strokeLinecap="round" /> <path d="M12 6C12 5.44772 12.4477 5 13 5C13.5523 5 14 5.44772 14 6C14 6.55228 13.5523 7 13 7" stroke="currentColor" strokeWidth="2" strokeLinecap="round" /> </svg>);
 };
 
-export const MagicIcon = ({ size = 16, className = '', }: IconProps) => { 
-  return ( <svg width={size} height={size} viewBox="0 0 24 24" fill="none" className={className} > <path d="M15 4L20 9L9 20L4 15L15 4Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" /> <path d="M7 4V2" stroke="currentColor" strokeWidth="2" strokeLinecap="round" /> <path d="M5 3H9" stroke="currentColor" strokeWidth="2" strokeLinecap="round" /> <path d="M19 14V12" stroke="currentColor" strokeWidth="2" strokeLinecap="round" /> <path d="M17 13H21" stroke="currentColor" strokeWidth="2" strokeLinecap="round" /> <path d="M5 21L6 20" stroke="currentColor" strokeWidth="2" strokeLinecap="round" /> </svg> ); 
+export const MagicIcon = ({ size = 16, className = '', }: IconProps) => {
+  return (<svg width={size} height={size} viewBox="0 0 24 24" fill="none" className={className} > <path d="M15 4L20 9L9 20L4 15L15 4Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" /> <path d="M7 4V2" stroke="currentColor" strokeWidth="2" strokeLinecap="round" /> <path d="M5 3H9" stroke="currentColor" strokeWidth="2" strokeLinecap="round" /> <path d="M19 14V12" stroke="currentColor" strokeWidth="2" strokeLinecap="round" /> <path d="M17 13H21" stroke="currentColor" strokeWidth="2" strokeLinecap="round" /> <path d="M5 21L6 20" stroke="currentColor" strokeWidth="2" strokeLinecap="round" /> </svg>);
 };
 
-export const UserCheckIcon = ({ size = 16, className = '', }: IconProps) => { 
-  return ( <svg width={size} height={size} viewBox="0 0 24 24" fill="none" className={className} > <path d="M15 21V19C15 16.7909 13.2091 15 11 15H6C3.79086 15 2 16.7909 2 19V21" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" /> <circle cx="8.5" cy="7" r="4" stroke="currentColor" strokeWidth="2" /> <path d="M16 19L18 21L22 17" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" /> </svg> ); 
+export const UserCheckIcon = ({ size = 16, className = '', }: IconProps) => {
+  return (<svg width={size} height={size} viewBox="0 0 24 24" fill="none" className={className} > <path d="M15 21V19C15 16.7909 13.2091 15 11 15H6C3.79086 15 2 16.7909 2 19V21" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" /> <circle cx="8.5" cy="7" r="4" stroke="currentColor" strokeWidth="2" /> <path d="M16 19L18 21L22 17" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" /> </svg>);
 };
 
 export const HeartIcon = ({ size = 16, className = '' }: IconProps) => {
@@ -380,21 +483,56 @@ export const EmailIcon = ({ size = 16, className = '' }: IconProps) => (
 
 // PrivacyTipOutlinedIcon (Política de Privacidad / Escudo)
 export const PrivacyTipIcon = ({ size = 16, className = '' }: IconProps) => (
-  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" className={className}>
+  <svg
+    width={size}
+    height={size}
+    viewBox="0 0 24 24"
+    fill="none"
+    className={className}
+  >
     <path
-      d="M12 3.19L5 6.3V12c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V6.3l-7-3.11zm5 8.81c0 4.33-2.91 8.37-7 9.47-4.09-1.1-7-5.14-7-9.47V7.8l5-2.22 5 2.22v4.2zm-6-2.5h2v2h-2v-2zm0 4h2v4h-2v-4z"
-      fill="currentColor"
+      d="M12 3L5 6v5c0 4.5 2.9 8.7 7 10 4.1-1.3 7-5.5 7-10V6l-7-3z"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+    <path
+      d="M12 10v4"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+    />
+    <path
+      d="M12 7.5v.01"
+      stroke="currentColor"
+      strokeWidth="2.5"
+      strokeLinecap="round"
     />
   </svg>
 );
 
 // GavelOutlinedIcon (Términos / Martillo de Ley)
 export const GavelIcon = ({ size = 16, className = '' }: IconProps) => (
-  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" className={className}>
-    <path
-      d="M1 21h12v2H1v-2zM5.245 8.05l2.83-2.827 9.9 9.9-2.83 2.828-9.9-9.9zM12.317 1.687l2.828 2.828-1.414 1.414-2.828-2.828 1.414-1.414zM2.417 11.587l2.828 2.828-1.414 1.414-2.828-2.828 1.414-1.414zM21.5 18h-8v2h8v-2z"
-      fill="currentColor"
-    />
+  <svg
+    width={size}
+    height={size}
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth={1.75}
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    className={className}
+  >
+    {/* head + handle, rotated as one piece */}
+    <g transform="rotate(45 12 12)">
+      <rect x="7.5" y="2.5" width="9" height="6" rx="1.75" />
+      <path d="M12 8.5V20" />
+    </g>
+
+    {/* sound block */}
+    <path d="M3 21h9" />
   </svg>
 );
 
@@ -694,68 +832,68 @@ export const FileBanIcon = ({ size }: { size?: number }) => (
 )
 
 export const CommentsIcon = ({ size = 16 }: { size?: number }) => (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-        <path d="M21 12a8.5 8.5 0 0 1-8.5 8.5 8.4 8.4 0 0 1-3.9-.94L3 21l1.44-5.6A8.5 8.5 0 1 1 21 12z" />
-    </svg>
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M21 12a8.5 8.5 0 0 1-8.5 8.5 8.4 8.4 0 0 1-3.9-.94L3 21l1.44-5.6A8.5 8.5 0 1 1 21 12z" />
+  </svg>
 );
 export const ReplyIcon = ({ size = 16 }: { size?: number }) => (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-        <polyline points="9 17 4 12 9 7" /><path d="M20 18v-2a4 4 0 0 0-4-4H4" />
-    </svg>
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <polyline points="9 17 4 12 9 7" /><path d="M20 18v-2a4 4 0 0 0-4-4H4" />
+  </svg>
 );
 
 export const MessageAdminIcon = ({ size = 16 }: { size?: number }) => (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-        <rect x="3" y="5" width="18" height="14" rx="2" />
-        <path d="M3 7l9 6 9-6" />
-    </svg>
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <rect x="3" y="5" width="18" height="14" rx="2" />
+    <path d="M3 7l9 6 9-6" />
+  </svg>
 );
 
 export const NotificationIcon = ({ size = 16 }: { size?: number }) => (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-        <path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9" />
-        <path d="M13.73 21a2 2 0 0 1-3.46 0" />
-    </svg>
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9" />
+    <path d="M13.73 21a2 2 0 0 1-3.46 0" />
+  </svg>
 );
 
 export const CalendarIcon = ({ size = 16 }: { size?: number }) => (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-        <rect x="3" y="4" width="18" height="18" rx="2" />
-        <path d="M16 2v4" /><path d="M8 2v4" /><path d="M3 10h18" />
-    </svg>
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <rect x="3" y="4" width="18" height="18" rx="2" />
+    <path d="M16 2v4" /><path d="M8 2v4" /><path d="M3 10h18" />
+  </svg>
 );
 
 export const ChevronLeftDateIcon = ({ size = 16 }: { size?: number }) => (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-        <polyline points="15 18 9 12 15 6" />
-    </svg>
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <polyline points="15 18 9 12 15 6" />
+  </svg>
 );
 
 export const ChevronRightDateIcon = ({ size = 16 }: { size?: number }) => (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-        <polyline points="9 18 15 12 9 6" />
-    </svg>
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <polyline points="9 18 15 12 9 6" />
+  </svg>
 );
 
 export const ChevronDownIcon = ({ size = 14 }: { size?: number }) => (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-        <polyline points="6 9 12 15 18 9" />
-    </svg>
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <polyline points="6 9 12 15 18 9" />
+  </svg>
 );
 
 export const LayoutDashboardIcon = ({ size = 14 }: { size?: number }) => (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-        <rect x="3" y="3" width="7" height="9" rx="1" />
-        <rect x="14" y="3" width="7" height="5" rx="1" />
-        <rect x="14" y="12" width="7" height="9" rx="1" />
-        <rect x="3" y="16" width="7" height="5" rx="1" />
-    </svg>
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <rect x="3" y="3" width="7" height="9" rx="1" />
+    <rect x="14" y="3" width="7" height="5" rx="1" />
+    <rect x="14" y="12" width="7" height="9" rx="1" />
+    <rect x="3" y="16" width="7" height="5" rx="1" />
+  </svg>
 );
 
 export const AuditHistoryIcon = ({ size = 14 }: { size?: number }) => (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-        <path d="M3 3v5h5" />
-        <path d="M3.05 13a9 9 0 1 0 .5-4.5" />
-        <path d="M12 7v5l3 3" />
-    </svg>
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M3 3v5h5" />
+    <path d="M3.05 13a9 9 0 1 0 .5-4.5" />
+    <path d="M12 7v5l3 3" />
+  </svg>
 );

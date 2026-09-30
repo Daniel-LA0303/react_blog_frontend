@@ -36,7 +36,7 @@ const unwrap = async <T,>(request: Promise<{ data: { data: T } }>): Promise<T> =
 // -----------------------------------------------------------------------------
 // project
 // -----------------------------------------------------------------------------
-export const createProject = (payload: { name: string; description: string }) =>
+export const createProject = (payload: { name: string; description: string, owner: string }) =>
   unwrap<{ projectId: string }>(clientAuthAxios.post('/project/create-project', payload))
 
 export const updateProject = (projectId: string, payload: { name: string; description: string }) =>

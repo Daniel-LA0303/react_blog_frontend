@@ -25,4 +25,22 @@ export interface BadgeListMeta {
   limit: number
   totalPages: number
 }
+
+export interface UserBadgeItem {
+  _id: string
+  awardedAt: string
+  isDisplayed: boolean
+  badge: {
+    _id: string
+    name: string
+    description: string
+    img?: string
+    icon?: string
+    type: 'ACHIEVEMENT'
+    condition: {
+      type: 'BLOG_COUNT' | 'COMMENT_COUNT' | 'QUIZ_COUNT' | 'FOLLOWER_COUNT' | 'QUIZ_SCORE'
+      value: number
+    }
+  }
+}
  

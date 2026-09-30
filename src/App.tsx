@@ -60,6 +60,12 @@ import StudyListEmptyState from "./components/Lists/StudyListEmptyState";
 import QuizBrowser from "./Pages/Quizz/QuizBrowser";
 import KanbanBoard from "./Pages/Project/Project";
 import ListBrowser from "./Pages/Lists/ListBrowser";
+import StudyListDashboard from "./Pages/DashBoard/Pages/StudyListDashboard";
+import QuizzesDashbooard from "./Pages/DashBoard/Pages/QuizzesDashbooard";
+import QuizAttemptDashboard from "./Pages/DashBoard/Pages/QuizAttemptDashboard";
+import ProjectsDashboard from "./Pages/DashBoard/Pages/ProjectsDashboard";
+import ProjectColaboration from "./Pages/DashBoard/Pages/ProjectColaboration";
+import BadgesDashborad from "./Pages/DashBoard/Pages/BadgesDashborad";
 
 
 
@@ -118,12 +124,21 @@ function App() {
           {/* DashBoard */}
           <Route path="/dashboard/:id" element={userAuth.userId ? <DashBoardProfile /> : <Login />} />
 
+          {/* activity */}
           <Route path="/save-posts/:id" element={userAuth.userId ? <SavePost /> : <Login />} />
           <Route path="/user-posts/:id" element={userAuth.userId ? <UserPosts /> : <Login />} />
           <Route path="/user-tags/:id" element={userAuth.userId ? < UserTags /> : <Login />} />
           <Route path="/user-likes-posts/:id" element={userAuth.userId ? <LikesPosts /> : <Login />} />
           <Route path="/followed-users/:id" element={userAuth.userId ? <FollowedUsers /> : <Login />} />
           <Route path="/followers-users/:id" element={userAuth.userId ? <FollowersUsers /> : <Login />} />
+          {/* activity collaboration */}
+          <Route path="/my-lists/:id" element={userAuth.userId ? <StudyListDashboard /> : <Login />} />
+          <Route path="/my-quizzes/:id" element={userAuth.userId ? <QuizzesDashbooard /> : <Login />} />
+          <Route path="/my-attempts/:id" element={userAuth.userId ? <QuizAttemptDashboard /> : <Login />} />
+          <Route path="/my-projects/:id" element={userAuth.userId ? <ProjectsDashboard /> : <Login />} />
+          <Route path="/my-projects-colaboration/:id" element={userAuth.userId ? <ProjectColaboration /> : <Login />} />
+          <Route path="/my-badges/:id" element={userAuth.userId ? <BadgesDashborad /> : <Login />} />
+
           <Route path="/payment-methods/:id" element={userAuth.userId ? <AddPaymentMethod /> : <Login />} />
 
           <Route path="/profile/:id" element={<Profile />} />

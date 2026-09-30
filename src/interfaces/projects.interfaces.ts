@@ -41,3 +41,13 @@ export interface KanbanBoard {
   lists: KanbanList[];
   tasks: KanbanTask[];
 }
+
+export interface ProjectCollabItem {
+  _id: string
+  name: string
+  description: string
+  owner: { _id: string; name: string }
+  status: 'ACTIVE' | 'ARCHIVED'
+  createdAt: string
+  updatedAt: string
+}
