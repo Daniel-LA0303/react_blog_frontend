@@ -3,6 +3,12 @@
 export type ProjectStatus = 'ACTIVE' | 'ARCHIVED' | 'DELETED';
 export type TaskPriority = 'LOW' | 'MEDIUM' | 'HIGH';
 
+export type ConfirmState =
+    | { type: 'status'; status: ProjectStatus }
+    | { type: 'removeMember'; user: KanbanUser }
+    | { type: 'deleteTask'; task: KanbanTask }
+    | null
+
 export interface KanbanUser {
   _id: string;
   name: string;

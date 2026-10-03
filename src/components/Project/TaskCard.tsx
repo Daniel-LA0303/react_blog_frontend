@@ -20,8 +20,6 @@ interface TaskCardProps {
     onSaveEdit: (task: string, title: string, description: string) => Promise<KanbanTask> | KanbanTask;
 }
 
-// task.assignedTo is a single user on the backend, so `assignedUsers` here
-// only ever holds 0 or 1 items; assigning someone new replaces the previous one
 const TaskCard = ({
     task,
     dark,

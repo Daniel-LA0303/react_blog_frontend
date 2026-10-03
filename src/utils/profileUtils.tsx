@@ -70,7 +70,7 @@ export const menuItems = [
     ),
   },
   {
-    to: () => '/create-quiz',
+    to: (id: string) => `/my-projects/${id}`,
     label: 'My Projects',
     icon: (
       <svg

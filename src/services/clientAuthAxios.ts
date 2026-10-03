@@ -1,4 +1,5 @@
 import axios, { InternalAxiosRequestConfig } from "axios";
+import { getSocket } from "./socketRef";
 
 let isRefreshing = false;
 let failedQueue: Array<{ resolve: (token: string) => void; reject: (err: any) => void }> = [];
@@ -9,6 +10,7 @@ const clientAuthAxios = axios.create({
   timeout: 10000,
 });
 
+
 clientAuthAxios.interceptors.request.use(
   (config: InternalAxiosRequestConfig) => {
     const token = localStorage.getItem("tokenAuthUser");
@@ -17,11 +19,15 @@ clientAuthAxios.interceptors.request.use(
       config.headers.Authorization = `Bearer ${token}`;
     }
 
+    // el servidor usa este id para no reenviarle el evento a quien hizo el cambio
+    const socketId = getSocket()?.id;
+    if (socketId && config.url?.startsWith("/project") && config.headers) {
+      config.headers["x-socket-id"] = socketId;
+    }
+
     return config;
   },
-  (error) => {
-    return Promise.reject(error);
-  }
+  (error) => Promise.reject(error)
 );
 
 

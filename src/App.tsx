@@ -148,8 +148,6 @@ function App() {
 
           <Route path="/project/:id" element={userAuth.userId ? <KanbanBoard /> : <Login />} />
 
-
-
           {/* MESSAGES */}
           {/* <Route
             path="/"

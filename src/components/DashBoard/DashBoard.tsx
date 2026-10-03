@@ -1,4 +1,4 @@
- import { Link } from 'react-router-dom'
+import { Link } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import useGlobalDataContext from '../../context/hooks/useGlobalDataContext'
 import userUserAuthContext from '../../context/hooks/useUserAuthContext'
@@ -213,29 +213,29 @@ const DashBoard = ({ counts }: any) => {
         </div>
       </motion.div>
 
-<motion.div initial="hidden" animate="visible" variants={stagger}>
-  <SectionLabel label="Your activity" dark={dark} />
-  <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 mb-8">
-    <StatCardDashboard to={`/user-posts/${userAuth.userId}`} icon={Icons.blog} label="Blogs Published" value={counts.postsCount} accent="bg-indigo-600 text-white" index={1} dark={dark} />
-    <StatCardDashboard to={`/user-likes-posts/${userAuth.userId}`} icon={Icons.likes} label="Post Likes" value={counts.likePostsCount} accent="bg-rose-600 text-white" index={2} dark={dark} />
-    <StatCardDashboard to={`/save-posts/${userAuth.userId}`} icon={Icons.saved} label="Posts Saved" value={counts.savedPostsCount} accent="bg-amber-500 text-white" index={3} dark={dark} />
-    <StatCardDashboard to={`/followers-users/${userAuth.userId}`} icon={Icons.followers} label="Followers" value={counts.followersCount} accent="bg-teal-600 text-white" index={4} dark={dark} />
-    <StatCardDashboard to={`/followed-users/${userAuth.userId}`} icon={Icons.following} label="Following" value={counts.followedUsersCount} accent="bg-sky-600 text-white" index={5} dark={dark} />
-    <StatCardDashboard to={`/user-tags/${userAuth.userId}`} icon={Icons.tags} label="Tags Saved" value={counts.tagsCount} accent="bg-violet-600 text-white" index={6} dark={dark} />
-  </div>
-</motion.div>
+      <motion.div initial="hidden" animate="visible" variants={stagger}>
+        <SectionLabel label="Your activity" dark={dark} />
+        <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 mb-8">
+          <StatCardDashboard to={`/user-posts/${userAuth.userId}`} icon={Icons.blog} label="Blogs Published" value={counts.postsCount} accent="bg-indigo-600 text-white" index={1} dark={dark} />
+          <StatCardDashboard to={`/user-likes-posts/${userAuth.userId}`} icon={Icons.likes} label="Post Likes" value={counts.likePostsCount} accent="bg-rose-600 text-white" index={2} dark={dark} />
+          <StatCardDashboard to={`/save-posts/${userAuth.userId}`} icon={Icons.saved} label="Posts Saved" value={counts.savedPostsCount} accent="bg-amber-500 text-white" index={3} dark={dark} />
+          <StatCardDashboard to={`/followers-users/${userAuth.userId}`} icon={Icons.followers} label="Followers" value={counts.followersCount} accent="bg-teal-600 text-white" index={4} dark={dark} />
+          <StatCardDashboard to={`/followed-users/${userAuth.userId}`} icon={Icons.following} label="Following" value={counts.followedUsersCount} accent="bg-sky-600 text-white" index={5} dark={dark} />
+          <StatCardDashboard to={`/user-tags/${userAuth.userId}`} icon={Icons.tags} label="Tags Saved" value={counts.tagsCount} accent="bg-violet-600 text-white" index={6} dark={dark} />
+        </div>
+      </motion.div>
 
-<motion.div initial="hidden" animate="visible" variants={stagger}>
-  <SectionLabel label="Your collaboration activity" dark={dark} />
-  <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 mb-8">
-    <StatCardDashboard to={`/user-posts/${userAuth.userId}`} icon={Icons.projectsOwn} label="My Projects" value={counts.projectsCount} accent="bg-indigo-600 text-white" index={1} dark={dark} />
-    <StatCardDashboard to={`/user-likes-posts/${userAuth.userId}`} icon={Icons.projectsCollaboration} label="Projects in collaboration" value={counts.projectsInCollaborationCount} accent="bg-rose-600 text-white" index={2} dark={dark} />
-    <StatCardDashboard to={`/save-posts/${userAuth.userId}`} icon={Icons.quizzesOwn} label="My Quizzes" value={counts.quizzesCount} accent="bg-amber-500 text-white" index={3} dark={dark} />
-    <StatCardDashboard to={`/followers-users/${userAuth.userId}`} icon={Icons.quizzesAttempt} label="My Quiz Attempts" value={counts.quizzesAttemptsCount} accent="bg-teal-600 text-white" index={4} dark={dark} />
-    <StatCardDashboard to={`/followed-users/${userAuth.userId}`} icon={Icons.lists} label="My Study Lists" value={counts.listsCount} accent="bg-sky-600 text-white" index={5} dark={dark} />
-    <StatCardDashboard to={`/user-tags/${userAuth.userId}`} icon={Icons.badges} label="My Badges" value={counts.badgeCount} accent="bg-violet-600 text-white" index={6} dark={dark} />
-  </div>
-</motion.div>
+      <motion.div initial="hidden" animate="visible" variants={stagger}>
+        <SectionLabel label="Your collaboration activity" dark={dark} />
+        <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 mb-8">
+          <StatCardDashboard to={`/my-lists/${userAuth.userId}`} icon={Icons.lists} label="My Study Lists" value={counts.listsCount} accent="bg-lime-600 text-white" index={1} dark={dark} />
+          <StatCardDashboard to={`/my-quizzes/${userAuth.userId}`} icon={Icons.quizzesOwn} label="My Quizzes" value={counts.quizzesCount} accent="bg-orange-600 text-white" index={2} dark={dark} />
+          <StatCardDashboard to={`/my-attempts/${userAuth.userId}`} icon={Icons.quizzesAttempt} label="My Quiz Attempts" value={counts.quizzesAttemptsCount} accent="bg-cyan-600 text-white" index={3} dark={dark} />
+          <StatCardDashboard to={`/my-projects/${userAuth.userId}`} icon={Icons.projectsOwn} label="My Projects" value={counts.projectsCount} accent="bg-emerald-600 text-white" index={4} dark={dark} />
+          <StatCardDashboard to={`/my-projects-colaboration/${userAuth.userId}`} icon={Icons.projectsCollaboration} label="Projects in collaboration" value={counts.projectsInCollaborationCount} accent="bg-fuchsia-600 text-white" index={5} dark={dark} />
+          <StatCardDashboard to={`/my-badges/${userAuth.userId}`} icon={Icons.badges} label="My Badges" value={counts.badgeCount} accent="bg-pink-700 text-white" index={6} dark={dark} />
+        </div>
+      </motion.div>
 
       <motion.div initial="hidden" animate="visible" variants={stagger}>
         <SectionLabel label="Coming soon" dark={dark} />

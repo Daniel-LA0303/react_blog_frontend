@@ -1,13 +1,7 @@
-import {
-  createContext,
-  useContext,
-  useEffect,
-  useRef,
-  useState,
-  ReactNode,
-} from "react";
+import { createContext, useContext, useEffect, useState, ReactNode } from "react";
 import { useAuth } from "./UserAuthContex";
 import { io, Socket } from "socket.io-client";
+import { setSocket } from "../services/socketRef";
 
 type SocketContextType = {
   socket: Socket | null;
@@ -24,53 +18,40 @@ export const useSocketContext = () => {
   return context;
 };
 
-type Props = {
-  children: ReactNode;
-};
-
-export const SocketProvider = ({ children }: Props) => {
+export const SocketProvider = ({ children }: { children: ReactNode }) => {
   const [onlineUsers, setOnlineUsers] = useState<string[]>([]);
+  const [socket, setSocketState] = useState<Socket | null>(null); // estado, no ref
 
   const { userAuth } = useAuth();
-
-  const socketRef = useRef<Socket | null>(null);
 
   useEffect(() => {
     if (!userAuth?.userId) return;
 
-    if (!socketRef.current) {
-      socketRef.current = io(
-        import.meta.env.VITE_API_URL_BACKEND_SOCKET as string,
-        {
-          query: { userId: userAuth.userId },
-        }
-      );
+    const s = io(import.meta.env.VITE_API_URL_BACKEND_SOCKET as string, {
+      query: { userId: userAuth.userId },
+    });
 
-      socketRef.current.on("initialOnlineUsers", (users: string[]) => {
-        setOnlineUsers(users);
-      });
+    s.on("initialOnlineUsers", (users: string[]) => setOnlineUsers(users));
+    s.on("userOnline", ({ userId }: { userId: string }) =>
+      setOnlineUsers((prev) => [...new Set([...prev, userId])])
+    );
+    s.on("userOffline", ({ userId }: { userId: string }) =>
+      setOnlineUsers((prev) => prev.filter((u) => u !== userId))
+    );
 
-      socketRef.current.on("userOnline", ({ userId }: { userId: string }) => {
-        setOnlineUsers((prev) => [...new Set([...prev, userId])]);
-      });
-
-      socketRef.current.on("userOffline", ({ userId }: { userId: string }) => {
-        setOnlineUsers((prev) => prev.filter((u) => u !== userId));
-      });
-    }
+    setSocketState(s); // para React (useProjectSocket)
+    setSocket(s);      // para axios (interceptor)
 
     return () => {
-      if (socketRef.current) {
-        socketRef.current.disconnect();
-        socketRef.current = null;
-      }
+      s.disconnect();
+      setSocketState(null);
+      setSocket(null);
+      setOnlineUsers([]);
     };
   }, [userAuth?.userId]);
 
   return (
-    <socketContext.Provider
-      value={{ socket: socketRef.current, onlineUsers }}
-    >
+    <socketContext.Provider value={{ socket, onlineUsers }}>
       {children}
     </socketContext.Provider>
   );

@@ -1,17 +1,9 @@
 import { Fragment, useEffect, useMemo, useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useParams } from 'react-router-dom'
-
-/**
- * hooks
- */
 import useGlobalDataContext from '../../context/hooks/useGlobalDataContext'
 import userUserAuthContext from '../../context/hooks/useUserAuthContext'
 import { useSwal } from '../../hooks/useSwal'
-
-/**
- * services
- */
 import clientAuthAxios from '../../services/clientAuthAxios'
 import {
     updateProject,
@@ -28,22 +20,17 @@ import {
     unassignUserFromTask,
     updateTask,
 } from '../../utils/projectUtils'
-import { KanbanList, KanbanProject, KanbanTask, KanbanUser, ProjectStatus } from '../../interfaces/projects.interfaces'
+import { ConfirmState, KanbanTask, KanbanUser, ProjectStatus } from '../../interfaces/projects.interfaces'
 import TaskCard from '../../components/Project/TaskCard'
 import Avatar from '../../components/Project/Avatar'
 import { AddCircleIcon, CloseIcon, DeleteIcon, ListIcon, PenIcon, RestoreIcon, SearchIcon } from '../../utils/iconsUtils'
 import Spinner from '../../components/Spinner/Spinner'
 import Sidebar from '../../components/Sidebar/Sidebar'
+import { useKanbanStore } from '../../context/hooks/webSockets/kanban/useKanbanStore'
+import { useProjectSocket } from '../../context/hooks/webSockets/kanban/useProjectSocket'
+import ProjectEventCard, { ProjectEventI } from '../../components/Project/ProjectEventCard'
 
-const ConfirmDialog = ({
-    open,
-    title,
-    message,
-    danger,
-    dark,
-    onConfirm,
-    onCancel,
-}: {
+const ConfirmDialog = ({ open, title, message, danger, dark, onConfirm, onCancel }: {
     open: boolean
     title: string
     message: string
@@ -67,25 +54,22 @@ const ConfirmDialog = ({
                     exit={{ opacity: 0, scale: 0.95, y: 8 }}
                     transition={{ type: 'spring', stiffness: 400, damping: 28 }}
                     onClick={(e) => e.stopPropagation()}
-                    className={`w-full max-w-sm rounded-2xl border p-5 shadow-xl ${dark ? 'bg-[#27272A] border-gray-800' : 'bg-white border-gray-100'
-                        }`}
+                    className={`w-full max-w-sm rounded-2xl border p-5 shadow-xl ${dark ? 'bg-[#27272A] border-gray-800' : 'bg-white border-gray-100'}`}
                 >
                     <h3 className={`text-sm font-bold ${dark ? 'text-white' : 'text-gray-900'}`}>{title}</h3>
                     <p className={`mt-1.5 text-sm ${dark ? 'text-gray-400' : 'text-gray-500'}`}>{message}</p>
                     <div className="mt-4 flex justify-end gap-2">
                         <button
                             onClick={onCancel}
-                            className={`px-3 py-1.5 text-sm font-medium rounded-lg transition-colors ${dark ? 'text-gray-300 hover:bg-gray-800' : 'text-gray-600 hover:bg-gray-100'
-                                }`}
+                            className={`px-3 py-1.5 text-sm font-medium rounded-lg transition-colors ${dark ? 'text-gray-300 hover:bg-gray-800' : 'text-gray-600 hover:bg-gray-100'}`}
                         >
-                            Cancelar
+                            Cancel
                         </button>
                         <button
                             onClick={onConfirm}
-                            className={`px-3 py-1.5 text-sm font-semibold rounded-lg text-white transition-colors ${danger ? 'bg-rose-500 hover:bg-rose-600' : 'bg-[#2563EB] hover:bg-blue-700'
-                                }`}
+                            className={`px-3 py-1.5 text-sm font-semibold rounded-lg text-white transition-colors ${danger ? 'bg-rose-500 hover:bg-rose-600' : 'bg-[#2563EB] hover:bg-blue-700'}`}
                         >
-                            Confirmar
+                            Confirm
                         </button>
                     </div>
                 </motion.div>
@@ -94,8 +78,6 @@ const ConfirmDialog = ({
     </AnimatePresence>
 )
 
-// thin bar shown between/around cards or columns to preview where the
-// dragged item will land
 const InsertionBar = ({ axis }: { axis: 'x' | 'y' }) => (
     <motion.div
         layout
@@ -106,23 +88,12 @@ const InsertionBar = ({ axis }: { axis: 'x' | 'y' }) => (
     />
 )
 
-type ConfirmState =
-    | { type: 'status'; status: ProjectStatus }
-    | { type: 'removeMember'; user: KanbanUser }
-    | { type: 'deleteTask'; task: KanbanTask }
-    | null
-
-// ----------------------------
-// board
-// ----------------------------
 export const KanbanBoard = () => {
     const { userAuth } = userUserAuthContext()
     const { showConfirmSwal } = useSwal()
     const { globalData } = useGlobalDataContext()
     const dark = !globalData.themeGlobal
-
     const { id } = useParams()
-
 
     const currentUser: KanbanUser = useMemo(
         () => ({
@@ -134,42 +105,47 @@ export const KanbanBoard = () => {
         [userAuth]
     )
 
-    // data for kanban
-    const [project, setProject] = useState<KanbanProject | null>(null)
-    const [lists, setLists] = useState<KanbanList[]>([])
-    const [tasks, setTasks] = useState<KanbanTask[]>([])
+    // ---- board data lives in zustand (shared with the socket listeners) ----
+    const project = useKanbanStore((s) => s.project)
+    const lists = useKanbanStore((s) => s.lists)
+    const tasks = useKanbanStore((s) => s.tasks)
+    const {
+        setBoard,
+        reset,
+        patchProject,
+        addMember,
+        removeMember,
+        addList,
+        applyListOrder,
+        addTask,
+        patchTask,
+        removeTask,
+        moveTask: moveTaskLocal,
+        setAssignee,
+    } = useKanbanStore.getState() // actions are stable references
 
-    // edit project infp
+    // ---- local UI state ----
     const [editingProject, setEditingProject] = useState(false)
     const [projectForm, setProjectForm] = useState({ name: '', description: '' })
 
-    // to show ui to add new list
     const [addingListOpen, setAddingListOpen] = useState(false)
     const [newListName, setNewListName] = useState('')
 
-    // to add a new list
     const [addingTaskListId, setAddingTaskListId] = useState<string | null>(null)
     const [newTaskTitle, setNewTaskTitle] = useState('')
 
-    // to assign user in task
     const [assigningTaskId, setAssigningTaskId] = useState<string | null>(null)
 
-    // to show modal
     const [showInviteModal, setShowInviteModal] = useState(false)
-    const [inviteQuery, setInviteQuery] = useState('') // query
-    const [inviteResults, setInviteResults] = useState<KanbanUser[]>([]) // results info
+    const [inviteQuery, setInviteQuery] = useState('')
+    const [inviteResults, setInviteResults] = useState<KanbanUser[]>([])
 
-    // types to show modals
-    const [confirmState, setConfirmState] = useState<ConfirmState>(null)
+    const [confirmState, setConfirmState] = useState<ConfirmState>(null);
+    const [lastActivity, setLastActivity] = useState<ProjectEventI[]>([]);
 
-    // drag & drop state 
-    // tasks: identified by id, never by a raw index (that's what caused the
-    // off-by-one bug when reordering/moving across lists)
+    // drag & drop
     const [draggedTaskId, setDraggedTaskId] = useState<string | null>(null)
-    const [taskDragIndicator, setTaskDragIndicator] = useState<{ listId: string; beforeTaskId: string | null } | null>(
-        null
-    )
-    // lists: same id-based approach
+    const [taskDragIndicator, setTaskDragIndicator] = useState<{ listId: string; beforeTaskId: string | null } | null>(null)
     const [draggedListId, setDraggedListId] = useState<string | null>(null)
     const [listDragIndicator, setListDragIndicator] = useState<{ beforeListId: string | null } | null>(null)
 
@@ -183,225 +159,172 @@ export const KanbanBoard = () => {
         setListDragIndicator(null)
     }
 
-    // load project info
-    useEffect(() => {
-        const getProject = async () => {
-            try {
-                const { data } = await clientAuthAxios.get(`/project/get-project/${id}`)
-                const board = data.data
-                setProject(board.project)
-                setLists(board.lists)
-                setTasks(board.tasks)
-                setProjectForm({ name: board.project.name, description: board.project.description })
-            } catch (error: any) {
-                showConfirmSwal({
-                    message: error.response?.data?.message || 'No se pudo cargar el proyecto',
-                    status: 'error',
-                    confirmButton: true,
-                    cancelButton: false,
-                })
-            }
-        }
-        getProject()
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [id]);
+    const showError = (error: any, fallback: string) =>
+        showConfirmSwal({
+            message: error?.response?.data?.message || fallback,
+            status: 'error',
+            confirmButton: true,
+            cancelButton: false,
+        })
 
-    // activate when user is search to invite someone
+    // ---- load board (also used by the socket hook to resync) ----
+    const loadBoard = async () => {
+        try {
+            const { data } = await clientAuthAxios.get(`/project/get-project/${id}`)
+            console.log(data);
+            setLastActivity(data.data.lastAcivity);
+            setBoard(data.data)
+            setProjectForm({ name: data.data.project.name, description: data.data.project.description })
+        } catch (error: any) {
+            showError(error, 'No se pudo cargar el proyecto')
+        }
+    }
+
+    useEffect(() => {
+        loadBoard()
+        return () => reset()
+    }, [id])
+
+    // real time: join room + listeners
+    useProjectSocket(id, loadBoard, (event) =>
+        setLastActivity((prev) =>
+            prev.some((e) => e._id === event._id)
+                ? prev                              // prevent duplicate
+                : [event, ...prev].slice(0, 10)     // add new
+        )
+    )
+
+    // search users to invite
     useEffect(() => {
         if (!showInviteModal || !project) return
         const run = async () => {
             try {
-
-                // search users
                 const results = await searchUsers(inviteQuery.trim())
-
-                // getids
                 const memberIds = new Set(project.members.map((m) => m._id))
-
-                // format to not invite again users that are in our project
                 setInviteResults(results.filter((u) => !memberIds.has(u._id)))
             } catch {
                 setInviteResults([])
             }
         }
         run()
-    }, [inviteQuery, showInviteModal]);
+    }, [inviteQuery, showInviteModal])
 
-    const isOwner2 = userAuth.userId === project?.owner;
     const isOwner = project ? project.owner === currentUser._id : false
     const isProjectDeleted = project?.status === 'DELETED'
 
-    // update project info
+    const sortedLists = useMemo(() => [...lists].sort((a, b) => a.order - b.order), [lists])
+
+    const tasksByList = (listId: string) =>
+        tasks.filter((t) => t.listId === listId).sort((a, b) => a.order - b.order)
+
+    // ---- project ----
     const handleSaveProject = async () => {
         if (!project) return
         try {
-            await updateProject(project._id, projectForm);
-            setProject({ ...project, ...projectForm });
-
-            // close edit 
+            await updateProject(project._id, projectForm)
+            patchProject(projectForm)
             setEditingProject(false)
         } catch (error: any) {
-            showConfirmSwal({ message: error.response?.data?.message || 'There was an error to update project.', status: 'error', confirmButton: true, cancelButton: false })
+            showError(error, 'There was an error to update project.')
         }
     }
 
-    // delete or update status project
     const handleChangeStatus = async (status: ProjectStatus) => {
         if (!project) return
         try {
             await updateProjectStatus(project._id, status)
-            setProject({ ...project, status })
+            patchProject({ status })
         } catch (error: any) {
-            showConfirmSwal({ message: error.response?.data?.message || 'There was an error to update status project.', status: 'error', confirmButton: true, cancelButton: false })
+            showError(error, 'There was an error to update status project.')
         } finally {
             setConfirmState(null)
         }
     }
 
-    // add new list
+    // ---- lists ----
     const handleAddList = async () => {
         if (!project || !newListName.trim()) return
         try {
-
-            // list response from backend
             const created = await createList(project._id, newListName.trim(), lists.length)
-
-            // update 
-            setLists((prev) =>
-                [...prev, // save last state
-                {
-                    ...created, // set new task
-                    order: prev.length // set order to new task in front we dont use position
-                }
-                ]);
-
-            // set null and false to not show ui 
+            addList({ ...created, order: lists.length })
             setNewListName('')
             setAddingListOpen(false)
         } catch (error: any) {
-            showConfirmSwal({ message: error.response?.data?.message || 'There was an error to add new list.', status: 'error', confirmButton: true, cancelButton: false })
+            showError(error, 'There was an error to add new list.')
         }
     }
 
-    // order list in base to position
-    const sortedLists = [...lists].sort((a, b) => a.order - b.order)
-
-    // update list position and save to db TODO
     const handleListDrop = () => {
         if (!project || !draggedListId) {
             cleanupListDrag()
             return
         }
-        const indicator = listDragIndicator ?? { beforeListId: null }
-        setLists((prev) => {
+        const sorted = [...sortedLists]
+        const fromIndex = sorted.findIndex((l) => l._id === draggedListId)
+        if (fromIndex === -1) {
+            cleanupListDrag()
+            return
+        }
 
-            // order actual lists
-            const sorted = [...prev].sort((a, b) => a.order - b.order)
-            const fromIndex = sorted.findIndex((l) => l._id === draggedListId)
-            if (fromIndex === -1) return prev
+        const [moved] = sorted.splice(fromIndex, 1)
+        const beforeId = listDragIndicator?.beforeListId
+        const rawTarget = beforeId ? sorted.findIndex((l) => l._id === beforeId) : -1
+        sorted.splice(rawTarget === -1 ? sorted.length : rawTarget, 0, moved)
 
-            // extract new list position
-            const [moved] = sorted.splice(fromIndex, 1);
-            const rawTarget = indicator.beforeListId ? sorted.findIndex((l) => l._id === indicator.beforeListId) : -1
-            const targetIndex = rawTarget === -1 ? sorted.length : rawTarget;
-            sorted.splice(targetIndex, 0, moved)
-
-            // reorder to change view and send data to backend
-            const reindexed = sorted.map((l, i) => ({ ...l, order: i }))
-            reorderLists(project._id, reindexed)
-            return reindexed
-        })
+        const reindexed = sorted.map((l, i) => ({ ...l, order: i }))
+        applyListOrder(reindexed) // immediate UI
+        reorderLists(project._id, reindexed).catch(loadBoard) // if it fails, resync
         cleanupListDrag()
     }
 
-    // filter tasks by list and order
-    const tasksByList = (listId: string) => // need list id to filter
-        tasks.filter((t) => t.listId === listId).sort((a, b) => a.order - b.order)
-
-    // add new task
+    // ---- tasks ----
     const handleAddTask = async (listId: string) => {
         if (!project || !newTaskTitle.trim()) return
         try {
+            const order = tasksByList(listId).length
             const created = await createTask(listId, {
                 project: project._id,
                 title: newTaskTitle.trim(),
                 description: '',
-                position: tasksByList(listId).length,
+                position: order,
                 createdBy: currentUser._id,
             })
-
-            // add to task our response
-            setTasks((prev) =>
-                [
-                    ...prev,
-                    {
-                        ...created, // set last state
-                        listId, // set list
-                        assignedUsers: [], // set a empy array 
-                        // get tasks by list and then set length from that list
-                        order: tasksByList(listId).length // set order based in length but only check it list id
-                    }
-                ]);
+            addTask({ ...created, listId, assignedUsers: [], order })
             setNewTaskTitle('')
             setAddingTaskListId(null)
         } catch (error: any) {
-            showConfirmSwal({ message: error.response?.data?.message || 'No se pudo crear la tarea', status: 'error', confirmButton: true, cancelButton: false })
+            showError(error, 'No se pudo crear la tarea')
         }
     }
 
-    // delete task
     const handleDeleteTask = async (task: KanbanTask) => {
         try {
             await deleteTask(task._id)
-
-            // update state
-            setTasks((prev) =>
-                prev
-                    .filter((t) => t._id !== task._id) // first we filter to get task
-                    .map((t) => // reorder this map
-                    (t.listId === task.listId && t.order > task.order // check task in the same list and check position
-                        ? { ...t, order: t.order - 1 } // reorder task with order > order deleted
-                        : t)) // no order
-            )
-
+            removeTask(task._id)
         } catch (error: any) {
-            showConfirmSwal({ message: error.response?.data?.message || 'No se pudo eliminar la tarea', status: 'error', confirmButton: true, cancelButton: false })
+            showError(error, 'No se pudo eliminar la tarea')
         } finally {
             setConfirmState(null)
         }
     }
 
-    const performMoveTask = (taskId: string, fromListId: string, toListId: string, toIndex: number) => {
+    const onSaveEditTask = async (taskId: string, title: string, description: string): Promise<KanbanTask> => {
+        const updated = await updateTask(taskId, { title, description })
+        patchTask(updated._id, { title: updated.title, description: updated.description })
+        return updated
+    }
 
-        setTasks((prev) => {
-            const movingTask = prev.find((t) => t._id === taskId)
-            if (!movingTask) return prev
-
-            if (fromListId === toListId) {
-                const listTasks = prev.filter((t) => t.listId === fromListId && t._id !== taskId).sort((a, b) => a.order - b.order)
-                const clamped = Math.min(toIndex, listTasks.length)
-                listTasks.splice(clamped, 0, movingTask)
-                const reindexed = listTasks.map((t, i) => ({ ...t, order: i }))
-                const updated = reindexed.find((t) => t._id === taskId)!
-                moveTask(taskId, { title: updated.title, description: updated.description, position: clamped, list: toListId })
-                return [...prev.filter((t) => t.listId !== fromListId), ...reindexed]
-            }
-
-            const fromTasks = prev
-                .filter((t) => t.listId === fromListId && t._id !== taskId)
-                .sort((a, b) => a.order - b.order)
-                .map((t, i) => ({ ...t, order: i }))
-
-            const toTasks = prev.filter((t) => t.listId === toListId).sort((a, b) => a.order - b.order)
-            const clamped = Math.min(toIndex, toTasks.length)
-            const movedTask = { ...movingTask, listId: toListId }
-            toTasks.splice(clamped, 0, movedTask)
-            const reindexedTo = toTasks.map((t, i) => ({ ...t, order: i }))
-
-            moveTask(taskId, { title: movedTask.title, description: movedTask.description, position: clamped, list: toListId })
-
-            return [...prev.filter((t) => t.listId !== fromListId && t.listId !== toListId), ...fromTasks, ...reindexedTo]
-        })
+    // toIndex = position among the target list WITHOUT the dragged task
+    const performMoveTask = (taskId: string, toListId: string, toIndex: number) => {
+        const task = useKanbanStore.getState().tasks.find((t) => t._id === taskId)
+        if (!task) return
+        moveTaskLocal(taskId, toListId, toIndex) // immediate UI
+        moveTask(taskId, {
+            title: task.title,
+            description: task.description,
+            position: toIndex,
+            list: toListId,
+        }).catch(loadBoard) // if it fails, resync
     }
 
     const handleTaskDrop = (listId: string) => {
@@ -411,128 +334,62 @@ export const KanbanBoard = () => {
             cleanupTaskDrag()
             return
         }
-        const indicator = taskDragIndicator && taskDragIndicator.listId === listId ? taskDragIndicator : { listId, beforeTaskId: null }
+        const beforeTaskId = taskDragIndicator?.listId === listId ? taskDragIndicator.beforeTaskId : null
         const siblings = tasks.filter((t) => t.listId === listId && t._id !== dragged._id).sort((a, b) => a.order - b.order)
-        const idx = indicator.beforeTaskId ? siblings.findIndex((t) => t._id === indicator.beforeTaskId) : -1
-        const finalIndex = idx === -1 ? siblings.length : idx
-        performMoveTask(dragged._id, dragged.listId, listId, finalIndex)
+        const idx = beforeTaskId ? siblings.findIndex((t) => t._id === beforeTaskId) : -1
+        performMoveTask(dragged._id, listId, idx === -1 ? siblings.length : idx)
         cleanupTaskDrag()
     }
 
-    // assing user to task
+    // ---- assignment ----
     const handleAssign = async (task: KanbanTask, user: KanbanUser) => {
         try {
             await assignUserToTask(task._id, user._id)
-            setTasks(
-                (prev) => prev.map(
-                    (t) => (
-                        t._id === task._id // check if is task to update
-                        ? { ...t, assignedUsers: [user] } // add user in ui
-                        : t // send same task, we dont do changes
-                    ))
-                )
+            setAssignee(task._id, user)
             setAssigningTaskId(null)
         } catch (error: any) {
-            showConfirmSwal({ message: error.response?.data?.message || 'No se pudo asignar al usuario', status: 'error', confirmButton: true, cancelButton: false })
+            showError(error, 'No se pudo asignar al usuario')
         }
     }
 
-    // unassign user
     const handleUnassign = async (task: KanbanTask, user: KanbanUser) => {
         try {
             await unassignUserFromTask(task._id, user._id)
-
-            setTasks(
-                (prev) => prev.map(
-                    (t) => (
-                        t._id === task._id // find task to update
-                        ? { ...t, assignedUsers: [] } // quit user from state
-                        : t
-                    ))
-                )
+            setAssignee(task._id, null)
             setAssigningTaskId(null)
         } catch (error: any) {
-            showConfirmSwal({ message: error.response?.data?.message || 'No se pudo quitar al usuario', status: 'error', confirmButton: true, cancelButton: false })
+            showError(error, 'No se pudo quitar al usuario')
         }
     }
 
-
-    // update task data
-    const onSaveEditTask = async (
-        taskId: string,
-        title: string,
-        description: string
-    ): Promise<KanbanTask> => {
-
-        const updatedTask = await updateTask(taskId, { title, description });
-
-        // update only task info
-        setTasks(prev =>
-            prev.map(task =>
-                task._id === updatedTask._id
-                    ? {
-                        // update info
-                        ...task,
-                        title: updatedTask.title,
-                        description: updatedTask.description
-                    }
-                    : task
-            )
-        );
-
-        return updatedTask;
-    };
-
-    // invite and set new member
+    // ---- members ----
     const handleInvite = async (user: KanbanUser) => {
         if (!project) return
         try {
-
-            // set info in db
             await inviteUserToProject(project._id, user._id)
-
-            setProject(
-                {
-                    ...project,
-                    members: [...project.members, user] // new member
-                }
-            )
-
+            addMember(user)
             setInviteResults((prev) => prev.filter((u) => u._id !== user._id))
         } catch (error: any) {
-            showConfirmSwal({ message: error.response?.data?.message || 'No se pudo invitar al usuario', status: 'error', confirmButton: true, cancelButton: false })
+            showError(error, 'No se pudo invitar al usuario')
         }
     }
 
-
-    // remove member
     const handleRemoveMember = async (user: KanbanUser) => {
         if (!project) return
         try {
-
-            // set info in backend
             await removeUserFromProject(project._id, user._id)
-
-            setProject(
-                { 
-                    ...project, // copy last state
-                    members: project.members.filter((m) => m._id !== user._id) // set new array members and filter
-                }
-            );
+            removeMember(user._id)
         } catch (error: any) {
-            showConfirmSwal({ message: error.response?.data?.message || 'No se pudo quitar al usuario del proyecto', status: 'error', confirmButton: true, cancelButton: false })
+            showError(error, 'No se pudo quitar al usuario del proyecto')
         } finally {
             setConfirmState(null)
         }
     }
 
-    if (!project) {
-        return <Spinner />
-    }
+    if (!project) return <Spinner />
 
     return (
         <div className={`min-h-screen w-full ${dark ? 'bg-[#18181B]' : 'bg-gray-50'}`}>
-
             <Sidebar />
             <div className="max-w-full mx-0 lg:mx-20 px-4 sm:px-6 py-6">
                 {/* ---- project header ---- */}
@@ -545,22 +402,18 @@ export const KanbanBoard = () => {
 
                     <div className="flex items-start justify-between gap-4 flex-wrap">
                         <div className="flex-1 min-w-[240px]">
-
-                            {/* to show editing project info ui */}
                             {editingProject ? (
                                 <div className="flex flex-col gap-2">
                                     <input
                                         value={projectForm.name}
                                         onChange={(e) => setProjectForm((f) => ({ ...f, name: e.target.value }))}
-                                        className={`text-lg font-bold rounded-lg px-2.5 py-1.5 outline-none border ${dark ? 'bg-[#18181B] border-gray-700 text-white' : 'bg-gray-50 border-gray-200 text-gray-900'
-                                            }`}
+                                        className={`text-lg font-bold rounded-lg px-2.5 py-1.5 outline-none border ${dark ? 'bg-[#18181B] border-gray-700 text-white' : 'bg-gray-50 border-gray-200 text-gray-900'}`}
                                     />
                                     <textarea
                                         value={projectForm.description}
                                         onChange={(e) => setProjectForm((f) => ({ ...f, description: e.target.value }))}
                                         rows={2}
-                                        className={`text-sm rounded-lg px-2.5 py-1.5 outline-none border resize-none ${dark ? 'bg-[#18181B] border-gray-700 text-gray-200' : 'bg-gray-50 border-gray-200 text-gray-600'
-                                            }`}
+                                        className={`text-sm rounded-lg px-2.5 py-1.5 outline-none border resize-none ${dark ? 'bg-[#18181B] border-gray-700 text-gray-200' : 'bg-gray-50 border-gray-200 text-gray-600'}`}
                                     />
                                     <div className="flex gap-2">
                                         <button onClick={handleSaveProject} className="px-3 py-1.5 text-xs font-semibold rounded-lg bg-[#2563EB] text-white hover:bg-blue-700">
@@ -578,28 +431,34 @@ export const KanbanBoard = () => {
                                     </div>
                                 </div>
                             ) : (
-
-                                // show normal ui
                                 <div className="flex items-center gap-2">
                                     <h1 className={`text-lg font-bold ${dark ? 'text-white' : 'text-gray-900'}`}>{project.name}</h1>
-                                    {isOwner2 && !isProjectDeleted && ( // only if is owner and project is not deleted
-                                        <button onClick={() => setEditingProject(true)} className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300" aria-label="Editar proyecto">
+                                    {isOwner && !isProjectDeleted && (
+                                        <button
+                                            onClick={() => {
+                                                // sync the form with the latest data (it may have changed via socket)
+                                                setProjectForm({ name: project.name, description: project.description })
+                                                setEditingProject(true)
+                                            }}
+                                            className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
+                                            aria-label="Editar proyecto"
+                                        >
                                             <PenIcon isDark={dark} />
                                         </button>
                                     )}
                                 </div>
                             )}
-                            {!editingProject && project.description && <p className={`mt-1 text-sm ${dark ? 'text-gray-400' : 'text-gray-500'}`}>{project.description}</p>}
+                            {!editingProject && project.description && (
+                                <p className={`mt-1 text-sm ${dark ? 'text-gray-400' : 'text-gray-500'}`}>{project.description}</p>
+                            )}
                         </div>
 
-                        {/* status + members + actions */}
+                        {/* members + actions */}
                         <div className="flex items-center gap-3 flex-wrap">
                             <div className="flex -space-x-2">
                                 {project.members.slice(0, 5).map((m) => (
                                     <div key={m._id} className="relative group/member">
                                         <Avatar user={m} />
-
-                                        {/* button to remove an user from project */}
                                         {isOwner && m._id !== project.owner && !isProjectDeleted && (
                                             <button
                                                 onClick={() => setConfirmState({ type: 'removeMember', user: m })}
@@ -613,50 +472,43 @@ export const KanbanBoard = () => {
                                 ))}
                                 {project.members.length > 5 && (
                                     <span
-                                        className={`h-7 w-7 rounded-full flex items-center justify-center text-[10px] font-semibold ring-2 ring-white dark:ring-[#27272A] ${dark ? 'bg-gray-700 text-gray-300' : 'bg-gray-200 text-gray-600'
-                                            }`}
+                                        className={`h-7 w-7 rounded-full flex items-center justify-center text-[10px] font-semibold ring-2 ring-white dark:ring-[#27272A] ${dark ? 'bg-gray-700 text-gray-300' : 'bg-gray-200 text-gray-600'}`}
                                     >
                                         +{project.members.length - 5}
                                     </span>
                                 )}
                             </div>
 
-
-                            {/* show modal to invite a new user */}
                             {isOwner && !isProjectDeleted && (
                                 <button
                                     onClick={() => setShowInviteModal(true)}
-                                    className={`flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-lg border transition-colors ${dark ? 'border-gray-700 text-gray-300 hover:bg-gray-800' : 'border-gray-200 text-gray-600 hover:bg-gray-50'
-                                        }`}
+                                    className={`flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-lg border transition-colors ${dark ? 'border-gray-700 text-gray-300 hover:bg-gray-800' : 'border-gray-200 text-gray-600 hover:bg-gray-50'}`}
                                 >
                                     <AddCircleIcon isDark={dark} />
                                 </button>
                             )}
 
-                            {isOwner && (
-                                <>
-                                    {!isProjectDeleted ? (
-                                        <button
-                                            onClick={() => setConfirmState({ type: 'status', status: 'DELETED' })}
-                                            className="flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-lg border border-rose-200 text-rose-600 hover:bg-rose-50 transition-colors"
-                                        >
-                                            <DeleteIcon />
-                                        </button>
-                                    ) : (
-                                        <button
-                                            onClick={() => handleChangeStatus('ACTIVE')}
-                                            className="flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-lg border border-green-200 text-green-700 hover:bg-green-50 transition-colors"
-                                        >
-                                            <RestoreIcon />
-                                        </button>
-                                    )}
-                                </>
-                            )}
+                            {isOwner &&
+                                (!isProjectDeleted ? (
+                                    <button
+                                        onClick={() => setConfirmState({ type: 'status', status: 'DELETED' })}
+                                        className="flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-lg border border-rose-200 text-rose-600 hover:bg-rose-50 transition-colors"
+                                    >
+                                        <DeleteIcon />
+                                    </button>
+                                ) : (
+                                    <button
+                                        onClick={() => handleChangeStatus('ACTIVE')}
+                                        className="flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-lg border border-green-200 text-green-700 hover:bg-green-50 transition-colors"
+                                    >
+                                        <RestoreIcon />
+                                    </button>
+                                ))}
                         </div>
                     </div>
                 </div>
 
-                {/* print lists */}
+                {/* ---- lists ---- */}
                 <div
                     className="flex items-start gap-4 overflow-x-auto pb-4 ui-scroll-y ui-scroll-x"
                     onDragOver={(e) => draggedListId && e.preventDefault()}
@@ -667,16 +519,9 @@ export const KanbanBoard = () => {
                         }
                     }}
                 >
-                    {/* bucle to print lists */}
                     {sortedLists.map((list, listIndex) => {
-
-                        // by each list we get task order by position
                         const listTasks = tasksByList(list._id)
-
-                        // get next list
                         const nextList = sortedLists[listIndex + 1]
-
-                        // 
                         const isDraggingThisList = draggedListId === list._id
 
                         return (
@@ -686,11 +531,6 @@ export const KanbanBoard = () => {
                                 )}
 
                                 <div
-                                    // NOT draggable here anymore — dragging the whole column was
-                                    // competing with dragging the single TaskCard inside it
-                                    // (nested draggables are ambiguous), which is exactly what
-                                    // caused the list itself to get reordered when it only had
-                                    // one task. Only the header handle below is draggable now.
                                     onDragOver={(e) => {
                                         e.preventDefault()
                                         if (!draggedListId || draggedListId === list._id) return
@@ -702,9 +542,9 @@ export const KanbanBoard = () => {
                                         e.preventDefault()
                                         if (draggedListId) handleListDrop()
                                     }}
-                                    className={`w-72 flex-shrink-0 rounded-2xl border flex flex-col max-h-[75vh] transition-all duration-150 ${dark ? 'bg-[#212124] border-gray-800' : 'bg-white border-gray-100'
-                                        } ${isDraggingThisList ? 'opacity-40 scale-[0.98]' : ''}`}
+                                    className={`w-72 flex-shrink-0 rounded-2xl border flex flex-col max-h-[75vh] transition-all duration-150 ${dark ? 'bg-[#212124] border-gray-800' : 'bg-white border-gray-100'} ${isDraggingThisList ? 'opacity-40 scale-[0.98]' : ''}`}
                                 >
+                                    {/* only the header is draggable (avoids nested draggables with TaskCard) */}
                                     <div
                                         draggable={!isProjectDeleted}
                                         onDragStart={(e) => {
@@ -715,7 +555,7 @@ export const KanbanBoard = () => {
                                         className="flex items-center justify-between px-3 pt-3 pb-2 cursor-grab active:cursor-grabbing"
                                     >
                                         <div className="flex items-center gap-1.5">
-                                            <span className={`${dark ? 'text-white' : 'text-black'}`}>
+                                            <span className={dark ? 'text-white' : 'text-black'}>
                                                 <ListIcon />
                                             </span>
                                             <h3 className={`text-sm font-semibold ${dark ? 'text-gray-100' : 'text-gray-800'}`}>{list.name}</h3>
@@ -735,13 +575,8 @@ export const KanbanBoard = () => {
                                         }}
                                     >
                                         <AnimatePresence initial={false}>
-
-                                            {/* print tasks  */}
                                             {listTasks.map((task, index) => {
-
-                                                // get next task
-                                                const nextTask = listTasks[index + 1];
-
+                                                const nextTask = listTasks[index + 1]
                                                 const showBarBefore =
                                                     taskDragIndicator?.listId === list._id &&
                                                     taskDragIndicator.beforeTaskId === task._id &&
@@ -771,7 +606,7 @@ export const KanbanBoard = () => {
                                                                 })
                                                             }}
                                                             onDelete={() => setConfirmState({ type: 'deleteTask', task })}
-                                                            onToggleAssign={() => setAssigningTaskId((id2) => (id2 === task._id ? null : task._id))}
+                                                            onToggleAssign={() => setAssigningTaskId((cur) => (cur === task._id ? null : task._id))}
                                                             onAssignUser={(u) => handleAssign(task, u)}
                                                             onUnassignUser={(u) => handleUnassign(task, u)}
                                                         />
@@ -785,9 +620,9 @@ export const KanbanBoard = () => {
                                         )}
                                     </div>
 
-                                    {/* to add a new task */}
+                                    {/* add task */}
                                     <div className="p-3">
-                                        {addingTaskListId === list._id ? ( // to show it only in a one list not all
+                                        {addingTaskListId === list._id ? (
                                             <div className="flex flex-col gap-2">
                                                 <input
                                                     autoFocus
@@ -795,8 +630,7 @@ export const KanbanBoard = () => {
                                                     onChange={(e) => setNewTaskTitle(e.target.value)}
                                                     onKeyDown={(e) => e.key === 'Enter' && handleAddTask(list._id)}
                                                     placeholder="Task title"
-                                                    className={`text-sm rounded-lg px-2.5 py-1.5 outline-none border ${dark ? 'bg-[#18181B] border-gray-700 text-white' : 'bg-gray-50 border-gray-200 text-gray-900'
-                                                        }`}
+                                                    className={`text-sm rounded-lg px-2.5 py-1.5 outline-none border ${dark ? 'bg-[#18181B] border-gray-700 text-white' : 'bg-gray-50 border-gray-200 text-gray-900'}`}
                                                 />
                                                 <div className="flex gap-2">
                                                     <button onClick={() => handleAddTask(list._id)} className="px-3 py-1.5 text-xs font-semibold rounded-lg bg-[#2563EB] text-white hover:bg-blue-700">
@@ -817,8 +651,7 @@ export const KanbanBoard = () => {
                                             !isProjectDeleted && (
                                                 <button
                                                     onClick={() => setAddingTaskListId(list._id)}
-                                                    className={`flex items-center gap-1.5 text-xs font-medium w-full px-2 py-1.5 rounded-lg transition-colors ${dark ? 'text-gray-400 hover:bg-gray-800' : 'text-gray-500 hover:bg-gray-50'
-                                                        }`}
+                                                    className={`flex items-center gap-1.5 text-xs font-medium w-full px-2 py-1.5 rounded-lg transition-colors ${dark ? 'text-gray-400 hover:bg-gray-800' : 'text-gray-500 hover:bg-gray-50'}`}
                                                 >
                                                     <AddCircleIcon isDark={dark} /> Add Task
                                                 </button>
@@ -833,7 +666,7 @@ export const KanbanBoard = () => {
                     {listDragIndicator?.beforeListId === null && draggedListId && <InsertionBar axis="x" />}
 
                     {/* add list */}
-                    {!isProjectDeleted && ( // only if project is not deleted
+                    {!isProjectDeleted && (
                         <div className="w-72 flex-shrink-0">
                             {addingListOpen ? (
                                 <div className={`rounded-2xl border p-3 flex flex-col gap-2 ${dark ? 'bg-[#212124] border-gray-800' : 'bg-white border-gray-100'}`}>
@@ -843,8 +676,7 @@ export const KanbanBoard = () => {
                                         onChange={(e) => setNewListName(e.target.value)}
                                         onKeyDown={(e) => e.key === 'Enter' && handleAddList()}
                                         placeholder="Nombre de la lista"
-                                        className={`text-sm rounded-lg px-2.5 py-1.5 outline-none border ${dark ? 'bg-[#18181B] border-gray-700 text-white' : 'bg-gray-50 border-gray-200 text-gray-900'
-                                            }`}
+                                        className={`text-sm rounded-lg px-2.5 py-1.5 outline-none border ${dark ? 'bg-[#18181B] border-gray-700 text-white' : 'bg-gray-50 border-gray-200 text-gray-900'}`}
                                     />
                                     <div className="flex gap-2">
                                         <button onClick={handleAddList} className="px-3 py-1.5 text-xs font-semibold rounded-lg bg-[#2563EB] text-white hover:bg-blue-700">
@@ -864,8 +696,7 @@ export const KanbanBoard = () => {
                             ) : (
                                 <button
                                     onClick={() => setAddingListOpen(true)}
-                                    className={`w-full flex items-center justify-center gap-1.5 text-sm font-medium rounded-2xl border border-dashed py-3 transition-colors ${dark ? 'border-gray-700 text-gray-500 hover:bg-gray-800/40' : 'border-gray-200 text-gray-400 hover:bg-gray-50'
-                                        }`}
+                                    className={`w-full flex items-center justify-center gap-1.5 text-sm font-medium rounded-2xl border border-dashed py-3 transition-colors ${dark ? 'border-gray-700 text-gray-500 hover:bg-gray-800/40' : 'border-gray-200 text-gray-400 hover:bg-gray-50'}`}
                                 >
                                     <AddCircleIcon isDark={dark} /> Add list
                                 </button>
@@ -873,9 +704,17 @@ export const KanbanBoard = () => {
                         </div>
                     )}
                 </div>
+                <p>Last</p>
+                {lastActivity.length === 0 ? (
+                    <p className="text-sm text-gray-400 mt-4">No recent activity</p>
+                ) : (
+                    lastActivity.map((event) => (
+                        <ProjectEventCard key={event._id} event={event} />
+                    ))
+                )}
             </div>
 
-            {/* invite modal  */}
+            {/* ---- invite modal ---- */}
             <AnimatePresence>
                 {showInviteModal && (
                     <motion.div
@@ -894,21 +733,14 @@ export const KanbanBoard = () => {
                             className={`w-full max-w-md rounded-2xl border p-5 shadow-xl ${dark ? 'bg-[#27272A] border-gray-800' : 'bg-white border-gray-100'}`}
                         >
                             <div className="flex items-center justify-between mb-3">
-                                <h3 className={`text-sm font-bold ${dark ? 'text-white' : 'text-gray-900'}`}>
-                                    Invite users
-                                </h3>
-
-                                <button
-                                    onClick={() => setShowInviteModal(false)}
-                                    className="text-gray-400 hover:text-gray-600"
-                                >
+                                <h3 className={`text-sm font-bold ${dark ? 'text-white' : 'text-gray-900'}`}>Invite users</h3>
+                                <button onClick={() => setShowInviteModal(false)} className="text-gray-400 hover:text-gray-600">
                                     <CloseIcon />
                                 </button>
                             </div>
 
                             <div className={`flex items-center gap-2 rounded-lg border px-2.5 py-1.5 ${dark ? 'bg-[#18181B] border-gray-700' : 'bg-gray-50 border-gray-200'}`}>
                                 <SearchIcon />
-                                {/* search users */}
                                 <input
                                     autoFocus
                                     value={inviteQuery}
@@ -918,36 +750,22 @@ export const KanbanBoard = () => {
                                 />
                             </div>
 
-
                             <div className="mt-3 flex flex-col gap-1 max-h-64 overflow-y-auto ui-scroll-y">
                                 {inviteResults.length === 0 && (
-                                    <p className={`text-xs px-1 py-2 ${dark ? 'text-gray-500' : 'text-gray-400'}`}>
-                                        No users found.
-                                    </p>
+                                    <p className={`text-xs px-1 py-2 ${dark ? 'text-gray-500' : 'text-gray-400'}`}>No users found.</p>
                                 )}
 
-                                {/* show results from backend*/}
                                 {inviteResults.map((u) => (
                                     <div
                                         key={u._id}
                                         className={`flex items-center gap-2.5 px-2 py-2 rounded-lg ${dark ? 'hover:bg-gray-800' : 'hover:bg-gray-50'}`}
                                     >
                                         <Avatar user={u} />
-
                                         <div className="flex-1 min-w-0">
-                                            <p className={`text-sm font-medium truncate ${dark ? 'text-gray-100' : 'text-gray-800'}`}>
-                                                {u.name}
-                                            </p>
-
-                                            <p className={`text-xs truncate ${dark ? 'text-gray-500' : 'text-gray-400'}`}>
-                                                {u.email}
-                                            </p>
+                                            <p className={`text-sm font-medium truncate ${dark ? 'text-gray-100' : 'text-gray-800'}`}>{u.name}</p>
+                                            <p className={`text-xs truncate ${dark ? 'text-gray-500' : 'text-gray-400'}`}>{u.email}</p>
                                         </div>
-
-                                        <button
-                                            onClick={() => handleInvite(u)} // invite user
-                                            className="text-xs font-semibold text-[#2563EB] hover:underline flex-shrink-0"
-                                        >
+                                        <button onClick={() => handleInvite(u)} className="text-xs font-semibold text-[#2563EB] hover:underline flex-shrink-0">
                                             Invite
                                         </button>
                                     </div>
