@@ -704,7 +704,6 @@ export const KanbanBoard = () => {
                         </div>
                     )}
                 </div>
-                <p>Last</p>
                 {lastActivity.length === 0 ? (
                     <p className="text-sm text-gray-400 mt-4">No recent activity</p>
                 ) : (

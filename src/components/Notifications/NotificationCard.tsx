@@ -1,12 +1,15 @@
 import useGlobalDataContext from "../../context/hooks/useGlobalDataContext";
+import userUserAuthContext from "../../context/hooks/useUserAuthContext";
 import { NotificationI, NotificationType } from "../../interfaces/notification.interface";
 import { useNavigate } from "react-router-dom";
 import { typeNotificationConfig } from "../../utils/notificationUtils";
 
+const MAX_MESSAGE_LENGTH = 60;
+
 const NotificationCard = ({
   notification,
   changeStatus,
-  loadingNotificationId
+  loadingNotificationId,
 }: {
   notification: NotificationI;
   changeStatus: (notification: string) => void;
@@ -14,6 +17,7 @@ const NotificationCard = ({
 }) => {
   const navigate = useNavigate();
   const { globalData } = useGlobalDataContext();
+  const { userAuth } = userUserAuthContext();
 
   const isDark = !globalData.themeGlobal;
 
@@ -23,12 +27,30 @@ const NotificationCard = ({
   const config = getConfig(notification.type);
   const IconComponent = config.icon;
 
+  // Notificaciones del sistema (badges) no tienen remitente
+  const sender = notification.senderId;
+  const isSystem = !sender;
+  const avatarSrc = sender?.profilePicture?.secure_url || "/avatar.png";
+  const senderName = isSystem ? "Badge unlocked" : sender.name;
+
   const routePage = async (notificationId: string) => {
     if (!notification.isRead) {
       await changeStatus(notificationId);
     }
+
+    // La badge se ve en el perfil del propio usuario
+    if (notification.type === "BADGE_AWARDED") {
+      navigate(`/profile/${userAuth.userId}`); // ajusta a tu ruta real de perfil
+      return;
+    }
+
     navigate(`${config.route}${notification.entityId}`);
   };
+
+  const message =
+    notification.message.length < MAX_MESSAGE_LENGTH
+      ? notification.message
+      : notification.message.slice(0, MAX_MESSAGE_LENGTH) + "...";
 
   return (
     <div
@@ -40,15 +62,17 @@ const NotificationCard = ({
       <div className="flex flex-col md:flex-row justify-between">
         <div className="flex gap-4 items-start">
           <div className="relative">
-            <img
-              src={
-                notification.senderId.profilePicture.secure_url !== ""
-                  ? notification.senderId.profilePicture.secure_url
-                  : "/avatar.png"
-              }
-              alt=""
-              className="w-12 h-12 rounded-full object-cover"
-            />
+            {isSystem ? (
+              <div className="w-12 h-12 rounded-full flex items-center justify-center bg-yellow-500/15">
+                <IconComponent size={24} className={config.iconClass} />
+              </div>
+            ) : (
+              <img
+                src={avatarSrc}
+                alt=""
+                className="w-12 h-12 rounded-full object-cover"
+              />
+            )}
 
             {!notification.isRead && (
               <div
@@ -59,14 +83,15 @@ const NotificationCard = ({
 
           <div className="flex-1">
             <div className="flex items-center gap-2">
-              <IconComponent size={18} className={config.iconClass} />
+              {/* En system el icono ya está en el avatar, no se repite */}
+              {!isSystem && <IconComponent size={18} className={config.iconClass} />}
 
               <span
                 className={`font-medium ${
                   isDark ? "text-white" : "text-gray-900"
                 }`}
               >
-                {notification.senderId.name}
+                {senderName}
               </span>
             </div>
 
@@ -75,9 +100,7 @@ const NotificationCard = ({
                 isDark ? "text-slate-300" : "text-gray-600"
               }`}
             >
-              {notification.message.length < 40
-                ? notification.message
-                : notification.message.slice(0, 60) + "..."}
+              {message}
             </p>
 
             <span
@@ -129,4 +152,5 @@ const NotificationCard = ({
     </div>
   );
 };
+
 export default NotificationCard;

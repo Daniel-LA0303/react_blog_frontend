@@ -4,18 +4,19 @@ import { Badge, BadgeStatus } from '../../../interfaces/badges.interfaces'
 import { useSwal } from '../../../hooks/useSwal'
 import useUserAuthContext from '../../../context/hooks/useUserAuthContext'
 import { CloseIcon, ShieldIcon } from '../../../utils/iconsUtils'
-import UISelect from '../../Global/UISelect'
 import { createBadge, updateBadge, uploadBadgeImage } from '../../../utils/badgesUtils'
 import UISelect2 from '../../Global/UISelect2'
-import { createPortal } from 'react-dom'
 import UIInputNumber from '../../Global/UIInputNumber'
 
 const CONDITION_TYPES = [
   { value: 'BLOG_COUNT', label: 'Blog count' },
   { value: 'COMMENT_COUNT', label: 'Comment count' },
-  { value: 'QUIZ_COUNT', label: 'Quiz count' },
+  //{ value: 'QUIZ_COUNT', label: 'Quiz count' },
   { value: 'FOLLOWER_COUNT', label: 'Follower count' },
-  { value: 'QUIZ_SCORE', label: 'Quiz score' },
+  { value: 'COLLABORATION_COUNT', label: 'Collaboration count' },
+  { value: 'QUIZ_COUNT', label: 'Quiz count' },
+  { value: 'PROJECT_COUNT', label: 'Project count' },
+  { value: 'LIST_COUNT', label: 'List count' },
 ]
 
 interface BadgeFormModalProps {
@@ -161,6 +162,42 @@ const BadgeFormModal = ({ badge, dark, onClose, onSaved }: BadgeFormModalProps) 
             </button>
           </div>
 
+          <div
+            className='flex justify-between gap-10 mb-2'
+          >
+            <div>
+              <span style={labelStyle}>Value</span>
+              <UISelect2
+                dark={dark}
+                value={conditionType}
+                onChange={(e) => setConditionType(e.target.value)}
+                icon={<ShieldIcon size={14} />}
+              >
+                <option value="" disabled>
+                  Select a condition
+                </option>
+
+                {conditionOptions.map((c) => (
+                  <option key={c.value} value={c.value}>
+                    {c.label}
+                  </option>
+                ))}
+              </UISelect2>
+            </div>
+
+            <UIInputNumber
+              dark={dark}
+              label="Value"
+              min={1}
+              value={conditionValue}
+              onChange={(e) =>
+                setConditionValue(
+                  Math.max(1, Number(e.target.value) || 1)
+                )
+              }
+              className="w-[100px]"
+            />
+          </div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
             {/* image */}
             <div>
@@ -219,42 +256,7 @@ const BadgeFormModal = ({ badge, dark, onClose, onSaved }: BadgeFormModalProps) 
               />
             </div>
 
-            <div
-              className='flex justify-between gap-10'
-            >
-              <div>
-                <span style={labelStyle}>Value</span>
-                <UISelect2
-                  dark={dark}
-                  value={conditionType}
-                  onChange={(e) => setConditionType(e.target.value)}
-                  icon={<ShieldIcon size={14} />}
-                >
-                  <option value="" disabled>
-                    Select a condition
-                  </option>
 
-                  {conditionOptions.map((c) => (
-                    <option key={c.value} value={c.value}>
-                      {c.label}
-                    </option>
-                  ))}
-                </UISelect2>
-              </div>
-
-              <UIInputNumber
-                dark={dark}
-                label="Value"
-                min={1}
-                value={conditionValue}
-                onChange={(e) =>
-                  setConditionValue(
-                    Math.max(1, Number(e.target.value) || 1)
-                  )
-                }
-                className="w-[100px]"
-              />
-            </div>
             <p style={{ margin: '-8px 0 0', fontSize: 11, color: dark ? 'rgba(255,255,255,0.3)' : 'rgba(0,0,0,0.35)' }}>
               This determines which user stat has to reach the value below to unlock the badge.
             </p>

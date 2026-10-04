@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { FlagIcon, ManageAccountsIcon, VerifiedUserIcon } from '../../utils/iconsUtils';
+import { FlagIcon, ListIcon, ManageAccountsIcon, ProjectsIcon, QuizIcon, VerifiedUserIcon } from '../../utils/iconsUtils';
 import useGlobalDataContext from '../../context/hooks/useGlobalDataContext';
 import { motion, Variants } from "framer-motion";
 import { UsersStatusLineChart } from '../../components/Admin/AdminPrincipal/UsersStatusLineChart';
@@ -16,6 +16,7 @@ import { ActiveSessionsCard } from '../../components/Admin/AdminPrincipal/Active
 import clientAuthAxios from '../../services/clientAuthAxios';
 import { useSwal } from '../../hooks/useSwal';
 import SmallSpinner from '../../components/Spinner/SmallSpinner';
+import { CreationActivityCards } from '../../components/Admin/ChartCard';
 
 const IconBase = ({ size = 20, children }: { size?: number; children: React.ReactNode }) => (
     <svg
@@ -62,6 +63,9 @@ interface DashboardStatsData {
     countCategories: number;
     countComments: number;
     countReports: number;
+    countLists: number;
+    countQuiz: number;
+    countProjects: number;
 }
 
 interface StatCardConfig {
@@ -77,6 +81,9 @@ const CARDS: StatCardConfig[] = [
     { key: 'countCategories', label: 'Categories', icon: CategoriesIcon, accent: 'amber' },
     { key: 'countComments', label: 'Comments', icon: CommentsIcon, accent: 'sky' },
     { key: 'countReports', label: 'Reports', icon: FlagIcon, accent: 'rose' },
+    { key: 'countLists', label: 'Study Lists', icon: ListIcon, accent: 'violet' },
+    { key: 'countQuiz', label: 'Quizzes', icon: QuizIcon, accent: 'fuchsia' },
+    { key: 'countProjects', label: 'Projects', icon: ProjectsIcon, accent: 'teal' },
 ];
 
 const ACCENT_STYLES: Record<StatCardConfig['accent'], { light: string; dark: string }> = {
@@ -145,7 +152,7 @@ const AdminPrincipal = () => {
                         variants={containerVariants}
                         initial="hidden"
                         animate="show"
-                        className="grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-5 gap-4"
+                        className="grid grid-cols-2 sm:grid-cols-4 xl:grid-cols-4 gap-4"
                     >
                         {CARDS.map(({ key, label, icon: Icon, accent }) => {
                             const value = stats?.[key] ?? 0;
@@ -226,6 +233,10 @@ const AdminPrincipal = () => {
                     <MessagesActivityCard />
                     <NotificationsActivityCard />
                 </div>
+            </section>
+
+            <section>
+                <CreationActivityCards />
             </section>
 
             <section className="mt-6">

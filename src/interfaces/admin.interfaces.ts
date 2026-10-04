@@ -230,3 +230,14 @@ export interface DateRangeFilterProps {
 
 // --- AUDILOGS
 export type Category = 'AUTH' | 'MODERATION' | 'CONTENT' | 'SYSTEM';
+
+export interface ActivityPoint {
+    date: string; // MM-DD-YYYY
+    count: number;
+}
+
+export interface CreationActivityData {
+    projects: ActivityPoint[];
+    quizzes: ActivityPoint[];
+    lists: ActivityPoint[];
+}

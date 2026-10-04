@@ -1,4 +1,4 @@
-export type NotificationType = 'LIKE_POST' | 'COMMENT_POST' | 'MESSAGE' | 'NOTE' | string
+export type NotificationType = 'LIKE_POST' | 'COMMENT_POST' | 'MESSAGE' | 'NOTE' | 'BADGE_AWARDED' | string
 
 export interface Sender {
     _id: string
@@ -13,5 +13,5 @@ export interface NotificationI {
     isRead: boolean
     createdAt: string
     entityId: string
-    senderId: Sender
+    senderId: Sender | null  
 }

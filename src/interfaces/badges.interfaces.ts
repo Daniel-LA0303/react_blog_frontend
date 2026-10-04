@@ -11,12 +11,17 @@ export interface Badge {
   name: string
   description: string
   img: string
-  type: string // server-assigned (e.g. "ACHIEVEMENT"), not user-editable
+  type: string
   condition: BadgeCondition
   status: BadgeStatus
   createdBy: string
   createdAt: string
   updatedAt: string
+}
+
+export type ProfileBadge = Pick<Badge, '_id' | 'name' | 'description' | 'img' | 'type' | 'condition'> & {
+  icon?: string
+  awardedAt: string
 }
  
 export interface BadgeListMeta {

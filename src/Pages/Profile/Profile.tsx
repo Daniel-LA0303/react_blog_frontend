@@ -31,6 +31,7 @@ import SmallSpinner from '../../components/Spinner/SmallSpinner';
 import ProfileSkeleton from '../../components/Spinner/Skeletons/ProfileSkeleton';
 import { CakeIcon, FlagIcon } from '../../utils/iconsUtils';
 import { ReportModal } from '../../components/Report/ReportModal';
+import { Badge } from '../../interfaces/badges.interfaces';
 
 const Profile = () => {
 
@@ -50,6 +51,7 @@ const Profile = () => {
   const [posts, setPosts] = useState<any[]>([]);
   const [user, setUser] = useState<any>({});
   const [userRoles, setUserRoles] = useState<string[]>([]);
+  const [badges, setBadges] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
   const [profileLoading, setProfileLoading] = useState(true);
   const [recommendedUsers, setRecommendedUsers] = useState<any[]>([]);
@@ -84,7 +86,8 @@ const Profile = () => {
 
     Promise.all([profileRequest, recommendedRequest])
       .then(([profileRes, recommendedRes]) => {
-        setUser(profileRes.data.data);
+        setUser(profileRes.data.data.user);
+        setBadges(profileRes.data.data.badges);
 
         // get roles
         const viewerRoles: string[] = (profileRes.data.data?.roles ?? []).map((r: any) =>
@@ -92,7 +95,7 @@ const Profile = () => {
         );
         setUserRoles(viewerRoles);
 
-        setIsFollow(profileRes.data.data.followersUsers.followers.includes(userAuth.userId));
+        setIsFollow(profileRes.data.data.user.followersUsers.followers.includes(userAuth.userId));
 
         if (recommendedRes) {
           const { recommendedUsers } = recommendedRes.data.data.recomended;
@@ -451,7 +454,7 @@ const Profile = () => {
             variants={staggerContainer}
             className="space-y-4 hidden lg:block"
           >
-            <SidebarContent user={user} dark={dark} animated />
+            <SidebarContent user={user} dark={dark} animated badges={badges} />
 
             {
               userAuth.userId !== null && recommendedUsers.length > 0 && (
