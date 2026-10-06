@@ -18,12 +18,16 @@ import useGlobalDataContext from '../../context/hooks/useGlobalDataContext'
  */
 import { motion, AnimatePresence } from 'framer-motion'
 import { EyeIcon, inputBase, inputTheme, labelBase, quotes } from '../../utils/authUtils'
+import { useSaveSession } from '../../context/hooks/auth/useSaveSession'
+import { GoogleLogin } from '@react-oauth/google'
 
 const Login = () => {
   /**
    * route
    */
   const route = useNavigate()
+
+  const saveSession = useSaveSession()
 
   /**
    * hooks
@@ -66,30 +70,7 @@ const Login = () => {
     setLoading(true)
     try {
       const res = await axios.post(`${globalData.link}/users/login`, data);
-      
-      localStorage.setItem('token', JSON.stringify(res.data.data.accessToken))
-      localStorage.setItem('tokenAuthUser', res.data.data.accessToken)
-      localStorage.setItem('refreshToken', res.data.data.refreshToken)
-      localStorage.setItem('roles', JSON.stringify(res.data.data.roles));
-      localStorage.setItem('email', res.data.data.email)
-      localStorage.setItem('username', res.data.data.name)
-      localStorage.setItem('userId', res.data.data._id)
-      localStorage.setItem('profileImage', res.data.data.profileImage)
-      localStorage.setItem('isFree', res.data.data.isFree)
-      localStorage.setItem('expiresAt', res.data.data.expiresAt)
-      localStorage.setItem('plan', JSON.stringify(res.data.data.plan))
-      setUserAuth({
-        userAuthToken: res.data.data.accessToken,
-        refreshToken: res.data.data.refreshToken,
-        roles: res.data.data.roles,
-        username: res.data.data.name,
-        profileImage: res.data.data.profileImage,
-        email: res.data.data.email,
-        userId: res.data.data._id,
-        isFree: res.data.data.isFree,
-        expiresAt: res.data.data.expiresAt,
-        plan: res.data.data.plan
-      })
+      saveSession(res.data.data)
       showAutoSwal({ message: 'Login successfully', status: 'success', timer: 2000 })
       setTimeout(() => route('/'), 1000)
     } catch (error: any) {
@@ -99,7 +80,16 @@ const Login = () => {
     }
   }
 
-
+  const googleSuccess = async (cred: any) => {
+    try {
+      const res = await axios.post(`${globalData.link}/users/google`, { credential: cred.credential })
+      saveSession(res.data.data)
+      showAutoSwal({ message: 'Login successfully', status: 'success', timer: 2000 })
+      setTimeout(() => route('/'), 1000)
+    } catch (error: any) {
+      showConfirmSwal({ message: error.response?.data?.message, status: 'error', confirmButton: true, cancelButton: false })
+    }
+  }
 
 
   return (
@@ -277,6 +267,11 @@ const Login = () => {
               </motion.button>
             </motion.div>
           </form>
+
+          <p className={`text-center my-4 text-xs ${dark ? 'text-gray-600' : 'text-gray-400'}`}>or</p>
+          <div className="flex justify-center">
+            <GoogleLogin onSuccess={googleSuccess} onError={() => console.log('Google error')} theme={dark ? 'filled_black' : 'outline'} />
+          </div>
 
           {/* Footer */}
           <motion.p

@@ -17,8 +17,7 @@ import useGlobalDataContext from '../../context/hooks/useGlobalDataContext'
  */
 import { motion, AnimatePresence } from 'framer-motion'
 import { EyeIcon, inputBase, inputTheme, labelBase } from '../../utils/authUtils'
-
-
+import { GoogleLogin } from '@react-oauth/google'
 
 const Field = ({ id, label, name: fname, type = 'text', value, onChange, hasError, error, rightEl, dark }: any) => (
   <div className="relative">
@@ -50,7 +49,7 @@ const StrengthBar = ({ password }: { password: string }) => {
   return (
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="mt-2 space-y-1">
       <div className="flex gap-1">
-        {[1,2,3,4].map(i => (
+        {[1, 2, 3, 4].map(i => (
           <div key={i} className="h-0.5 flex-1 rounded-full transition-colors duration-300"
             style={{ backgroundColor: i <= score ? colors[score] : '#e5e7eb' }} />
         ))}
@@ -87,7 +86,7 @@ const Register = () => {
   /**
    * functions
    */
-  const getData = (e: any) => {  
+  const getData = (e: any) => {
     const { name, value } = e.target
     setData(prev => ({ ...prev, [name]: value }))
     if (errors[name]) setErrors(prev => ({ ...prev, [name]: '' }))
@@ -120,12 +119,20 @@ const Register = () => {
     }
   }
 
+  const googleSuccess = async (cred: any) => {
+    try {
+      const res = await axios.post(`${globalData.link}/users/google`, { credential: cred.credential })
 
-
+      showAutoSwal({ message: res.data.message, status: 'success', timer: 2000 })
+      route('/')
+    } catch (error: any) {
+      showConfirmSwal({ message: error.response?.data?.message, status: 'error', confirmButton: true, cancelButton: false })
+    }
+  }
   return (
     <section className={`min-h-screen flex items-stretch transition-colors duration-300 ${dark ? 'bg-[#0a0a0a]' : 'bg-[#f5f4f0]'}`}>
 
-      {/* ── Left panel — brand ─────────────────────────────────────────── */}
+      {/*  Left panel — brand  */}
       <motion.div
         initial={{ opacity: 0, x: -24 }}
         animate={{ opacity: 1, x: 0 }}
@@ -199,23 +206,23 @@ const Register = () => {
 
             {/* Name */}
             <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.26 }}>
-              <Field 
-                id="reg-name" 
-                label="Full name" 
-                name="name" 
-                value={data.name} 
+              <Field
+                id="reg-name"
+                label="Full name"
+                name="name"
+                value={data.name}
                 onChange={getData}
                 hasError={!!errors.name} error={errors.name} />
             </motion.div>
 
             {/* Email */}
             <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.31 }}>
-              <Field 
-                id="reg-email" 
-                label="Email address" 
-                name="email" 
-                type="email" 
-                value={data.email} 
+              <Field
+                id="reg-email"
+                label="Email address"
+                name="email"
+                type="email"
+                value={data.email}
                 onChange={getData}
                 hasError={!!errors.email} error={errors.email} />
             </motion.div>
@@ -225,10 +232,10 @@ const Register = () => {
               <div className="relative">
                 <input
                   type={showPass ? 'text' : 'password'}
-                  name="password" 
+                  name="password"
                   id="reg-password"
-                  placeholder="Password" 
-                  value={data.password} 
+                  placeholder="Password"
+                  value={data.password}
                   onChange={getData}
                   autoComplete="new-password"
                   className={`${inputBase} ${inputTheme(!!errors.password, dark)}`}
@@ -301,6 +308,8 @@ const Register = () => {
               </motion.button>
             </motion.div>
           </form>
+          <p className={`text-center my-4 text-xs ${dark ? 'text-gray-600' : 'text-gray-400'}`}>or</p>
+          <GoogleLogin onSuccess={googleSuccess} onError={() => console.log('Google error')} theme={dark ? 'filled_black' : 'outline'} />
 
           {/* Footer */}
           <motion.p

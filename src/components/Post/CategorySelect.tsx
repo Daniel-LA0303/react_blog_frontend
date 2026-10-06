@@ -37,7 +37,7 @@ const CategorySelect = ({
   const getName = (cat: any) => cat.name || cat.label || cat.value || ''
 
   return (
-    <div ref={ref} className="relative">
+    <div ref={ref} className="relative ui-scroll-y">
       <div
         onClick={() => setOpen(v => !v)}
         className={`min-h-[42px] w-full rounded-xl border px-3 py-2 cursor-pointer flex flex-wrap gap-1.5 items-center transition-colors duration-150

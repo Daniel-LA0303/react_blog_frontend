@@ -7,6 +7,7 @@ import store from './store'
 import { UserAuthProvider } from './context/UserAuthContex';
 import { GlobalDataProvider } from './context/GlobalState';
 import { SocketProvider } from './context/SocketContext';
+import { GoogleOAuthProvider } from '@react-oauth/google'
 
 const rootElement = document.getElementById("root");
 
@@ -16,6 +17,7 @@ if (!rootElement) {
 
 ReactDOM.createRoot(rootElement).render(
   // <React.StrictMode>
+  <GoogleOAuthProvider clientId={import.meta.env.VITE_GOOGLE_CLIENT_ID}>
   <UserAuthProvider>
     <Provider store={store}>
       <GlobalDataProvider>
@@ -25,5 +27,6 @@ ReactDOM.createRoot(rootElement).render(
       </GlobalDataProvider>
     </Provider>
   </UserAuthProvider>
+  </GoogleOAuthProvider>
   // </React.StrictMode>
 );
