@@ -30,6 +30,7 @@ const Notifications = () => {
     const { globalData } = useGlobalDataContext()
     const { userAuth } = useAuth()
     const { errorPage } = usePages()
+    const dark = !globalData.themeGlobal
 
     const [loading, setLoading] = useState(false)
     const [open, setOpen] = useState(false)
@@ -62,7 +63,7 @@ const Notifications = () => {
 
     const markOne = async (notification: any, config: any) => {
 
-        if(!config.isRead){
+        if (!config.isRead) {
             await changeStatus(notification._id);
         }
         routePage(config, notification.entityId);
@@ -89,25 +90,34 @@ const Notifications = () => {
 
             {/* Bell button */}
             <button
+                type="button"
                 onClick={() => setOpen(v => !v)}
-                className={`
-                    relative flex items-center justify-center w-10 h-10 rounded-xl
-                    text-slate-300 transition-all duration-150
-                    ${open
-                        ? 'bg-violet-500/10 ring-1 ring-violet-500/40 text-violet-300'
-                        : 'hover:bg-white/5 hover:text-slate-100'}
-                `}
                 aria-label="Notifications"
+                aria-expanded={open}
+                aria-haspopup="true"
+                className={`
+                    relative flex h-10 w-10 items-center justify-center rounded-lg border mx-1
+                    transition-all duration-300 active:scale-[0.98]
+                    focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2
+                    ${dark
+                        ? open
+                            ? 'bg-neutral-800 border-neutral-700 text-neutral-100 focus-visible:ring-neutral-500 focus-visible:ring-offset-neutral-950'
+                            : 'bg-transparent border-transparent text-neutral-100 hover:bg-white/10 focus-visible:ring-neutral-500 focus-visible:ring-offset-neutral-950'
+                        : open
+                            ? 'bg-neutral-100 border-neutral-200 text-neutral-900 focus-visible:ring-neutral-400 focus-visible:ring-offset-white'
+                            : 'bg-transparent border-transparent text-neutral-900 hover:bg-neutral-900/5 focus-visible:ring-neutral-400 focus-visible:ring-offset-white'}
+                    `}
             >
-                <BellIcon isDark={globalData.themeGlobal}/>
+                <BellIcon isDark={dark} />
 
                 {unread > 0 && (
-                    <span className="
-                        absolute top-1 right-1 min-w-[14px] h-[14px] px-[3px]
-                        rounded-full bg-rose-500 text-white text-[9px] font-bold
-                        flex items-center justify-center leading-none
-                        ring-2 ring-[#0f0f1a] animate-pulse
-                    ">
+                    <span
+                        className={`
+                            absolute -right-1 -top-1 flex h-[16px] min-w-[16px] items-center justify-center
+                            rounded-full px-1 text-[10px] font-semibold leading-none text-white ring-2
+                            ${dark ? 'bg-blue-500 ring-neutral-950' : 'bg-blue-600 ring-white'}
+                        `}
+                    >
                         {unread > 5 ? '5+' : unread}
                     </span>
                 )}
@@ -160,7 +170,7 @@ const Notifications = () => {
                         {/* empty */}
                         {!loading && (!notifications || notifications.length === 0) && (
                             <div className="flex flex-col items-center gap-2 py-12 text-slate-600">
-                                <BellIcon isDark={globalData.themeGlobal}/>
+                                <BellIcon isDark={globalData.themeGlobal} />
                                 <p className="text-xs">No notifications yet</p>
                             </div>
                         )}
@@ -215,7 +225,7 @@ const Notifications = () => {
                                             absolute -bottom-1 -right-1 w-[18px] h-[18px] rounded-md  border border-white/[0.08] flex items-center justify-center
                                             ${!globalData.themeGlobal ? 'bg-[#13131f]' : 'bg-slate-200'}`}
                                         >
-                                           <BellIcon isDark={globalData.themeGlobal}/>
+                                            <BellIcon isDark={globalData.themeGlobal} />
                                         </div>
                                     </div>
 
@@ -223,7 +233,7 @@ const Notifications = () => {
                                     <div className="flex-1 min-w-0 pt-0.5">
                                         <div className="flex items-baseline justify-between gap-2 mb-0.5">
                                             <span className="text-[12px] font-semibold text-slate-300 truncate">
-                                                {notif.senderId?.name ?? 'Someone'}
+                                                {notif.senderId?.name ?? 'uKnowly'}
                                             </span>
                                             <span className="text-[10px] text-slate-600 shrink-0">
                                                 {relativeTime(notif.createdAt)}

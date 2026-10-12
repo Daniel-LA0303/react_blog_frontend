@@ -6,6 +6,7 @@ import { CloseIcon } from '../../utils/iconsUtils'
 import { StudyList, StudyListStatus } from '../../interfaces/lists.interfaces'
 import { updateStudyList } from '../../utils/listsUtils'
 import Field from '../Global/Field'
+import UIButton from '../Global/UIButton'
 
 const CONDITION_TYPES = [
   { value: 'ACTIVE', label: 'Active' },
@@ -112,7 +113,7 @@ const StudyListFormModal = ({ list, dark, onClose, onSaved }: StudyListFormModal
                 <select
                   id="statusPost"
                   value={status}
-                  onChange={e => 
+                  onChange={e =>
                     setStatus(e.target.value as StudyListStatus)
                   }
                   className={`
@@ -149,38 +150,22 @@ const StudyListFormModal = ({ list, dark, onClose, onSaved }: StudyListFormModal
           </div>
 
           <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 8, marginTop: 20 }}>
-            <button
+            <UIButton
+              variant="secondary"
+              size="small"
+              dark={dark}
               onClick={onClose}
-              style={{
-                padding: '8px 14px',
-                fontSize: 13,
-                fontWeight: 500,
-                borderRadius: 8,
-                border: 'none',
-                cursor: 'pointer',
-                background: dark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.05)',
-                color: dark ? '#fff' : '#333',
-              }}
-            >
-              Cancel
-            </button>
-            <button
+            >Cancel</UIButton>
+            <UIButton
+              variant="primary"
+              type='submit'
+              size="small"
+              dark={dark}
               onClick={handleSubmit}
+              loading={saving}
               disabled={saving}
-              style={{
-                padding: '8px 16px',
-                fontSize: 13,
-                fontWeight: 600,
-                borderRadius: 8,
-                border: 'none',
-                cursor: 'pointer',
-                background: '#2563EB',
-                color: '#fff',
-                opacity: saving ? 0.6 : 1,
-              }}
-            >
-              {saving ? 'Saving...' : 'Save changes'}
-            </button>
+            >Save</UIButton>
+            
           </div>
         </motion.div>
       </motion.div>

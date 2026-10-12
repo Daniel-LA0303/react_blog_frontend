@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import Avatar from './Avatar'
 import { KanbanTask, KanbanUser } from '../../interfaces/projects.interfaces'
 import { AddCircleIcon, CheckIcon, TrashIcon, PenIcon } from '../../utils/iconsUtils'
+import UIButton from '../Global/UIButton'
 
 interface TaskCardProps {
     task: KanbanTask
@@ -106,25 +107,14 @@ const TaskCard = ({
                             }`}
                     />
                     <div className="flex gap-2 mt-0.5">
-                        <button
+                        <UIButton dark={dark} variant="primary"
+                            loading={saving}
                             onClick={handleSave}
-                            disabled={saving || !editTitle.trim()}
-                            className="px-2.5 py-1 text-xs font-semibold rounded-lg bg-[#2563EB] text-white hover:bg-blue-700 disabled:opacity-50"
-                        >
-                            {saving ? (
-                                <span className="inline-block h-3 w-3 animate-spin rounded-full border-2 border-white border-t-transparent" />
-                            ) : (
-                                'Save'
-                            )}
-                        </button>
-                        <button
-                            onClick={cancelEdit}
+                            size="small">Save</UIButton>
+                        <UIButton dark={dark} variant="secondary"
                             disabled={saving}
-                            className={`px-2.5 py-1 text-xs font-semibold rounded-lg disabled:opacity-50 ${dark ? 'text-gray-300 hover:bg-gray-800' : 'text-gray-600 hover:bg-gray-100'
-                                }`}
-                        >
-                            Cancel
-                        </button>
+                            onClick={cancelEdit} size="small">Cancel</UIButton>
+
                     </div>
                 </div>
             ) : (
@@ -180,11 +170,11 @@ const TaskCard = ({
                                     className={`px-2 py-1 text-[11px] font-semibold uppercase tracking-wide ${dark ? 'text-gray-500' : 'text-gray-400'
                                         }`}
                                 >
-                                    Miembros del proyecto
+                                    Project Members
                                 </p>
                                 {members.length === 0 && (
                                     <p className={`px-2 py-1.5 text-xs ${dark ? 'text-gray-500' : 'text-gray-400'}`}>
-                                        Invita usuarios para poder asignarlos.
+                                        Invite soe users.
                                     </p>
                                 )}
                                 {members.map((m) => {

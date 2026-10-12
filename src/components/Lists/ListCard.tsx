@@ -1,7 +1,8 @@
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { PenIcon } from '../../utils/iconsUtils'
 import useUserAuthContext from '../../context/hooks/useUserAuthContext'
 import { StudyListItemPaginated } from '../../interfaces/lists.interfaces'
+import UIButton from '../Global/UIButton'
 
 interface ListCardProps {
   list: StudyListItemPaginated
@@ -12,11 +13,16 @@ const ListCard = ({ list, dark }: ListCardProps) => {
   const { userAuth } = useUserAuthContext()
   const isOwner = list.owner === userAuth.userId
 
+  const route = useNavigate();
+
+  const handleNavigateLists = () => {
+    route(`/study-list/${list._id}`)
+  }
+
   return (
     <div
-      className={`rounded-2xl border p-4 flex flex-col gap-3 transition-colors ${
-        dark ? 'bg-[#27272A] border-gray-800 hover:border-gray-700' : 'bg-white border-gray-100 hover:border-gray-200 shadow-sm'
-      }`}
+      className={`rounded-2xl border p-4 flex flex-col gap-3 transition-colors ${dark ? 'bg-[#27272A] border-gray-800 hover:border-gray-700' : 'bg-white border-gray-100 hover:border-gray-200 shadow-sm'
+        }`}
     >
       <div className="flex items-start justify-between gap-2">
         <h3 className={`text-sm font-bold leading-snug line-clamp-2 ${dark ? 'text-white' : 'text-gray-900'}`}>{list.title}</h3>
@@ -34,12 +40,9 @@ const ListCard = ({ list, dark }: ListCardProps) => {
             </span>
           )}
         </div>
-        <Link
-          to={`/study-list/${list._id}`} // adjust to your real route
-          className="text-xs font-semibold px-3 py-1.5 rounded-lg bg-[#2563EB] text-white hover:bg-blue-700 transition-colors"
-        >
-          View list
-        </Link>
+        <UIButton dark={dark} variant="primary"
+          onClick={handleNavigateLists}
+          size="small">View List</UIButton>
       </div>
     </div>
   )

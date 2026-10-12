@@ -23,6 +23,7 @@ import useConversation from '../../context/hooks/useConversation'
  */
 import { motion, AnimatePresence } from 'framer-motion'
 import { CakeIcon } from '../../utils/iconsUtils'
+import UIButton from '../Global/UIButton'
 
 const UserCard = ({ user }: any) => {
 
@@ -68,7 +69,7 @@ const UserCard = ({ user }: any) => {
       setIsFollow(true)
     } catch (error: any) {
       console.log(error)
-      showConfirmSwal({ message: error.response.data.message, status: 'error', confirmButton: true, cancelButton: false,})
+      showConfirmSwal({ message: error.response.data.message, status: 'error', confirmButton: true, cancelButton: false, })
     }
   }
 
@@ -111,9 +112,9 @@ const UserCard = ({ user }: any) => {
             <p className={`text-sm text-justify mt-0.5 ${dark ? 'text-white' : 'text-gray-400'}`}>
               {user.info?.desc && user.info?.desc}
             </p>
-            
-            <p className={`text-sm text-justify mt-2 ${dark ? 'text-white' : 'text-gray-400'}`}>
-              <CakeIcon isDark={dark}/>
+
+            <p className={`flex items-center text-sm text-justify mt-2 ${dark ? 'text-white' : 'text-gray-400'}`}>
+              <CakeIcon isDark={dark} />
               <span className='ml-2'>{new Date(user.createdAt).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}</span>
             </p>
           </div>
@@ -140,61 +141,23 @@ const UserCard = ({ user }: any) => {
 
         {/* Action buttons */}
         {isLoggedIn && !isOwn && (
-          <div className="flex items-center gap-2 mt-5">
+          <div className="flex items-center justify-between gap-2 mt-5">
 
             {/* Follow / Following */}
             <AnimatePresence mode="wait" initial={false}>
-              {isFollow ? (
-                <motion.button
-                  key="following"
-                  type="button"
-                  onClick={handleClickUnFollow}
-                  initial={{ opacity: 0, scale: 0.9 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  exit={{ opacity: 0, scale: 0.9 }}
-                  transition={{ duration: 0.15 }}
-                  whileTap={{ scale: 0.95 }}
-                  className={`flex-1 rounded-xl py-2 text-xs font-medium border transition-colors
-                    ${dark
-                      ? 'bg-gray-800 border-gray-700 text-gray-300 hover:bg-red-900/30 hover:border-red-800 hover:text-red-400'
-                      : 'bg-gray-100 border-gray-200 text-gray-600 hover:bg-red-50 hover:border-red-200 hover:text-red-500'
-                    }`}
-                >
-                  ✓ Following
-                </motion.button>
-              ) : (
-                <motion.button
-                  key="follow"
-                  type="button"
-                  onClick={handleClickFollow}
-                  initial={{ opacity: 0, scale: 0.9 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  exit={{ opacity: 0, scale: 0.9 }}
-                  transition={{ duration: 0.15 }}
-                  whileTap={{ scale: 0.95 }}
-                  className="flex-1 rounded-xl py-2 text-xs font-semibold text-white transition-colors"
-                  style={{ backgroundColor: '#2563EB' }}
-                  onMouseEnter={(e: any) => (e.currentTarget.style.backgroundColor = '#1d4ed8')}
-                  onMouseLeave={(e: any) => (e.currentTarget.style.backgroundColor = '#2563EB')}
-                >
-                  Follow
-                </motion.button>
-              )}
+
+              {isFollow ?
+                <UIButton dark={dark} variant="accent" onClick={handleClickUnFollow} size="small">Following</UIButton>
+                :
+                <UIButton dark={dark} variant="primary" onClick={handleClickFollow} size="small">Follow</UIButton>
+              }
+
+
             </AnimatePresence>
 
             {/* Message */}
-            <motion.button
-              type="button"
-              onClick={handleClickChat}
-              whileTap={{ scale: 0.95 }}
-              className={`flex-1 rounded-xl py-2 text-xs font-medium border transition-colors
-                ${dark
-                  ? 'border-gray-700 text-gray-300 hover:bg-gray-800'
-                  : 'border-gray-200 text-gray-600 hover:bg-gray-50'
-                }`}
-            >
-              Message
-            </motion.button>
+            <UIButton dark={dark} variant="secondary" onClick={handleClickChat} size="small">Message</UIButton>
+            
           </div>
         )}
       </div>

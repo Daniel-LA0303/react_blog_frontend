@@ -33,7 +33,7 @@ const SearchBar = () => {
 
   return (
     <>
-      {/* ── Mobile overlay (< md) ── */}
+      {/*  Mobile overlay (< md)  */}
       <AnimatePresence>
         {isOpen && (
           <motion.div

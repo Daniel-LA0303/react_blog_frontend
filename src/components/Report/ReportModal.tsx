@@ -96,7 +96,7 @@ export const ReportModal = ({ open, onClose, targetType, targetId }: ReportModal
                 {/* Header */}
                 <div className="flex items-center gap-3">
                     <div className={`h-10 w-10 rounded-xl flex items-center justify-center flex-shrink-0
-            ${dark ? 'bg-rose-500/10 text-rose-400' : 'bg-rose-50 text-rose-600'}`}>
+                    ${dark ? 'bg-rose-500/10 text-rose-700' : 'bg-rose-50 text-rose-800'}`}>
                         <FlagIcon size={18} />
                     </div>
                     <div>
@@ -150,10 +150,10 @@ export const ReportModal = ({ open, onClose, targetType, targetId }: ReportModal
 
                 {/* Footer actions */}
                 <div className="flex items-center justify-end gap-2 pt-1">
-                    <UIButton onClick={handleClose} variant="outline" dark={dark} disabled={submitting}>
+                    <UIButton onClick={handleClose} variant="secondary" dark={dark} disabled={submitting} size='small'>
                         Cancel
                     </UIButton>
-                    <UIButton onClick={handleSubmit} variant="danger" dark={dark} disabled={!isValid || submitting}>
+                    <UIButton onClick={handleSubmit} variant="primary" dark={dark} disabled={!isValid || submitting} size='small'>
                         {submitting ? 'Submitting...' : 'Submit report'}
                     </UIButton>
                 </div>

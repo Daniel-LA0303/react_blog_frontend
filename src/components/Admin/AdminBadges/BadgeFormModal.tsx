@@ -7,6 +7,7 @@ import { CloseIcon, ShieldIcon } from '../../../utils/iconsUtils'
 import { createBadge, updateBadge, uploadBadgeImage } from '../../../utils/badgesUtils'
 import UISelect2 from '../../Global/UISelect2'
 import UIInputNumber from '../../Global/UIInputNumber'
+import UIButton from '../../Global/UIButton'
 
 const CONDITION_TYPES = [
   { value: 'BLOG_COUNT', label: 'Blog count' },
@@ -274,38 +275,17 @@ const BadgeFormModal = ({ badge, dark, onClose, onSaved }: BadgeFormModalProps) 
           </div>
 
           <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 8, marginTop: 20 }}>
-            <button
-              onClick={onClose}
-              style={{
-                padding: '8px 14px',
-                fontSize: 13,
-                fontWeight: 500,
-                borderRadius: 8,
-                border: 'none',
-                cursor: 'pointer',
-                background: dark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.05)',
-                color: dark ? '#fff' : '#333',
-              }}
-            >
-              Cancel
-            </button>
-            <button
+
+            <UIButton
+              type='button'
+              dark={dark} variant="secondary" onClick={onClose} size="small">Cancel</UIButton>
+            <UIButton
+              type='button'
+              dark={dark} variant="primary"
               onClick={handleSubmit}
               disabled={saving || uploading}
-              style={{
-                padding: '8px 16px',
-                fontSize: 13,
-                fontWeight: 600,
-                borderRadius: 8,
-                border: 'none',
-                cursor: 'pointer',
-                background: '#2563EB',
-                color: '#fff',
-                opacity: saving || uploading ? 0.6 : 1,
-              }}
-            >
-              {uploading ? 'Uploading image...' : saving ? 'Saving...' : isEditMode ? 'Save changes' : 'Create badge'}
-            </button>
+              loading={saving || uploading}
+              size="small">{uploading ? 'Uploading image...' : saving ? 'Saving...' : isEditMode ? 'Save changes' : 'Create badge'}</UIButton>
           </div>
         </motion.div>
       </motion.div>

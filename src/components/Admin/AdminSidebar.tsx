@@ -123,7 +123,7 @@ const AdminSidebar = ({
                   ? 'bg-[#2563EB]/15 text-[#2563EB]'
                   : 'bg-[#2563EB]/8 text-[#2563EB]'
                 : dark
-                  ? 'text-gray-500 hover:bg-gray-800 hover:text-gray-200'
+                  ? 'text-gray-500 hover:bg-[#121212] hover:text-gray-200'
                   : 'text-gray-400 hover:bg-gray-50 hover:text-gray-700'
               }
           `}
@@ -154,7 +154,7 @@ const AdminSidebar = ({
       <div className={`px-3 py-3 border-t flex-shrink-0 ${dark ? 'border-gray-800' : 'border-gray-100'}`}>
         <button
           onClick={handleLogout}
-          className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-medium transition-colors ${dark ? 'text-gray-500 hover:bg-gray-800 hover:text-gray-300' : 'text-gray-400 hover:bg-gray-50 hover:text-gray-600'}`}
+          className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-medium transition-colors ${dark ? 'text-gray-500 hover:bg-[#121212] hover:text-gray-300' : 'text-gray-400 hover:bg-gray-50 hover:text-gray-600'}`}
         >
           {Icons.logout}
           Log out
@@ -164,7 +164,7 @@ const AdminSidebar = ({
       <div className={`px-3 py-3 border-t flex-shrink-0 ${dark ? 'border-gray-800' : 'border-gray-100'}`}>
         <Link
           to="/"
-          className={`flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-medium transition-colors ${dark ? 'text-gray-500 hover:bg-gray-800 hover:text-gray-300' : 'text-gray-400 hover:bg-gray-50 hover:text-gray-600'}`}
+          className={`flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-medium transition-colors ${dark ? 'text-gray-500 hover:bg-[#121212] hover:text-gray-300' : 'text-gray-400 hover:bg-gray-50 hover:text-gray-600'}`}
         >
           {Icons.back}
           Back to site

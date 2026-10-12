@@ -29,7 +29,7 @@ const AsideHomeTop = ({ topInfo }: any) => {
             className={`flex items-center px-4 py-3 rounded-xl shadow transition-colors duration-150
             ${globalData.themeGlobal
                 ? 'bg-white border border-gray-100 hover:bg-gray-50 text-gray-900'
-                : 'bg-[#27272A] border border-gray-800 hover:bg-gray-800 text-white'
+                : 'bg-[#27272A] border border-gray-800 hover:bg-[#121212] text-white'
               }`}
           >
             <div
@@ -54,7 +54,7 @@ const AsideHomeTop = ({ topInfo }: any) => {
             className={`w-full max-w-md flex flex-col rounded-xl shadow-lg px-3 py-4 transition-colors duration-150
             ${globalData.themeGlobal
                 ? 'bg-white border border-gray-100 hover:bg-gray-50 text-gray-900'
-                : 'bg-[#27272A] border border-gray-800 hover:bg-gray-800 text-white'
+                : 'bg-[#27272A] border border-gray-800 hover:bg-[#121212] text-white'
               }`}
           >
             <div className="flex items-center justify-between">

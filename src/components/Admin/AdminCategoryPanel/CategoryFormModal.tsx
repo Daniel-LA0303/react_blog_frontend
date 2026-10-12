@@ -5,8 +5,6 @@ import UIButton from "../../Global/UIButton";
 import ColorPicker from "../ColorPicker";
 import { CategoryFormValues, ICategoryInfo } from "../../../interfaces/admin.interfaces";
 
-
-
 const EMPTY_FORM: CategoryFormValues = {
   name: '', color: '#2563EB', desc: '', longDesc: '',
 }
@@ -22,59 +20,44 @@ const CategoryFormModal = ({
   submitting: boolean
 }) => {
   const [form, setForm] = useState<CategoryFormValues>(EMPTY_FORM)
-  const [autoSlug, setAutoSlug] = useState(true) // keep value/label synced to name until user edits them manually
 
   // Reset form each time the modal opens, pre-filling when editing
   useEffect(() => {
-    if (open) {
-      if (editing) {
-        setForm({
-          name: editing.name,
-          color: editing.color,
-          desc: editing.desc,
-          longDesc: editing.longDesc,
-        })
-        setAutoSlug(false) // don't auto-overwrite an existing category's value/label
-      } else {
-        setForm(EMPTY_FORM)
-        setAutoSlug(true)
-      }
+    if (!open) return
+    if (editing) {
+      setForm({
+        name: editing.name,
+        color: editing.color,
+        desc: editing.desc,
+        longDesc: editing.longDesc,
+      })
+    } else {
+      setForm(EMPTY_FORM)
     }
   }, [open, editing])
 
-  const handleNameChange = (name: string) => {
-    setForm(f => ({
-      ...f,
-      name,
-    }))
-  }
-
-  const isValid = form.name.trim() && form.desc.trim()
+  const isValid = Boolean(form.name.trim() && form.desc.trim())
 
   const handleSubmit = async () => {
     if (!isValid || submitting) return
     await onSubmit(form)
   }
 
-  const fieldLabelStyle: React.CSSProperties = {
-    fontSize: 13, color: dark ? 'rgba(255,255,255,0.4)' : 'rgba(0,0,0,0.45)', marginBottom: 4,
-  }
-
   return (
     <UIModal open={open} onClose={onClose} dark={dark} maxWidth={440}>
-      <div style={{ padding: 24, display: 'flex', flexDirection: 'column', gap: 16 }}>
-        <p style={{ margin: 0, fontSize: 16, fontWeight: 600, color: dark ? '#fff' : '#111' }}>
+      <div className="flex max-h-[85vh] flex-col gap-4 overflow-y-auto p-6">
+        <h2 className={`text-base font-semibold ${dark ? 'text-white' : 'text-neutral-900'}`}>
           {editing ? 'Edit category' : 'New category'}
-        </p>
+        </h2>
 
         <UITextField
           label="Name"
           value={form.name}
-          onChange={e => handleNameChange(e.target.value)}
+          onChange={e => setForm(f => ({ ...f, name: e.target.value }))}
           dark={dark}
           placeholder="e.g. Technology"
         />
-        
+
         <UITextField
           label="Short description"
           value={form.desc}
@@ -94,15 +77,26 @@ const CategoryFormModal = ({
         />
 
         <div>
-          <p style={fieldLabelStyle}>Color</p>
-          <ColorPicker value={form.color} onChange={c => setForm(f => ({ ...f, color: c }))} dark={dark} />
+          <p className={`mb-1 text-[13px] ${dark ? 'text-neutral-400' : 'text-neutral-500'}`}>Color</p>
+          <ColorPicker
+            value={form.color}
+            onChange={color => setForm(f => ({ ...f, color }))}
+            dark={dark}
+          />
         </div>
 
-        <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 8, marginTop: 8 }}>
-          <UIButton variant="outline" dark={dark} onClick={onClose} disabled={submitting}>
+        <div className="mt-2 flex justify-end gap-2">
+          <UIButton variant="secondary" size="small" dark={dark} onClick={onClose} disabled={submitting}>
             Cancel
           </UIButton>
-          <UIButton variant="primary" dark={dark} onClick={handleSubmit} disabled={!isValid || submitting}>
+          <UIButton
+            variant="primary"
+            size="small"
+            dark={dark}
+            onClick={handleSubmit}
+            disabled={!isValid || submitting}
+            loading={submitting}
+          >
             {submitting ? 'Saving…' : editing ? 'Save changes' : 'Create category'}
           </UIButton>
         </div>

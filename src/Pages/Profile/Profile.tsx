@@ -32,6 +32,7 @@ import ProfileSkeleton from '../../components/Spinner/Skeletons/ProfileSkeleton'
 import { CakeIcon, FlagIcon } from '../../utils/iconsUtils';
 import { ReportModal } from '../../components/Report/ReportModal';
 import { Badge } from '../../interfaces/badges.interfaces';
+import UIButton from '../../components/Global/UIButton';
 
 const Profile = () => {
 
@@ -290,36 +291,16 @@ const Profile = () => {
                             className="mt-6 flex justify-center sm:justify-end items-center gap-3"
                           >
                             <AnimatePresence mode="wait">
-                              {isFollow ? (
-                                <motion.div
-                                  key="following"
-                                  initial={{ opacity: 0, scale: 0.9 }}
-                                  animate={{ opacity: 1, scale: 1 }}
-                                  exit={{ opacity: 0, scale: 0.9 }}
-                                  transition={{ duration: 0.2 }}
-                                >
-                                  <ActionButton onClick={handleUnFollowUser} variant="outline">
-                                    ✓ Following
-                                  </ActionButton>
-                                </motion.div>
-                              ) : (
-                                <motion.div
-                                  key="follow"
-                                  initial={{ opacity: 0, scale: 0.9 }}
-                                  animate={{ opacity: 1, scale: 1 }}
-                                  exit={{ opacity: 0, scale: 0.9 }}
-                                  transition={{ duration: 0.2 }}
-                                >
-                                  <ActionButton onClick={handleFollowUser} variant="primary">
-                                    Follow
-                                  </ActionButton>
-                                </motion.div>
-                              )}
-                            </AnimatePresence>
 
-                            <ActionButton onClick={handleClickChat} variant="success">
-                              Message
-                            </ActionButton>
+                              {isFollow ?
+                                <UIButton dark={dark} variant="accent" onClick={handleUnFollowUser} size="small">Following</UIButton>
+                                :
+                                <UIButton dark={dark} variant="primary" onClick={handleFollowUser} size="small">Follow</UIButton>
+                              }
+
+                            </AnimatePresence>
+                            <UIButton dark={dark} variant="secondary" onClick={handleClickChat} size="small">Message</UIButton>
+
                           </motion.div>
                         )
                       )

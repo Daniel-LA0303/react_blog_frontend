@@ -2,13 +2,14 @@ import React, { useEffect, useState } from 'react'
 import clientAuthAxios from '../../../services/clientAuthAxios';
 import useUserAuthContext from '../../../context/hooks/useUserAuthContext';
 import useGlobalDataContext from '../../../context/hooks/useGlobalDataContext';
-import { Link, useParams } from 'react-router-dom';
+import { Link, useNavigate, useParams } from 'react-router-dom';
 import { QuizListItem } from '../../../interfaces/quizzes.interfaces';
 import SmallSpinner from '../../../components/Spinner/SmallSpinner';
 import QuizCard from '../../../components/Quizz/QuizCard';
 import Sidebar from '../../../components/Sidebar/Sidebar';
 import StudyListModal from '../../../components/Lists/StudyListModal';
 import AsideCollabDashboard from '../../../components/Aside/AsideCollabDashboard';
+import UIButton from '../../../components/Global/UIButton';
 
 const QuizzesDashbooard = () => {
 
@@ -17,6 +18,7 @@ const QuizzesDashbooard = () => {
      * route
      */
     const params = useParams();
+    const route = useNavigate();
 
     /**
      * hooks
@@ -104,6 +106,10 @@ const QuizzesDashbooard = () => {
         }
     };
 
+    const handleNavigateCreateQuiz = () => {
+        route("/create-quiz")
+    }
+
     return (
         <div className={`${globalData.themeGlobal ? 'text-black' : 'text-white'}`}>
             <Sidebar />
@@ -159,12 +165,9 @@ const QuizzesDashbooard = () => {
                                     </p>
                                 </div>
 
-                                <Link
-                                    to="/create-quiz"
-                                    className="text-xs font-semibold px-4 py-2 rounded-lg bg-[#2563EB] text-white hover:bg-blue-700 transition-colors"
-                                >
-                                    Create quiz
-                                </Link>
+                                <UIButton dark={isDark} variant="primary"
+                                    onClick={handleNavigateCreateQuiz}
+                                    size="small">Create a Quiz</UIButton>
                             </div>
                         )}
                         {!hasMore && (

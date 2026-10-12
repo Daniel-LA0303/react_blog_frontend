@@ -15,9 +15,22 @@ import useGlobalDataContext from '../../context/hooks/useGlobalDataContext'
 /**
  * libraries
  */
-import { motion, AnimatePresence } from 'framer-motion'
+import { motion, AnimatePresence, type Variants } from 'framer-motion'
 import { EyeIcon, inputBase, inputTheme, labelBase } from '../../utils/authUtils'
 import { GoogleLogin } from '@react-oauth/google'
+import UIButton from '../../components/Global/UIButton'
+import { NextIcon } from '../../utils/iconsUtils'
+
+const EASE: [number, number, number, number] = [0.25, 0.46, 0.45, 0.94]
+
+const container: Variants = {
+  hidden: {},
+  show: { transition: { staggerChildren: 0.06, delayChildren: 0.15 } },
+}
+const item: Variants = {
+  hidden: { opacity: 0, y: 12 },
+  show: { opacity: 1, y: 0, transition: { duration: 0.45, ease: EASE } },
+}
 
 const Field = ({ id, label, name: fname, type = 'text', value, onChange, hasError, error, rightEl, dark }: any) => (
   <div className="relative">
@@ -41,7 +54,7 @@ const Field = ({ id, label, name: fname, type = 'text', value, onChange, hasErro
   </div>
 )
 
-const StrengthBar = ({ password }: { password: string }) => {
+const StrengthBar = ({ password, dark }: { password: string; dark: boolean }) => {
   if (!password) return null
   const score = [password.length >= 8, /[A-Z]/.test(password), /[0-9]/.test(password), /[^A-Za-z0-9]/.test(password)].filter(Boolean).length
   const colors = ['', '#e24b4a', '#EF9F27', '#2563EB', '#1D9E75']
@@ -51,7 +64,7 @@ const StrengthBar = ({ password }: { password: string }) => {
       <div className="flex gap-1">
         {[1, 2, 3, 4].map(i => (
           <div key={i} className="h-0.5 flex-1 rounded-full transition-colors duration-300"
-            style={{ backgroundColor: i <= score ? colors[score] : '#e5e7eb' }} />
+            style={{ backgroundColor: i <= score ? colors[score] : dark ? 'rgba(255,255,255,0.12)' : '#e5e7eb' }} />
         ))}
       </div>
       <p className="text-xs" style={{ color: colors[score] }}>{labels[score]}</p>
@@ -113,7 +126,10 @@ const Register = () => {
       showAutoSwal({ message: res.data.message, status: 'success', timer: 2000 })
       setTimeout(() => route('/'), 3000)
     } catch (error: any) {
-      showConfirmSwal({ message: error.response.data.message, status: 'error', confirmButton: true, cancelButton: false, })
+      showConfirmSwal({
+        message: error.response?.data?.message ?? 'Something went wrong. Please try again.',
+        status: 'error', confirmButton: true, cancelButton: false,
+      })
     } finally {
       setLoading(false)
     }
@@ -129,75 +145,101 @@ const Register = () => {
       showConfirmSwal({ message: error.response?.data?.message, status: 'error', confirmButton: true, cancelButton: false })
     }
   }
+
+  const muted = dark ? 'text-gray-400' : 'text-gray-500'
+  const eyeButton = `absolute right-0 top-3 transition-colors ${dark ? 'text-gray-500 hover:text-gray-300' : 'text-gray-400 hover:text-gray-700'}`
+  const labelColor = (hasError: boolean) =>
+    hasError ? 'text-red-400' : dark ? 'text-gray-500 peer-focus:text-gray-300' : 'text-gray-400 peer-focus:text-gray-700'
+
   return (
     <section className={`min-h-screen flex items-stretch transition-colors duration-300 ${dark ? 'bg-[#0a0a0a]' : 'bg-[#f5f4f0]'}`}>
 
       {/*  Left panel — brand  */}
-      <motion.div
+      <motion.aside
         initial={{ opacity: 0, x: -24 }}
         animate={{ opacity: 1, x: 0 }}
-        transition={{ duration: 0.6, ease: [0.25, 0.46, 0.45, 0.94] }}
-        className="hidden lg:flex flex-col justify-between w-5/12 xl:w-2/5 bg-[#0a0a0a] px-14 py-14"
+        transition={{ duration: 0.6, ease: EASE }}
+        className="relative hidden lg:flex flex-col justify-between w-5/12 xl:w-2/5 overflow-hidden bg-[#0a0a0a] border-r border-white/5 px-14 py-14"
       >
-        <div>
-          <span className="text-white text-2xl font-bold tracking-tight" style={{ fontFamily: 'Georgia, serif' }}>
-            DLTechBlog
-          </span>
-          <p className="mt-2 text-xs text-gray-600 tracking-wide">Write. Learn. Inspire.</p>
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute inset-0"
+          style={{
+            backgroundImage: 'radial-gradient(rgba(255,255,255,0.07) 1px, transparent 1px)',
+            backgroundSize: '22px 22px',
+            maskImage: 'radial-gradient(ellipse at 30% 40%, black 20%, transparent 75%)',
+            WebkitMaskImage: 'radial-gradient(ellipse at 30% 40%, black 20%, transparent 75%)',
+          }}
+        />
+        <div aria-hidden="true" className="pointer-events-none absolute inset-x-0 top-0 h-56 bg-gradient-to-b from-white/[0.04] to-transparent" />
+
+        <div className="relative">
+          <Link to="/" className="inline-flex items-center gap-3">
+            <span className="text-white text-2xl font-bold tracking-tight" style={{ fontFamily: 'Georgia, serif' }}>
+              uKnowly
+            </span>
+          </Link>
+          <p className="mt-3 text-xs text-gray-500 tracking-wide">Write. Learn. Inspire.</p>
         </div>
 
         <motion.div
           initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.7, delay: 0.25 }}
+          transition={{ duration: 0.7, delay: 0.25, ease: EASE }}
+          className="relative"
         >
           {/* Stats */}
-          <div className="space-y-6 mb-10">
+          <div className="mb-10">
             {[
-              { n: '12k+', label: 'Developers' },
+              { n: '12k+', label: 'Members' },
               { n: '3.4k', label: 'Articles published' },
               { n: '98%', label: 'Free forever' },
             ].map(({ n, label }) => (
-              <div key={label} className="flex items-baseline gap-3">
-                <span className="text-white text-2xl font-bold" style={{ fontFamily: 'Georgia, serif' }}>{n}</span>
-                <span className="text-gray-600 text-xs tracking-widest uppercase">{label}</span>
+              <div key={label} className="flex items-baseline justify-between border-t border-white/10 py-5">
+                <span className="text-white text-3xl font-bold tracking-tight" style={{ fontFamily: 'Georgia, serif' }}>{n}</span>
+                <span className="text-gray-500 text-xs tracking-widest uppercase">{label}</span>
               </div>
             ))}
+            <div className="border-t border-white/10" />
           </div>
-          <div className="h-px bg-gray-800 mb-8" />
-          <p className="text-gray-600 text-xs leading-relaxed">
-            Join thousands of developers sharing what they know. No paywalls, no ads.
+          <p className="text-gray-500 text-sm leading-relaxed">
+            Join thousands of developers and academics sharing what they know. No paywalls, no ads.
           </p>
         </motion.div>
-      </motion.div>
 
-      {/* ── Right panel — form ─────────────────────────────────────────── */}
+        <p className="relative text-[11px] tracking-wide text-gray-500">© {new Date().getFullYear()} uKnowly</p>
+      </motion.aside>
+
+      {/*  Right panel — form  */}
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 0.5, delay: 0.1 }}
-        className={`flex-1 flex items-center justify-center px-8 py-16 ${dark ? 'bg-[#27272A]' : 'bg-[#f5f4f0]'}`}
+        className={`flex-1 flex items-center justify-center px-8 py-16 ${dark ? 'bg-[#27272A]' : 'bg-white'}`}
       >
-        <div className="w-full max-w-sm">
+        <motion.div variants={container} initial="hidden" animate="show" className="w-full max-w-sm">
 
           {/* Mobile brand */}
-          <div className="lg:hidden mb-10">
-            <span className={`text-2xl font-bold tracking-tight ${dark ? 'text-white' : 'text-gray-900'}`} style={{ fontFamily: 'Georgia, serif' }}>
-              DLTechBlog
-            </span>
-          </div>
+          <motion.div variants={item} className="lg:hidden mb-10">
+            <Link to="/" className="inline-flex items-center gap-3">
+              <span className={`text-2xl font-bold tracking-tight ${dark ? 'text-white' : 'text-gray-900'}`} style={{ fontFamily: 'Georgia, serif' }}>
+                uKnowly
+              </span>
+            </Link>
+          </motion.div>
 
           {/* Header */}
-          <motion.div
-            initial={{ opacity: 0, y: 12 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.45, delay: 0.2 }}
-            className="mb-10"
-          >
-            <h1 className={`text-3xl font-bold tracking-tight ${dark ? 'text-white' : 'text-gray-900'}`} style={{ fontFamily: 'Georgia, serif' }}>
+          <motion.div variants={item} className="mb-10">
+            <p className={`mb-3 text-[11px] font-medium uppercase tracking-[0.2em] ${dark ? 'text-blue-400' : 'text-[#2563EB]'}`}>
+              Create account
+            </p>
+            <h1
+              className={`text-4xl font-bold leading-[1.1] tracking-tight ${dark ? 'text-white' : 'text-gray-900'}`}
+              style={{ fontFamily: 'Georgia, serif' }}
+            >
               Start writing.
             </h1>
-            <p className={`mt-2 text-sm ${dark ? 'text-gray-500' : 'text-gray-500'}`}>
+            <p className={`mt-3 text-sm leading-relaxed ${muted}`}>
               Create your account — free, forever.
             </p>
           </motion.div>
@@ -205,7 +247,7 @@ const Register = () => {
           <form onSubmit={sendData} className="space-y-7">
 
             {/* Name */}
-            <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.26 }}>
+            <motion.div variants={item}>
               <Field
                 id="reg-name"
                 label="Full name"
@@ -216,7 +258,7 @@ const Register = () => {
             </motion.div>
 
             {/* Email */}
-            <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.31 }}>
+            <motion.div variants={item}>
               <Field
                 id="reg-email"
                 label="Email address"
@@ -228,7 +270,7 @@ const Register = () => {
             </motion.div>
 
             {/* Password */}
-            <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.36 }}>
+            <motion.div variants={item}>
               <div className="relative">
                 <input
                   type={showPass ? 'text' : 'password'}
@@ -240,12 +282,12 @@ const Register = () => {
                   autoComplete="new-password"
                   className={`${inputBase} ${inputTheme(!!errors.password, dark)}`}
                 />
-                <label htmlFor="reg-password"
-                  className={`${labelBase} ${errors.password ? 'text-red-400' : dark ? 'text-gray-500 peer-focus:text-gray-300' : 'text-gray-400 peer-focus:text-gray-700'}`}>
+                <label htmlFor="reg-password" className={`${labelBase} ${labelColor(!!errors.password)}`}>
                   Password
                 </label>
                 <button type="button" onClick={() => setShowPass(v => !v)}
-                  className={`absolute right-0 top-3 transition-colors ${dark ? 'text-gray-600 hover:text-gray-300' : 'text-gray-400 hover:text-gray-700'}`}>
+                  aria-label={showPass ? 'Hide password' : 'Show password'}
+                  className={eyeButton}>
                   <EyeIcon visible={showPass} />
                 </button>
                 <AnimatePresence>
@@ -254,12 +296,12 @@ const Register = () => {
                       className="mt-1.5 text-xs text-red-400">{errors.password}</motion.p>
                   )}
                 </AnimatePresence>
-                <StrengthBar password={password} />
+                <StrengthBar password={password} dark={dark} />
               </div>
             </motion.div>
 
             {/* Confirm password */}
-            <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.41 }}>
+            <motion.div variants={item}>
               <div className="relative">
                 <input
                   type={showPass2 ? 'text' : 'password'}
@@ -270,12 +312,12 @@ const Register = () => {
                   autoComplete="new-password"
                   className={`${inputBase} ${inputTheme(!!errors.password2, dark)}`}
                 />
-                <label htmlFor="reg-password2"
-                  className={`${labelBase} ${errors.password2 ? 'text-red-400' : dark ? 'text-gray-500 peer-focus:text-gray-300' : 'text-gray-400 peer-focus:text-gray-700'}`}>
+                <label htmlFor="reg-password2" className={`${labelBase} ${labelColor(!!errors.password2)}`}>
                   Confirm password
                 </label>
                 <button type="button" onClick={() => setShowPass2(v => !v)}
-                  className={`absolute right-0 top-3 transition-colors ${dark ? 'text-gray-600 hover:text-gray-300' : 'text-gray-400 hover:text-gray-700'}`}>
+                  aria-label={showPass2 ? 'Hide password' : 'Show password'}
+                  className={eyeButton}>
                   <EyeIcon visible={showPass2} />
                 </button>
                 <AnimatePresence>
@@ -288,42 +330,42 @@ const Register = () => {
             </motion.div>
 
             {/* Submit */}
-            <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.46 }}>
-              <motion.button
+            <motion.div variants={item}>
+              <UIButton
                 type="submit"
-                disabled={loading}
-                whileTap={{ scale: 0.98 }}
-                className="w-full flex items-center justify-center gap-2 py-3.5 text-sm font-semibold text-white rounded-xl transition-colors disabled:opacity-50"
-                style={{ backgroundColor: '#2563EB' }}
-                onMouseEnter={(e: any) => !loading && (e.currentTarget.style.backgroundColor = '#1d4ed8')}
-                onMouseLeave={(e: any) => (e.currentTarget.style.backgroundColor = '#2563EB')}
+                dark={dark}
+                variant="accent"
+                size="large"
+                fullWidth
+                loading={loading}
+                rightIcon={<NextIcon size={16} />}
               >
-                {loading ? (
-                  <motion.span
-                    className="h-4 w-4 rounded-full border-2 border-white/30 border-t-white"
-                    animate={{ rotate: 360 }}
-                    transition={{ duration: 0.7, repeat: Infinity, ease: 'linear' }}
-                  />
-                ) : <>Create account <span className="opacity-60">→</span></>}
-              </motion.button>
+                Create account
+              </UIButton>
             </motion.div>
           </form>
-          <p className={`text-center my-4 text-xs ${dark ? 'text-gray-600' : 'text-gray-400'}`}>or</p>
-          <GoogleLogin onSuccess={googleSuccess} onError={() => console.log('Google error')} theme={dark ? 'filled_black' : 'outline'} />
+
+          <motion.div variants={item} className="my-7 flex items-center gap-4">
+            <span className={`h-px flex-1 ${dark ? 'bg-white/10' : 'bg-black/10'}`} />
+            <span className={`text-[11px] uppercase tracking-[0.2em] ${dark ? 'text-gray-500' : 'text-gray-400'}`}>or</span>
+            <span className={`h-px flex-1 ${dark ? 'bg-white/10' : 'bg-black/10'}`} />
+          </motion.div>
+
+          <motion.div variants={item} className="flex justify-center">
+            <GoogleLogin onSuccess={googleSuccess} onError={() => console.log('Google error')} theme={dark ? 'filled_black' : 'outline'} />
+          </motion.div>
 
           {/* Footer */}
-          <motion.p
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.52 }}
-            className={`mt-10 text-xs text-center ${dark ? 'text-gray-600' : 'text-gray-400'}`}
-          >
+          <motion.p variants={item} className={`mt-10 text-xs text-center ${muted}`}>
             Already have an account?{' '}
-            <Link to="/login" className="font-semibold text-[#2563EB] hover:text-blue-700 transition-colors">
+            <Link
+              to="/login"
+              className={`font-semibold underline-offset-4 transition-colors hover:underline ${dark ? 'text-blue-400 hover:text-blue-300' : 'text-[#2563EB] hover:text-blue-700'}`}
+            >
               Log in
             </Link>
           </motion.p>
-        </div>
+        </motion.div>
       </motion.div>
     </section>
   )

@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 
 import ProfileButton from '../ProfileButton/ProfileButton'
@@ -12,8 +12,11 @@ import useGlobalDataContext from '../../context/hooks/useGlobalDataContext'
 import Notifications from '../Notifications/Notifications'
 import useGetSocketBannedNotification from '../../context/hooks/useGetBannedNotification'
 import { useSwal } from '../../hooks/useSwal'
+import UIButton from '../Global/UIButton'
+import { AddCircleIcon } from '../../utils/iconsUtils'
 
 const Sidebar = () => {
+  const route = useNavigate();
   const { userAuth } = userUserAuthContext()
   const { globalData } = useGlobalDataContext()
   const dark = !globalData.themeGlobal
@@ -53,6 +56,18 @@ const Sidebar = () => {
     handleBannedUser();
   }, [bannedMessage]);
 
+  const hanldeNavigateLogin = () => {
+    route("/login");
+  }
+
+  const hanldeNavigateRegister = () => {
+    route("/register");
+  }
+
+    const hanldeNavigateCratePost = () => {
+    route("/new-post");
+  }
+
   return (
     <>
       <header
@@ -88,19 +103,14 @@ const Sidebar = () => {
             {userAuth.userId ? (
               <div className='flex justify-center items-center'>
                 {/* New post — desktop */}
-                <Link
-                  to="/new-post"
-                  className={`hidden md:inline-flex items-center gap-1.5 rounded-full px-4 py-1.5 text-xs font-semibold border transition-colors duration-150
-                    ${dark
-                      ? 'border-gray-700 text-gray-200 hover:bg-gray-800'
-                      : 'border-gray-200 text-gray-700 hover:bg-gray-50'
-                    }`}
-                >
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" className="w-3.5 h-3.5">
-                    <line x1="12" y1="5" x2="12" y2="19" /><line x1="5" y1="12" x2="19" y2="12" />
-                  </svg>
-                  Write
-                </Link>
+                <UIButton
+                  type='button'
+                  dark={dark}
+                  variant="primary"
+                  onClick={hanldeNavigateCratePost}
+                  leftIcon={<AddCircleIcon isDark={dark} />}
+                  size="small">Write</UIButton>
+
                 <Notifications />
                 <ProfileButton />
               </div>
@@ -113,22 +123,8 @@ const Sidebar = () => {
 
                 {/* Auth buttons — desktop */}
                 <div className="hidden sm:flex items-center gap-2">
-                  <Link
-                    to="/login"
-                    className={`rounded-full px-4 py-1.5 text-xs font-medium transition-colors duration-150
-                      ${dark ? 'text-gray-300 hover:text-white' : 'text-gray-600 hover:text-gray-900'}`}
-                  >
-                    Log in
-                  </Link>
-                  <Link
-                    to="/register"
-                    className="rounded-full px-4 py-1.5 text-xs font-semibold text-white transition-colors duration-150"
-                    style={{ backgroundColor: '#2563EB' }}
-                    onMouseEnter={e => (e.currentTarget.style.backgroundColor = '#1d4ed8')}
-                    onMouseLeave={e => (e.currentTarget.style.backgroundColor = '#2563EB')}
-                  >
-                    Sign up
-                  </Link>
+                  <UIButton dark={dark} variant="secondary" onClick={hanldeNavigateLogin} size="small">Log in</UIButton>
+                  <UIButton dark={dark} variant="primary" onClick={hanldeNavigateRegister} size="small">Register</UIButton>
                 </div>
               </>
             )}

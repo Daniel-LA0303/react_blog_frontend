@@ -4,7 +4,7 @@ import useGlobalDataContext from '../../context/hooks/useGlobalDataContext'
 import { useSwal } from '../../hooks/useSwal'
 import { fadeUp, stagger } from '../../utils/animationsUtils'
 import { ROWS_PER_PAGE_OPTIONS } from '../../utils/adminUtils'
-import { ShieldIcon, CheckCircleIcon, BlockIcon, SearchIcon } from '../../utils/iconsUtils'
+import { ShieldIcon, CheckCircleIcon, BlockIcon, SearchIcon, AddCircleIcon } from '../../utils/iconsUtils'
 import UITextField from '../../components/Global/UITextField'
 import UITablePagination from '../../components/Admin/UITablePagination'
 import StatCard from '../../components/Global/StatCard'
@@ -15,6 +15,7 @@ import { Badge, BadgeFilterStatus } from '../../interfaces/badges.interfaces'
 import { deleteBadge, getBadges, updateBadge } from '../../utils/badgesUtils'
 import AnimatedRowBadge from '../../components/Admin/AdminBadges/AnimatedRowBadge'
 import BadgeFormModal from '../../components/Admin/AdminBadges/BadgeFormModal'
+import UIButton from '../../components/Global/UIButton'
 
 const AdminBadgeManagement = () => {
 
@@ -160,15 +161,10 @@ const AdminBadgeManagement = () => {
             </p>
           </div>
           {canManage && (
-            <button
-              onClick={handleOpenCreate}
-              style={{
-                display: 'flex', alignItems: 'center', gap: 6, padding: '8px 14px', borderRadius: 10,
-                fontSize: 13, fontWeight: 600, border: 'none', cursor: 'pointer', background: '#2563EB', color: '#fff',
-              }}
-            >
-              + New badge
-            </button>
+            <UIButton
+              type='button'
+              leftIcon={<AddCircleIcon isDark={dark} />}
+              dark={dark} variant="primary" onClick={handleOpenCreate} size="small">New badge</UIButton>
           )}
         </motion.div>
 

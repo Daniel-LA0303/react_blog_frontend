@@ -9,6 +9,7 @@ import ProjectCollabCard from '../../../components/Project/ProjectCollabCard';
 import SmallSpinner from '../../../components/Spinner/SmallSpinner';
 import AsideCollabDashboard from '../../../components/Aside/AsideCollabDashboard';
 import CreateProjectModal from '../../../components/Project/CreateProjectModal';
+import UIButton from '../../../components/Global/UIButton';
 
 const ProjectsDashboard = () => {
 
@@ -163,12 +164,9 @@ const ProjectsDashboard = () => {
                                     </p>
                                 </div>
 
-                                <button
+                                <UIButton dark={isDark} variant="primary"
                                     onClick={() => setCreateOpen(true)}
-                                    className="text-xs font-semibold px-3 py-1.5 rounded-lg bg-[#2563EB] text-white hover:bg-blue-700 transition-colors"
-                                >
-                                    New project
-                                </button>
+                                    size="small">Create a Project</UIButton>
                             </div>
                         )}
                         {!hasMore && (

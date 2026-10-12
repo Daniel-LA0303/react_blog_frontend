@@ -3,6 +3,7 @@ import userUserAuthContext from "../../context/hooks/useUserAuthContext";
 import { NotificationI, NotificationType } from "../../interfaces/notification.interface";
 import { useNavigate } from "react-router-dom";
 import { typeNotificationConfig } from "../../utils/notificationUtils";
+import UIButton from "../Global/UIButton";
 
 const MAX_MESSAGE_LENGTH = 60;
 
@@ -55,9 +56,8 @@ const NotificationCard = ({
   return (
     <div
       onClick={() => routePage(notification._id)}
-      className={`${
-        isDark ? "bg-[#27272A] text-white" : "bg-white text-black"
-      } rounded-xl p-4 transition-all cursor-pointer`}
+      className={`${isDark ? "bg-[#27272A] text-white" : "bg-white text-black"
+        } rounded-xl p-4 transition-all cursor-pointer`}
     >
       <div className="flex flex-col md:flex-row justify-between">
         <div className="flex gap-4 items-start">
@@ -87,26 +87,23 @@ const NotificationCard = ({
               {!isSystem && <IconComponent size={18} className={config.iconClass} />}
 
               <span
-                className={`font-medium ${
-                  isDark ? "text-white" : "text-gray-900"
-                }`}
+                className={`font-medium ${isDark ? "text-white" : "text-gray-900"
+                  }`}
               >
                 {senderName}
               </span>
             </div>
 
             <p
-              className={`mt-1 text-sm md:text-base ${
-                isDark ? "text-slate-300" : "text-gray-600"
-              }`}
+              className={`mt-1 text-sm md:text-base ${isDark ? "text-slate-300" : "text-gray-600"
+                }`}
             >
               {message}
             </p>
 
             <span
-              className={`text-xs mt-2 block ${
-                isDark ? "text-slate-500" : "text-gray-400"
-              }`}
+              className={`text-xs mt-2 block ${isDark ? "text-slate-500" : "text-gray-400"
+                }`}
             >
               {new Date(notification.createdAt).toLocaleString()}
             </span>
@@ -115,37 +112,19 @@ const NotificationCard = ({
 
         <div className="flex md:block justify-center">
           {!notification.isRead && (
-            <button
+            <UIButton
+              dark={isDark}
+              variant="primary"
+              size="small"
+              loading={loadingNotificationId === notification._id}
+              className="mt-2 md:mt-0 w-3/4 md:w-auto min-w-[110px]"
               onClick={(e) => {
                 e.stopPropagation();
                 changeStatus(notification._id);
               }}
-              className="bg-[rgb(37,99,235)] hover:bg-[#507ddd] py-1 px-1 md:px-4 rounded-lg text-white text-xs md:text-sm mt-2 md:mt-0 w-3/4 md:w-auto flex items-center justify-center gap-2"
             >
-              {loadingNotificationId === notification._id ? (
-                <svg
-                  className="animate-spin h-4 w-4"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                >
-                  <circle
-                    className="opacity-25"
-                    cx="12"
-                    cy="12"
-                    r="10"
-                    stroke="currentColor"
-                    strokeWidth="4"
-                  />
-                  <path
-                    className="opacity-75"
-                    fill="currentColor"
-                    d="M4 12a8 8 0 018-8v8z"
-                  />
-                </svg>
-              ) : (
-                "Mark as Read"
-              )}
-            </button>
+              Mark as Read
+            </UIButton>
           )}
         </div>
       </div>

@@ -23,7 +23,7 @@ const AsideMenu = ({ user }: any) => {
 
     const itemClass = `flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-[13.5px] transition-colors
     ${dark
-            ? 'text-gray-400 hover:bg-gray-800 hover:text-white'
+            ? 'text-gray-400 hover:bg-[#121212] hover:text-white'
             : 'text-gray-500 hover:bg-gray-100 hover:text-gray-900'
         }`;
 

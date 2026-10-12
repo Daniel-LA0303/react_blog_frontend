@@ -8,6 +8,7 @@ import Post from '../Post/Post'
 import userUserAuthContext from '../../context/hooks/useUserAuthContext'
 import useGlobalDataContext from '../../context/hooks/useGlobalDataContext'
 import { fadeUp } from '../../utils/animationsUtils'
+import { NextIcon, PreviousIcon } from '../../utils/iconsUtils'
 
 /// show users - cats - post in page search
 const SearchCom = ({
@@ -113,20 +114,20 @@ const SearchCom = ({
           onClick={() => onPageChange(currentPage - 1)}
           disabled={currentPage === 1}
           whileTap={{ scale: 0.94 }}
-          className={`h-8 px-3 rounded-lg text-xs font-medium transition-colors duration-150 disabled:opacity-30 disabled:cursor-not-allowed
+          className={`h-8 px-3 rounded-lg flex items-center text-xs font-medium transition-colors duration-150 disabled:opacity-30 disabled:cursor-not-allowed
             ${dark ? 'bg-gray-800 text-gray-400 hover:bg-gray-700' : 'bg-gray-100 text-gray-500 hover:bg-gray-200'}`}
         >
-          ← Prev
+         <PreviousIcon/> <span className='ml-0.5'>Prev</span>
         </motion.button>
         {pages}
         <motion.button
           onClick={() => onPageChange(currentPage + 1)}
           disabled={currentPage === totalPages}
           whileTap={{ scale: 0.94 }}
-          className={`h-8 px-3 rounded-lg text-xs font-medium transition-colors duration-150 disabled:opacity-30 disabled:cursor-not-allowed
+          className={`h-8 px-3 rounded-lg flex items-center text-xs font-medium transition-colors duration-150 disabled:opacity-30 disabled:cursor-not-allowed
             ${dark ? 'bg-gray-800 text-gray-400 hover:bg-gray-700' : 'bg-gray-100 text-gray-500 hover:bg-gray-200'}`}
         >
-          Next →
+          <span className='mr-0.5'>Next</span> <NextIcon />
         </motion.button>
       </div>
     )

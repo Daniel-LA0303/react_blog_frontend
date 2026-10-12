@@ -29,6 +29,7 @@ import Sidebar from '../../components/Sidebar/Sidebar'
 import { useKanbanStore } from '../../context/hooks/webSockets/kanban/useKanbanStore'
 import { useProjectSocket } from '../../context/hooks/webSockets/kanban/useProjectSocket'
 import ProjectEventCard, { ProjectEventI } from '../../components/Project/ProjectEventCard'
+import UIButton from '../../components/Global/UIButton'
 
 const ConfirmDialog = ({ open, title, message, danger, dark, onConfirm, onCancel }: {
     open: boolean
@@ -58,19 +59,16 @@ const ConfirmDialog = ({ open, title, message, danger, dark, onConfirm, onCancel
                 >
                     <h3 className={`text-sm font-bold ${dark ? 'text-white' : 'text-gray-900'}`}>{title}</h3>
                     <p className={`mt-1.5 text-sm ${dark ? 'text-gray-400' : 'text-gray-500'}`}>{message}</p>
+
+
                     <div className="mt-4 flex justify-end gap-2">
-                        <button
+
+                        <UIButton dark={dark} variant="secondary"
                             onClick={onCancel}
-                            className={`px-3 py-1.5 text-sm font-medium rounded-lg transition-colors ${dark ? 'text-gray-300 hover:bg-gray-800' : 'text-gray-600 hover:bg-gray-100'}`}
-                        >
-                            Cancel
-                        </button>
-                        <button
+                            size="small">Cancel</UIButton>
+                        <UIButton dark={dark} variant="primary"
                             onClick={onConfirm}
-                            className={`px-3 py-1.5 text-sm font-semibold rounded-lg text-white transition-colors ${danger ? 'bg-rose-500 hover:bg-rose-600' : 'bg-[#2563EB] hover:bg-blue-700'}`}
-                        >
-                            Confirm
-                        </button>
+                            size="small">Confirm</UIButton>
                     </div>
                 </motion.div>
             </motion.div>
@@ -416,18 +414,20 @@ export const KanbanBoard = () => {
                                         className={`text-sm rounded-lg px-2.5 py-1.5 outline-none border resize-none ${dark ? 'bg-[#18181B] border-gray-700 text-gray-200' : 'bg-gray-50 border-gray-200 text-gray-600'}`}
                                     />
                                     <div className="flex gap-2">
-                                        <button onClick={handleSaveProject} className="px-3 py-1.5 text-xs font-semibold rounded-lg bg-[#2563EB] text-white hover:bg-blue-700">
-                                            Save
-                                        </button>
-                                        <button
-                                            onClick={() => {
+                                        <UIButton
+                                            type='button'
+                                            dark={dark} variant="primary"
+                                            onClick={handleSaveProject}
+                                            size="small">Save</UIButton>
+
+                                        <UIButton
+                                            type='button'
+                                            dark={dark} variant="secondary"
+                                             onClick={() => {
                                                 setProjectForm({ name: project.name, description: project.description })
                                                 setEditingProject(false)
                                             }}
-                                            className={`px-3 py-1.5 text-xs font-semibold rounded-lg ${dark ? 'text-gray-300 hover:bg-gray-800' : 'text-gray-600 hover:bg-gray-100'}`}
-                                        >
-                                            Cancel
-                                        </button>
+                                            size="small">Cancel</UIButton>
                                     </div>
                                 </div>
                             ) : (
@@ -633,18 +633,15 @@ export const KanbanBoard = () => {
                                                     className={`text-sm rounded-lg px-2.5 py-1.5 outline-none border ${dark ? 'bg-[#18181B] border-gray-700 text-white' : 'bg-gray-50 border-gray-200 text-gray-900'}`}
                                                 />
                                                 <div className="flex gap-2">
-                                                    <button onClick={() => handleAddTask(list._id)} className="px-3 py-1.5 text-xs font-semibold rounded-lg bg-[#2563EB] text-white hover:bg-blue-700">
-                                                        Add
-                                                    </button>
-                                                    <button
+
+                                                    <UIButton dark={dark} variant="primary" onClick={() => handleAddTask(list._id)} size="small">Add</UIButton>
+                                                    <UIButton dark={dark} variant="secondary"
                                                         onClick={() => {
                                                             setAddingTaskListId(null)
                                                             setNewTaskTitle('')
                                                         }}
-                                                        className={`px-3 py-1.5 text-xs font-semibold rounded-lg ${dark ? 'text-gray-300 hover:bg-gray-800' : 'text-gray-600 hover:bg-gray-100'}`}
-                                                    >
-                                                        Cancel
-                                                    </button>
+                                                        size="small">Cancel</UIButton>
+
                                                 </div>
                                             </div>
                                         ) : (
@@ -675,22 +672,18 @@ export const KanbanBoard = () => {
                                         value={newListName}
                                         onChange={(e) => setNewListName(e.target.value)}
                                         onKeyDown={(e) => e.key === 'Enter' && handleAddList()}
-                                        placeholder="Nombre de la lista"
+                                        placeholder="List name"
                                         className={`text-sm rounded-lg px-2.5 py-1.5 outline-none border ${dark ? 'bg-[#18181B] border-gray-700 text-white' : 'bg-gray-50 border-gray-200 text-gray-900'}`}
                                     />
                                     <div className="flex gap-2">
-                                        <button onClick={handleAddList} className="px-3 py-1.5 text-xs font-semibold rounded-lg bg-[#2563EB] text-white hover:bg-blue-700">
-                                            Create
-                                        </button>
-                                        <button
+                                        <UIButton dark={dark} variant="primary"
+                                            onClick={handleAddList}
+                                            size="small">Create</UIButton>
+                                        <UIButton dark={dark} variant="secondary"
                                             onClick={() => {
                                                 setAddingListOpen(false)
                                                 setNewListName('')
-                                            }}
-                                            className={`px-3 py-1.5 text-xs font-semibold rounded-lg ${dark ? 'text-gray-300 hover:bg-gray-800' : 'text-gray-600 hover:bg-gray-100'}`}
-                                        >
-                                            Cancel
-                                        </button>
+                                            }} size="small">Cancel</UIButton>
                                     </div>
                                 </div>
                             ) : (

@@ -4,7 +4,7 @@ import UIButton from '../../components/Global/UIButton'
 import useGlobalDataContext from '../../context/hooks/useGlobalDataContext';
 import useUserAuthContext from '../../context/hooks/useUserAuthContext';
 import { useSwal } from '../../hooks/useSwal';
-import { AddIcon, SearchIcon } from '../../utils/iconsUtils' // AddIcon ya lo tenías importado
+import { AddCircleIcon, AddIcon, SearchIcon } from '../../utils/iconsUtils' // AddIcon ya lo tenías importado
 import clientAuthAxios from '../../services/clientAuthAxios';
 import { motion } from "framer-motion";
 import { fadeUp } from '../../utils/animationsUtils';
@@ -114,11 +114,14 @@ const AdminCats = () => {
               Manage your own categories.
             </p>
           </div>
+
           {canManage && (
-            <UIButton variant="primary" dark={dark} onClick={openCreate}>
-              <span style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-                <AddIcon size={16} /> New category
-              </span>
+            <UIButton
+              variant="primary" dark={dark} onClick={openCreate}
+              leftIcon={<AddCircleIcon isDark={dark} />}
+              size='small'
+            >
+              New category
             </UIButton>
           )}
         </motion.div>

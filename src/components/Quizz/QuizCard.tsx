@@ -2,6 +2,7 @@ import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { QuizListItem } from '../../interfaces/quizzes.interfaces'
 import { BookmarkIcon, PenIcon } from '../../utils/iconsUtils'
 import useUserAuthContext from '../../context/hooks/useUserAuthContext'
+import UIButton from '../Global/UIButton'
 
 
 
@@ -73,13 +74,14 @@ const QuizCard = ({ quiz, dark, onSave }: QuizCardProps) => {
           </span>
           {quiz.timeLimit && <span>{quiz.timeLimit} min</span>}
         </div>
+
         {!isInsideMyQuizzes && (
-          <button
+          <UIButton
+            variant="primary"
+            size="small"
+            dark={dark}
             onClick={() => navigate(`/take-quiz/${quiz._id}`)}
-            className="text-xs font-semibold px-3 py-1.5 rounded-lg bg-[#2563EB] text-white hover:bg-blue-700 transition-colors"
-          >
-            Take quiz
-          </button>
+          >Take Quiz</UIButton>
         )}
       </div>
     </div>

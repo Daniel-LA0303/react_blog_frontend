@@ -55,7 +55,7 @@ const Spinner = () => {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5, delay: 0.2 }}
       >
-        {'DLTechBlog'.split('').map((char, i) => (
+        {'uKnowly'.split('').map((char, i) => (
           <motion.span
             key={i}
             className={`text-xs font-semibold tracking-widest uppercase ${dark ? 'text-gray-600' : 'text-gray-400'}`}

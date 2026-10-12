@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
-import { Link, useParams } from 'react-router-dom'
+import { Link, useNavigate, useParams } from 'react-router-dom'
 import { motion, AnimatePresence, useInView } from 'framer-motion'
 import axios from 'axios'
 
@@ -16,6 +16,8 @@ import LoadingPosts from '../../components/Spinner/LoadingPosts'
 import { fadeUp, stagger } from '../../utils/animationsUtils'
 import PostSkeleton from '../../components/Spinner/Skeletons/PostSkeleton'
 import AsideSkeleton from '../../components/Spinner/Skeletons/AsideSkeleton'
+import UIButton from '../../components/Global/UIButton'
+import { AddCircleIcon } from '../../utils/iconsUtils'
 
 
 const AsideCard = ({ title, dark, delay, children }: {
@@ -55,6 +57,7 @@ const CategoryPost = () => {
   const { errorPage, setErrorPage } = usePages()
   const { error } = errorPage
   const params = useParams()
+  const route = useNavigate();
   const dark = !globalData.themeGlobal
 
   const [posts, setPosts] = useState<any[]>([])
@@ -158,7 +161,11 @@ const CategoryPost = () => {
     return () => window.removeEventListener('scroll', handleScroll)
   }, [postsLoading, hasMore, page])
 
-  const cat = categoryInfo?.category
+  const cat = categoryInfo?.category;
+
+  const hanldeNavigateNewPost = () => {
+    route("/new-post");
+  }
 
   return (
     <div className={`min-h-screen transition-colors duration-300 ${dark ? 'bg-[#0f0f0f]' : 'bg-white'}`}>
@@ -168,7 +175,7 @@ const CategoryPost = () => {
       ) : (
         <div className="max-w-screen-xl mx-auto px-4 sm:px-6 lg:px-8 pb-16">
 
-          {/* ── 1. Hero category card ── */}
+          {/*  1. Hero category card  */}
           <AnimatePresence mode="wait">
             {categoryLoading ? (
               <motion.div
@@ -206,7 +213,7 @@ const CategoryPost = () => {
 
           <div className="flex flex-col md:flex-row gap-8">
 
-            {/* ── Posts column ── */}
+            {/*  Posts column  */}
             <div className="flex-1 min-w-0 space-y-4 order-2 md:order-1">
 
               {/* Skeleton first load */}
@@ -233,13 +240,9 @@ const CategoryPost = () => {
                       No posts in this category yet
                     </p>
                     {userAuth.userId && (
-                      <Link
-                        to="/new-post"
-                        className="inline-flex items-center mt-4 rounded-full px-5 py-2 text-xs font-semibold text-white transition-colors"
-                        style={{ backgroundColor: '#2563EB' }}
-                      >
-                        Be the first — write a post
-                      </Link>
+                      <UIButton
+                        type='button'
+                        dark={dark} variant="primary" onClick={hanldeNavigateNewPost} size="small">Be the first — write a post</UIButton>
                     )}
                   </motion.div>
                 )}
@@ -280,7 +283,7 @@ const CategoryPost = () => {
               </AnimatePresence>
             </div>
 
-            {/* ── 2. Aside — shows ABOVE posts on mobile ── */}
+            {/*  2. Aside — shows ABOVE posts on mobile  */}
             <aside className="w-full md:w-72 flex-shrink-0 order-1 md:order-2">
               <AnimatePresence mode="wait">
                 {categoryLoading ? (
@@ -301,16 +304,12 @@ const CategoryPost = () => {
                         <p className={`text-sm leading-relaxed ${dark ? 'text-gray-400' : 'text-gray-500'}`}>
                           {cat.longDesc}
                         </p>
+
                         {userAuth.userId && (
-                          <Link
-                            to="/new-post"
-                            className="inline-flex items-center mt-4 rounded-full px-4 py-1.5 text-xs font-semibold text-white transition-colors"
-                            style={{ backgroundColor: '#2563EB' }}
-                            onMouseEnter={e => (e.currentTarget.style.backgroundColor = '#1d4ed8')}
-                            onMouseLeave={e => (e.currentTarget.style.backgroundColor = '#2563EB')}
-                          >
-                            + Write a post
-                          </Link>
+                          <UIButton
+                            type='button'
+                            leftIcon={<AddCircleIcon isDark={dark} />}
+                            dark={dark} variant="primary" onClick={hanldeNavigateNewPost} size="small">Write a post</UIButton>
                         )}
                       </AsideCard>
                     )}

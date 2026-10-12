@@ -4,9 +4,10 @@ import { motion, AnimatePresence } from 'framer-motion'
 import clientAuthAxios from '../../services/clientAuthAxios'
 import useGlobalDataContext from '../../context/hooks/useGlobalDataContext'
 import { useSwal } from '../../hooks/useSwal'
+import UIButton from '../Global/UIButton'
 
 const NewCardCategory = ({ category, userAuth }: any) => {
-  
+
   const [isFollow, setIsFollow] = useState(false)
   const { showConfirmSwal } = useSwal()
   const { globalData } = useGlobalDataContext()
@@ -21,7 +22,7 @@ const NewCardCategory = ({ category, userAuth }: any) => {
       await clientAuthAxios.post(`/users/follow-tag/${userAuth.userId}?categoryId=${category._id}`)
       setIsFollow(true)
     } catch (error: any) {
-      showConfirmSwal({ message: error.response.data.message, status: 'error', confirmButton: true, cancelButton: false,})
+      showConfirmSwal({ message: error.response.data.message, status: 'error', confirmButton: true, cancelButton: false, })
     }
   }
 
@@ -66,42 +67,11 @@ const NewCardCategory = ({ category, userAuth }: any) => {
 
           {userAuth?.userId && (
             <AnimatePresence mode="wait" initial={false}>
-              {isFollow ? (
-                <motion.button
-                  key="following"
-                  type="button"
-                  onClick={handleUnFollowTag}
-                  initial={{ opacity: 0, scale: 0.9 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  exit={{ opacity: 0, scale: 0.9 }}
-                  transition={{ duration: 0.15 }}
-                  whileTap={{ scale: 0.95 }}
-                  className={`flex-shrink-0 rounded-full px-3.5 py-1 text-xs font-medium border transition-colors duration-150
-                    ${dark
-                      ? 'bg-gray-800 border-gray-700 text-gray-300 hover:bg-red-900/30 hover:border-red-800 hover:text-red-400'
-                      : 'bg-gray-100 border-gray-200 text-gray-500 hover:bg-red-50 hover:border-red-200 hover:text-red-500'
-                    }`}
-                >
-                  ✓ Following
-                </motion.button>
-              ) : (
-                <motion.button
-                  key="follow"
-                  type="button"
-                  onClick={handleFollowTag}
-                  initial={{ opacity: 0, scale: 0.9 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  exit={{ opacity: 0, scale: 0.9 }}
-                  transition={{ duration: 0.15 }}
-                  whileTap={{ scale: 0.95 }}
-                  className="flex-shrink-0 rounded-full px-3.5 py-1 text-xs font-semibold text-white transition-colors duration-150"
-                  style={{ backgroundColor: '#2563EB' }}
-                  onMouseEnter={(e: any) => (e.currentTarget.style.backgroundColor = '#1d4ed8')}
-                  onMouseLeave={(e: any) => (e.currentTarget.style.backgroundColor = '#2563EB')}
-                >
-                  Follow
-                </motion.button>
-              )}
+              {isFollow ?
+                <UIButton dark={dark} variant="accent" onClick={handleUnFollowTag} size="small">Following</UIButton>
+                :
+                <UIButton dark={dark} variant="primary" onClick={handleFollowTag} size="small">Follow</UIButton>
+              }
             </AnimatePresence>
           )}
         </div>

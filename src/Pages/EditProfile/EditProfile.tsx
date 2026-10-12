@@ -16,6 +16,7 @@ import FieldWithOutError from '../../components/Global/FieldWithOutError'
 import { SocialIcons } from '../../utils/iconsUtils'
 import { inputCls } from '../../utils/postUtils'
 import SocialField from '../../components/Profile/SocialField'
+import UIButton from '../../components/Global/UIButton'
 
 
 const EditProfile = () => {
@@ -192,7 +193,7 @@ const EditProfile = () => {
                 </div>
               </SectionEditProfile>
 
-              {/* ── Personal info ────────────────────────────────────────── */}
+              {/*  Personal info  */}
               <SectionEditProfile index={1} label="Personal information" hint="Shown publicly on your profile page." dark={dark}>
                 <FieldWithOutError label="Bio" htmlFor="desc" dark={dark}>
                   <textarea
@@ -300,31 +301,14 @@ const EditProfile = () => {
               className={`flex justify-end items-center gap-3 px-7 py-5 border-t rounded-b-2xl
                 ${dark ? 'border-gray-800' : 'border-gray-100'}`}
             >
-              <motion.button
-                type="button"
+              <UIButton dark={dark} variant="secondary"
                 onClick={() => route(-1)}
-                whileTap={{ scale: 0.97 }}
-                className={`rounded-xl px-5 py-2.5 text-sm font-medium border transition-colors
-                  ${dark ? 'border-gray-700 text-gray-300 hover:bg-gray-800' : 'border-gray-200 text-gray-600 hover:bg-gray-50'}`}
-              >
-                Cancel
-              </motion.button>
-
-              <motion.button
+                size="small">Cancel</UIButton>
+              <UIButton dark={dark} variant="primary"
                 type="submit"
                 onClick={handleSubmit}
-                disabled={saving}
-                whileTap={{ scale: 0.97 }}
-                className="relative rounded-xl px-6 py-2.5 text-sm font-semibold text-white bg-[#2563EB] hover:bg-blue-700 transition-colors disabled:opacity-60 disabled:cursor-not-allowed min-w-[90px] flex items-center justify-center gap-2"
-              >
-                {saving ? (
-                  <motion.span
-                    className="h-4 w-4 rounded-full border-2 border-white/40 border-t-white"
-                    animate={{ rotate: 360 }}
-                    transition={{ duration: 0.7, repeat: Infinity, ease: 'linear' }}
-                  />
-                ) : 'Save changes'}
-              </motion.button>
+                loading={saving}
+                size="small">Confirm</UIButton>
             </motion.div>
           </motion.div>
         </main>

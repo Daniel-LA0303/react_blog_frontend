@@ -6,6 +6,7 @@ import { useSwal } from '../../hooks/useSwal'
 import { createProject } from '../../utils/projectUtils'
 import UIModal from '../Global/UIModal'
 import Field from '../Global/Field'
+import UIButton from '../Global/UIButton'
 
 interface CreateProjectModalProps {
   open: boolean
@@ -26,11 +27,10 @@ const CreateProjectModal = ({ open, onClose, dark }: CreateProjectModalProps) =>
   const [nameError, setNameError] = useState('')
   const [saving, setSaving] = useState(false)
 
-  const inputClass = `w-full text-sm rounded-lg px-3 py-2 outline-none border transition-colors ${
-    dark
-      ? 'bg-[#18181B] border-gray-700 text-white placeholder:text-gray-600 focus:border-gray-500'
-      : 'bg-gray-50 border-gray-200 text-gray-900 placeholder:text-gray-400 focus:border-gray-400'
-  }`
+  const inputClass = `w-full text-sm rounded-lg px-3 py-2 outline-none border transition-colors ${dark
+    ? 'bg-[#18181B] border-gray-700 text-white placeholder:text-gray-600 focus:border-gray-500'
+    : 'bg-gray-50 border-gray-200 text-gray-900 placeholder:text-gray-400 focus:border-gray-400'
+    }`
 
   const reset = () => {
     setName('')
@@ -60,7 +60,7 @@ const CreateProjectModal = ({ open, onClose, dark }: CreateProjectModalProps) =>
         owner: userAuth.userId as string,
       })
       console.log(res.projectId);
-      
+
 
       reset()
       onClose()
@@ -121,23 +121,15 @@ const CreateProjectModal = ({ open, onClose, dark }: CreateProjectModalProps) =>
 
         {/* footer */}
         <div className={`px-5 py-3 flex items-center justify-end gap-2 border-t ${dark ? 'border-gray-800' : 'border-gray-100'}`}>
-          <button
-            type="button"
+          <UIButton dark={dark} variant="secondary"
             onClick={handleClose}
             disabled={saving}
-            className={`text-xs font-semibold px-3 py-1.5 rounded-lg border transition-colors disabled:opacity-50 ${
-              dark ? 'border-gray-700 text-gray-300 hover:bg-gray-800' : 'border-gray-200 text-gray-700 hover:bg-gray-50'
-            }`}
-          >
-            Cancel
-          </button>
-          <button
+            size="small">Cancel</UIButton>
+          <UIButton dark={dark} variant="primary"
             type="submit"
-            disabled={saving}
-            className="text-xs font-semibold px-4 py-1.5 rounded-lg bg-[#2563EB] text-white hover:bg-blue-700 disabled:opacity-50 transition-colors"
-          >
-            {saving ? 'Creating...' : 'Create project'}
-          </button>
+            onClick={handleSubmit}
+            loading={saving}
+            size="small">Confirm</UIButton>
         </div>
       </form>
     </UIModal>

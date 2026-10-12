@@ -12,6 +12,7 @@ import { useSwal } from "../../hooks/useSwal";
 import clientAuthAxios from "../../services/clientAuthAxios";
 import useConversation from "../../context/hooks/useConversation";
 import { motion, AnimatePresence } from "framer-motion";
+import UIButton from "../Global/UIButton";
 
 const UserCardLong = ({ user }: any) => {
     const navigate = useNavigate();
@@ -158,57 +159,16 @@ const UserCardLong = ({ user }: any) => {
                     <div className="flex items-center gap-2 shrink-0 w-full sm:w-auto">
                         {/* Follow / Unfollow */}
                         <AnimatePresence mode="wait" initial={false}>
-                            {isFollow ? (
-                                <motion.button
-                                    key="following"
-                                    type="button"
-                                    onClick={handleClickUnFollow}
-                                    initial={{ opacity: 0, scale: 0.9 }}
-                                    animate={{ opacity: 1, scale: 1 }}
-                                    exit={{ opacity: 0, scale: 0.9 }}
-                                    transition={{ duration: 0.15 }}
-                                    whileTap={{ scale: 0.95 }}
-                                    className={`flex-1 sm:flex-none rounded-xl px-5 py-2 text-xs font-medium border transition-colors
-                                        ${isLight
-                                            ? "bg-gray-100 border-gray-200 text-gray-600 hover:bg-red-50 hover:border-red-200 hover:text-red-500"
-                                            : "bg-gray-800 border-gray-700 text-gray-300 hover:bg-red-900/30 hover:border-red-800 hover:text-red-400"
-                                        }`}
-                                >
-                                    ✓ Following
-                                </motion.button>
-                            ) : (
-                                <motion.button
-                                    key="follow"
-                                    type="button"
-                                    onClick={handleClickFollow}
-                                    initial={{ opacity: 0, scale: 0.9 }}
-                                    animate={{ opacity: 1, scale: 1 }}
-                                    exit={{ opacity: 0, scale: 0.9 }}
-                                    transition={{ duration: 0.15 }}
-                                    whileTap={{ scale: 0.95 }}
-                                    className="flex-1 sm:flex-none rounded-xl px-5 py-2 text-xs font-semibold text-white transition-colors"
-                                    style={{ backgroundColor: "#2563EB" }}
-                                    onMouseEnter={(e: any) => (e.currentTarget.style.backgroundColor = "#1d4ed8")}
-                                    onMouseLeave={(e: any) => (e.currentTarget.style.backgroundColor = "#2563EB")}
-                                >
-                                    Follow
-                                </motion.button>
-                            )}
+                            {isFollow ?
+                                <UIButton dark={!isLight} variant="accent" onClick={handleClickUnFollow} size="small">Following</UIButton>
+                                :
+                                <UIButton dark={!isLight} variant="primary" onClick={handleClickFollow} size="small">Follow</UIButton>
+                            }
+
                         </AnimatePresence>
 
                         {/* Message */}
-                        <motion.button
-                            type="button"
-                            onClick={handleClickChat}
-                            whileTap={{ scale: 0.95 }}
-                            className={`flex-1 sm:flex-none rounded-xl px-5 py-2 text-xs font-medium border transition-colors
-                                ${isLight
-                                    ? "border-gray-200 text-gray-600 hover:bg-gray-50"
-                                    : "border-gray-700 text-gray-300 hover:bg-gray-800"
-                                }`}
-                        >
-                            Message
-                        </motion.button>
+                        <UIButton dark={!isLight} variant="secondary" onClick={handleClickChat} size="small">Message</UIButton>
                     </div>
                 )}
             </div>

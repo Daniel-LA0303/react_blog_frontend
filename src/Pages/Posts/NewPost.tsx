@@ -49,7 +49,8 @@ import { fadeUp, stagger } from '../../utils/animationsUtils'
 import Field from '../../components/Global/Field'
 import CategorySelect from '../../components/Post/CategorySelect'
 import { inputCls, toneOptions } from '../../utils/postUtils'
-import { MagicIcon } from '../../utils/iconsUtils'
+import { MagicIcon, PenIcon } from '../../utils/iconsUtils'
+import UIButton from '../../components/Global/UIButton'
 
 
 const NewPost = () => {
@@ -285,7 +286,7 @@ const NewPost = () => {
                           ? <span className={`w-3 h-3 border-2 rounded-full animate-spin
                             ${dark ? 'border-white/30 border-t-white' : 'border-black/20 border-t-black'}`}
                           />
-                          : <MagicIcon isDark={globalData.themeGlobal} />
+                          : <PenIcon isDark={globalData.themeGlobal} />
                         }
                       </button>
                     </Tooltip>
@@ -350,7 +351,7 @@ const NewPost = () => {
                           ? <span className={`w-3 h-3 border-2 rounded-full animate-spin
                               ${dark ? 'border-white/30 border-t-white' : 'border-black/20 border-t-black'}`}
                           />
-                          : <MagicIcon isDark={globalData.themeGlobal} />
+                          : <PenIcon isDark={globalData.themeGlobal} />
                         }
                       </button>
                     </Tooltip>
@@ -524,7 +525,7 @@ const NewPost = () => {
               </AnimatePresence>
             </motion.div>
 
-            {/* ── Content editor */}
+            {/*  Content editor */}
             <p className={`text-xs font-semibold uppercase tracking-widest my-4 ${dark ? 'text-gray-500' : 'text-gray-400'}`}>
               Content
             </p>
@@ -613,47 +614,17 @@ const NewPost = () => {
             </motion.div>
 
           </div>
-          {/* ── Footer actions ─*/}
+          {/*  Footer actions ─*/}
           <motion.div
             variants={fadeUp} custom={4}
             className={`flex justify-end items-center gap-3 px-7 py-5 border-t rounded-b-2xl
               ${dark ? 'border-gray-800' : 'border-gray-100'}`}
           >
-            <motion.button
-              type="button"
-              onClick={() => route(-1)}
-              whileTap={{ scale: 0.97 }}
-              className={`rounded-xl px-5 py-2.5 text-sm font-medium border transition-colors
-                ${dark ? 'border-gray-700 text-gray-300 hover:bg-gray-800' : 'border-gray-200 text-gray-600 hover:bg-gray-50'}`}
-            >
-              Cancel
-            </motion.button>
+            <UIButton dark={dark} variant="secondary" onClick={() => route(-1)} size="small">Cancel</UIButton>
 
-            <motion.button
-              type="submit"
-              disabled={saving}
-              whileTap={{ scale: 0.97 }}
-              className="relative rounded-xl px-6 py-2.5 text-sm font-semibold text-white transition-colors disabled:opacity-60 disabled:cursor-not-allowed min-w-[110px] flex items-center justify-center gap-2"
-              style={{ backgroundColor: '#2563EB' }}
-              onMouseEnter={(e: any) => !saving && (e.currentTarget.style.backgroundColor = '#1d4ed8')}
-              onMouseLeave={(e: any) => (e.currentTarget.style.backgroundColor = '#2563EB')}
-            >
-              {saving ? (
-                <motion.span
-                  className="h-4 w-4 rounded-full border-2 border-white/40 border-t-white"
-                  animate={{ rotate: 360 }}
-                  transition={{ duration: 0.7, repeat: Infinity, ease: 'linear' }}
-                />
-              ) : (
-                <>
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}
-                    strokeLinecap="round" strokeLinejoin="round" className="w-3.5 h-3.5">
-                    <path d="M12 20h9" /><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z" />
-                  </svg>
-                  Publish post
-                </>
-              )}
-            </motion.button>
+            <UIButton type="submit" dark={dark} variant="primary" loading={saving} className="min-w-[110px]" size='small'>
+              Publish post
+            </UIButton>
           </motion.div>
         </motion.form>
       </main>

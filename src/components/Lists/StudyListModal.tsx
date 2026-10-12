@@ -5,6 +5,8 @@ import UIModal from '../Global/UIModal'
 import SmallSpinner from '../Spinner/SmallSpinner'
 import useUserAuthContext from '../../context/hooks/useUserAuthContext'
 import { getResourceListMembership } from '../../utils/listsUtils'
+import UIButton from '../Global/UIButton'
+import { AddCircleIcon, AddIcon } from '../../utils/iconsUtils'
 
 type StudyList = {
     _id: string
@@ -256,20 +258,18 @@ const StudyListModal = ({
                                                 type="button"
                                                 disabled={alreadySaved}
                                                 onClick={() => setSelectedListId(list._id)}
-                                                className={`w-full flex items-center gap-3 rounded-xl px-3 py-3 text-left transition-colors ${
-                                                    alreadySaved
-                                                        ? dark ? 'opacity-60 cursor-default' : 'opacity-60 cursor-default'
-                                                        : selected
-                                                            ? dark ? 'bg-blue-500/10' : 'bg-blue-50'
-                                                            : dark ? 'hover:bg-white/5' : 'hover:bg-gray-50'
-                                                }`}
+                                                className={`w-full flex items-center gap-3 rounded-xl px-3 py-3 text-left transition-colors ${alreadySaved
+                                                    ? dark ? 'opacity-60 cursor-default' : 'opacity-60 cursor-default'
+                                                    : selected
+                                                        ? dark ? 'bg-blue-500/10' : 'bg-blue-50'
+                                                        : dark ? 'hover:bg-white/5' : 'hover:bg-gray-50'
+                                                    }`}
                                             >
                                                 <span
-                                                    className={`flex-shrink-0 w-5 h-5 rounded-md border flex items-center justify-center transition-colors ${
-                                                        alreadySaved || selected
-                                                            ? 'bg-blue-600 border-blue-600'
-                                                            : dark ? 'border-gray-600' : 'border-gray-300'
-                                                    }`}
+                                                    className={`flex-shrink-0 w-5 h-5 rounded-md border flex items-center justify-center transition-colors ${alreadySaved || selected
+                                                        ? 'bg-blue-600 border-blue-600'
+                                                        : dark ? 'border-gray-600' : 'border-gray-300'
+                                                        }`}
                                                 >
                                                     {(alreadySaved || selected) && (
                                                         <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
@@ -308,34 +308,29 @@ const StudyListModal = ({
                         </div>
 
                         {/* Footer */}
-                        <div className={`px-5 py-4 border-t ${dark ? 'border-white/10' : 'border-gray-100'}`}>
-                            <button
+                        <div className={`px-5 py-4 border-t flex justify-between ${dark ? 'border-white/10' : 'border-gray-100'}`}>
+
+                            <UIButton dark={dark}
                                 type="button"
+                                variant="primary"
                                 onClick={() => setMode('CREATE')}
-                                className={`w-full flex items-center justify-center gap-2 rounded-xl py-2.5 text-sm font-medium transition-colors ${dark ? 'text-gray-200 hover:bg-white/5' : 'text-gray-700 hover:bg-gray-50'}`}
-                            >
-                                <span className="text-lg leading-none">
-                                    +
-                                </span>
-                                Create new list
-                            </button>
+                                leftIcon={<AddCircleIcon isDark={dark} />}
+                                size="small">Create new list</UIButton>
 
                             {selectedListId && (
-                                <button
-                                    type="button"
-                                    onClick={handleAddToList}
-                                    disabled={
-                                        adding ||
-                                        !resourceId ||
-                                        !resourceType ||
-                                        !onAddToList
-                                    }
-                                    className="mt-2 w-full rounded-xl bg-blue-600 hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed text-white py-2.5 text-sm font-medium transition-colors"
-                                >
-                                    {adding
-                                        ? 'Adding...'
-                                        : 'Add to list'}
-                                </button>
+                            <UIButton dark={dark}
+                                type="button"
+                                variant="secondary"
+                                onClick={handleAddToList}
+                                disabled={
+                                    adding ||
+                                    !resourceId ||
+                                    !resourceType ||
+                                    !onAddToList
+                                }
+                                loading={adding}
+                                leftIcon={<AddCircleIcon isDark={dark} />}
+                                size="small">Add to list</UIButton>
                             )}
                         </div>
                     </motion.div>
@@ -412,23 +407,21 @@ const StudyListModal = ({
                         </div>
 
                         {/* Footer */}
-                        <div className={`px-5 py-4 border-t flex gap-2 ${dark ? 'border-white/10' : 'border-gray-100'}`}>
-                            <button
-                                type="button"
-                                onClick={() => setMode('SELECT')}
-                                className={`flex-1 rounded-xl py-2.5 text-sm font-medium ${dark ? 'text-gray-300 hover:bg-white/5' : 'text-gray-600 hover:bg-gray-50'}`}
-                            >
-                                Cancel
-                            </button>
+                        <div className={`px-5 py-4 border-t flex justify-between gap-2 ${dark ? 'border-white/10' : 'border-gray-100'}`}>
 
-                            <button
-                                type="button"
+                            <UIButton
+                                dark={dark}
+                                variant="secondary"
+                                onClick={() => setMode('SELECT')}
+                                size="small">Cancel</UIButton>
+
+                            <UIButton
+                                dark={dark}
+                                variant="primary"
                                 onClick={handleCreateList}
                                 disabled={!canCreate || creating}
-                                className="flex-1 rounded-xl bg-blue-600 hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed text-white py-2.5 text-sm font-medium transition-colors"
-                            >
-                                {creating ? 'Creating...' : 'Create list'}
-                            </button>
+                                loading={creating}
+                                size="small">Create list</UIButton>
                         </div>
                     </motion.div>
                 )}

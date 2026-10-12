@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { Link, useParams } from 'react-router-dom';
+import { Link, useNavigate, useParams } from 'react-router-dom';
 import useGlobalDataContext from '../../../context/hooks/useGlobalDataContext';
 import useUserAuthContext from '../../../context/hooks/useUserAuthContext';
 import clientAuthAxios from '../../../services/clientAuthAxios';
@@ -8,6 +8,7 @@ import Sidebar from '../../../components/Sidebar/Sidebar';
 import { StudyListItemPaginated } from '../../../interfaces/lists.interfaces';
 import ListCard from '../../../components/Lists/ListCard';
 import AsideCollabDashboard from '../../../components/Aside/AsideCollabDashboard';
+import UIButton from '../../../components/Global/UIButton';
 
 const StudyListDashboard = () => {
 
@@ -16,6 +17,7 @@ const StudyListDashboard = () => {
      * route
      */
     const params = useParams();
+    const route = useNavigate();
 
     /**
      * hooks
@@ -101,6 +103,11 @@ const StudyListDashboard = () => {
             setLoading(false);
         }
     };
+
+    const handleNavigateLists = () => {
+        route("/lists")
+    }
+
     return (
         <div className={`${globalData.themeGlobal ? 'text-black' : 'text-white'}`}>
             <Sidebar />
@@ -151,12 +158,10 @@ const StudyListDashboard = () => {
                                     </p>
                                 </div>
 
-                                <Link
-                                    to="/lists"
-                                    className="text-xs font-semibold px-4 py-2 rounded-lg bg-[#2563EB] text-white hover:bg-blue-700 transition-colors"
-                                >
-                                    Explore Lists
-                                </Link>
+                                <UIButton dark={isDark} variant="primary"
+                                    onClick={handleNavigateLists}
+                                    size="small">Explore Lists</UIButton>
+
                             </div>
                         )}
                         {!hasMore && (

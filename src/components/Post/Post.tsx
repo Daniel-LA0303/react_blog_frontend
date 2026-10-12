@@ -226,23 +226,23 @@ export const Post = ({ post, status }: PostProps) => {
           </Link>
 
           {/* Categories */}
-          {categories?.length > 0 && (
-            <div className="flex flex-wrap gap-1.5">
-              {categories.map((cat: any) => (
-                <Link
-                  key={cat._id}
-                  to={`/category/${cat.name}`}
-                  className={`text-xs px-2.5 py-0.5 rounded-full font-medium transition-colors duration-150
-                    ${dark
-                      ? 'bg-gray-800 text-gray-400 hover:bg-gray-700 hover:text-gray-200'
-                      : 'bg-gray-100 text-gray-500 hover:bg-gray-200 hover:text-gray-700'
-                    }`}
-                >
-                  #{cat.name}
-                </Link>
-              ))}
-            </div>
-          )}
+{categories?.length > 0 && (
+  <div className="flex flex-wrap gap-1.5">
+    {categories.map((cat: any) => (
+      <Link
+        key={cat._id}
+        to={`/category/${cat.name}`}
+        className={`text-xs px-2.5 py-0.5 rounded-full font-medium ring-1 ring-inset transition-colors duration-300
+          ${dark
+            ? 'bg-neutral-800 text-neutral-400 ring-neutral-700 hover:bg-neutral-700 hover:text-neutral-100'
+            : 'bg-neutral-100 text-neutral-600 ring-neutral-200 hover:bg-neutral-200 hover:text-neutral-900'
+          }`}
+      >
+        #{cat.name}
+      </Link>
+    ))}
+  </div>
+)}
 
           {/* Divider */}
           <div className={`h-px w-full ${dark ? 'bg-gray-800' : 'bg-gray-100'}`} />
@@ -302,21 +302,23 @@ export const Post = ({ post, status }: PostProps) => {
                   <BookmarkIcon filled={save} />
                 </IconButton>
               </div>
-
-              <button
-                type="button"
-                onClick={() => {
-                  setStudyListModalOpen(true)
-                }}
-                className={`flex items-center px-2 py-1.5 rounded-lg text-sm text-left
+              {
+                userAuth.userId &&
+                <button
+                  type="button"
+                  onClick={() => {
+                    setStudyListModalOpen(true)
+                  }}
+                  className={`flex items-center px-2 py-1.5 rounded-lg text-sm text-left
                   ${dark
-                    ? 'text-gray-200 hover:bg-white/5'
-                    : 'text-gray-700 hover:bg-gray-50'
-                  }`}
-              >
-                {/* List icon */}
-               <ListIcon />
-              </button>
+                      ? 'text-gray-200 hover:bg-white/5'
+                      : 'text-gray-700 hover:bg-gray-50'
+                    }`}
+                >
+                  {/* List icon */}
+                  <ListIcon />
+                </button>
+              }
             </div>
           </div>
         </div>

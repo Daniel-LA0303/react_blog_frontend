@@ -845,6 +845,20 @@ export const FileBanIcon = ({ size }: { size?: number }) => (
   </IconBase>
 )
 
+export const PreviousIcon = ({ size }: { size?: number }) => (
+  <IconBase size={size}>
+    <line x1="19" y1="12" x2="5" y2="12" />
+    <polyline points="12 19 5 12 12 5" />
+  </IconBase>
+)
+
+export const NextIcon = ({ size }: { size?: number }) => (
+  <IconBase size={size}>
+    <line x1="5" y1="12" x2="19" y2="12" />
+    <polyline points="12 5 19 12 12 19" />
+  </IconBase>
+)
+
 export const CommentsIcon = ({ size = 16 }: { size?: number }) => (
   <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
     <path d="M21 12a8.5 8.5 0 0 1-8.5 8.5 8.4 8.4 0 0 1-3.9-.94L3 21l1.44-5.6A8.5 8.5 0 1 1 21 12z" />

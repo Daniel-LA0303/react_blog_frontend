@@ -18,6 +18,7 @@ import QuestionEditor from '../../components/Quizz/QuestionEditor'
 import Sidebar from '../../components/Sidebar/Sidebar'
 import useUserAuthContext from '../../context/hooks/useUserAuthContext'
 import Spinner from '../../components/Spinner/Spinner'
+import UIButton from '../../components/Global/UIButton'
 
 export const uid = (prefix: string) => `${prefix}_${Date.now().toString(36)}_${Math.random().toString(36).slice(2, 8)}`
 
@@ -433,7 +434,7 @@ export const CreateQuiz = () => {
       <div className="max-w-5xl mx-auto px-4 sm:px-6 py-6 flex flex-col gap-5">
 
         {/* ---- header / actions ---- */}
-        <div className="flex items-center justify-between">
+        <div className="flex items-center justify-between flex-wrap">
           <div>
             <h1 className={`text-lg font-bold ${dark ? 'text-white' : 'text-gray-900'}`}>{isEditMode ? 'Edit quiz' : 'Create quiz'}</h1>
             <p className={`text-xs mt-0.5 ${dark ? 'text-gray-500' : 'text-gray-400'}`}>
@@ -456,13 +457,9 @@ export const CreateQuiz = () => {
               </option>
             </select>
 
-            <button
-              onClick={handleSave}
-              disabled={saving}
-              className="px-3 py-1.5 text-xs font-semibold rounded-lg bg-[#2563EB] text-white hover:bg-blue-700 disabled:opacity-50 transition-colors"
-            >
-              {saving ? 'Saving...' : 'Save'}
-            </button>
+            <UIButton onClick={handleSave} dark={dark} variant="primary" loading={saving} size='small'>
+              Save
+            </UIButton>
           </div>
         </div>
 

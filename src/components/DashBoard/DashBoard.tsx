@@ -1,4 +1,4 @@
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import useGlobalDataContext from '../../context/hooks/useGlobalDataContext'
 import userUserAuthContext from '../../context/hooks/useUserAuthContext'
@@ -6,6 +6,7 @@ import { useEffect, useRef, useState } from 'react'
 import { useInView } from 'framer-motion'
 import { fadeUp, stagger } from '../../utils/animationsUtils'
 import { Icons } from '../../utils/iconsUtils'
+import UIButton from '../Global/UIButton'
 
 
 const Counter = ({ value }: { value: number }) => {
@@ -119,9 +120,16 @@ const SectionLabel = ({ label, dark }: { label: string; dark: boolean }) => (
 )
 
 const DashBoard = ({ counts }: any) => {
-  const { globalData } = useGlobalDataContext()
-  const { userAuth } = userUserAuthContext()
-  const dark = !globalData.themeGlobal
+
+  const { globalData } = useGlobalDataContext();
+  const { userAuth } = userUserAuthContext();
+  const dark = !globalData.themeGlobal;
+
+  const route = useNavigate();
+
+  const handleNavigate = () => {
+    route(`/profile/${userAuth.userId}`);
+  }
 
   if (Object.keys(userAuth).length === 0) return (
     <div className="flex justify-center py-24">
@@ -199,16 +207,7 @@ const DashBoard = ({ counts }: any) => {
 
           {/* Edit profile link */}
           <motion.div variants={fadeUp} custom={4} initial="hidden" animate="visible" className="flex-shrink-0">
-            <Link
-              to={`/profile/${userAuth.userId}`}
-              className={`inline-flex items-center gap-1.5 rounded-full px-4 py-1.5 text-xs font-medium border transition-colors duration-150
-                ${dark
-                  ? 'border-gray-700 text-gray-300 hover:bg-gray-800'
-                  : 'border-gray-200 text-gray-600 hover:bg-gray-50'
-                }`}
-            >
-              View profile →
-            </Link>
+            <UIButton dark={dark} variant="primary" onClick={handleNavigate} size="small">View profile</UIButton>
           </motion.div>
         </div>
       </motion.div>

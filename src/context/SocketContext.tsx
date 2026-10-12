@@ -29,6 +29,7 @@ export const SocketProvider = ({ children }: { children: ReactNode }) => {
 
     const s = io(import.meta.env.VITE_API_URL_BACKEND_SOCKET as string, {
       query: { userId: userAuth.userId },
+      transports: ["websocket"],
     });
 
     s.on("initialOnlineUsers", (users: string[]) => setOnlineUsers(users));
