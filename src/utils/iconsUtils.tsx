@@ -852,6 +852,87 @@ export const PreviousIcon = ({ size }: { size?: number }) => (
   </IconBase>
 )
 
+export const CodeIcon = ({ size }: { size?: number }) => (
+  <IconBase size={size}>
+    <polyline points="16 18 22 12 16 6" />
+    <polyline points="8 6 2 12 8 18" />
+  </IconBase>
+)
+
+export const BriefcaseIcon = ({ size }: { size?: number }) => (
+  <IconBase size={size}>
+    <rect x="2" y="7" width="20" height="14" rx="2" />
+    <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16" />
+  </IconBase>
+)
+
+export const SmileIcon = ({ size }: { size?: number }) => (
+  <IconBase size={size}>
+    <circle cx="12" cy="12" r="10" />
+    <path d="M8 14s1.5 2 4 2 4-2 4-2" />
+    <line x1="9" y1="9" x2="9.01" y2="9" />
+    <line x1="15" y1="9" x2="15.01" y2="9" />
+  </IconBase>
+)
+
+export const SchoolIcon = ({ size }: { size?: number }) => (
+  <IconBase size={size}>
+    <path d="M22 10L12 5 2 10l10 5 10-5z" />
+    <path d="M6 12v5c3 3 9 3 12 0v-5" />
+    <line x1="22" y1="10" x2="22" y2="16" />
+  </IconBase>
+)
+
+export const TerminalIcon = ({ size }: { size?: number }) => (
+  <IconBase size={size}>
+    <polyline points="4 17 10 11 4 5" />
+    <line x1="12" y1="19" x2="20" y2="19" />
+  </IconBase>
+)
+
+export const RobotIcon = ({ size }: { size?: number }) => (
+  <IconBase size={size}>
+    <rect x="4" y="8" width="16" height="12" rx="3" />
+    <line x1="12" y1="8" x2="12" y2="4" />
+    <circle cx="12" cy="3" r="1" />
+    <line x1="2" y1="13" x2="2" y2="16" />
+    <line x1="22" y1="13" x2="22" y2="16" />
+    <line x1="9" y1="13" x2="9" y2="13.01" />
+    <line x1="15" y1="13" x2="15" y2="13.01" />
+    <line x1="9" y1="17" x2="15" y2="17" />
+  </IconBase>
+)
+
+export const CorrectCircleIcon = ({ size }: { size?: number }) => (
+  <IconBase size={size}>
+    <circle cx="12" cy="12" r="10" />
+    <polyline points="8 12.5 11 15.5 16 9" />
+  </IconBase>
+)
+
+export const ResearchIcon = ({ size }: { size?: number }) => (
+  <IconBase size={size}>
+    <path d="M9 3h6" />
+    <path d="M10 3v6L4.5 18a2 2 0 0 0 1.7 3h11.6a2 2 0 0 0 1.7-3L14 9V3" />
+    <path d="M7.5 14h9" />
+  </IconBase>
+)
+
+export const IncorrectCircleIcon = ({ size }: { size?: number }) => (
+  <IconBase size={size}>
+    <circle cx="12" cy="12" r="10" />
+    <line x1="15" y1="9" x2="9" y2="15" />
+    <line x1="9" y1="9" x2="15" y2="15" />
+  </IconBase>
+)
+
+export const CopyIcon = ({ size }: { size?: number }) => (
+  <IconBase size={size}>
+    <rect x="9" y="9" width="13" height="13" rx="2" />
+    <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
+  </IconBase>
+)
+
 export const NextIcon = ({ size }: { size?: number }) => (
   <IconBase size={size}>
     <line x1="5" y1="12" x2="19" y2="12" />

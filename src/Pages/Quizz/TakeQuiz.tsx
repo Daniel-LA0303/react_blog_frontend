@@ -18,6 +18,7 @@ import Sidebar from '../../components/Sidebar/Sidebar'
 import useUserAuthContext from '../../context/hooks/useUserAuthContext'
 import Leaderboard from '../../components/Quizz/Leaderboard'
 import SmallSpinner from '../../components/Spinner/SmallSpinner'
+import UIButton from '../../components/Global/UIButton'
 
 type Stage = 'loading' | 'intro' | 'progress' | 'submitting' | 'result' | 'error'
 
@@ -62,7 +63,6 @@ export const TakeQuiz = () => {
             setStage('loading')
             try {
                 const data = await getQuizForAttempt(quizId as string)
-                console.log(data);
 
                 if (cancelled) return
                 setQuiz(data.quiz);
@@ -203,12 +203,12 @@ export const TakeQuiz = () => {
 
     // ---- loading / error ----
     if (stage === 'loading') {
-        if(isInsideStudyList){
+        if (isInsideStudyList) {
             return <SmallSpinner />
-        }else if(!isInsideStudyList){
+        } else if (!isInsideStudyList) {
             return <Spinner />
         }
-        
+
     }
     if (stage === 'error' || !quiz) {
         return <div className="p-10 text-center text-sm text-rose-500">Something went wrong loading this quiz.</div>
@@ -243,7 +243,7 @@ export const TakeQuiz = () => {
 
                                         <div className='flex justify-center w-1/6 mx-auto items-center'>
                                             <span className='font-bold'>Owner: </span>
-                                            <img src={owner?.profileImage?.secure_url || '/avatar.png'} alt="" className="h-7 w-7 rounded-full object-cover flex-shrink-0" />
+                                            <img src={owner?.profilePicture?.secure_url || '/avatar.png'} alt="" className="h-7 w-7 rounded-full object-cover flex-shrink-0" />
                                             <Link to={`/profile/${owner._id}`}>{owner?.name}</Link>
                                         </div>
                                     </div>
@@ -260,12 +260,13 @@ export const TakeQuiz = () => {
                                         </div>
                                     </div>
 
-                                    <button
+                                    <UIButton
+                                        className='mt-3'
+                                        type="button"
+                                        dark={dark}
                                         onClick={startQuiz}
-                                        className="mt-7 px-6 py-2.5 text-sm font-semibold rounded-xl bg-[#2563EB] text-white hover:bg-blue-700 transition-colors"
-                                    >
-                                        Start quiz
-                                    </button>
+                                        variant="primary"
+                                        size="small">Start quiz</UIButton>
                                 </motion.div>
 
 
@@ -373,25 +374,24 @@ export const TakeQuiz = () => {
                                 <div className="flex items-center justify-between mt-5">
 
                                     {/* go back to last question */}
-                                    <button
+                                    <UIButton
+                                        type='button'
+                                        dark={dark} variant="secondary"
                                         onClick={goBack}
                                         disabled={currentIndex === 0}
-                                        className={`px-4 py-2 text-sm font-semibold rounded-lg transition-colors disabled:opacity-40 ${dark ? 'text-gray-300 hover:bg-gray-800' : 'text-gray-600 hover:bg-gray-100'
-                                            }`}
-                                    >
-                                        Back
-                                    </button>
+                                        size="small">Back</UIButton>
                                     <span className={`text-xs ${dark ? 'text-gray-500' : 'text-gray-400'}`}>
                                         {answeredCount}/{sortedQuestions.length} answered
                                     </span>
                                     {/* check go question or last */}
-                                    <button
+
+                                    <UIButton
+                                        type="button"
+                                        dark={dark}
                                         onClick={goNext}
+                                        variant="primary"
                                         disabled={!answers[currentQuestion._id]}
-                                        className="px-5 py-2 text-sm font-semibold rounded-lg bg-[#2563EB] text-white hover:bg-blue-700 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
-                                    >
-                                        {isLast ? 'Submit quiz' : 'Next'}
-                                    </button>
+                                        size="small">{isLast ? 'Submit quiz' : 'Next'}</UIButton>
                                 </div>
                             </motion.div>
                         )}
@@ -399,7 +399,7 @@ export const TakeQuiz = () => {
                         {/* stage submitting */}
                         {stage === 'submitting' && (
                             <motion.div key="submitting" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className={`${cardClass} p-10 text-center`}>
-                                <p className={`text-sm font-medium ${dark ? 'text-gray-300' : 'text-gray-600'}`}>Scoring your answers...</p>
+                                <SmallSpinner />
                             </motion.div>
                         )}
 

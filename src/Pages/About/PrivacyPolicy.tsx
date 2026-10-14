@@ -1,126 +1,103 @@
-import { useRef } from 'react'
-import { motion, useInView } from 'framer-motion'
-import Sidebar from '../../components/Sidebar/Sidebar'
-import useGlobalDataContext from '../../context/hooks/useGlobalDataContext'
-import Section from '../../components/Global/Section'
-import { fadeUp } from '../../utils/animationsUtils'
+import LegalPage, { LegalSection } from "../../components/About/LegalPage"
 
-const sectionsPolicy = [
+
+const sections: LegalSection[] = [
   {
+    id: 'collect',
     badge: 'Data we collect',
     title: 'Information we collect',
+    intro: 'We only collect what we need to make the platform work and to personalize your experience.',
     items: [
-      'Basic profile info: name, email, and photo',
-      'The content you create: posts, comments, and likes',
-      'Your activity: what you follow, save, and interact with',
-      'Messages you send through the chat',
+      'Your profile: name, email, photo and any biography or personal details you choose to add.',
+      'If you sign in with Google, the basic information Google shares with us: your name, email and profile photo.',
+      'What you create: posts, comments, replies, quizzes, lists and projects.',
+      'Your activity: what you like, save and follow, plus your quiz attempts, results and badges.',
+      'Messages and images you send through chat.',
+      'Your recent searches, so search feels faster and recommendations feel more relevant.',
     ],
   },
   {
+    id: 'use',
     badge: 'How we use it',
     title: 'How we use your information',
     items: [
-      'To show you relevant content and recommendations',
-      'To let other users find and connect with you',
-      'To send you notifications about activity on your posts',
-      'To keep your account secure and working properly',
+      'To show you content, people and categories you may enjoy.',
+      'To let others find your profile and connect with you.',
+      'To notify you when someone interacts with your posts, comments, projects or messages.',
+      'To calculate quiz results and leaderboards, and to award badges for your achievements.',
+      'To keep projects in sync so every collaborator sees the latest changes.',
+      'To send emails about important account actions, such as confirming your account or recovering your password.',
+      'To keep your account and the community secure.',
     ],
   },
   {
-    badge: 'Your content',
-    title: 'Your posts and visibility',
+    id: 'visibility',
+    badge: 'Who can see what',
+    title: 'Your content and visibility',
     items: [
-      'You control who sees your profile and activity through your settings',
-      'When you delete a post, it stops being visible to everyone right away',
-      'Comments and likes can be removed by you at any time',
+      'Your profile, published posts and public comments can be seen by other users.',
+      'Quiz results may appear in leaderboards next to other participants.',
+      'Badges are shown on your profile, and you can choose to show or hide them.',
+      'Your lists are personal. Your projects are visible only to you and the people you invite.',
+      'Chat messages are visible only to the people in the conversation.',
+      'When you delete a post, it stops being visible to everyone right away.',
     ],
   },
   {
+    id: 'ai',
+    badge: 'AI tools',
+    title: 'Using the AI features',
+    intro: 'AI tools only run when you choose to use them.',
+    items: [
+      'When you ask for a summary, a title, a quiz or an answer about a post, the relevant content and your question are sent to an AI service to produce the result.',
+      'Please avoid including sensitive personal information in the questions you ask.',
+      'AI responses are suggestions. Review them before you publish or rely on them.',
+    ],
+  },
+  {
+    id: 'collaboration',
+    badge: 'Working with others',
+    title: 'Projects and collaboration',
+    items: [
+      'Collaborators can see the lists, tasks and recent activity of the projects they belong to.',
+      'When you search for people to invite, only public profile information is shown.',
+      'Project owners can remove collaborators at any time.',
+    ],
+  },
+  {
+    id: 'control',
     badge: 'Your control',
     title: 'Managing your data',
     items: [
-      'You can update or correct your personal info anytime from your profile',
-      'You can unfollow, unsave, or remove your activity whenever you want',
-      'You can request to close your account and remove your data',
+      'Update or correct your personal information from your profile at any time.',
+      'Unfollow, unsave, unlike or remove your activity whenever you want.',
+      'Edit or delete your posts, quizzes, lists and projects.',
+      'Choose which badges appear on your profile.',
+      'Request to close your account and remove your data.',
     ],
   },
   {
+    id: 'security',
     badge: 'Staying safe',
     title: 'How we protect your account',
     items: [
-      'Your password is never visible to anyone, including our team',
-      'We verify your email to keep your account secure',
-      'You can recover access anytime if you forget your password',
+      'Your password is never visible to anyone, including our team.',
+      'We verify your email to help keep your account secure.',
+      'You can recover access with your email if you forget your password.',
+      'If you notice anything suspicious, let us know so we can help.',
     ],
   },
 ]
 
-const PrivacyPolicy = () => {
-  const { globalData } = useGlobalDataContext()
-  const dark = !globalData.themeGlobal
-
-  return (
-    <div className={`min-h-screen transition-colors duration-300 ${dark ? 'bg-[#0f0f0f]' : 'bg-[#fafafa]'}`}>
-      <Sidebar />
-
-      <section className="max-w-3xl mx-auto px-4 sm:px-6 pt-20 pb-16">
-        <Section>
-          <motion.div variants={fadeUp} custom={0} className="mb-3">
-            <span className={`text-xs font-semibold uppercase tracking-widest ${dark ? 'text-gray-600' : 'text-gray-400'}`}>
-              Legal · DLTechBlog
-            </span>
-          </motion.div>
-          <motion.h1
-            variants={fadeUp} custom={1}
-            className={`text-4xl sm:text-5xl font-bold tracking-tight leading-tight mb-6 ${dark ? 'text-white' : 'text-gray-900'}`}
-            style={{ fontFamily: 'Georgia, serif' }}
-          >
-            Privacy policy
-          </motion.h1>
-          <motion.p variants={fadeUp} custom={2} className={`text-base leading-relaxed max-w-2xl mb-2 ${dark ? 'text-gray-400' : 'text-gray-500'}`}>
-            This page explains what information we collect, how we use it, and what control you have over your data.
-          </motion.p>
-        </Section>
-      </section>
-
-      <section className="max-w-3xl mx-auto px-4 sm:px-6 pb-16 space-y-4">
-        {sectionsPolicy.map((s, i) => (
-          <motion.div
-            key={s.title}
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.4, delay: i * 0.06 }}
-            className={`rounded-2xl border p-6 space-y-4 ${dark ? 'bg-[#27272A] border-gray-800' : 'bg-white border-gray-100'}`}
-          >
-            <div className="flex items-start gap-4">
-              <div className="flex-1">
-                <span className={`inline-block text-[10px] font-semibold uppercase tracking-widest px-2.5 py-0.5 rounded-full mb-2
-                  ${dark ? 'bg-[#2563EB]/15 text-blue-400' : 'bg-[#2563EB]/8 text-[#2563EB]'}`}>
-                  {s.badge}
-                </span>
-                <p className={`text-sm font-semibold ${dark ? 'text-white' : 'text-gray-900'}`}>{s.title}</p>
-              </div>
-            </div>
-            <div className={`border-t pt-4 space-y-2.5 ${dark ? 'border-gray-800' : 'border-gray-100'}`}>
-              {s.items.map((item, j) => (
-                <motion.div key={j} initial={{ opacity: 0, x: -8 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }} transition={{ duration: 0.3, delay: j * 0.05 }} className="flex items-start gap-2.5">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="#2563EB" strokeWidth={2.5} strokeLinecap="round" strokeLinejoin="round" className="w-3.5 h-3.5 flex-shrink-0 mt-0.5">
-                    <polyline points="20 6 9 17 4 12"/>
-                  </svg>
-                  <span className={`text-sm ${dark ? 'text-gray-400' : 'text-gray-600'}`}>{item}</span>
-                </motion.div>
-              ))}
-            </div>
-          </motion.div>
-        ))}
-
-        <motion.p initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} viewport={{ once: true }} className={`text-xs pt-4 ${dark ? 'text-gray-600' : 'text-gray-400'}`}>
-          Questions about your data? Reach out through the platform chat or via your profile page.
-        </motion.p>
-      </section>
-    </div>
-  )
-}
+const PrivacyPolicy = () => (
+  <LegalPage
+    eyebrow="Legal · DLTechBlog"
+    title="Privacy policy"
+    intro="This page explains what information we collect, how we use it and the control you have over your data."
+    updated="October 2026"
+    sections={sections}
+    footnote="Questions about your data? Reach out through the platform chat or your profile page."
+  />
+)
 
 export default PrivacyPolicy

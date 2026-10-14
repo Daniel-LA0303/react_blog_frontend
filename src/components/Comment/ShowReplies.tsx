@@ -22,6 +22,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import clientAuthAxios from '../../services/clientAuthAxios'
 import { PenIcon, TrashIcon } from '../../utils/iconsUtils'
 import { Link } from 'react-router-dom'
+import UIButton from '../Global/UIButton'
 
 const ShowReplies = ({ reply, onUpdateReply, onDeleteReply }: any) => {
 
@@ -147,21 +148,21 @@ const ShowReplies = ({ reply, onUpdateReply, onDeleteReply }: any) => {
           <div className="flex items-center gap-1">
             <motion.button
               type="button"
-              onClick={() => handleDeleteReply(reply._id)}
-              whileTap={{ scale: 0.9 }}
-              className={`h-6 w-6 flex items-center justify-center rounded-lg text-[10px] transition-colors
-                ${dark ? 'text-gray-700 hover:bg-red-900/30 hover:text-red-400' : 'text-gray-400 hover:bg-red-50 hover:text-red-500'}`}
-            >
-              <TrashIcon isDark={dark} />
-            </motion.button>
-            <motion.button
-              type="button"
               onClick={() => setIsEditing(true)}
               whileTap={{ scale: 0.9 }}
               className={`h-6 w-6 flex items-center justify-center rounded-lg text-[10px] transition-colors
                 ${dark ? 'text-gray-700 hover:bg-gray-800 hover:text-gray-300' : 'text-gray-400 hover:bg-gray-200 hover:text-gray-600'}`}
             >
               <PenIcon isDark={dark} />
+            </motion.button>
+            <motion.button
+              type="button"
+              onClick={() => handleDeleteReply(reply._id)}
+              whileTap={{ scale: 0.9 }}
+              className={`h-6 w-6 flex items-center justify-center rounded-lg text-[10px] transition-colors
+                ${dark ? 'text-gray-700 hover:bg-red-900/30 hover:text-red-400' : 'text-gray-400 hover:bg-red-50 hover:text-red-500'}`}
+            >
+              <TrashIcon isDark={dark} />
             </motion.button>
           </div>
         )}
@@ -186,33 +187,19 @@ const ShowReplies = ({ reply, onUpdateReply, onDeleteReply }: any) => {
               />
             </div>
             <div className="flex justify-end gap-2 mt-2">
-              <motion.button
-                type="button"
+              <UIButton
+                type='button'
+                dark={dark} variant="secondary"
                 onClick={cancelEdit}
-                whileTap={{ scale: 0.96 }}
-                className={`rounded-lg px-3 py-1 text-[11px] font-medium border transition-colors
-                  ${dark ? 'border-gray-700 text-gray-400 hover:bg-gray-800' : 'border-gray-200 text-gray-500 hover:bg-gray-100'}`}
-              >
-                Cancel
-              </motion.button>
-              <motion.button
+                size="small">Cancel</UIButton>
+              <UIButton
                 type="button"
+                dark={dark}
                 onClick={handleEditReply}
+                variant="primary"
                 disabled={submitting}
-                whileTap={{ scale: 0.96 }}
-                className="rounded-lg px-3 py-1 text-[11px] font-semibold text-white transition-colors disabled:opacity-40 flex items-center gap-1"
-                style={{ backgroundColor: '#2563EB' }}
-                onMouseEnter={(e: any) => (e.currentTarget.style.backgroundColor = '#1d4ed8')}
-                onMouseLeave={(e: any) => (e.currentTarget.style.backgroundColor = '#2563EB')}
-              >
-                {submitting ? (
-                  <motion.span
-                    className="h-3 w-3 rounded-full border-2 border-white/30 border-t-white"
-                    animate={{ rotate: 360 }}
-                    transition={{ duration: 0.7, repeat: Infinity, ease: 'linear' }}
-                  />
-                ) : 'Update'}
-              </motion.button>
+                loading={submitting}
+                size="small">Update reply</UIButton>
             </div>
           </motion.div>
         ) : (

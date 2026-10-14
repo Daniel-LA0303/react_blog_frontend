@@ -15,7 +15,7 @@ import userUserAuthContext from '../../context/hooks/useUserAuthContext'
 import { useSwal } from '../../hooks/useSwal'
 import { BookmarkIcon, CommentIcon, HeartIcon } from '../../utils/iconsActionsUtils'
 import StudyListModal from '../Lists/StudyListModal'
-import { ListIcon } from '../../utils/iconsUtils'
+import { ListIcon, ResearchIcon } from '../../utils/iconsUtils'
 
 
 const IconButton = ({
@@ -170,7 +170,17 @@ export const Post = ({ post, status }: PostProps) => {
 
         {/* Body */}
         <div className="flex flex-col justify-between flex-1 p-5 gap-3 min-w-0">
-
+          {typePost === 'INVESTIGATION' && (
+            <span
+              className={`inline-flex items-center gap-1.5 self-start px-2.5 py-1 rounded-md border text-[10px] font-medium uppercase tracking-[0.18em]
+                ${dark
+                  ? 'border-white/10 text-gray-300 bg-white/[0.03]'
+                  : 'border-black/10 text-gray-600 bg-black/[0.02]'}`}
+            >
+              <ResearchIcon size={12} />
+              Investigation
+            </span>
+          )}
           {/* Top: author + date */}
           <div className='flex justify-between'>
 
@@ -186,6 +196,7 @@ export const Post = ({ post, status }: PostProps) => {
                   {user.name}
                 </span>
               </Link>
+              
               <span className={`text-xs ${dark ? 'text-gray-600' : 'text-gray-400'}`}>·</span>
               <time className={`text-xs flex-shrink-0 ${dark ? 'text-gray-600' : 'text-gray-400'}`}>
                 {new Date(date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
@@ -193,12 +204,6 @@ export const Post = ({ post, status }: PostProps) => {
             </div>
 
             <div className=''>
-              {typePost === 'INVESTIGATION' && (
-                <span className="inline-flex mr-1 items-center gap-1.5 px-3 py-1 text-[10px] font-semibold uppercase tracking-widest rounded-full mb-2 border shadow-sm bg-sky-50 text-sky-700 border-sky-200">
-                  <span className="w-1.5 h-1.5 rounded-full bg-sky-500" />
-                  Investigation
-                </span>
-              )}
               {status !== undefined && (
                 <span
                   className={`inline-block px-2 py-0.5 text-xs font-semibold rounded-full mb-2 ${status === 'PUBLISHED'
@@ -226,23 +231,23 @@ export const Post = ({ post, status }: PostProps) => {
           </Link>
 
           {/* Categories */}
-{categories?.length > 0 && (
-  <div className="flex flex-wrap gap-1.5">
-    {categories.map((cat: any) => (
-      <Link
-        key={cat._id}
-        to={`/category/${cat.name}`}
-        className={`text-xs px-2.5 py-0.5 rounded-full font-medium ring-1 ring-inset transition-colors duration-300
-          ${dark
-            ? 'bg-neutral-800 text-neutral-400 ring-neutral-700 hover:bg-neutral-700 hover:text-neutral-100'
-            : 'bg-neutral-100 text-neutral-600 ring-neutral-200 hover:bg-neutral-200 hover:text-neutral-900'
-          }`}
-      >
-        #{cat.name}
-      </Link>
-    ))}
-  </div>
-)}
+          {categories?.length > 0 && (
+            <div className="flex flex-wrap gap-1.5">
+              {categories.map((cat: any) => (
+                <Link
+                  key={cat._id}
+                  to={`/category/${cat.name}`}
+                  className={`text-xs px-2.5 py-0.5 rounded-full font-medium ring-1 ring-inset transition-colors duration-300
+                    ${dark
+                      ? 'bg-neutral-800 text-neutral-400 ring-neutral-700 hover:bg-neutral-700 hover:text-neutral-100'
+                      : 'bg-neutral-100 text-neutral-600 ring-neutral-200 hover:bg-neutral-200 hover:text-neutral-900'
+                    }`}
+                >
+                  #{cat.name}
+                </Link>
+              ))}
+            </div>
+          )}
 
           {/* Divider */}
           <div className={`h-px w-full ${dark ? 'bg-gray-800' : 'bg-gray-100'}`} />
@@ -336,7 +341,6 @@ export const Post = ({ post, status }: PostProps) => {
               resourceId,
               resourceType,
             });
-            console.log(res);
           } catch (error) {
             console.log(error);
           }

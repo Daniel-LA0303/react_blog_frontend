@@ -15,6 +15,7 @@ import { useSwal } from '../../hooks/useSwal'
  * libraries
  */
 import { motion } from 'framer-motion'
+import UIButton from '../Global/UIButton'
 
 const ReplyComment = ({
   setReplyActive,
@@ -90,33 +91,19 @@ const ReplyComment = ({
       </div>
 
       <div className="flex justify-end gap-2 mt-2">
-        <motion.button
+        <UIButton
+          type='button'
+          dark={dark} variant="secondary"
+           onClick={cancelReply}
+          size="small">Cancel</UIButton>
+        <UIButton
           type="button"
-          onClick={cancelReply}
-          whileTap={{ scale: 0.96 }}
-          className={`rounded-xl px-4 py-1.5 text-xs font-medium border transition-colors
-            ${dark ? 'border-gray-700 text-gray-400 hover:bg-gray-800' : 'border-gray-200 text-gray-500 hover:bg-gray-50'}`}
-        >
-          Cancel
-        </motion.button>
-        <motion.button
-          type="button"
+          dark={dark}
           onClick={replyCommentFunc}
-          disabled={submitting || !replyComment.trim()}
-          whileTap={{ scale: 0.96 }}
-          className="rounded-xl px-4 py-1.5 text-xs font-semibold text-white transition-colors disabled:opacity-40 disabled:cursor-not-allowed flex items-center gap-1.5"
-          style={{ backgroundColor: '#2563EB' }}
-          onMouseEnter={(e: any) => !submitting && (e.currentTarget.style.backgroundColor = '#1d4ed8')}
-          onMouseLeave={(e: any) => (e.currentTarget.style.backgroundColor = '#2563EB')}
-        >
-          {submitting ? (
-            <motion.span
-              className="h-3.5 w-3.5 rounded-full border-2 border-white/30 border-t-white"
-              animate={{ rotate: 360 }}
-              transition={{ duration: 0.7, repeat: Infinity, ease: 'linear' }}
-            />
-          ) : 'Post reply'}
-        </motion.button>
+          variant="primary"
+          disabled={submitting}
+          loading={submitting}
+          size="small">Post reply</UIButton>
       </div>
     </motion.div>
   )

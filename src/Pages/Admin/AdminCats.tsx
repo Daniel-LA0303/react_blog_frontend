@@ -27,7 +27,7 @@ const AdminCats = () => {
     typeof role === "string" ? role : role?.name
   );
 
-  const canManage = currentUserRoles.includes('ROLE_ADMIN');
+  const canManage = currentUserRoles.includes('ROLE_ADMIN') || currentUserRoles.includes('ROLE_MOD');
 
   const [categories, setCategory] = useState<ICategoryAdminPanel[]>([]);
   const [total, setTotal] = useState(0);

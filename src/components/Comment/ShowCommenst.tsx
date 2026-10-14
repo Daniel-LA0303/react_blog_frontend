@@ -270,7 +270,7 @@ const ShowCommenst = ({
             <div className="flex items-center gap-1">
               <motion.button
                 type="button"
-                onClick={() => handleDeleteComment(comment._id)}
+                onClick={() => setEditActive(!editActive)}
                 whileTap={{ scale: 0.9 }}
                 className={`h-7 w-7 flex items-center justify-center rounded-lg text-xs transition-colors
                   ${dark ? 'text-gray-600 hover:bg-red-900/30 hover:text-red-400' : 'text-gray-400 hover:bg-red-50 hover:text-red-500'}`}
@@ -280,7 +280,7 @@ const ShowCommenst = ({
               {!editActive && (
                 <motion.button
                   type="button"
-                  onClick={() => setEditActive(!editActive)}
+                  onClick={() => handleDeleteComment(comment._id)}
                   whileTap={{ scale: 0.9 }}
                   className={`h-7 w-7 flex items-center justify-center rounded-lg text-xs transition-colors
                     ${dark ? 'text-gray-600 hover:bg-gray-800 hover:text-gray-300' : 'text-gray-400 hover:bg-gray-100 hover:text-gray-600'}`}

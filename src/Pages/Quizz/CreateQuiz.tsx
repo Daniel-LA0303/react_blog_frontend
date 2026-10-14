@@ -19,9 +19,14 @@ import Sidebar from '../../components/Sidebar/Sidebar'
 import useUserAuthContext from '../../context/hooks/useUserAuthContext'
 import Spinner from '../../components/Spinner/Spinner'
 import UIButton from '../../components/Global/UIButton'
+import UISelect from '../../components/Global/UISelect'
 
 export const uid = (prefix: string) => `${prefix}_${Date.now().toString(36)}_${Math.random().toString(36).slice(2, 8)}`
 
+const REASON_OPTIONS: { value: any; label: string }[] = [
+    { value: 'HIDDEN', label: 'Hidden' },
+    { value: 'PUBLISHED', label: 'Published' },
+];
 
 // build empty option
 export const emptyOptions = () => [
@@ -444,19 +449,15 @@ export const CreateQuiz = () => {
           </div>
           <div className="flex items-center gap-2">
             {/* status select replaces the old draft/publish buttons — only two possible values */}
-            <select
+
+            <UISelect
               value={status}
               onChange={(e) => setStatus(e.target.value as QuizStatus)}
+              dark={dark}
+              options={REASON_OPTIONS}
+              placeholder="Select a reason"
               disabled={saving}
-              className={`text-xs font-semibold rounded-lg px-3 py-1.5 outline-none border ${dark ? 'bg-[#18181B] border-gray-700 text-white' : 'bg-white border-gray-200 text-gray-900'
-                }`}
-            >
-              <option value="HIDDEN">Hidden</option>
-              <option value="PUBLISHED" disabled={!isComplete}>
-                Published{!isComplete ? ' (complete quiz first)' : ''}
-              </option>
-            </select>
-
+            />
             <UIButton onClick={handleSave} dark={dark} variant="primary" loading={saving} size='small'>
               Save
             </UIButton>

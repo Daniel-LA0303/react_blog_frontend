@@ -7,11 +7,18 @@ import { StudyList, StudyListStatus } from '../../interfaces/lists.interfaces'
 import { updateStudyList } from '../../utils/listsUtils'
 import Field from '../Global/Field'
 import UIButton from '../Global/UIButton'
+import UISelect from '../Global/UISelect'
 
 const CONDITION_TYPES = [
   { value: 'ACTIVE', label: 'Active' },
   { value: 'HIDDEN', label: 'Hidden' },
 ]
+
+
+const REASON_OPTIONS: { value: any; label: string }[] = [
+  { value: 'ACTIVE', label: 'Active' },
+  { value: 'HIDDEN', label: 'Hidden' },
+];
 
 interface StudyListFormModalProps {
   list: StudyList
@@ -109,42 +116,16 @@ const StudyListFormModal = ({ list, dark, onClose, onSaved }: StudyListFormModal
               <textarea value={description} onChange={(e) => setDescription(e.target.value)} rows={3} style={{ ...inputStyle, resize: 'none' }} />
             </div>
             <Field label="Post Visibility" htmlFor="statusPost" dark={dark}>
-              <div className="relative">
-                <select
-                  id="statusPost"
+              <div className="">
+                <UISelect
                   value={status}
                   onChange={e =>
                     setStatus(e.target.value as StudyListStatus)
                   }
-                  className={`
-                    w-full appearance-none rounded-lg px-4 py-2.5 text-sm font-medium transition-all duration-200 outline-none pr-10 cursor-pointer
-                    ${dark
-                      ? 'bg-zinc-900/80 text-white border-zinc-800 hover:border-zinc-700 focus:border-zinc-500'
-                      : 'bg-white text-zinc-900 border-zinc-200 hover:border-zinc-300 focus:border-zinc-400'
-                    }`}
-                >
-                  <option value="" disabled hidden className={dark ? 'bg-zinc-900 text-zinc-500' : 'bg-white text-zinc-400'}>
-                    Select Post Status
-                  </option>
-                  <option value="ACTIVE" className={dark ? 'bg-zinc-900 text-emerald-400 font-semibold' : 'bg-white text-emerald-600 font-semibold'}>
-                    ● ACTIVE (Visible to public)
-                  </option>
-                  <option value="HIDDEN" className={dark ? 'bg-zinc-900 text-amber-400 font-semibold' : 'bg-white text-amber-600 font-semibold'}>
-                    ● Hidden (Only visible to you)
-                  </option>
-                </select>
-
-                {/* Custom Dropdown Arrow */}
-                <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3">
-                  <svg
-                    className={`h-4 w-4 transition-transform duration-200 ${dark ? 'text-zinc-400' : 'text-zinc-500'}`}
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
-                  </svg>
-                </div>
+                  dark={dark}
+                  options={REASON_OPTIONS}
+                  placeholder="Select a reason"
+                />
               </div>
             </Field>
           </div>
@@ -165,7 +146,7 @@ const StudyListFormModal = ({ list, dark, onClose, onSaved }: StudyListFormModal
               loading={saving}
               disabled={saving}
             >Save</UIButton>
-            
+
           </div>
         </motion.div>
       </motion.div>

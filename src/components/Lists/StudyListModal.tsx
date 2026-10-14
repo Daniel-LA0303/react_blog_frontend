@@ -115,7 +115,6 @@ const StudyListModal = ({
 
         getResourceListMembership(resourceType, resourceId)
             .then((memberships) => {
-                console.log('membership response:', memberships) // <-- temporal
                 const map: Record<string, string> = {}
                 memberships.forEach((m) => { map[m.listId] = m.itemId })
                 setSavedItemByList(map)

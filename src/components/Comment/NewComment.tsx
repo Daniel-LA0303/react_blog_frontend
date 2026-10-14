@@ -21,6 +21,7 @@ import useGlobalDataContext from '../../context/hooks/useGlobalDataContext'
  * libraries
  */
 import { motion } from 'framer-motion'
+import UIButton from '../Global/UIButton'
 
 const NewComment = ({
   user,
@@ -68,7 +69,7 @@ const NewComment = ({
       setEngagementPost((prev: any) => ({ ...prev, numberComments: prev.numberComments + 1 }))
     } catch (error: any) {
       console.log(error)
-      showConfirmSwal({ message: error.response.data.message, status: 'error', confirmButton: true,cancelButton: false, })
+      showConfirmSwal({ message: error.response.data.message, status: 'error', confirmButton: true, cancelButton: false, })
     } finally {
       setSubmitting(false)
     }
@@ -114,32 +115,18 @@ const NewComment = ({
             className="overflow-hidden"
           >
             <div className="flex justify-end gap-2 mt-2">
-              <motion.button
-                type="button"
+              <UIButton
+                type='button'
+                dark={dark} variant="secondary"
                 onClick={() => { setFocused(false); setComment('') }}
-                whileTap={{ scale: 0.96 }}
-                className={`rounded-xl px-4 py-1.5 text-xs font-medium border transition-colors
-                  ${dark ? 'border-gray-700 text-gray-400 hover:bg-gray-800' : 'border-gray-200 text-gray-500 hover:bg-gray-50'}`}
-              >
-                Cancel
-              </motion.button>
-              <motion.button
+                size="small">Cancel</UIButton>
+              <UIButton
                 type="submit"
+                dark={dark} 
+                variant="primary"
                 disabled={submitting || !comment.trim()}
-                whileTap={{ scale: 0.96 }}
-                className="rounded-xl px-4 py-1.5 text-xs font-semibold text-white transition-colors disabled:opacity-40 disabled:cursor-not-allowed flex items-center gap-1.5"
-                style={{ backgroundColor: '#2563EB' }}
-                onMouseEnter={(e: any) => !submitting && (e.currentTarget.style.backgroundColor = '#1d4ed8')}
-                onMouseLeave={(e: any) => (e.currentTarget.style.backgroundColor = '#2563EB')}
-              >
-                {submitting ? (
-                  <motion.span
-                    className="h-3.5 w-3.5 rounded-full border-2 border-white/30 border-t-white"
-                    animate={{ rotate: 360 }}
-                    transition={{ duration: 0.7, repeat: Infinity, ease: 'linear' }}
-                  />
-                ) : 'Comment'}
-              </motion.button>
+                loading={submitting}
+                size="small">Comment</UIButton>
             </div>
           </motion.div>
         </form>

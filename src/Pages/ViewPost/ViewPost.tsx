@@ -48,9 +48,10 @@ import BlogRecommendedCard from '../../components/Post/BlogRecommendedCard'
 import useIA from '../../context/hooks/useIA'
 import { AIAssistModal } from '../../components/IA/NewPost/AIAssistModal'
 import { Question, QuizModal } from '../../components/IA/ViewPost/QuizModal'
-import { FlagIcon, PenIcon, TrashIcon } from '../../utils/iconsUtils'
+import { FlagIcon, PenIcon, ResearchIcon, RobotIcon, TrashIcon } from '../../utils/iconsUtils'
 import { ReportModal } from '../../components/Report/ReportModal'
 import SmallSpinner from '../../components/Spinner/SmallSpinner'
+import UIButton from '../../components/Global/UIButton'
 
 
 const ViewPost = () => {
@@ -131,6 +132,7 @@ const ViewPost = () => {
 
     axios.get(`${globalData.link}/pages/page-view-post/${params.id}`)
       .then(response => {
+
         const fetchedPost = response.data?.data?.post;
         const comments = response.data?.data?.comments || [];
         const totalComments = response.data?.data?.totalComments || 0;
@@ -362,9 +364,9 @@ const ViewPost = () => {
   const isLoggedIn = !!userAuth.userId
 
 
-  if ((loading || !post) && isInsideStudyList){
+  if ((loading || !post) && isInsideStudyList) {
     return <SmallSpinner />
-  }else if((loading || !post) && !isInsideStudyList){
+  } else if ((loading || !post) && !isInsideStudyList) {
     return <Spinner />
   }
 
@@ -431,7 +433,19 @@ const ViewPost = () => {
               </AnimatePresence>
 
               <div className={`px-6 sm:px-6  ${post.user.status === 'BANNED' ? 'py-1' : 'py-8'}`}>
-
+                <div className='mb-3'>
+                  {post.typePost === 'INVESTIGATION' && (
+                    <span
+                      className={`inline-flex items-center gap-1.5 self-start px-2.5 py-1 rounded-md border text-[10px] font-medium uppercase tracking-[0.18em]
+                        ${dark
+                          ? 'border-white/10 text-gray-300 bg-white/[0.03]'
+                          : 'border-black/10 text-gray-600 bg-black/[0.02]'}`}
+                    >
+                      <ResearchIcon size={12} />
+                      Investigation
+                    </span>
+                  )}
+                </div>
                 {/* Author row */}
                 <div className={`flex items-center justify-between mb-6`}>
                   {
@@ -534,89 +548,117 @@ const ViewPost = () => {
                   className={`post-content ${dark ? "post-content--dark text-white" : "post-content--light"}`}
                   dangerouslySetInnerHTML={{ __html: post.content }}
                 />
+                <div className='mt-5'>
+                  <hr />
+                </div>
+                {countContent && userAuth.userId && (
+                  <div className={`mt-5 rounded-xl border p-4 ${dark ? 'border-white/10' : 'border-black/10'}`}>
 
-                {
-                  countContent && (
-                    <>
-                      <div>
-                        <hr />
-                        <p className={`${dark ? 'text-white' : 'text-black'} mt-5 font-semibold text-base md:text-xl`}>IA Tools</p>
-                      </div>
+                    {/* encabezado */}
+                    <div className='flex items-center gap-2'>
+                      <span className={dark ? 'text-white/70' : 'text-black/70'}>
+                        <RobotIcon size={20} />
+                      </span>
 
-                      <div>
-                        <button
-                          onClick={handleSummaryIA}
-                          disabled={loadingType === 'summary'}
-                          className="rounded-xl py-2 px-3 mt-10 text-xs font-semibold text-white transition-colors"
-                          style={{ backgroundColor: '#2563EB' }}
+                      <p className={`font-semibold text-base md:text-xl ${dark ? 'text-white' : 'text-black'}`}>
+                        IA Tools
+                      </p>
+
+                      <span className={`text-[10px] font-semibold tracking-wider px-1.5 py-0.5 rounded-md border ${dark ? 'border-white/20 text-white/70' : 'border-black/20 text-black/70'}`}>
+                        AI
+                      </span>
+                    </div>
+
+                    <p className={`mt-1 mb-4 text-xs md:text-sm ${dark ? 'text-white/50' : 'text-black/50'}`}>
+                      Summarize, test yourself or ask anything about this post.
+                    </p>
+                    {/* tus botones sin cambios */}
+                    <div>
+                      <UIButton
+                        type="button"
+                        className='mr-2'
+                        dark={dark}
+                        variant="primary"
+                        onClick={handleSummaryIA}
+                        disabled={loadingType === 'summary'}
+                        loading={loadingType === 'summary'}
+                        size="small">
+                        {loadingType === 'summary'
+                          ? <span className="w-3 h-3 border-2 rounded-full animate-spin border-white/30 border-t-white inline-block" />
+                          : 'Summary'
+                        }
+                      </UIButton>
+
+                      <UIButton
+                        type="button"
+                        className='mr-2'
+                        dark={dark}
+                        onClick={handleQuizIA}
+                        variant="primary"
+                        disabled={loadingType === 'quiz'}
+                        loading={loadingType === 'quiz'}
+                        size="small"
+                      >
+                        Generate a Quiz
+                      </UIButton>
+
+                      <UIButton
+                        type="button"
+                        dark={dark}
+                        onClick={hanndleActivateCustom}
+                        variant="primary"
+                        disabled={loadingType === 'custom'}
+                        size="small"
+                      >
+                        {activateCustom ? 'Close custom' : 'Ask about this Blog'}
+                      </UIButton>
+                    </div>
+                    <div className='mt-3'>
+                      {activateCustom && (
+                        <motion.div
+                          initial={{ opacity: 0, y: 16 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          transition={{ duration: 0.4, ease: [0.25, 0.46, 0.45, 0.94] }}
+                          className="mt-3"
                         >
-                          {loadingType === 'summary'
-                            ? <span className="w-3 h-3 border-2 rounded-fiull animate-spin border-white/30 border-t-white inline-block" />
-                            : 'Summary'
-                          }
-                        </button>
-
-                        <button
-                          onClick={handleQuizIA}
-                          disabled={loadingType === 'quiz'}
-                          className="rounded-xl ml-2 py-2 px-3 mt-10 text-xs font-semibold text-white transition-colors"
-                          style={{ backgroundColor: '#2563EB' }}
-                        >
-                          {loadingType === 'quiz'
-                            ? <span className="w-3 h-3 border-2 rounded-fiull animate-spin border-white/30 border-t-white inline-block" />
-                            : 'Generate a Quiz'
-                          }
-                        </button>
-
-
-                        <button
-                          onClick={hanndleActivateCustom}
-                          disabled={loadingType === 'custom'}
-                          className="rounded-xl ml-2 py-2 px-3 mt-10 text-xs font-semibold text-white transition-colors"
-                          style={{ backgroundColor: '#2563EB' }}
-                        >
-                          {activateCustom ? 'Close' : 'Ask about this Blog'}
-                        </button>
-                      </div>
-                    </>
-                  )
-                }
-                <div className='mt-3'>
-                  {activateCustom && (
-                    <motion.div
-                      initial={{ opacity: 0, y: 16 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ duration: 0.4, ease: [0.25, 0.46, 0.45, 0.94] }}
-                      className="mt-3"
-                    >
-                      <input
-                        type="text"
-                        name='custompromt'
-                        value={customPromt}
-                        onChange={(e) => setCustomPromt(e.target.value)}
-                        placeholder="Ask anything about this post..."
-                        className={`w-full text-sm px-4 py-2.5 rounded-xl border outline-none transition-colors
+                          <p className={`mt-1 text-xs md:text-sm ${dark ? 'text-white/50' : 'text-black/50'}`}>
+                            Write your question to IA
+                          </p>
+                          <input
+                            type="text"
+                            name='custompromt'
+                            value={customPromt}
+                            onChange={(e) => setCustomPromt(e.target.value)}
+                            placeholder="Ask anything about this post..."
+                            className={`w-full text-sm px-4 py-2.5 rounded-xl border outline-none transition-colors
                           focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500
                           ${dark
-                            ? 'bg-[#1a1a1a] border-gray-700 text-white placeholder:text-gray-600'
-                            : 'bg-gray-50 border-gray-200 text-gray-900 placeholder:text-gray-400'
-                          }`}
-                      />
-                      <button
-                        type="button"
-                        onClick={handleCustomIA}
-                        disabled={loadingType === 'custom' || !customPromt.trim()}
-                        className="flex-shrink-0 mt-3 rounded-xl py-2.5 px-3 text-xs font-semibold text-white transition-colors disabled:opacity-50"
-                        style={{ backgroundColor: '#2563EB' }}
-                      >
-                        {loadingType === 'custom'
-                          ? <span className="w-3 h-3 border-2 rounded-full animate-spin border-white/30 border-t-white inline-block" />
-                          : 'Send'
-                        }
-                      </button>
-                    </motion.div>
-                  )}
-                </div>
+                                ? 'bg-[#1a1a1a] border-gray-700 text-white placeholder:text-gray-600'
+                                : 'bg-gray-50 border-gray-200 text-gray-900 placeholder:text-gray-400'
+                              }`}
+                          />
+                          <UIButton
+                            type="button"
+                            className='mt-1'
+                            dark={dark}
+                            variant="primary"
+                            onClick={handleCustomIA}
+                            disabled={loadingType === 'custom' || !customPromt.trim()}
+                            loading={loadingType === 'custom'}
+                            size="small"
+                          >
+                            {loadingType === 'custom'
+                              ? <span className="w-3 h-3 border-2 rounded-full animate-spin border-white/30 border-t-white inline-block" />
+                              : 'Send'
+                            }
+                          </UIButton>
+                        </motion.div>
+                      )}
+                    </div>
+                  </div>
+                )}
+
+
               </div>
             </article>
             {

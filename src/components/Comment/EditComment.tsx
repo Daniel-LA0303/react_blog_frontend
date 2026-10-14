@@ -7,6 +7,7 @@ import useGlobalDataContext from '../../context/hooks/useGlobalDataContext'
  * libraries
  */
 import { motion } from 'framer-motion'
+import UIButton from '../Global/UIButton'
 
 const EditComment = ({
   setEditActive,
@@ -43,26 +44,18 @@ const EditComment = ({
       </div>
 
       <div className="flex justify-end gap-2 mt-2">
-        <motion.button
-          type="button"
+
+        <UIButton
+          type='button'
+          dark={dark} variant="secondary"
           onClick={() => setEditActive(!editActive)}
-          whileTap={{ scale: 0.96 }}
-          className={`rounded-xl px-4 py-1.5 text-xs font-medium border transition-colors
-            ${dark ? 'border-gray-700 text-gray-400 hover:bg-gray-800' : 'border-gray-200 text-gray-500 hover:bg-gray-50'}`}
-        >
-          Cancel
-        </motion.button>
-        <motion.button
-          type="button"
+          size="small">Cancel</UIButton>
+        <UIButton
+          type="submit"
+          dark={dark}
+          variant="primary"
           onClick={() => handleEditComment(idComment)}
-          whileTap={{ scale: 0.96 }}
-          className="rounded-xl px-4 py-1.5 text-xs font-semibold text-white transition-colors"
-          style={{ backgroundColor: '#2563EB' }}
-          onMouseEnter={(e: any) => (e.currentTarget.style.backgroundColor = '#1d4ed8')}
-          onMouseLeave={(e: any) => (e.currentTarget.style.backgroundColor = '#2563EB')}
-        >
-          Update
-        </motion.button>
+          size="small">Update comment</UIButton>
       </div>
     </motion.div>
   )

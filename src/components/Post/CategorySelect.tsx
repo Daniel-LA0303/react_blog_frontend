@@ -1,15 +1,27 @@
 import { AnimatePresence, motion } from "framer-motion";
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
+import clientAuthAxios from "../../services/clientAuthAxios";
+// import clientAuthAxios from '...'  // usa el mismo que ya tienes en tu proyecto
+
+const PAGE_SIZE = 20
+const MAX_SELECTED = 4
 
 const CategorySelect = ({
-  options, selected, onChange, dark, hasError,
+  selected, onChange, dark, hasError,
 }: {
-  options: any[]; selected: any[]; onChange: (cats: any[]) => void; dark: boolean; hasError: boolean
+  selected: any[]; onChange: (cats: any[]) => void; dark: boolean; hasError: boolean
 }) => {
   const [open, setOpen] = useState(false)
   const [search, setSearch] = useState('')
+  const [debounced, setDebounced] = useState('')
+  const [items, setItems] = useState<any[]>([])
+  const [page, setPage] = useState(1)
+  const [hasMore, setHasMore] = useState(true)
+  const [loading, setLoading] = useState(false)
   const ref = useRef<HTMLDivElement>(null)
+  const reqId = useRef(0)
 
+  // cerrar al hacer clic fuera
   useEffect(() => {
     const handler = (e: MouseEvent) => {
       if (!ref.current?.contains(e.target as Node)) setOpen(false)
@@ -18,15 +30,60 @@ const CategorySelect = ({
     return () => document.removeEventListener('mousedown', handler)
   }, [])
 
-  const filtered = options.filter(
-    o => o.name?.toLowerCase().includes(search.toLowerCase()) &&
-      !selected.find(s => s._id === o._id || s.value === o.value)
-  )
+  // debounce de la búsqueda
+  useEffect(() => {
+    const t = setTimeout(() => setDebounced(search.trim()), 300)
+    return () => clearTimeout(t)
+  }, [search])
+
+  const fetchPage = useCallback(async (pageToLoad: number, term: string, replace: boolean) => {
+    const id = ++reqId.current // descarta respuestas viejas si el usuario sigue escribiendo
+    setLoading(true)
+    try {
+      const { data } = await clientAuthAxios.get('/pages/page-new-post', {
+        params: { page: pageToLoad, limit: PAGE_SIZE, search: term },
+      })
+      if (id !== reqId.current) return
+      const res = data.data
+      setItems(prev => (replace ? res.categories : [...prev, ...res.categories]))
+      setPage(pageToLoad)
+      setHasMore(res.hasMore)
+    } catch {
+      if (id === reqId.current) setHasMore(false)
+    } finally {
+      if (id === reqId.current) setLoading(false)
+    }
+  }, [])
+
+  // carga inicial al abrir y cada vez que cambia la búsqueda
+  useEffect(() => {
+    if (open) fetchPage(1, debounced, true)
+  }, [open, debounced, fetchPage])
+
+  // al cerrar, limpia la búsqueda
+  useEffect(() => {
+    if (!open) {
+      setSearch('')
+      setDebounced('')
+    }
+  }, [open])
+
+  const handleScroll = (e: React.UIEvent<HTMLUListElement>) => {
+    const el = e.currentTarget
+    if (el.scrollHeight - el.scrollTop - el.clientHeight < 40 && hasMore && !loading) {
+      fetchPage(page + 1, debounced, false)
+    }
+  }
+
+  const isSelected = (cat: any) =>
+    selected.some(s => s._id === cat._id || (s.value && s.value === cat.value))
+
+  const visible = items.filter(o => !isSelected(o))
 
   const toggle = (cat: any) => {
-    if (selected.find(s => s._id === cat._id || s.value === cat.value)) {
+    if (isSelected(cat)) {
       onChange(selected.filter(s => s._id !== cat._id && s.value !== cat.value))
-    } else if (selected.length < 4) {
+    } else if (selected.length < MAX_SELECTED) {
       onChange([...selected, cat])
     }
   }
@@ -35,6 +92,8 @@ const CategorySelect = ({
     onChange(selected.filter(s => s._id !== cat._id && s.value !== cat.value))
 
   const getName = (cat: any) => cat.name || cat.label || cat.value || ''
+
+  const limitReached = selected.length >= MAX_SELECTED
 
   return (
     <div ref={ref} className="relative ui-scroll-y">
@@ -63,12 +122,12 @@ const CategorySelect = ({
 
         {selected.length === 0 && (
           <span className={`text-sm ${dark ? 'text-gray-600' : 'text-gray-400'}`}>
-            Select up to 4 categories…
+            Select up to {MAX_SELECTED} categories…
           </span>
         )}
         {selected.length > 0 && (
           <span className={`ml-auto text-xs flex-shrink-0 ${dark ? 'text-gray-500' : 'text-gray-400'}`}>
-            {selected.length}/4
+            {selected.length}/{MAX_SELECTED}
           </span>
         )}
       </div>
@@ -87,7 +146,7 @@ const CategorySelect = ({
             <div className={`px-3 py-2 border-b ${dark ? 'border-gray-800' : 'border-gray-100'}`}>
               <input
                 type="text"
-                placeholder="Filter categories…"
+                placeholder="Search categories…"
                 value={search}
                 onChange={e => setSearch(e.target.value)}
                 onClick={e => e.stopPropagation()}
@@ -95,19 +154,20 @@ const CategorySelect = ({
                 className={`w-full bg-transparent text-sm outline-none ${dark ? 'text-white placeholder-gray-600' : 'text-gray-900 placeholder-gray-400'}`}
               />
             </div>
-            <ul className="max-h-52 overflow-y-auto py-1">
-              {filtered.length === 0 ? (
+
+            <ul className="max-h-52 overflow-y-auto py-1" onScroll={handleScroll}>
+              {visible.length === 0 && !loading ? (
                 <li className={`px-4 py-3 text-xs text-center ${dark ? 'text-gray-600' : 'text-gray-400'}`}>
-                  {selected.length >= 4 ? 'Maximum 4 categories reached' : 'No categories found'}
+                  {limitReached ? `Maximum ${MAX_SELECTED} categories reached` : 'No categories found'}
                 </li>
               ) : (
-                filtered.map(cat => (
+                visible.map(cat => (
                   <li
                     key={cat._id || cat.value}
                     onClick={e => { e.stopPropagation(); toggle(cat) }}
                     className={`flex items-center gap-3 px-4 py-2.5 text-sm cursor-pointer transition-colors duration-100
                       ${dark ? 'hover:bg-gray-800 text-gray-300' : 'hover:bg-gray-50 text-gray-700'}
-                      ${selected.length >= 4 ? 'opacity-40 cursor-not-allowed pointer-events-none' : ''}`}
+                      ${limitReached ? 'opacity-40 cursor-not-allowed pointer-events-none' : ''}`}
                   >
                     <span
                       className="h-2 w-2 rounded-full flex-shrink-0"
@@ -117,6 +177,12 @@ const CategorySelect = ({
                   </li>
                 ))
               )}
+
+              {loading && (
+                <li className={`px-4 py-3 text-xs text-center ${dark ? 'text-gray-600' : 'text-gray-400'}`}>
+                  Loading…
+                </li>
+              )}
             </ul>
           </motion.div>
         )}
@@ -125,4 +191,4 @@ const CategorySelect = ({
   )
 }
 
-export default CategorySelect;
+export default CategorySelect

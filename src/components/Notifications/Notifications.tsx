@@ -66,7 +66,13 @@ const Notifications = () => {
         if (!config.isRead) {
             await changeStatus(notification._id);
         }
-        routePage(config, notification.entityId);
+
+        if(notification.type === 'BADGE_AWARDED'){
+            navigate(`/profile/${userAuth.userId}`)
+        }else{
+            routePage(config, notification.entityId);       
+        }
+        
 
         setNotifications(
             notifications.map(n => (n._id === notification._id ? { ...n, isRead: true } : n))

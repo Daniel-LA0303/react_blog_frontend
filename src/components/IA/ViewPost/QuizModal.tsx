@@ -1,6 +1,8 @@
 // QuizModal.tsx
 import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
+import UIButton from '../../Global/UIButton';
+import { CloseIcon, CorrectCircleIcon, IncorrectCircleIcon, RobotIcon } from '../../../utils/iconsUtils';
 
 export interface Option { 
     text: string; 
@@ -94,7 +96,7 @@ export const QuizModal = ({ questions, dark, onClose }: QuizModalProps) => {
         {/* Header */}
         <div className={`flex items-center gap-3 px-5 py-4 border-b ${dark ? 'border-gray-800' : 'border-gray-100'}`}>
           <div className="w-8 h-8 rounded-lg flex items-center justify-center bg-blue-50 flex-shrink-0">
-            <i className="ti ti-help-circle" style={{ fontSize: 16, color: '#2563EB' }} aria-hidden />
+            <RobotIcon />
           </div>
           <div className="flex-1">
             <p className={`text-sm font-medium ${dark ? 'text-white' : 'text-gray-900'}`}>Post Quiz</p>
@@ -105,7 +107,7 @@ export const QuizModal = ({ questions, dark, onClose }: QuizModalProps) => {
           <button onClick={onClose}
             className={`w-8 h-8 flex items-center justify-center rounded-full transition-colors
               ${dark ? 'hover:bg-gray-800 text-gray-400' : 'hover:bg-gray-100 text-gray-500'}`}>
-            <i className="ti ti-x" style={{ fontSize: 15 }} />
+            <CloseIcon />
           </button>
         </div>
 
@@ -140,11 +142,16 @@ export const QuizModal = ({ questions, dark, onClose }: QuizModalProps) => {
               <span className={`text-xs ${!answered ? (dark ? 'text-gray-600' : 'text-gray-400') : answered && q.options[selectedIndex!]?.isCorrect ? 'text-green-600' : 'text-red-500'}`}>
                 {!answered ? 'Select an answer' : q.options[selectedIndex!]?.isCorrect ? '✓ Correct!' : '✗ Incorrect'}
               </span>
-              <button onClick={handleNext} disabled={!answered}
-                className="flex items-center gap-1.5 text-xs px-4 py-2 rounded-lg bg-[#2563EB] text-white hover:bg-blue-700 transition-colors disabled:opacity-40 disabled:cursor-not-allowed">
+              <UIButton
+                type="submit"
+                dark={dark} 
+                onClick={handleNext}
+                variant="primary"
+                disabled={!answered}
+                size="small"
+              >
                 {current + 1 === total ? 'See results' : 'Next'}
-                <i className={`ti ${current + 1 === total ? 'ti-trophy' : 'ti-arrow-right'}`} style={{ fontSize: 12 }} />
-              </button>
+              </UIButton>
             </div>
           </>
         ) : (
@@ -155,8 +162,8 @@ export const QuizModal = ({ questions, dark, onClose }: QuizModalProps) => {
             <p className={`text-sm font-medium mb-1 ${dark ? 'text-white' : 'text-gray-900'}`}>{label}</p>
             <p className={`text-xs mb-5 ${dark ? 'text-gray-500' : 'text-gray-400'}`}>You scored {pct}%</p>
             <div className="flex items-center justify-center gap-3 mb-6">
-              <span className="text-xs px-3 py-1.5 rounded-lg bg-green-50 text-green-700">✓ {correct} correct</span>
-              <span className="text-xs px-3 py-1.5 rounded-lg bg-red-50 text-red-700">✗ {wrong} wrong</span>
+              <span className="text-xs px-3 py-1.5 rounded-lg bg-green-50 text-green-700"><CorrectCircleIcon /> {correct} correct</span>
+              <span className="text-xs px-3 py-1.5 rounded-lg bg-red-50 text-red-700"><IncorrectCircleIcon /> {wrong} wrong</span>
             </div>
             {/*<button onClick={handleRetry}
               className={`text-xs px-4 py-2 rounded-lg border transition-colors
